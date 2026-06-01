@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { CategoryItem } from '../types';
 import { db } from '../mock';
@@ -14,13 +14,11 @@ export function CategoryPage() {
   ];
 
   return (
-    <>
-      <h2>カテゴリ設定</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="カテゴリデータがありません" 
-      />
-    </>
+    <DataPage 
+      title="カテゴリ設定"
+      data={items} 
+      columns={columns} 
+      emptyMessage="カテゴリデータがありません" 
+    />
   );
 }

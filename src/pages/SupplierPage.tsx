@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { SupplierItem } from '../types';
 import { db } from '../mock';
@@ -15,13 +15,11 @@ export function SupplierPage() {
   ];
 
   return (
-    <>
-      <h2>仕入先設定</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="仕入先データがありません" 
-      />
-    </>
+    <DataPage 
+      title="仕入先設定"
+      data={items} 
+      columns={columns} 
+      emptyMessage="仕入先データがありません" 
+    />
   );
 }

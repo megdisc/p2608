@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { MasterItem } from '../types';
 import { db } from '../mock';
@@ -21,13 +21,11 @@ export function MasterPage() {
   ];
 
   return (
-    <>
-      <h2>品目設定</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="マスタデータがありません" 
-      />
-    </>
+    <DataPage 
+      title="品目設定"
+      data={items} 
+      columns={columns} 
+      emptyMessage="マスタデータがありません" 
+    />
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { db } from '../mock';
@@ -17,13 +17,11 @@ export function TransactionPage() {
   ];
 
   return (
-    <>
-      <h2>受入・払出記録</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="記録データがありません" 
-      />
-    </>
+    <DataPage 
+      title="受入・払出記録"
+      data={items} 
+      columns={columns} 
+      emptyMessage="記録データがありません" 
+    />
   );
 }

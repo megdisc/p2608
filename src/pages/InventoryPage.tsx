@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { InventoryItem } from '../types';
 import { db } from '../mock';
@@ -14,13 +14,11 @@ export function InventoryPage() {
   ];
 
   return (
-    <>
-      <h2>在庫集計</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="在庫データがありません" 
-      />
-    </>
+    <DataPage 
+      title="在庫集計"
+      data={items} 
+      columns={columns} 
+      emptyMessage="在庫データがありません" 
+    />
   );
 }

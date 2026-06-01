@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable } from '../components/ui';
+import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { StocktakingItem } from '../types';
 import { db } from '../mock';
@@ -29,13 +29,11 @@ export function StocktakingPage() {
   ];
 
   return (
-    <>
-      <h2>棚卸記録</h2>
-      <DataTable 
-        data={items} 
-        columns={columns} 
-        emptyMessage="棚卸記録がありません" 
-      />
-    </>
+    <DataPage 
+      title="棚卸記録"
+      data={items} 
+      columns={columns} 
+      emptyMessage="棚卸記録がありません" 
+    />
   );
 }

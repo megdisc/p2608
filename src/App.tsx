@@ -10,13 +10,14 @@ type InventoryItem = {
 };
 
 const initialData: InventoryItem[] = [
-  { id: 'ITM-001', name: 'ノートパソコン', category: '電子機器', quantity: 15, location: 'A-01' },
-  { id: 'ITM-002', name: 'ワイヤレスマウス', category: '周辺機器', quantity: 42, location: 'A-02' },
-  { id: 'ITM-003', name: 'メカニカルキーボード', category: '周辺機器', quantity: 8, location: 'A-03' },
-  { id: 'ITM-004', name: '27インチモニター', category: '電子機器', quantity: 12, location: 'B-01' },
-  { id: 'ITM-005', name: 'HDMIケーブル (2m)', category: 'ケーブル', quantity: 105, location: 'C-01' },
-  { id: 'ITM-006', name: 'USB-C ハブ', category: '周辺機器', quantity: 24, location: 'C-02' },
-  { id: 'ITM-007', name: 'コピー用紙 A4', category: '消耗品', quantity: 500, location: 'D-01' },
+  { id: 'ING-001', name: '強力粉 (カメリヤ) 25kg', category: '粉類', quantity: 12, location: '倉庫A' },
+  { id: 'ING-002', name: '薄力粉 (バイオレット) 25kg', category: '粉類', quantity: 5, location: '倉庫A' },
+  { id: 'ING-003', name: 'ドライイースト 500g', category: '酵母・膨張剤', quantity: 20, location: '冷蔵庫1' },
+  { id: 'ING-004', name: '上白糖 30kg', category: '糖類', quantity: 3, location: '倉庫B' },
+  { id: 'ING-005', name: '粗塩 5kg', category: '調味料', quantity: 8, location: '倉庫B' },
+  { id: 'ING-006', name: '無塩バター 450g', category: '乳製品', quantity: 40, location: '冷蔵庫2' },
+  { id: 'ING-007', name: '牛乳 (業務用) 1000ml', category: '乳製品', quantity: 24, location: '冷蔵庫2' },
+  { id: 'ING-008', name: '鶏卵 (Lサイズ) 10kg', category: '生鮮食品', quantity: 4, location: '冷蔵庫3' },
 ];
 
 function App() {

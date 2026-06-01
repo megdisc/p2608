@@ -97,49 +97,51 @@ function App() {
   const [supplierItems] = useState<SupplierItem[]>(initialSupplierData);
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1>在庫管理システム</h1>
-        <span className="system-id">p2608</span>
-      </header>
-      
-      <nav className="nav-menu">
-        <button 
-          className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
-          onClick={() => setActiveTab('inventory')}
-        >
-          在庫一覧
-        </button>
-        <button 
-          className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
-          onClick={() => setActiveTab('master')}
-        >
-          品目一覧 (マスタ)
-        </button>
-        <button 
-          className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
-          onClick={() => setActiveTab('category')}
-        >
-          カテゴリ一覧
-        </button>
-        <button 
-          className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
-          onClick={() => setActiveTab('supplier')}
-        >
-          仕入先一覧
-        </button>
-        <button 
-          className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
-          onClick={() => setActiveTab('location')}
-        >
-          保管場所一覧
-        </button>
-      </nav>
+    <div className="app-layout">
+      <aside className="sidebar">
+        <header className="header">
+          <h1>在庫管理システム</h1>
+          <span className="system-id">p2608</span>
+        </header>
+        
+        <nav className="nav-menu">
+          <button 
+            className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
+            onClick={() => setActiveTab('inventory')}
+          >
+            在庫
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
+            onClick={() => setActiveTab('master')}
+          >
+            品目
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
+            onClick={() => setActiveTab('category')}
+          >
+            カテゴリ
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
+            onClick={() => setActiveTab('supplier')}
+          >
+            仕入先
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
+            onClick={() => setActiveTab('location')}
+          >
+            保管場所
+          </button>
+        </nav>
+      </aside>
 
       <main className="main-content">
         {activeTab === 'inventory' && (
           <>
-            <h2>在庫一覧</h2>
+            <h2>在庫</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -170,7 +172,7 @@ function App() {
 
         {activeTab === 'master' && (
           <>
-            <h2>管理品目マスタ</h2>
+            <h2>品目</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -207,7 +209,7 @@ function App() {
 
         {activeTab === 'category' && (
           <>
-            <h2>カテゴリ一覧</h2>
+            <h2>カテゴリ</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -238,7 +240,7 @@ function App() {
 
         {activeTab === 'supplier' && (
           <>
-            <h2>仕入先一覧</h2>
+            <h2>仕入先</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -271,7 +273,7 @@ function App() {
 
         {activeTab === 'location' && (
           <>
-            <h2>保管場所一覧</h2>
+            <h2>保管場所</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>

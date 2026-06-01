@@ -49,6 +49,18 @@ type TransactionItem = {
   quantity: number;
 };
 
+type StocktakingItem = {
+  id: string;
+  date: string;
+  itemId: string;
+  itemName: string;
+  systemQty: number;
+  actualQty: number;
+  difference: number;
+  personInCharge: string;
+  location: string;
+};
+
 const initialInventoryData: InventoryItem[] = [
   { id: 'ING-001', name: '強力粉 (カメリヤ) 25kg', quantity: 12 },
   { id: 'ING-002', name: '薄力粉 (バイオレット) 25kg', quantity: 5 },
@@ -104,7 +116,14 @@ const initialTransactionData: TransactionItem[] = [
   { id: 'TRX-005', date: '2026-06-01 13:45', itemId: 'ING-008', itemName: '鶏卵 (Lサイズ) 10kg', type: '受入', quantity: 2 },
 ];
 
-type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction';
+const initialStocktakingData: StocktakingItem[] = [
+  { id: 'STK-001', date: '2026-05-31 18:00', itemId: 'ING-001', itemName: '強力粉 (カメリヤ)', systemQty: 12, actualQty: 12, difference: 0, personInCharge: '佐藤', location: '倉庫A' },
+  { id: 'STK-002', date: '2026-05-31 18:15', itemId: 'ING-003', itemName: 'ドライイースト', systemQty: 21, actualQty: 20, difference: -1, personInCharge: '佐藤', location: '冷蔵庫1' },
+  { id: 'STK-003', date: '2026-05-31 18:30', itemId: 'ING-006', itemName: '無塩バター', systemQty: 40, actualQty: 40, difference: 0, personInCharge: '鈴木', location: '冷蔵庫2' },
+  { id: 'STK-004', date: '2026-05-31 18:45', itemId: 'ING-004', itemName: '上白糖', systemQty: 3, actualQty: 3, difference: 0, personInCharge: '鈴木', location: '倉庫B' },
+];
+
+type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('inventory');
@@ -114,6 +133,7 @@ function App() {
   const [categoryItems] = useState<CategoryItem[]>(initialCategoryData);
   const [supplierItems] = useState<SupplierItem[]>(initialSupplierData);
   const [transactionItems] = useState<TransactionItem[]>(initialTransactionData);
+  const [stocktakingItems] = useState<StocktakingItem[]>(initialStocktakingData);
 
   const [firstColWidth, setFirstColWidth] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -162,6 +182,12 @@ function App() {
               onClick={() => setActiveTab('transaction')}
             >
               受入・払出記録
+            </button>
+            <button 
+              className={`nav-button ${activeTab === 'stocktaking' ? 'active' : ''}`}
+              onClick={() => setActiveTab('stocktaking')}
+            >
+              棚卸記録
             </button>
           </div>
 
@@ -256,6 +282,51 @@ function App() {
                   {transactionItems.length === 0 && (
                     <tr>
                       <td colSpan={6} className="empty-message">記録データがありません</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
+        {activeTab === 'stocktaking' && (
+          <>
+            <h2>棚卸記録</h2>
+            <div className="table-container">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>日時</th>
+                    <th>品目ID</th>
+                    <th>品目</th>
+                    <th>帳簿在庫</th>
+                    <th>実在庫</th>
+                    <th>差異</th>
+                    <th>担当者</th>
+                    <th>保管場所</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stocktakingItems.map((item) => (
+                    <tr key={item.id}>
+                      <td className="item-id">{item.id}</td>
+                      <td>{item.date}</td>
+                      <td className="item-id">{item.itemId}</td>
+                      <td>{item.itemName}</td>
+                      <td className="quantity">{item.systemQty}</td>
+                      <td className="quantity">{item.actualQty}</td>
+                      <td className="quantity" style={{ color: item.difference !== 0 ? '#e03131' : 'inherit' }}>
+                        {item.difference > 0 ? `+${item.difference}` : item.difference}
+                      </td>
+                      <td>{item.personInCharge}</td>
+                      <td>{item.location}</td>
+                    </tr>
+                  ))}
+                  {stocktakingItems.length === 0 && (
+                    <tr>
+                      <td colSpan={9} className="empty-message">棚卸記録がありません</td>
                     </tr>
                   )}
                 </tbody>

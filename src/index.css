@@ -137,7 +137,8 @@ body {
 .table-container {
   border: 1px solid var(--color-border);
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   background-color: var(--color-bg);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   max-width: 1000px;
@@ -147,6 +148,37 @@ body {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  white-space: nowrap;
+}
+
+/* Sticky first column */
+.inventory-table th:nth-child(1),
+.inventory-table td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  background-color: var(--color-bg);
+  z-index: 1;
+}
+
+/* Sticky second column */
+.inventory-table th:nth-child(2),
+.inventory-table td:nth-child(2) {
+  position: sticky;
+  left: var(--first-col-width, 0px);
+  background-color: var(--color-bg);
+  z-index: 1;
+}
+
+.inventory-table th:nth-child(1),
+.inventory-table th:nth-child(2) {
+  background-color: var(--color-bg-subtle);
+  z-index: 2;
+}
+
+/* Hover effect for sticky cells */
+.inventory-table tbody tr:hover td:nth-child(1),
+.inventory-table tbody tr:hover td:nth-child(2) {
+  background-color: var(--color-bg-hover);
 }
 
 .inventory-table th,

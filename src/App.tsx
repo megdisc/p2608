@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './index.css';
 
 type InventoryItem = {
@@ -61,14 +61,14 @@ const initialInventoryData: InventoryItem[] = [
 ];
 
 const initialMasterData: MasterItem[] = [
-  { id: 'ING-001', name: '強力粉 (カメリヤ)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '日清製粉', standardPrice: 7500, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
-  { id: 'ING-002', name: '薄力粉 (バイオレット)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '日清製粉', standardPrice: 6800, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
-  { id: 'ING-003', name: 'ドライイースト', manufacturer: 'ルサッフル', contentAmount: 500, contentUnit: 'g', supplier: 'サフ', standardPrice: 1200, standardPurchaseQty: 10, category: '酵母・膨張剤', location: '冷蔵庫1' },
-  { id: 'ING-004', name: '上白糖', manufacturer: '三井製糖', contentAmount: 30, contentUnit: 'kg', supplier: '三井製糖', standardPrice: 5400, standardPurchaseQty: 1, category: '糖類', location: '倉庫B' },
-  { id: 'ING-005', name: '粗塩', manufacturer: '伯方塩業', contentAmount: 5, contentUnit: 'kg', supplier: '伯方の塩', standardPrice: 850, standardPurchaseQty: 2, category: '調味料', location: '倉庫B' },
-  { id: 'ING-006', name: '無塩バター', manufacturer: 'よつ葉乳業', contentAmount: 450, contentUnit: 'g', supplier: 'よつ葉乳業', standardPrice: 950, standardPurchaseQty: 30, category: '乳製品', location: '冷蔵庫2' },
-  { id: 'ING-007', name: '牛乳 (業務用)', manufacturer: '明治', contentAmount: 1000, contentUnit: 'ml', supplier: '明治', standardPrice: 280, standardPurchaseQty: 12, category: '乳製品', location: '冷蔵庫2' },
-  { id: 'ING-008', name: '鶏卵 (Lサイズ)', manufacturer: 'JA全農', contentAmount: 10, contentUnit: 'kg', supplier: 'JA全農', standardPrice: 3200, standardPurchaseQty: 2, category: '生鮮食品', location: '冷蔵庫3' },
+  { id: 'ING-001', name: '強力粉 (カメリヤ)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '関東製菓材料卸(株)', standardPrice: 7500, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
+  { id: 'ING-002', name: '薄力粉 (バイオレット)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '関東製菓材料卸(株)', standardPrice: 6800, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
+  { id: 'ING-003', name: 'ドライイースト', manufacturer: 'ルサッフル', contentAmount: 500, contentUnit: 'g', supplier: '関東製菓材料卸(株)', standardPrice: 1200, standardPurchaseQty: 10, category: '酵母・膨張剤', location: '冷蔵庫1' },
+  { id: 'ING-004', name: '上白糖', manufacturer: '三井製糖', contentAmount: 30, contentUnit: 'kg', supplier: '第一食材商事', standardPrice: 5400, standardPurchaseQty: 1, category: '糖類', location: '倉庫B' },
+  { id: 'ING-005', name: '粗塩', manufacturer: '伯方塩業', contentAmount: 5, contentUnit: 'kg', supplier: '第一食材商事', standardPrice: 850, standardPurchaseQty: 2, category: '調味料', location: '倉庫B' },
+  { id: 'ING-006', name: '無塩バター', manufacturer: 'よつ葉乳業', contentAmount: 450, contentUnit: 'g', supplier: '丸越乳業販売(株)', standardPrice: 950, standardPurchaseQty: 30, category: '乳製品', location: '冷蔵庫2' },
+  { id: 'ING-007', name: '牛乳 (業務用)', manufacturer: '明治', contentAmount: 1000, contentUnit: 'ml', supplier: '丸越乳業販売(株)', standardPrice: 280, standardPurchaseQty: 12, category: '乳製品', location: '冷蔵庫2' },
+  { id: 'ING-008', name: '鶏卵 (Lサイズ)', manufacturer: 'JA全農', contentAmount: 10, contentUnit: 'kg', supplier: '新鮮農産流通協同組合', standardPrice: 3200, standardPurchaseQty: 2, category: '生鮮食品', location: '冷蔵庫3' },
 ];
 
 const initialLocationData: LocationItem[] = [
@@ -90,13 +90,10 @@ const initialCategoryData: CategoryItem[] = [
 ];
 
 const initialSupplierData: SupplierItem[] = [
-  { id: 'SUP-001', name: '日清製粉', contactPerson: '山田 太郎', phone: '03-xxxx-0001' },
-  { id: 'SUP-002', name: 'サフ (輸入代理店)', contactPerson: '佐藤 花子', phone: '03-xxxx-0002' },
-  { id: 'SUP-003', name: '三井製糖', contactPerson: '鈴木 一郎', phone: '03-xxxx-0003' },
-  { id: 'SUP-004', name: '伯方の塩', contactPerson: '田中 次郎', phone: '089-xxx-0004' },
-  { id: 'SUP-005', name: 'よつ葉乳業', contactPerson: '伊藤 健太', phone: '011-xxx-0005' },
-  { id: 'SUP-006', name: '明治', contactPerson: '渡辺 真理', phone: '03-xxxx-0006' },
-  { id: 'SUP-007', name: 'JA全農', contactPerson: '小林 大輔', phone: '03-xxxx-0007' },
+  { id: 'SUP-001', name: '関東製菓材料卸(株)', contactPerson: '山田 太郎', phone: '03-xxxx-0001' },
+  { id: 'SUP-002', name: '第一食材商事', contactPerson: '佐藤 花子', phone: '03-xxxx-0002' },
+  { id: 'SUP-003', name: '丸越乳業販売(株)', contactPerson: '鈴木 一郎', phone: '03-xxxx-0003' },
+  { id: 'SUP-004', name: '新鮮農産流通協同組合', contactPerson: '田中 次郎', phone: '042-xxx-0004' },
 ];
 
 const initialTransactionData: TransactionItem[] = [
@@ -117,6 +114,27 @@ function App() {
   const [categoryItems] = useState<CategoryItem[]>(initialCategoryData);
   const [supplierItems] = useState<SupplierItem[]>(initialSupplierData);
   const [transactionItems] = useState<TransactionItem[]>(initialTransactionData);
+
+  const [firstColWidth, setFirstColWidth] = useState(0);
+  const tableRef = useRef<HTMLTableElement>(null);
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (tableRef.current) {
+        const firstTh = tableRef.current.querySelector('th');
+        if (firstTh) {
+          setFirstColWidth(firstTh.getBoundingClientRect().width);
+        }
+      }
+    };
+    
+    updateWidth();
+    // Re-measure after a short delay to ensure fonts/layout are fully resolved
+    const timer = setTimeout(updateWidth, 50);
+    return () => clearTimeout(timer);
+  }, [activeTab]);
+
+  const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
 
   return (
     <div className="app-layout">
@@ -156,16 +174,16 @@ function App() {
               品目設定
             </button>
             <button 
-              className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
-              onClick={() => setActiveTab('category')}
-            >
-              カテゴリ設定
-            </button>
-            <button 
               className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
               onClick={() => setActiveTab('supplier')}
             >
               仕入先設定
+            </button>
+            <button 
+              className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
+              onClick={() => setActiveTab('category')}
+            >
+              カテゴリ設定
             </button>
             <button 
               className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
@@ -182,7 +200,7 @@ function App() {
           <>
             <h2>在庫集計</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -213,7 +231,7 @@ function App() {
           <>
             <h2>受入・払出記録</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -250,7 +268,7 @@ function App() {
           <>
             <h2>品目設定</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -295,7 +313,7 @@ function App() {
           <>
             <h2>カテゴリ設定</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -326,7 +344,7 @@ function App() {
           <>
             <h2>仕入先設定</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -359,7 +377,7 @@ function App() {
           <>
             <h2>保管場所設定</h2>
             <div className="table-container">
-              <table className="inventory-table">
+              <table className="inventory-table" ref={tableRef} style={tableStyle}>
                 <thead>
                   <tr>
                     <th>ID</th>

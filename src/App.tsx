@@ -10,9 +10,13 @@ type InventoryItem = {
 type MasterItem = {
   id: string;
   name: string;
-  category: string;
+  manufacturer: string;
+  contentAmount: number;
+  contentUnit: string;
   supplier: string;
   standardPrice: number;
+  standardPurchaseQty: number;
+  category: string;
   location: string;
 };
 
@@ -57,14 +61,14 @@ const initialInventoryData: InventoryItem[] = [
 ];
 
 const initialMasterData: MasterItem[] = [
-  { id: 'ING-001', name: '強力粉 (カメリヤ) 25kg', category: '粉類', supplier: '日清製粉', standardPrice: 7500, location: '倉庫A' },
-  { id: 'ING-002', name: '薄力粉 (バイオレット) 25kg', category: '粉類', supplier: '日清製粉', standardPrice: 6800, location: '倉庫A' },
-  { id: 'ING-003', name: 'ドライイースト 500g', category: '酵母・膨張剤', supplier: 'サフ', standardPrice: 1200, location: '冷蔵庫1' },
-  { id: 'ING-004', name: '上白糖 30kg', category: '糖類', supplier: '三井製糖', standardPrice: 5400, location: '倉庫B' },
-  { id: 'ING-005', name: '粗塩 5kg', category: '調味料', supplier: '伯方の塩', standardPrice: 850, location: '倉庫B' },
-  { id: 'ING-006', name: '無塩バター 450g', category: '乳製品', supplier: 'よつ葉乳業', standardPrice: 950, location: '冷蔵庫2' },
-  { id: 'ING-007', name: '牛乳 (業務用) 1000ml', category: '乳製品', supplier: '明治', standardPrice: 280, location: '冷蔵庫2' },
-  { id: 'ING-008', name: '鶏卵 (Lサイズ) 10kg', category: '生鮮食品', supplier: 'JA全農', standardPrice: 3200, location: '冷蔵庫3' },
+  { id: 'ING-001', name: '強力粉 (カメリヤ)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '日清製粉', standardPrice: 7500, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
+  { id: 'ING-002', name: '薄力粉 (バイオレット)', manufacturer: '日清製粉', contentAmount: 25, contentUnit: 'kg', supplier: '日清製粉', standardPrice: 6800, standardPurchaseQty: 1, category: '粉類', location: '倉庫A' },
+  { id: 'ING-003', name: 'ドライイースト', manufacturer: 'ルサッフル', contentAmount: 500, contentUnit: 'g', supplier: 'サフ', standardPrice: 1200, standardPurchaseQty: 10, category: '酵母・膨張剤', location: '冷蔵庫1' },
+  { id: 'ING-004', name: '上白糖', manufacturer: '三井製糖', contentAmount: 30, contentUnit: 'kg', supplier: '三井製糖', standardPrice: 5400, standardPurchaseQty: 1, category: '糖類', location: '倉庫B' },
+  { id: 'ING-005', name: '粗塩', manufacturer: '伯方塩業', contentAmount: 5, contentUnit: 'kg', supplier: '伯方の塩', standardPrice: 850, standardPurchaseQty: 2, category: '調味料', location: '倉庫B' },
+  { id: 'ING-006', name: '無塩バター', manufacturer: 'よつ葉乳業', contentAmount: 450, contentUnit: 'g', supplier: 'よつ葉乳業', standardPrice: 950, standardPurchaseQty: 30, category: '乳製品', location: '冷蔵庫2' },
+  { id: 'ING-007', name: '牛乳 (業務用)', manufacturer: '明治', contentAmount: 1000, contentUnit: 'ml', supplier: '明治', standardPrice: 280, standardPurchaseQty: 12, category: '乳製品', location: '冷蔵庫2' },
+  { id: 'ING-008', name: '鶏卵 (Lサイズ)', manufacturer: 'JA全農', contentAmount: 10, contentUnit: 'kg', supplier: 'JA全農', standardPrice: 3200, standardPurchaseQty: 2, category: '生鮮食品', location: '冷蔵庫3' },
 ];
 
 const initialLocationData: LocationItem[] = [
@@ -182,7 +186,7 @@ function App() {
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>品名</th>
+                    <th>品目</th>
                     <th>在庫数量</th>
                   </tr>
                 </thead>
@@ -215,7 +219,7 @@ function App() {
                     <th>ID</th>
                     <th>日時</th>
                     <th>品目ID</th>
-                    <th>品名</th>
+                    <th>品目</th>
                     <th>区分</th>
                     <th>数量</th>
                   </tr>
@@ -250,10 +254,14 @@ function App() {
                 <thead>
                   <tr>
                     <th>ID</th>
-                    <th>品名</th>
-                    <th>カテゴリ</th>
+                    <th>品目</th>
+                    <th>製造元</th>
+                    <th>内容量</th>
+                    <th>内容量単位</th>
                     <th>仕入先</th>
                     <th>標準単価 (円)</th>
+                    <th>標準仕入数量</th>
+                    <th>カテゴリ</th>
                     <th>保管場所</th>
                   </tr>
                 </thead>
@@ -262,15 +270,19 @@ function App() {
                     <tr key={item.id}>
                       <td className="item-id">{item.id}</td>
                       <td>{item.name}</td>
-                      <td>{item.category}</td>
+                      <td>{item.manufacturer}</td>
+                      <td className="quantity">{item.contentAmount}</td>
+                      <td>{item.contentUnit}</td>
                       <td>{item.supplier}</td>
                       <td className="quantity">{item.standardPrice.toLocaleString()}</td>
+                      <td className="quantity">{item.standardPurchaseQty}</td>
+                      <td>{item.category}</td>
                       <td>{item.location}</td>
                     </tr>
                   ))}
                   {masterItems.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="empty-message">マスタデータがありません</td>
+                      <td colSpan={10} className="empty-message">マスタデータがありません</td>
                     </tr>
                   )}
                 </tbody>

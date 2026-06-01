@@ -69,7 +69,31 @@ body {
 .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 24px;
+}
+
+.nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-category {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+}
+
+.nav-placeholder {
+  font-size: 11px;
+  color: var(--color-border);
+  text-align: center;
+  padding: 8px 0;
 }
 
 .nav-button {

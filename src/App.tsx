@@ -36,6 +36,15 @@ type SupplierItem = {
   phone: string;
 };
 
+type TransactionItem = {
+  id: string;
+  date: string;
+  itemId: string;
+  itemName: string;
+  type: '受入' | '払出';
+  quantity: number;
+};
+
 const initialInventoryData: InventoryItem[] = [
   { id: 'ING-001', name: '強力粉 (カメリヤ) 25kg', quantity: 12 },
   { id: 'ING-002', name: '薄力粉 (バイオレット) 25kg', quantity: 5 },
@@ -86,7 +95,15 @@ const initialSupplierData: SupplierItem[] = [
   { id: 'SUP-007', name: 'JA全農', contactPerson: '小林 大輔', phone: '03-xxxx-0007' },
 ];
 
-type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier';
+const initialTransactionData: TransactionItem[] = [
+  { id: 'TRX-001', date: '2026-06-01 08:30', itemId: 'ING-001', itemName: '強力粉 (カメリヤ) 25kg', type: '受入', quantity: 10 },
+  { id: 'TRX-002', date: '2026-06-01 09:15', itemId: 'ING-003', itemName: 'ドライイースト 500g', type: '払出', quantity: 1 },
+  { id: 'TRX-003', date: '2026-06-01 10:00', itemId: 'ING-006', itemName: '無塩バター 450g', type: '払出', quantity: 2 },
+  { id: 'TRX-004', date: '2026-06-01 11:30', itemId: 'ING-007', itemName: '牛乳 (業務用) 1000ml', type: '受入', quantity: 12 },
+  { id: 'TRX-005', date: '2026-06-01 13:45', itemId: 'ING-008', itemName: '鶏卵 (Lサイズ) 10kg', type: '受入', quantity: 2 },
+];
+
+type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('inventory');
@@ -95,6 +112,7 @@ function App() {
   const [locationItems] = useState<LocationItem[]>(initialLocationData);
   const [categoryItems] = useState<CategoryItem[]>(initialCategoryData);
   const [supplierItems] = useState<SupplierItem[]>(initialSupplierData);
+  const [transactionItems] = useState<TransactionItem[]>(initialTransactionData);
 
   return (
     <div className="app-layout">
@@ -105,43 +123,60 @@ function App() {
         </header>
         
         <nav className="nav-menu">
-          <button 
-            className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inventory')}
-          >
-            在庫
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
-            onClick={() => setActiveTab('master')}
-          >
-            品目
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
-            onClick={() => setActiveTab('category')}
-          >
-            カテゴリ
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
-            onClick={() => setActiveTab('supplier')}
-          >
-            仕入先
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
-            onClick={() => setActiveTab('location')}
-          >
-            保管場所
-          </button>
+          <div className="nav-section">
+            <div className="nav-category">集計系</div>
+            <button 
+              className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
+              onClick={() => setActiveTab('inventory')}
+            >
+              在庫集計
+            </button>
+          </div>
+
+          <div className="nav-section">
+            <div className="nav-category">記録系</div>
+            <button 
+              className={`nav-button ${activeTab === 'transaction' ? 'active' : ''}`}
+              onClick={() => setActiveTab('transaction')}
+            >
+              受入・払出記録
+            </button>
+          </div>
+
+          <div className="nav-section">
+            <div className="nav-category">設定系</div>
+            <button 
+              className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
+              onClick={() => setActiveTab('master')}
+            >
+              品目設定
+            </button>
+            <button 
+              className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
+              onClick={() => setActiveTab('category')}
+            >
+              カテゴリ設定
+            </button>
+            <button 
+              className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
+              onClick={() => setActiveTab('supplier')}
+            >
+              仕入先設定
+            </button>
+            <button 
+              className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
+              onClick={() => setActiveTab('location')}
+            >
+              保管場所設定
+            </button>
+          </div>
         </nav>
       </aside>
 
       <main className="main-content">
         {activeTab === 'inventory' && (
           <>
-            <h2>在庫</h2>
+            <h2>在庫集計</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -170,9 +205,46 @@ function App() {
           </>
         )}
 
+        {activeTab === 'transaction' && (
+          <>
+            <h2>受入・払出記録</h2>
+            <div className="table-container">
+              <table className="inventory-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>日時</th>
+                    <th>品目ID</th>
+                    <th>品名</th>
+                    <th>区分</th>
+                    <th>数量</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactionItems.map((item) => (
+                    <tr key={item.id}>
+                      <td className="item-id">{item.id}</td>
+                      <td>{item.date}</td>
+                      <td className="item-id">{item.itemId}</td>
+                      <td>{item.itemName}</td>
+                      <td>{item.type}</td>
+                      <td className="quantity">{item.quantity}</td>
+                    </tr>
+                  ))}
+                  {transactionItems.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="empty-message">記録データがありません</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
         {activeTab === 'master' && (
           <>
-            <h2>品目</h2>
+            <h2>品目設定</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -209,7 +281,7 @@ function App() {
 
         {activeTab === 'category' && (
           <>
-            <h2>カテゴリ</h2>
+            <h2>カテゴリ設定</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -240,7 +312,7 @@ function App() {
 
         {activeTab === 'supplier' && (
           <>
-            <h2>仕入先</h2>
+            <h2>仕入先設定</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>
@@ -273,7 +345,7 @@ function App() {
 
         {activeTab === 'location' && (
           <>
-            <h2>保管場所</h2>
+            <h2>保管場所設定</h2>
             <div className="table-container">
               <table className="inventory-table">
                 <thead>

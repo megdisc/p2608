@@ -10,13 +10,14 @@ export function SupplierPage() {
   const columns: Column<SupplierItem>[] = [
     { key: 'name', header: '仕入先名', editable: true, inputType: 'text' },
     { key: 'contactPerson', header: '担当者', editable: true, inputType: 'text' },
-    { key: 'phone', header: '電話番号', editable: true, inputType: 'text' },
+    { key: 'phone', header: '電話番号', editable: true, inputType: 'number' },
   ];
 
   const handleBatchSave = (drafts: SupplierItem[], deletedIds: string[]) => {
     const afterDelete = drafts.filter(item => !deletedIds.includes(item.id)).map(item => ({
       ...item,
-      contactPerson: item.contactPerson.replace(/[\s　]+/g, '')
+      contactPerson: item.contactPerson.replace(/[\s　]+/g, ''),
+      phone: String(item.phone).replace(/-/g, '')
     }));
     setItems(afterDelete);
     alert('保存しました。');

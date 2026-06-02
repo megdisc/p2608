@@ -9,7 +9,7 @@ export function LocationPage() {
 
   const columns: Column<LocationItem>[] = [
     { key: 'name', header: '保管場所名', editable: true, inputType: 'text' },
-    { key: 'description', header: '用途・説明', editable: true, inputType: 'text' },
+    { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
 
   const handleBatchSave = (drafts: LocationItem[], deletedIds: string[]) => {

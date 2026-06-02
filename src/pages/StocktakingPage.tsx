@@ -40,6 +40,7 @@ export function StocktakingPage() {
       data={items} 
       columns={columns} 
       emptyMessage="棚卸記録がありません" 
+      initialSort={{ key: 'date', direction: 'desc' }}
     />
   );
 }

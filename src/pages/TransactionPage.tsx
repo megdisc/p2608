@@ -30,6 +30,7 @@ export function TransactionPage() {
       data={items} 
       columns={columns} 
       emptyMessage="記録データがありません" 
+      initialSort={{ key: 'date', direction: 'desc' }}
     />
   );
 }

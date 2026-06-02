@@ -6,13 +6,14 @@ type DataPageProps<T> = {
   data: T[];
   columns: Column<T>[];
   emptyMessage: string;
+  initialSort?: { key: string; direction: 'asc' | 'desc' };
 };
 
-export function DataPage<T extends { id: string }>({ title, data, columns, emptyMessage }: DataPageProps<T>) {
+export function DataPage<T extends { id: string }>({ title, data, columns, emptyMessage, initialSort }: DataPageProps<T>) {
   return (
     <>
       <h2>{title}</h2>
-      <DataTable data={data} columns={columns} emptyMessage={emptyMessage} />
+      <DataTable data={data} columns={columns} emptyMessage={emptyMessage} initialSort={initialSort} />
     </>
   );
 }

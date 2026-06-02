@@ -8,18 +8,24 @@ export type Column<T> = {
   style?: React.CSSProperties;
 };
 
+type SortConfig = { key: string; direction: 'asc' | 'desc' };
+
 type DataTableProps<T> = {
   data: T[];
   columns: Column<T>[];
   emptyMessage: string;
+  initialSort?: SortConfig;
 };
 
-type SortConfig = { key: string; direction: 'asc' | 'desc' } | null;
-
-export function DataTable<T extends { id: string }>({ data, columns, emptyMessage }: DataTableProps<T>) {
+export function DataTable<T extends { id: string }>({ data, columns, emptyMessage, initialSort }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
-  const [sortConfig, setSortConfig] = useState<SortConfig>(null);
+  
+  // Default to initialSort or first column, ascending
+  const [sortConfig, setSortConfig] = useState<SortConfig>(() => initialSort || {
+    key: columns.length > 0 ? columns[0].key : '',
+    direction: 'asc'
+  });
 
   useEffect(() => {
     const updateWidth = () => {
@@ -37,7 +43,7 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
   }, [data, columns]);
 
   const sortedData = useMemo(() => {
-    if (!sortConfig) return data;
+    if (!sortConfig.key) return data;
     
     return [...data].sort((a, b) => {
       let aVal = (a as any)[sortConfig.key];
@@ -59,9 +65,8 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
   const handleSort = (key: string) => {
     if (!key) return;
     setSortConfig(current => {
-      if (current && current.key === key) {
-        if (current.direction === 'asc') return { key, direction: 'desc' };
-        return null; // Cycle: asc -> desc -> none
+      if (current.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
       }
       return { key, direction: 'asc' };
     });
@@ -83,8 +88,8 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {col.header}
-                  <span style={{ fontSize: '0.8em', color: sortConfig?.key === col.key ? 'inherit' : 'transparent' }}>
-                    {sortConfig?.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
+                  <span style={{ fontSize: '0.8em', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                    {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
                   </span>
                 </div>
               </th>

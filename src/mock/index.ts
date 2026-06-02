@@ -38,9 +38,11 @@ export const db = {
   get inventory(): InventoryItem[] {
     return inventoryTable.map((inv) => {
       const master = masterTable.find((m) => m.id === inv.itemId);
+      const category = categoryTable.find((c) => c.id === master?.categoryId);
       const location = locationTable.find((l) => l.id === inv.locationId);
       return {
         id: inv.id,
+        category: category?.name ?? 'Unknown',
         name: master?.name ?? 'Unknown',
         location: location?.name ?? 'Unknown',
         quantity: inv.quantity,
@@ -67,10 +69,12 @@ export const db = {
   get transaction(): TransactionItem[] {
     return transactionTable.map((tx) => {
       const master = masterTable.find((m) => m.id === tx.itemId);
+      const category = categoryTable.find((c) => c.id === master?.categoryId);
       const location = locationTable.find((l) => l.id === tx.locationId);
       const staff = staffTable.find((s) => s.id === tx.staffId);
       return {
         ...tx,
+        category: category?.name ?? 'Unknown',
         itemName: master?.name ?? 'Unknown',
         location: location?.name ?? 'Unknown',
         personInCharge: staff?.name ?? 'Unknown',
@@ -81,10 +85,12 @@ export const db = {
   get stocktaking(): StocktakingItem[] {
     return stocktakingTable.map((st) => {
       const master = masterTable.find((m) => m.id === st.itemId);
+      const category = categoryTable.find((c) => c.id === master?.categoryId);
       const location = locationTable.find((l) => l.id === st.locationId);
       const staff = staffTable.find((s) => s.id === st.staffId);
       return {
         ...st,
+        category: category?.name ?? 'Unknown',
         itemName: master?.name ?? 'Unknown',
         location: location?.name ?? 'Unknown',
         personInCharge: staff?.name ?? 'Unknown',

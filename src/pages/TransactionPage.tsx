@@ -17,6 +17,7 @@ export function TransactionPage() {
         return `${y}年${m}月${d}日 ${timePart}`;
       }
     },
+    { key: 'category', header: 'カテゴリ' },
     { key: 'itemName', header: '品目' },
     { key: 'location', header: '保管場所' },
     { key: 'type', header: '区分' },

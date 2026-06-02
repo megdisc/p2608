@@ -1,5 +1,6 @@
 export type InventoryItem = {
   id: string;
+  category: string;
   name: string;
   location: string;
   quantity: number;
@@ -42,6 +43,7 @@ export type TransactionItem = {
   id: string;
   date: string;
   itemId: string;
+  category: string;
   itemName: string;
   type: '受入' | '払出';
   quantity: number;
@@ -60,6 +62,7 @@ export type StocktakingItem = {
   id: string;
   date: string;
   itemId: string;
+  category: string;
   itemName: string;
   systemQty: number;
   actualQty: number;

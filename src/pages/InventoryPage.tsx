@@ -5,6 +5,7 @@ import { db } from '../mock';
 
 type PivotInventoryItem = {
   id: string;
+  category: string;
   name: string;
   totalQuantity: number;
   [locationName: string]: string | number;
@@ -21,6 +22,7 @@ export function InventoryPage() {
       if (!grouped.has(inv.name)) {
         const initialItem: PivotInventoryItem = {
           id: `PIVOT-${inv.name}`,
+          category: inv.category,
           name: inv.name,
           totalQuantity: 0,
         };
@@ -42,6 +44,7 @@ export function InventoryPage() {
     const items = Array.from(grouped.values());
 
     const dynamicColumns: Column<PivotInventoryItem>[] = [
+      { key: 'category', header: 'カテゴリ' },
       { key: 'name', header: '品目' },
       { key: 'totalQuantity', header: '総合数量', className: 'quantity' },
     ];

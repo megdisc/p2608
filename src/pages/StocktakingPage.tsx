@@ -17,6 +17,7 @@ export function StocktakingPage() {
         return `${y}年${m}月${d}日 ${timePart}`;
       }
     },
+    { key: 'category', header: 'カテゴリ' },
     { key: 'itemName', header: '品目' },
     { key: 'location', header: '保管場所' },
     { key: 'systemQty', header: '帳簿在庫', className: 'quantity' },

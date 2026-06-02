@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
+import { DateTimeInput } from './DateTimeInput';
 
 export type Column<T> = {
   key: string;
@@ -155,17 +156,19 @@ export function DataTable<T extends { id: string }>({
         );
       }
       
-      let inputValue = value as string | number;
-      if (col.inputType === 'datetime-local' && typeof value === 'string') {
-        inputValue = value.replace(' ', 'T');
+      if (col.inputType === 'datetime-local') {
+        return (
+          <DateTimeInput 
+            value={value as string}
+            onChange={(newVal) => handleCellChange(item.id, col.key, newVal)}
+          />
+        );
       }
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue: string | number = e.target.value;
         if (col.inputType === 'number') {
           newValue = Number(newValue);
-        } else if (col.inputType === 'datetime-local') {
-          newValue = newValue.replace('T', ' ');
         }
         handleCellChange(item.id, col.key, newValue);
       };
@@ -173,7 +176,7 @@ export function DataTable<T extends { id: string }>({
       return (
         <Input 
           type={col.inputType} 
-          value={inputValue} 
+          value={value} 
           onChange={handleChange}
         />
       );

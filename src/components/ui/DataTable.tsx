@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Button } from './Button';
 
 export type Column<T> = {
   key: string;
@@ -6,6 +7,9 @@ export type Column<T> = {
   render?: (item: T) => React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  editable?: boolean;
+  inputType?: 'text' | 'number' | 'select' | 'date';
+  options?: { label: string; value: string }[]; // For select
 };
 
 type SortConfig = { key: string; direction: 'asc' | 'desc' };
@@ -15,17 +19,34 @@ type DataTableProps<T> = {
   columns: Column<T>[];
   emptyMessage: string;
   initialSort?: SortConfig;
+  onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
+  onAddRow?: () => T;
 };
 
-export function DataTable<T extends { id: string }>({ data, columns, emptyMessage, initialSort }: DataTableProps<T>) {
+export function DataTable<T extends { id: string }>({ 
+  data, 
+  columns, 
+  emptyMessage, 
+  initialSort,
+  onBatchSave,
+  onAddRow
+}: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
   
-  // Default to initialSort or first column, ascending
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => initialSort || {
     key: columns.length > 0 ? columns[0].key : '',
     direction: 'asc'
   });
+
+  const [draftData, setDraftData] = useState<T[]>(data);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  
+  // Sync when parent data changes (e.g. after save)
+  useEffect(() => {
+    setDraftData(data);
+    setDeletedIds(new Set());
+  }, [data]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -40,12 +61,12 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
     updateWidth();
     const timer = setTimeout(updateWidth, 50);
     return () => clearTimeout(timer);
-  }, [data, columns]);
+  }, [draftData, columns, onBatchSave]);
 
   const sortedData = useMemo(() => {
-    if (!sortConfig.key) return data;
+    if (!sortConfig.key) return draftData;
     
-    return [...data].sort((a, b) => {
+    return [...draftData].sort((a, b) => {
       let aVal = (a as any)[sortConfig.key];
       let bVal = (b as any)[sortConfig.key];
       
@@ -60,7 +81,7 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
       if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [data, sortConfig]);
+  }, [draftData, sortConfig]);
 
   const handleSort = (key: string) => {
     if (!key) return;
@@ -72,47 +93,155 @@ export function DataTable<T extends { id: string }>({ data, columns, emptyMessag
     });
   };
 
+  const handleCellChange = (id: string, key: string, value: any) => {
+    setDraftData(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, [key]: value };
+      }
+      return item;
+    }));
+  };
+
+  const toggleDelete = (id: string) => {
+    setDeletedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleAddClick = () => {
+    if (!onAddRow) return;
+    const newRow = onAddRow();
+    setDraftData(prev => [...prev, newRow]);
+  };
+
+  const handleSaveClick = () => {
+    if (onBatchSave) {
+      onBatchSave(draftData, Array.from(deletedIds));
+    }
+  };
+
+  const handleCancelClick = () => {
+    setDraftData(data);
+    setDeletedIds(new Set());
+  };
+
+  const renderCellContent = (col: Column<T>, item: T) => {
+    const isEditable = !!onBatchSave && col.editable !== false && col.inputType;
+    
+    if (isEditable) {
+      const value = (item as any)[col.key] ?? '';
+      
+      if (col.inputType === 'select') {
+        return (
+          <select 
+            className="inline-input"
+            value={value} 
+            onChange={(e) => handleCellChange(item.id, col.key, e.target.value)}
+          >
+            {col.options?.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        );
+      }
+      
+      return (
+        <input 
+          className="inline-input"
+          type={col.inputType} 
+          value={value} 
+          onChange={(e) => handleCellChange(item.id, col.key, col.inputType === 'number' ? Number(e.target.value) : e.target.value)}
+        />
+      );
+    }
+    
+    return col.render ? col.render(item) : (item as any)[col.key];
+  };
+
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
+  const isEditingEnabled = !!onBatchSave;
+
+
+// ... 
 
   return (
-    <div className="table-container">
-      <table className="inventory-table" ref={tableRef} style={tableStyle}>
-        <thead>
-          <tr>
-            {columns.map((col, idx) => (
-              <th 
-                key={col.key || idx}
-                onClick={() => handleSort(col.key)}
-                style={{ cursor: 'pointer', userSelect: 'none' }}
-                title={`${col.header}でソート`}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {col.header}
-                  <span style={{ fontSize: '0.8em', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
-                    {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
-                  </span>
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((item) => (
-            <tr key={item.id}>
-              {columns.map((col, idx) => (
-                <td key={col.key || idx} className={col.className} style={col.style}>
-                  {col.render ? col.render(item) : (item as any)[col.key]}
-                </td>
-              ))}
-            </tr>
-          ))}
-          {sortedData.length === 0 && (
+    <>
+      <div className="table-container">
+        <table className="inventory-table" ref={tableRef} style={tableStyle}>
+          <thead>
             <tr>
-              <td colSpan={columns.length} className="empty-message">{emptyMessage}</td>
+              {columns.map((col, idx) => (
+                <th 
+                  key={col.key || idx}
+                  onClick={() => handleSort(col.key)}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                  title={`${col.header}でソート`}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    {col.header}
+                    <span style={{ fontSize: '0.8em', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                      {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
+                    </span>
+                  </div>
+                </th>
+              ))}
+              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center' }}>削除</th>}
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {sortedData.map((item) => {
+              const isDeleted = deletedIds.has(item.id);
+              return (
+                <tr key={item.id} style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}>
+                  {columns.map((col, idx) => (
+                    <td key={col.key || idx} className={col.className} style={col.style}>
+                      {renderCellContent(col, item)}
+                    </td>
+                  ))}
+                  {isEditingEnabled && (
+                    <td className="sticky-right" style={{ textAlign: 'center' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={isDeleted}
+                        onChange={() => toggleDelete(item.id)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
+            {sortedData.length === 0 && (
+              <tr>
+                <td colSpan={columns.length + (isEditingEnabled ? 1 : 0)} className="empty-message">{emptyMessage}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      
+      {isEditingEnabled && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+          <div>
+            {onAddRow && (
+              <Button variant="primary" onClick={handleAddClick}>
+                ＋ 新規追加
+              </Button>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Button variant="secondary" onClick={handleCancelClick}>
+              変更を破棄
+            </Button>
+            <Button variant="success" onClick={handleSaveClick}>
+              保存
+            </Button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

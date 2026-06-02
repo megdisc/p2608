@@ -7,13 +7,32 @@ type DataPageProps<T> = {
   columns: Column<T>[];
   emptyMessage: string;
   initialSort?: { key: string; direction: 'asc' | 'desc' };
+  onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
+  onAddRow?: () => T;
 };
 
-export function DataPage<T extends { id: string }>({ title, data, columns, emptyMessage, initialSort }: DataPageProps<T>) {
+export function DataPage<T extends { id: string }>({ 
+  title, 
+  data, 
+  columns, 
+  emptyMessage, 
+  initialSort,
+  onBatchSave,
+  onAddRow
+}: DataPageProps<T>) {
   return (
     <>
-      <h2>{title}</h2>
-      <DataTable data={data} columns={columns} emptyMessage={emptyMessage} initialSort={initialSort} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+        <h2 style={{ margin: 0 }}>{title}</h2>
+      </div>
+      <DataTable 
+        data={data} 
+        columns={columns} 
+        emptyMessage={emptyMessage} 
+        initialSort={initialSort} 
+        onBatchSave={onBatchSave}
+        onAddRow={onAddRow}
+      />
     </>
   );
 }

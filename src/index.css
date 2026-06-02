@@ -186,6 +186,23 @@ body {
   background-color: var(--color-bg-hover);
 }
 
+.sticky-right {
+  position: sticky;
+  right: 0;
+  background-color: var(--color-bg);
+  z-index: 1;
+  box-shadow: -2px 0 5px rgba(0,0,0,0.03);
+}
+
+th.sticky-right {
+  background-color: var(--color-bg-subtle);
+  z-index: 2;
+}
+
+.inventory-table tbody tr:hover td.sticky-right {
+  background-color: var(--color-bg-hover);
+}
+
 .inventory-table th,
 .inventory-table td {
   padding: 16px 24px;
@@ -233,4 +250,92 @@ body {
   text-align: center;
   padding: 48px !important;
   color: var(--color-text-muted) !important;
+}
+
+/* Action Buttons for DataTable */
+.action-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  background: var(--color-bg-subtle);
+  color: var(--color-text);
+}
+
+.action-btn:hover {
+  background: var(--color-border);
+}
+
+.edit-btn {
+  color: #1c7ed6;
+  border-color: #a5d8ff;
+  background-color: #e7f5ff;
+}
+.edit-btn:hover { background-color: #d0ebff; }
+
+.delete-btn {
+  color: #e03131;
+  border-color: #ffc9c9;
+  background-color: #ffe3e3;
+}
+.delete-btn:hover { background-color: #ffc9c9; }
+
+.save-btn {
+  color: #087f5b;
+  border-color: #b2f2bb;
+  background-color: #ebfbee;
+}
+.save-btn:hover { background-color: #d3f9d8; }
+
+.cancel-btn {
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+.add-btn {
+  background-color: #228be6;
+  color: white;
+  border: none;
+}
+.add-btn:hover {
+  background-color: #1c7ed6;
+  color: white;
+}
+
+/* Inline Input for DataTable */
+.inline-input {
+  width: 100%;
+  padding: 8px 4px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  border-radius: 4px;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  transition: border-color 0.2s, background-color 0.2s;
+  box-sizing: border-box;
+}
+
+.inline-input:hover {
+  border-color: #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.inline-input:focus {
+  outline: none;
+  border-color: #339af0;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(51, 154, 240, 0.2);
+}
+
+select.inline-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 32px;
 }

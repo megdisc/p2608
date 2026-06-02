@@ -5,13 +5,28 @@ import type { SupplierItem } from '../types';
 import { db } from '../mock';
 
 export function SupplierPage() {
-  const [items] = useState<SupplierItem[]>(db.supplier);
+  const [items, setItems] = useState<SupplierItem[]>(db.supplier);
 
   const columns: Column<SupplierItem>[] = [
-    { key: 'name', header: '仕入先名' },
-    { key: 'contactPerson', header: '担当者' },
-    { key: 'phone', header: '電話番号' },
+    { key: 'name', header: '仕入先名', editable: true, inputType: 'text' },
+    { key: 'contactPerson', header: '担当者', editable: true, inputType: 'text' },
+    { key: 'phone', header: '電話番号', editable: true, inputType: 'text' },
   ];
+
+  const handleBatchSave = (drafts: SupplierItem[], deletedIds: string[]) => {
+    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
+    setItems(afterDelete);
+    alert('保存しました。');
+  };
+
+  const handleAdd = () => {
+    return {
+      id: `SUP-${Date.now()}`,
+      name: '新規仕入先',
+      contactPerson: '',
+      phone: ''
+    } as SupplierItem;
+  };
 
   return (
     <DataPage 
@@ -19,6 +34,8 @@ export function SupplierPage() {
       data={items} 
       columns={columns} 
       emptyMessage="仕入先データがありません" 
+      onBatchSave={handleBatchSave}
+      onAddRow={handleAdd}
     />
   );
 }

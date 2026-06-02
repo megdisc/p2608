@@ -5,17 +5,46 @@ import type { StaffItem } from '../types';
 import { db } from '../mock';
 
 export function StaffPage() {
-  const [items] = useState<StaffItem[]>(db.staff);
+  const [items, setItems] = useState<StaffItem[]>(db.staff);
+
+  const roleOptions = [
+    { label: 'システム管理者', value: 'システム管理者' },
+    { label: '現場スタッフ', value: '現場スタッフ' },
+    { label: '経理担当', value: '経理担当' }
+  ];
+
+  const statusOptions = [
+    { label: '有効', value: 'active' },
+    { label: '無効', value: 'inactive' }
+  ];
 
   const columns: Column<StaffItem>[] = [
-    { key: 'name', header: '氏名' },
-    { key: 'role', header: '権限ロール' },
+    { key: 'name', header: '氏名', editable: true, inputType: 'text' },
+    { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
     { 
       key: 'status', 
       header: 'ステータス',
+      editable: true,
+      inputType: 'select',
+      options: statusOptions,
       render: (item) => item.status === 'active' ? '有効' : '無効' 
     },
   ];
+
+  const handleBatchSave = (drafts: StaffItem[], deletedIds: string[]) => {
+    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
+    setItems(afterDelete);
+    alert('保存しました。');
+  };
+
+  const handleAdd = () => {
+    return {
+      id: `STF-${Date.now()}`,
+      name: '新規スタッフ',
+      role: '現場スタッフ',
+      status: 'active'
+    } as StaffItem;
+  };
 
   return (
     <DataPage 
@@ -23,6 +52,8 @@ export function StaffPage() {
       data={items} 
       columns={columns} 
       emptyMessage="スタッフデータがありません" 
+      onBatchSave={handleBatchSave}
+      onAddRow={handleAdd}
     />
   );
 }

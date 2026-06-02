@@ -49,28 +49,28 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             品目設定
           </button>
           <button 
-            className={`nav-button ${activeTab === 'unit' ? 'active' : ''}`}
-            onClick={() => setActiveTab('unit')}
-          >
-            単位設定
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
-            onClick={() => setActiveTab('supplier')}
-          >
-            仕入先設定
-          </button>
-          <button 
             className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
             onClick={() => setActiveTab('category')}
           >
             カテゴリ設定
           </button>
           <button 
+            className={`nav-button ${activeTab === 'unit' ? 'active' : ''}`}
+            onClick={() => setActiveTab('unit')}
+          >
+            単位設定
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
             onClick={() => setActiveTab('location')}
           >
             保管場所設定
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
+            onClick={() => setActiveTab('supplier')}
+          >
+            仕入先設定
           </button>
           <button 
             className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}

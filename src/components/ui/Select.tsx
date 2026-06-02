@@ -8,7 +8,7 @@ export function Select({ options, className = '', children, ...props }: SelectPr
   return (
     <select className={`inline-input ${className}`.trim()} {...props}>
       {options ? options.map(opt => (
-        <option key={opt.value} value={opt.value}>{opt.label}</option>
+        <option key={opt.value} value={opt.value}>{opt.label || '-'}</option>
       )) : children}
     </select>
   );

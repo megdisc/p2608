@@ -23,15 +23,13 @@ import type {
 // Helper to simulate joins
 const joinMasterItem = (rawMaster: typeof masterTable[0]): MasterItem => {
   const category = categoryTable.find((c) => c.id === rawMaster.categoryId);
-  const locations = rawMaster.locationIds
-    .map((id) => locationTable.find((l) => l.id === id)?.name)
-    .filter(Boolean) as string[];
+  const location = locationTable.find((l) => l.id === rawMaster.locationId);
   const supplier = supplierTable.find((s) => s.id === rawMaster.supplierId);
 
   return {
     ...rawMaster,
     category: category?.name ?? 'Unknown',
-    locations,
+    location: location?.name ?? 'Unknown',
     supplier: supplier?.name ?? 'Unknown',
   };
 };

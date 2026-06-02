@@ -15,7 +15,7 @@ export type MasterTableItem = {
   standardPrice: number;
   standardPurchaseQty: number;
   categoryId: string;
-  locationIds: string[];
+  locationId: string;
 };
 
 export type LocationTableItem = {

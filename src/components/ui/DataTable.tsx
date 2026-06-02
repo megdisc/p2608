@@ -237,10 +237,10 @@ export function DataTable<T extends { id: string }>({
             </Button>
           )}
           <Button onClick={handleCancelClick}>
-            キャンセル
+            取消
           </Button>
           <Button onClick={handleSaveClick}>
-            保存
+            確定
           </Button>
         </div>
       )}

@@ -10,6 +10,7 @@ export function InventoryPage() {
   const columns: Column<InventoryItem>[] = [
     { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'name', header: '品目' },
+    { key: 'location', header: '保管場所' },
     { key: 'quantity', header: '在庫数量', className: 'quantity' },
   ];
 

@@ -12,6 +12,7 @@ export function StocktakingPage() {
     { key: 'date', header: '日時' },
     { key: 'itemId', header: '品目ID', className: 'item-id' },
     { key: 'itemName', header: '品目' },
+    { key: 'location', header: '保管場所' },
     { key: 'systemQty', header: '帳簿在庫', className: 'quantity' },
     { key: 'actualQty', header: '実在庫', className: 'quantity' },
     { 
@@ -24,7 +25,6 @@ export function StocktakingPage() {
         </span>
       )
     },
-    { key: 'location', header: '保管場所' },
     { key: 'personInCharge', header: '担当者' },
   ];
 

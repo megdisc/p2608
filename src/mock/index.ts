@@ -36,9 +36,11 @@ export const db = {
   get inventory(): InventoryItem[] {
     return inventoryTable.map((inv) => {
       const master = masterTable.find((m) => m.id === inv.id);
+      const location = master ? locationTable.find((l) => l.id === master.locationId) : undefined;
       return {
         id: inv.id,
         name: master?.name ?? 'Unknown',
+        location: location?.name ?? 'Unknown',
         quantity: inv.quantity,
       };
     });

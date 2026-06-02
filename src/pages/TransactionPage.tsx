@@ -12,9 +12,9 @@ export function TransactionPage() {
     { key: 'date', header: '日時' },
     { key: 'itemId', header: '品目ID', className: 'item-id' },
     { key: 'itemName', header: '品目' },
+    { key: 'location', header: '保管場所' },
     { key: 'type', header: '区分' },
     { key: 'quantity', header: '数量', className: 'quantity' },
-    { key: 'location', header: '保管場所' },
     { key: 'personInCharge', header: '担当者' },
   ];
 

@@ -1,5 +1,7 @@
 export type InventoryTableItem = {
-  id: string; // e.g., ING-001
+  id: string; // e.g., INV-001
+  itemId: string; // e.g., ING-001
+  locationId: string; // e.g., LOC-001
   quantity: number;
 };
 
@@ -13,7 +15,7 @@ export type MasterTableItem = {
   standardPrice: number;
   standardPurchaseQty: number;
   categoryId: string;
-  locationId: string;
+  locationIds: string[];
 };
 
 export type LocationTableItem = {

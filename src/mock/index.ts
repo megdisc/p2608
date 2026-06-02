@@ -21,13 +21,15 @@ import type {
 // Helper to simulate joins
 const joinMasterItem = (rawMaster: typeof masterTable[0]): MasterItem => {
   const category = categoryTable.find((c) => c.id === rawMaster.categoryId);
-  const location = locationTable.find((l) => l.id === rawMaster.locationId);
+  const locations = rawMaster.locationIds
+    .map((id) => locationTable.find((l) => l.id === id)?.name)
+    .filter(Boolean) as string[];
   const supplier = supplierTable.find((s) => s.id === rawMaster.supplierId);
 
   return {
     ...rawMaster,
     category: category?.name ?? 'Unknown',
-    location: location?.name ?? 'Unknown',
+    locations,
     supplier: supplier?.name ?? 'Unknown',
   };
 };
@@ -35,8 +37,8 @@ const joinMasterItem = (rawMaster: typeof masterTable[0]): MasterItem => {
 export const db = {
   get inventory(): InventoryItem[] {
     return inventoryTable.map((inv) => {
-      const master = masterTable.find((m) => m.id === inv.id);
-      const location = master ? locationTable.find((l) => l.id === master.locationId) : undefined;
+      const master = masterTable.find((m) => m.id === inv.itemId);
+      const location = locationTable.find((l) => l.id === inv.locationId);
       return {
         id: inv.id,
         name: master?.name ?? 'Unknown',

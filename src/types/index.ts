@@ -15,7 +15,7 @@ export type MasterItem = {
   standardPrice: number;
   standardPurchaseQty: number;
   category: string;
-  location: string;
+  locations: string[];
 };
 
 export type LocationItem = {

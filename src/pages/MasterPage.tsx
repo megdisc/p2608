@@ -17,7 +17,11 @@ export function MasterPage() {
     { key: 'standardPrice', header: '標準単価 (円)', className: 'quantity', render: (item) => item.standardPrice.toLocaleString() },
     { key: 'standardPurchaseQty', header: '標準仕入数量', className: 'quantity' },
     { key: 'category', header: 'カテゴリ' },
-    { key: 'location', header: '保管場所' },
+    { 
+      key: 'locations', 
+      header: '保管場所',
+      render: (item) => item.locations.join(', ')
+    },
   ];
 
   return (

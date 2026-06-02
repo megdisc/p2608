@@ -66,6 +66,12 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           >
             保管場所設定
           </button>
+          <button 
+            className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
+            onClick={() => setActiveTab('staff')}
+          >
+            スタッフ設定
+          </button>
         </div>
       </nav>
     </aside>

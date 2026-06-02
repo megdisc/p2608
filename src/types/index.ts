@@ -44,6 +44,15 @@ export type TransactionItem = {
   itemName: string;
   type: '受入' | '払出';
   quantity: number;
+  location: string;
+  personInCharge: string;
+};
+
+export type StaffItem = {
+  id: string;
+  name: string;
+  role: string;
+  status: 'active' | 'inactive';
 };
 
 export type StocktakingItem = {
@@ -58,4 +67,4 @@ export type StocktakingItem = {
   location: string;
 };
 
-export type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking';
+export type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';

@@ -24,8 +24,8 @@ export function StocktakingPage() {
         </span>
       )
     },
-    { key: 'personInCharge', header: '担当者' },
     { key: 'location', header: '保管場所' },
+    { key: 'personInCharge', header: '担当者' },
   ];
 
   return (

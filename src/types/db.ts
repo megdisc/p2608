@@ -42,6 +42,15 @@ export type TransactionTableItem = {
   itemId: string;
   type: '受入' | '払出';
   quantity: number;
+  locationId: string;
+  staffId: string;
+};
+
+export type StaffTableItem = {
+  id: string;
+  name: string;
+  role: string;
+  status: 'active' | 'inactive';
 };
 
 export type StocktakingTableItem = {
@@ -51,6 +60,6 @@ export type StocktakingTableItem = {
   systemQty: number;
   actualQty: number;
   difference: number;
-  personInCharge: string;
+  staffId: string;
   locationId: string;
 };

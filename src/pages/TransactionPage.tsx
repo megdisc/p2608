@@ -14,6 +14,8 @@ export function TransactionPage() {
     { key: 'itemName', header: '品目' },
     { key: 'type', header: '区分' },
     { key: 'quantity', header: '数量', className: 'quantity' },
+    { key: 'location', header: '保管場所' },
+    { key: 'personInCharge', header: '担当者' },
   ];
 
   return (

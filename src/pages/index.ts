@@ -5,3 +5,4 @@ export * from './MasterPage';
 export * from './CategoryPage';
 export * from './SupplierPage';
 export * from './LocationPage';
+export * from './StaffPage';

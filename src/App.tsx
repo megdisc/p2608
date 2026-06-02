@@ -9,7 +9,8 @@ import {
   MasterPage, 
   CategoryPage, 
   SupplierPage, 
-  LocationPage 
+  LocationPage,
+  StaffPage
 } from './pages';
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
       {activeTab === 'category' && <CategoryPage />}
       {activeTab === 'supplier' && <SupplierPage />}
       {activeTab === 'location' && <LocationPage />}
+      {activeTab === 'staff' && <StaffPage />}
     </AppLayout>
   );
 }

@@ -41,11 +41,13 @@ export function DataTable<T extends { id: string }>({
 
   const [draftData, setDraftData] = useState<T[]>(data);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
     setDraftData(data);
     setDeletedIds(new Set());
+    setNewRowIds(new Set());
   }, [data]);
 
   useEffect(() => {
@@ -64,9 +66,12 @@ export function DataTable<T extends { id: string }>({
   }, [draftData, columns, onBatchSave]);
 
   const sortedData = useMemo(() => {
-    if (!sortConfig.key) return draftData;
+    const existingRows = draftData.filter(item => !newRowIds.has(item.id));
+    const newRows = draftData.filter(item => newRowIds.has(item.id));
+
+    if (!sortConfig.key) return [...existingRows, ...newRows];
     
-    return [...draftData].sort((a, b) => {
+    existingRows.sort((a, b) => {
       let aVal = (a as any)[sortConfig.key];
       let bVal = (b as any)[sortConfig.key];
       
@@ -81,7 +86,9 @@ export function DataTable<T extends { id: string }>({
       if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [draftData, sortConfig]);
+
+    return [...existingRows, ...newRows];
+  }, [draftData, sortConfig, newRowIds]);
 
   const handleSort = (key: string) => {
     if (!key) return;
@@ -115,6 +122,7 @@ export function DataTable<T extends { id: string }>({
     if (!onAddRow) return;
     const newRow = onAddRow();
     setDraftData(prev => [...prev, newRow]);
+    setNewRowIds(prev => new Set(prev).add(newRow.id));
   };
 
   const handleSaveClick = () => {
@@ -126,6 +134,7 @@ export function DataTable<T extends { id: string }>({
   const handleCancelClick = () => {
     setDraftData(data);
     setDeletedIds(new Set());
+    setNewRowIds(new Set());
   };
 
   const renderCellContent = (col: Column<T>, item: T) => {

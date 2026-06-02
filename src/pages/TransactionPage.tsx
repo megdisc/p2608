@@ -7,12 +7,13 @@ import { db } from '../mock';
 export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>(db.transaction);
 
-  const categoryOptions = useMemo(() => db.category.map(c => ({ label: c.name, value: c.name })), []);
-  const locationOptions = useMemo(() => db.location.map(l => ({ label: l.name, value: l.name })), []);
-  const itemOptions = useMemo(() => db.master.map(m => ({ label: m.name, value: m.name })), []);
-  const staffOptions = useMemo(() => db.staff.map(s => ({ label: s.name, value: s.name })), []);
+  const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...db.category.map(c => ({ label: c.name, value: c.name }))], []);
+  const locationOptions = useMemo(() => [{ label: '', value: '' }, ...db.location.map(l => ({ label: l.name, value: l.name }))], []);
+  const itemOptions = useMemo(() => [{ label: '', value: '' }, ...db.master.map(m => ({ label: m.name, value: m.name }))], []);
+  const staffOptions = useMemo(() => [{ label: '', value: '' }, ...db.staff.map(s => ({ label: s.name, value: s.name }))], []);
 
   const typeOptions = [
+    { label: '', value: '' },
     { label: '受入', value: '受入' },
     { label: '払出', value: '払出' }
   ];
@@ -55,13 +56,13 @@ export function TransactionPage() {
       id: `TRX-${Date.now()}`,
       date: formattedDate,
       itemId: '',
-      category: categoryOptions[0]?.value || '',
-      itemName: itemOptions[0]?.value || '',
-      type: '受入',
-      quantity: 1,
-      location: locationOptions[0]?.value || '',
-      personInCharge: staffOptions[0]?.value || ''
-    } as TransactionItem;
+      category: '',
+      itemName: '',
+      type: '',
+      quantity: 0,
+      location: '',
+      personInCharge: ''
+    } as unknown as TransactionItem;
   };
 
   return (

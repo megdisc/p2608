@@ -7,8 +7,8 @@ import { db } from '../mock';
 export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>(db.master);
 
-  const categoryOptions = useMemo(() => db.category.map(c => ({ label: c.name, value: c.name })), []);
-  const supplierOptions = useMemo(() => db.supplier.map(s => ({ label: s.name, value: s.name })), []);
+  const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...db.category.map(c => ({ label: c.name, value: c.name }))], []);
+  const supplierOptions = useMemo(() => [{ label: '', value: '' }, ...db.supplier.map(s => ({ label: s.name, value: s.name }))], []);
 
   const columns: Column<MasterItem>[] = [
     { key: 'name', header: '品目', editable: true, inputType: 'text' },
@@ -37,14 +37,14 @@ export function MasterPage() {
   const handleAdd = () => {
     return {
       id: `MST-${Date.now()}`,
-      name: '新規品目',
+      name: '',
       manufacturer: '',
       contentAmount: 0,
       contentUnit: '',
-      supplier: supplierOptions[0]?.value || '',
+      supplier: '',
       standardPrice: 0,
       standardPurchaseQty: 0,
-      category: categoryOptions[0]?.value || '',
+      category: '',
       locations: []
     } as MasterItem;
   };

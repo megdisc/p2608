@@ -7,10 +7,10 @@ import { db } from '../mock';
 export function StocktakingPage() {
   const [items, setItems] = useState<StocktakingItem[]>(db.stocktaking);
 
-  const categoryOptions = useMemo(() => db.category.map(c => ({ label: c.name, value: c.name })), []);
-  const locationOptions = useMemo(() => db.location.map(l => ({ label: l.name, value: l.name })), []);
-  const itemOptions = useMemo(() => db.master.map(m => ({ label: m.name, value: m.name })), []);
-  const staffOptions = useMemo(() => db.staff.map(s => ({ label: s.name, value: s.name })), []);
+  const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...db.category.map(c => ({ label: c.name, value: c.name }))], []);
+  const locationOptions = useMemo(() => [{ label: '', value: '' }, ...db.location.map(l => ({ label: l.name, value: l.name }))], []);
+  const itemOptions = useMemo(() => [{ label: '', value: '' }, ...db.master.map(m => ({ label: m.name, value: m.name }))], []);
+  const staffOptions = useMemo(() => [{ label: '', value: '' }, ...db.staff.map(s => ({ label: s.name, value: s.name }))], []);
 
   const columns: Column<StocktakingItem>[] = [
     { 
@@ -68,13 +68,13 @@ export function StocktakingPage() {
       id: `STK-${Date.now()}`,
       date: formattedDate,
       itemId: '',
-      category: categoryOptions[0]?.value || '',
-      itemName: itemOptions[0]?.value || '',
+      category: '',
+      itemName: '',
       systemQty: 0,
       actualQty: 0,
       difference: 0,
-      location: locationOptions[0]?.value || '',
-      personInCharge: staffOptions[0]?.value || ''
+      location: '',
+      personInCharge: ''
     } as StocktakingItem;
   };
 

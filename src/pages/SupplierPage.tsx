@@ -22,7 +22,7 @@ export function SupplierPage() {
   const handleAdd = () => {
     return {
       id: `SUP-${Date.now()}`,
-      name: '新規仕入先',
+      name: '',
       contactPerson: '',
       phone: ''
     } as SupplierItem;

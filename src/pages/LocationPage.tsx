@@ -8,6 +8,7 @@ export function LocationPage() {
   const [items, setItems] = useState<LocationItem[]>(db.location);
 
   const typeOptions = [
+    { label: '', value: '' },
     { label: '常温', value: '常温' },
     { label: '冷蔵', value: '冷蔵' },
     { label: '冷凍', value: '冷凍' }
@@ -28,8 +29,8 @@ export function LocationPage() {
   const handleAdd = () => {
     return {
       id: `LOC-${Date.now()}`,
-      name: '新規保管場所',
-      type: '常温',
+      name: '',
+      type: '',
       description: ''
     } as LocationItem;
   };

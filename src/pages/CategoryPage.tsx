@@ -21,7 +21,7 @@ export function CategoryPage() {
   const handleAdd = () => {
     return {
       id: `CAT-${Date.now()}`,
-      name: '新規カテゴリ',
+      name: '',
       description: ''
     } as CategoryItem;
   };

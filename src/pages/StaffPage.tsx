@@ -8,12 +8,14 @@ export function StaffPage() {
   const [items, setItems] = useState<StaffItem[]>(db.staff);
 
   const roleOptions = [
+    { label: '', value: '' },
     { label: 'システム管理者', value: 'システム管理者' },
     { label: '現場スタッフ', value: '現場スタッフ' },
     { label: '経理担当', value: '経理担当' }
   ];
 
   const statusOptions = [
+    { label: '', value: '' },
     { label: '有効', value: 'active' },
     { label: '無効', value: 'inactive' }
   ];
@@ -40,10 +42,10 @@ export function StaffPage() {
   const handleAdd = () => {
     return {
       id: `STF-${Date.now()}`,
-      name: '新規スタッフ',
-      role: '現場スタッフ',
-      status: 'active'
-    } as StaffItem;
+      name: '',
+      role: '',
+      status: ''
+    } as unknown as StaffItem;
   };
 
   return (

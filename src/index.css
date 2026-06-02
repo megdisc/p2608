@@ -278,11 +278,26 @@ th.sticky-right {
 
 select.inline-input {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cccccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right center;
   background-size: 16px;
   padding-right: 20px;
+}
+
+/* Lighten the calendar/clock icon in native date/time pickers */
+input[type="datetime-local"].inline-input::-webkit-calendar-picker-indicator,
+input[type="date"].inline-input::-webkit-calendar-picker-indicator,
+input[type="time"].inline-input::-webkit-calendar-picker-indicator {
+  opacity: 0.3;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+input[type="datetime-local"].inline-input::-webkit-calendar-picker-indicator:hover,
+input[type="date"].inline-input::-webkit-calendar-picker-indicator:hover,
+input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.7;
 }
 
 .action-bar {

@@ -10,7 +10,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties;
   editable?: boolean;
-  inputType?: 'text' | 'number' | 'select' | 'date';
+  inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local';
   options?: { label: string; value: string }[]; // For select
 };
 
@@ -155,11 +155,26 @@ export function DataTable<T extends { id: string }>({
         );
       }
       
+      let inputValue = value as string | number;
+      if (col.inputType === 'datetime-local' && typeof value === 'string') {
+        inputValue = value.replace(' ', 'T');
+      }
+
+      const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let newValue: string | number = e.target.value;
+        if (col.inputType === 'number') {
+          newValue = Number(newValue);
+        } else if (col.inputType === 'datetime-local') {
+          newValue = newValue.replace('T', ' ');
+        }
+        handleCellChange(item.id, col.key, newValue);
+      };
+
       return (
         <Input 
           type={col.inputType} 
-          value={value} 
-          onChange={(e) => handleCellChange(item.id, col.key, col.inputType === 'number' ? Number(e.target.value) : e.target.value)}
+          value={inputValue} 
+          onChange={handleChange}
         />
       );
     }

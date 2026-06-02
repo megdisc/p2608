@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { DataPage } from '../components/page';
+import { DateTimeDisplay } from '../components/ui';
 import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { db } from '../mock';
@@ -23,16 +24,8 @@ export function TransactionPage() {
       key: 'date', 
       header: '日時',
       editable: true,
-      inputType: 'text',
-      render: (item) => {
-        const parts = item.date.split(' ');
-        if (parts.length !== 2) return item.date;
-        const [datePart, timePart] = parts;
-        const dateParts = datePart.split('-');
-        if (dateParts.length !== 3) return item.date;
-        const [y, m, d] = dateParts;
-        return `${y}年${m}月${d}日 ${timePart}`;
-      }
+      inputType: 'datetime-local',
+      render: (item) => <DateTimeDisplay value={item.date} />
     },
     { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
     { key: 'itemName', header: '品目', editable: true, inputType: 'select', options: itemOptions },

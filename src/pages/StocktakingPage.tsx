@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { DataPage } from '../components/page';
+import { DateTimeDisplay } from '../components/ui';
 import type { Column } from '../components/ui';
 import type { StocktakingItem } from '../types';
 import { db } from '../mock';
@@ -17,32 +18,27 @@ export function StocktakingPage() {
       key: 'date', 
       header: '日時',
       editable: true,
-      inputType: 'text',
-      render: (item) => {
-        const parts = item.date.split(' ');
-        if (parts.length !== 2) return item.date;
-        const [datePart, timePart] = parts;
-        const dateParts = datePart.split('-');
-        if (dateParts.length !== 3) return item.date;
-        const [y, m, d] = dateParts;
-        return `${y}年${m}月${d}日 ${timePart}`;
-      }
+      inputType: 'datetime-local',
+      render: (item) => <DateTimeDisplay value={item.date} />
     },
     { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
     { key: 'itemName', header: '品目', editable: true, inputType: 'select', options: itemOptions },
     { key: 'location', header: '保管場所', editable: true, inputType: 'select', options: locationOptions },
-    { key: 'systemQty', header: '帳簿在庫', className: 'quantity', editable: true, inputType: 'number' },
+    { key: 'systemQty', header: '帳簿在庫', className: 'quantity', editable: false },
     { key: 'actualQty', header: '実在庫', className: 'quantity', editable: true, inputType: 'number' },
     { 
       key: 'difference', 
       header: '差異', 
       className: 'quantity',
       editable: false,
-      render: (item) => (
-        <span style={{ color: item.difference !== 0 ? '#e03131' : 'inherit' }}>
-          {item.difference > 0 ? `+${item.difference}` : item.difference}
-        </span>
-      )
+      render: (item) => {
+        const color = item.difference > 0 ? '#1c7ed6' : (item.difference < 0 ? '#e03131' : 'inherit');
+        return (
+          <span style={{ color }}>
+            {item.difference > 0 ? `+${item.difference}` : item.difference}
+          </span>
+        );
+      }
     },
     { key: 'personInCharge', header: '担当者', editable: true, inputType: 'select', options: staffOptions },
   ];

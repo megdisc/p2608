@@ -8,7 +8,6 @@ export function SupplierPage() {
   const [items] = useState<SupplierItem[]>(db.supplier);
 
   const columns: Column<SupplierItem>[] = [
-    { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'name', header: '仕入先名' },
     { key: 'contactPerson', header: '担当者' },
     { key: 'phone', header: '電話番号' },

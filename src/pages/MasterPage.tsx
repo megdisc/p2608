@@ -8,7 +8,6 @@ export function MasterPage() {
   const [items] = useState<MasterItem[]>(db.master);
 
   const columns: Column<MasterItem>[] = [
-    { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'name', header: '品目' },
     { key: 'manufacturer', header: '製造元' },
     { key: 'contentAmount', header: '内容量', className: 'quantity' },

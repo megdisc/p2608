@@ -8,9 +8,7 @@ export function TransactionPage() {
   const [items] = useState<TransactionItem[]>(db.transaction);
 
   const columns: Column<TransactionItem>[] = [
-    { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'date', header: '日時' },
-    { key: 'itemId', header: '品目ID', className: 'item-id' },
     { key: 'itemName', header: '品目' },
     { key: 'location', header: '保管場所' },
     { key: 'type', header: '区分' },

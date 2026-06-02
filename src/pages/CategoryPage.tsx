@@ -8,7 +8,6 @@ export function CategoryPage() {
   const [items] = useState<CategoryItem[]>(db.category);
 
   const columns: Column<CategoryItem>[] = [
-    { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'name', header: 'カテゴリ名' },
     { key: 'description', header: '説明' },
   ];

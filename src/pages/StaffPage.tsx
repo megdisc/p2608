@@ -8,7 +8,6 @@ export function StaffPage() {
   const [items] = useState<StaffItem[]>(db.staff);
 
   const columns: Column<StaffItem>[] = [
-    { key: 'id', header: 'スタッフID', className: 'item-id' },
     { key: 'name', header: '氏名' },
     { key: 'role', header: '権限ロール' },
     { 

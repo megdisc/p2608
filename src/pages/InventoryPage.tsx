@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { InventoryItem } from '../types';
 import { db } from '../mock';
@@ -43,11 +42,6 @@ export function InventoryPage() {
     { key: 'location', header: '保管場所' },
     { key: 'quantity', header: '在庫数量', className: 'quantity' },
   ];
-
-  // Optional: Keep ID column in separated view only, or keep it in both but generate a stable one.
-  if (viewMode === 'separated') {
-    columns.unshift({ key: 'id', header: 'ID', className: 'item-id' });
-  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1, padding: '48px', overflowX: 'auto' }}>

@@ -8,9 +8,7 @@ export function StocktakingPage() {
   const [items] = useState<StocktakingItem[]>(db.stocktaking);
 
   const columns: Column<StocktakingItem>[] = [
-    { key: 'id', header: 'ID', className: 'item-id' },
     { key: 'date', header: '日時' },
-    { key: 'itemId', header: '品目ID', className: 'item-id' },
     { key: 'itemName', header: '品目' },
     { key: 'location', header: '保管場所' },
     { key: 'systemQty', header: '帳簿在庫', className: 'quantity' },

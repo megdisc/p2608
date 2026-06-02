@@ -8,7 +8,15 @@ export function TransactionPage() {
   const [items] = useState<TransactionItem[]>(db.transaction);
 
   const columns: Column<TransactionItem>[] = [
-    { key: 'date', header: '日時' },
+    { 
+      key: 'date', 
+      header: '日時',
+      render: (item) => {
+        const [datePart, timePart] = item.date.split(' ');
+        const [y, m, d] = datePart.split('-');
+        return `${y}年${m}月${d}日 ${timePart}`;
+      }
+    },
     { key: 'itemName', header: '品目' },
     { key: 'location', header: '保管場所' },
     { key: 'type', header: '区分' },

@@ -16,7 +16,7 @@ export function StocktakingPage() {
   const columns: Column<StocktakingItem>[] = [
     { 
       key: 'date', 
-      header: '日時',
+      header: '記録日時',
       editable: true,
       inputType: 'datetime-local',
       render: (item) => <DateTimeDisplay value={item.date} />
@@ -40,7 +40,7 @@ export function StocktakingPage() {
         );
       }
     },
-    { key: 'personInCharge', header: '担当者', editable: true, inputType: 'select', options: staffOptions },
+    { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = (drafts: StocktakingItem[], deletedIds: string[]) => {

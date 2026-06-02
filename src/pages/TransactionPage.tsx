@@ -22,7 +22,7 @@ export function TransactionPage() {
   const columns: Column<TransactionItem>[] = [
     { 
       key: 'date', 
-      header: '日時',
+      header: '記録日時',
       editable: true,
       inputType: 'datetime-local',
       render: (item) => <DateTimeDisplay value={item.date} />
@@ -32,7 +32,7 @@ export function TransactionPage() {
     { key: 'location', header: '保管場所', editable: true, inputType: 'select', options: locationOptions },
     { key: 'type', header: '区分', editable: true, inputType: 'select', options: typeOptions },
     { key: 'quantity', header: '数量', className: 'quantity', editable: true, inputType: 'number' },
-    { key: 'personInCharge', header: '担当者', editable: true, inputType: 'select', options: staffOptions },
+    { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = (drafts: TransactionItem[], deletedIds: string[]) => {

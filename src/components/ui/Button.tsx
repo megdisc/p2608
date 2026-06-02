@@ -31,7 +31,7 @@ export function Button({ variant = 'primary', className = '', style, children, .
   return (
     <button 
       className={`${baseClass} ${variantClass} ${className}`.trim()} 
-      style={{ padding: '8px 16px', fontWeight: 'bold', ...style }}
+      style={style}
       {...props}
     >
       {children}

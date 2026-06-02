@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from './Button';
+import { Input } from './Input';
+import { Select } from './Select';
 
 export type Column<T> = {
   key: string;
@@ -145,21 +147,16 @@ export function DataTable<T extends { id: string }>({
       
       if (col.inputType === 'select') {
         return (
-          <select 
-            className="inline-input"
+          <Select 
             value={value} 
+            options={col.options}
             onChange={(e) => handleCellChange(item.id, col.key, e.target.value)}
-          >
-            {col.options?.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
+          />
         );
       }
       
       return (
-        <input 
-          className="inline-input"
+        <Input 
           type={col.inputType} 
           value={value} 
           onChange={(e) => handleCellChange(item.id, col.key, col.inputType === 'number' ? Number(e.target.value) : e.target.value)}
@@ -212,7 +209,7 @@ export function DataTable<T extends { id: string }>({
                   ))}
                   {isEditingEnabled && (
                     <td className="sticky-right" style={{ textAlign: 'center' }}>
-                      <input 
+                      <Input 
                         type="checkbox" 
                         checked={isDeleted}
                         onChange={() => toggleDelete(item.id)}
@@ -233,22 +230,18 @@ export function DataTable<T extends { id: string }>({
       </div>
       
       {isEditingEnabled && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
-          <div>
-            {onAddRow && (
-              <Button variant="primary" onClick={handleAddClick}>
-                ＋ 新規追加
-              </Button>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <Button variant="secondary" onClick={handleCancelClick}>
-              変更を破棄
+        <div className="action-bar">
+          {onAddRow && (
+            <Button onClick={handleAddClick}>
+              追加
             </Button>
-            <Button variant="success" onClick={handleSaveClick}>
-              保存
-            </Button>
-          </div>
+          )}
+          <Button onClick={handleCancelClick}>
+            キャンセル
+          </Button>
+          <Button onClick={handleSaveClick}>
+            保存
+          </Button>
         </div>
       )}
     </>

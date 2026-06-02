@@ -8,13 +8,14 @@ export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>(db.master);
 
   const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...db.category.map(c => ({ label: c.name, value: c.name }))], []);
+  const unitOptions = useMemo(() => [{ label: '', value: '' }, ...db.unit.map(u => ({ label: u.name, value: u.name }))], []);
   const supplierOptions = useMemo(() => [{ label: '', value: '' }, ...db.supplier.map(s => ({ label: s.name, value: s.name }))], []);
 
   const columns: Column<MasterItem>[] = [
     { key: 'name', header: '品目', editable: true, inputType: 'text' },
     { key: 'manufacturer', header: '製造元', editable: true, inputType: 'text' },
     { key: 'contentAmount', header: '内容量', className: 'quantity', editable: true, inputType: 'number' },
-    { key: 'contentUnit', header: '内容量単位', editable: true, inputType: 'text' },
+    { key: 'contentUnit', header: '内容量単位', editable: true, inputType: 'select', options: unitOptions },
     { key: 'supplier', header: '仕入先', editable: true, inputType: 'select', options: supplierOptions },
     { key: 'standardPrice', header: '標準単価 (円)', className: 'quantity', editable: true, inputType: 'number', render: (item) => item.standardPrice.toLocaleString() },
     { key: 'standardPurchaseQty', header: '標準仕入数量', className: 'quantity', editable: true, inputType: 'number' },

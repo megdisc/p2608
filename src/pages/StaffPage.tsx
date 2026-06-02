@@ -9,9 +9,8 @@ export function StaffPage() {
 
   const roleOptions = [
     { label: '', value: '' },
-    { label: 'システム管理者', value: 'システム管理者' },
-    { label: '現場スタッフ', value: '現場スタッフ' },
-    { label: '経理担当', value: '経理担当' }
+    { label: '管理者', value: '管理者' },
+    { label: 'スタッフ', value: 'スタッフ' }
   ];
 
   const statusOptions = [
@@ -34,7 +33,10 @@ export function StaffPage() {
   ];
 
   const handleBatchSave = (drafts: StaffItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
+    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id)).map(item => ({
+      ...item,
+      name: item.name.replace(/[\s　]+/g, '')
+    }));
     setItems(afterDelete);
     alert('保存しました。');
   };

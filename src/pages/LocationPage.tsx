@@ -7,16 +7,8 @@ import { db } from '../mock';
 export function LocationPage() {
   const [items, setItems] = useState<LocationItem[]>(db.location);
 
-  const typeOptions = [
-    { label: '', value: '' },
-    { label: '常温', value: '常温' },
-    { label: '冷蔵', value: '冷蔵' },
-    { label: '冷凍', value: '冷凍' }
-  ];
-
   const columns: Column<LocationItem>[] = [
     { key: 'name', header: '保管場所名', editable: true, inputType: 'text' },
-    { key: 'type', header: '温度帯区分', editable: true, inputType: 'select', options: typeOptions },
     { key: 'description', header: '用途・説明', editable: true, inputType: 'text' },
   ];
 
@@ -30,7 +22,6 @@ export function LocationPage() {
     return {
       id: `LOC-${Date.now()}`,
       name: '',
-      type: '',
       description: ''
     } as LocationItem;
   };

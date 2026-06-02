@@ -2,6 +2,7 @@ import { inventoryTable } from './tables/inventory';
 import { masterTable } from './tables/master';
 import { locationTable } from './tables/location';
 import { categoryTable } from './tables/category';
+import { unitTable } from './tables/unit';
 import { supplierTable } from './tables/supplier';
 import { transactionTable } from './tables/transaction';
 import { stocktakingTable } from './tables/stocktaking';
@@ -12,6 +13,7 @@ import type {
   MasterItem,
   LocationItem,
   CategoryItem,
+  UnitItem,
   SupplierItem,
   TransactionItem,
   StocktakingItem,
@@ -62,6 +64,10 @@ export const db = {
     return categoryTable;
   },
 
+  get unit(): UnitItem[] {
+    return unitTable;
+  },
+
   get supplier(): SupplierItem[] {
     return supplierTable;
   },
@@ -107,6 +113,7 @@ export * from './tables/inventory';
 export * from './tables/master';
 export * from './tables/location';
 export * from './tables/category';
+export * from './tables/unit';
 export * from './tables/supplier';
 export * from './tables/transaction';
 export * from './tables/stocktaking';

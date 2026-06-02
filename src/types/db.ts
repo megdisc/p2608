@@ -21,7 +21,6 @@ export type MasterTableItem = {
 export type LocationTableItem = {
   id: string;
   name: string;
-  type: string;
   description: string;
 };
 

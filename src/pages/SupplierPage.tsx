@@ -14,7 +14,10 @@ export function SupplierPage() {
   ];
 
   const handleBatchSave = (drafts: SupplierItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
+    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id)).map(item => ({
+      ...item,
+      contactPerson: item.contactPerson.replace(/[\s　]+/g, '')
+    }));
     setItems(afterDelete);
     alert('保存しました。');
   };

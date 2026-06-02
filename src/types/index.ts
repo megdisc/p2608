@@ -19,10 +19,15 @@ export type MasterItem = {
   locations: string[];
 };
 
+export type UnitItem = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 export type LocationItem = {
   id: string;
   name: string;
-  type: string;
   description: string;
 };
 
@@ -71,4 +76,4 @@ export type StocktakingItem = {
   location: string;
 };
 
-export type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';
+export type Tab = 'inventory' | 'master' | 'unit' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';

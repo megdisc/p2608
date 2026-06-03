@@ -6,10 +6,10 @@ import { supabase } from '../lib/supabase';
 
 export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>([]);
-  const [categories, setCategories] = useState<{name: string}[]>([]);
-  const [units, setUnits] = useState<{name: string}[]>([]);
-  const [suppliers, setSuppliers] = useState<{name: string}[]>([]);
-  const [locations, setLocations] = useState<{name: string}[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [units, setUnits] = useState<{id: string, name: string}[]>([]);
+  const [suppliers, setSuppliers] = useState<{id: string, name: string}[]>([]);
+  const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +29,10 @@ export function MasterPage() {
             supplier:suppliers(name),
             unit:units(name)
           `).eq('is_deleted', false),
-          supabase.from('categories').select('name').eq('is_deleted', false),
-          supabase.from('units').select('name').eq('is_deleted', false),
-          supabase.from('suppliers').select('name').eq('is_deleted', false),
-          supabase.from('locations').select('name').eq('is_deleted', false),
+          supabase.from('categories').select('id, name').eq('is_deleted', false),
+          supabase.from('units').select('id, name').eq('is_deleted', false),
+          supabase.from('suppliers').select('id, name').eq('is_deleted', false),
+          supabase.from('locations').select('id, name').eq('is_deleted', false),
         ]);
 
         if (itemsData) {
@@ -86,11 +86,88 @@ export function MasterPage() {
     { key: 'standardPurchaseQty', header: '標準仕入数量', className: 'quantity', editable: true, inputType: 'number' },
   ];
 
-  const handleBatchSave = (drafts: MasterItem[], deletedIds: string[]) => {
-    // 削除されたIDを除外
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
-    setItems(afterDelete);
-    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
+  const handleBatchSave = async (drafts: MasterItem[], deletedIds: string[]) => {
+    try {
+      setLoading(true);
+
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('items').update({ is_deleted: true }).in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const catMap = new Map(categories.map(c => [c.name, c.id]));
+      const unitMap = new Map(units.map(u => [u.name, u.id]));
+      const supMap = new Map(suppliers.map(s => [s.name, s.id]));
+      const locMap = new Map(locations.map(l => [l.name, l.id]));
+
+      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('MST-'));
+      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('MST-'));
+
+      for (const item of existingItems) {
+        const { error } = await supabase.from('items').update({
+          name: item.name,
+          manufacturer: item.manufacturer,
+          content_amount: item.contentAmount,
+          unit_id: unitMap.get(item.contentUnit) || null,
+          supplier_id: supMap.get(item.supplier) || null,
+          standard_price: item.standardPrice,
+          standard_purchase_qty: item.standardPurchaseQty,
+          category_id: catMap.get(item.category) || null,
+          location_id: locMap.get(item.location) || null
+        }).eq('id', item.id);
+        if (error) throw error;
+      }
+
+      if (newItems.length > 0) {
+        const inserts = newItems.map(item => ({
+          code: `MST-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
+          name: item.name,
+          manufacturer: item.manufacturer,
+          content_amount: item.contentAmount,
+          unit_id: unitMap.get(item.contentUnit) || null,
+          supplier_id: supMap.get(item.supplier) || null,
+          standard_price: item.standardPrice,
+          standard_purchase_qty: item.standardPurchaseQty,
+          category_id: catMap.get(item.category) || null,
+          location_id: locMap.get(item.location) || null
+        }));
+        const { error } = await supabase.from('items').insert(inserts);
+        if (error) throw error;
+      }
+
+      // Reload
+      const { data: itemsData, error: reloadError } = await supabase.from('items').select(`
+        *,
+        category:categories(name),
+        location:locations(name),
+        supplier:suppliers(name),
+        unit:units(name)
+      `).eq('is_deleted', false);
+      
+      if (reloadError) throw reloadError;
+      
+      if (itemsData) {
+        const mapped: MasterItem[] = itemsData.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          manufacturer: item.manufacturer,
+          contentAmount: item.content_amount,
+          contentUnit: item.unit?.name || 'Unknown',
+          supplier: item.supplier?.name || 'Unknown',
+          standardPrice: item.standard_price,
+          standardPurchaseQty: item.standard_purchase_qty,
+          category: item.category?.name || 'Unknown',
+          location: item.location?.name || 'Unknown',
+        }));
+        setItems(mapped);
+      }
+      alert('保存が完了しました。');
+    } catch (error) {
+      console.error('Error saving items:', error);
+      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = () => {

@@ -7,10 +7,10 @@ import { supabase } from '../lib/supabase';
 
 export function StocktakingPage() {
   const [items, setItems] = useState<StocktakingItem[]>([]);
-  const [categories, setCategories] = useState<{name: string}[]>([]);
-  const [locations, setLocations] = useState<{name: string}[]>([]);
-  const [masters, setMasters] = useState<{name: string}[]>([]);
-  const [staffs, setStaffs] = useState<{name: string}[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
+  const [masters, setMasters] = useState<{id: string, name: string}[]>([]);
+  const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +29,10 @@ export function StocktakingPage() {
             location:locations(name),
             staff:staffs(name)
           `),
-          supabase.from('categories').select('name').eq('is_deleted', false),
-          supabase.from('locations').select('name').eq('is_deleted', false),
-          supabase.from('items').select('name').eq('is_deleted', false),
-          supabase.from('staffs').select('name')
+          supabase.from('categories').select('id, name').eq('is_deleted', false),
+          supabase.from('locations').select('id, name').eq('is_deleted', false),
+          supabase.from('items').select('id, name').eq('is_deleted', false),
+          supabase.from('staffs').select('id, name')
         ]);
 
         if (stData) {
@@ -98,17 +98,88 @@ export function StocktakingPage() {
     { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
   ];
 
-  const handleBatchSave = (drafts: StocktakingItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
-    
-    // 差異の再計算
-    const recalculated = afterDelete.map(item => ({
-      ...item,
-      difference: item.actualQty - item.systemQty
-    }));
-    
-    setItems(recalculated);
-    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
+  const handleBatchSave = async (drafts: StocktakingItem[], deletedIds: string[]) => {
+    try {
+      setLoading(true);
+
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('stocktakings').delete().in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const itemMap = new Map(masters.map(m => [m.name, m.id]));
+      const locMap = new Map(locations.map(l => [l.name, l.id]));
+      const staffMap = new Map(staffs.map(s => [s.name, s.id]));
+
+      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('STK-'));
+      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('STK-'));
+
+      for (const item of existingItems) {
+        const dateObj = new Date(item.date.replace(' ', 'T'));
+        const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+
+        const { error } = await supabase.from('stocktakings').update({
+          date: isoDateStr,
+          item_id: itemMap.get(item.itemName) || null,
+          system_qty: item.systemQty,
+          actual_qty: item.actualQty,
+          difference: item.actualQty - item.systemQty,
+          location_id: locMap.get(item.location) || null,
+          staff_id: staffMap.get(item.personInCharge) || null
+        }).eq('id', item.id);
+        if (error) throw error;
+      }
+
+      if (newItems.length > 0) {
+        const inserts = newItems.map(item => {
+          const dateObj = new Date(item.date.replace(' ', 'T'));
+          const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+          
+          return {
+            date: isoDateStr,
+            item_id: itemMap.get(item.itemName) || null,
+            system_qty: item.systemQty,
+            actual_qty: item.actualQty,
+            difference: item.actualQty - item.systemQty,
+            location_id: locMap.get(item.location) || null,
+            staff_id: staffMap.get(item.personInCharge) || null
+          };
+        });
+        const { error } = await supabase.from('stocktakings').insert(inserts);
+        if (error) throw error;
+      }
+
+      // Reload
+      const { data: stData, error: reloadError } = await supabase.from('stocktakings').select(`
+        *,
+        item:items(name, category:categories(name)),
+        location:locations(name),
+        staff:staffs(name)
+      `);
+      if (reloadError) throw reloadError;
+
+      if (stData) {
+        const mapped: StocktakingItem[] = stData.map((st: any) => ({
+          id: st.id,
+          date: st.date,
+          itemId: st.item_id,
+          category: st.item?.category?.name || 'Unknown',
+          itemName: st.item?.name || 'Unknown',
+          systemQty: st.system_qty,
+          actualQty: st.actual_qty,
+          difference: st.difference,
+          location: st.location?.name || 'Unknown',
+          personInCharge: st.staff?.name || 'Unknown',
+        }));
+        setItems(mapped);
+      }
+      alert('保存が完了しました。');
+    } catch (error) {
+      console.error('Error saving stocktakings:', error);
+      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = () => {

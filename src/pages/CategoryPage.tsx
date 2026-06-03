@@ -28,10 +28,45 @@ export function CategoryPage() {
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
 
-  const handleBatchSave = (drafts: CategoryItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
-    setItems(afterDelete);
-    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
+  const handleBatchSave = async (drafts: CategoryItem[], deletedIds: string[]) => {
+    try {
+      setLoading(true);
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('categories').update({ is_deleted: true }).in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('CAT-'));
+      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('CAT-'));
+
+      for (const item of existingItems) {
+        const { error } = await supabase.from('categories').update({
+          name: item.name,
+          description: item.description
+        }).eq('id', item.id);
+        if (error) throw error;
+      }
+
+      if (newItems.length > 0) {
+        const inserts = newItems.map(item => ({
+          code: `CAT-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
+          name: item.name,
+          description: item.description
+        }));
+        const { error } = await supabase.from('categories').insert(inserts);
+        if (error) throw error;
+      }
+
+      const { data, error: reloadError } = await supabase.from('categories').select('*').eq('is_deleted', false);
+      if (reloadError) throw reloadError;
+      if (data) setItems(data);
+      alert('保存が完了しました。');
+    } catch (error) {
+      console.error('Error saving categories:', error);
+      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = () => {

@@ -7,10 +7,10 @@ import { supabase } from '../lib/supabase';
 
 export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>([]);
-  const [categories, setCategories] = useState<{name: string}[]>([]);
-  const [locations, setLocations] = useState<{name: string}[]>([]);
-  const [masters, setMasters] = useState<{name: string}[]>([]);
-  const [staffs, setStaffs] = useState<{name: string}[]>([]);
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
+  const [masters, setMasters] = useState<{id: string, name: string}[]>([]);
+  const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,10 +29,10 @@ export function TransactionPage() {
             location:locations(name),
             staff:staffs(name)
           `),
-          supabase.from('categories').select('name').eq('is_deleted', false),
-          supabase.from('locations').select('name').eq('is_deleted', false),
-          supabase.from('items').select('name').eq('is_deleted', false),
-          supabase.from('staffs').select('name')
+          supabase.from('categories').select('id, name').eq('is_deleted', false),
+          supabase.from('locations').select('id, name').eq('is_deleted', false),
+          supabase.from('items').select('id, name').eq('is_deleted', false),
+          supabase.from('staffs').select('id, name').eq('is_deleted', false)
         ]);
 
         if (txData) {
@@ -89,10 +89,85 @@ export function TransactionPage() {
     { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
   ];
 
-  const handleBatchSave = (drafts: TransactionItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
-    setItems(afterDelete);
-    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
+  const handleBatchSave = async (drafts: TransactionItem[], deletedIds: string[]) => {
+    try {
+      setLoading(true);
+
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('transactions').delete().in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const itemMap = new Map(masters.map(m => [m.name, m.id]));
+      const locMap = new Map(locations.map(l => [l.name, l.id]));
+      const staffMap = new Map(staffs.map(s => [s.name, s.id]));
+
+      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('TRX-'));
+      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('TRX-'));
+
+      for (const item of existingItems) {
+        const dateObj = new Date(item.date.replace(' ', 'T'));
+        const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+
+        const { error } = await supabase.from('transactions').update({
+          date: isoDateStr,
+          item_id: itemMap.get(item.itemName) || null,
+          type: item.type,
+          quantity: item.quantity,
+          location_id: locMap.get(item.location) || null,
+          staff_id: staffMap.get(item.personInCharge) || null
+        }).eq('id', item.id);
+        if (error) throw error;
+      }
+
+      if (newItems.length > 0) {
+        const inserts = newItems.map(item => {
+          const dateObj = new Date(item.date.replace(' ', 'T'));
+          const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+          
+          return {
+            date: isoDateStr,
+            item_id: itemMap.get(item.itemName) || null,
+            type: item.type,
+            quantity: item.quantity,
+            location_id: locMap.get(item.location) || null,
+            staff_id: staffMap.get(item.personInCharge) || null
+          };
+        });
+        const { error } = await supabase.from('transactions').insert(inserts);
+        if (error) throw error;
+      }
+
+      // Reload
+      const { data: txData, error: reloadError } = await supabase.from('transactions').select(`
+        *,
+        item:items(name, category:categories(name)),
+        location:locations(name),
+        staff:staffs(name)
+      `);
+      if (reloadError) throw reloadError;
+
+      if (txData) {
+        const mapped: TransactionItem[] = txData.map((tx: any) => ({
+          id: tx.id,
+          date: tx.date,
+          itemId: tx.item_id,
+          category: tx.item?.category?.name || 'Unknown',
+          itemName: tx.item?.name || 'Unknown',
+          type: tx.type,
+          quantity: tx.quantity,
+          location: tx.location?.name || 'Unknown',
+          personInCharge: tx.staff?.name || 'Unknown',
+        }));
+        setItems(mapped);
+      }
+      alert('保存が完了しました。');
+    } catch (error) {
+      console.error('Error saving transactions:', error);
+      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = () => {

@@ -1,11 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { StaffItem } from '../types';
-import { db } from '../mock';
+import { supabase } from '../lib/supabase';
 
 export function StaffPage() {
-  const [items, setItems] = useState<StaffItem[]>(db.staff);
+  const [items, setItems] = useState<StaffItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from('staffs').select('*').eq('is_deleted', false);
+        if (error) throw error;
+        if (data) setItems(data);
+      } catch (error) {
+        console.error('Error fetching staffs:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const roleOptions = [
     { label: '', value: '' },
@@ -38,7 +54,7 @@ export function StaffPage() {
       name: item.name.replace(/[\s　]+/g, '')
     }));
     setItems(afterDelete);
-    alert('保存しました。');
+    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
   };
 
   const handleAdd = () => {
@@ -49,6 +65,8 @@ export function StaffPage() {
       status: ''
     } as unknown as StaffItem;
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <DataPage 

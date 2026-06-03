@@ -1,16 +1,72 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { MasterItem } from '../types';
-import { db } from '../mock';
+import { supabase } from '../lib/supabase';
 
 export function MasterPage() {
-  const [items, setItems] = useState<MasterItem[]>(db.master);
+  const [items, setItems] = useState<MasterItem[]>([]);
+  const [categories, setCategories] = useState<{name: string}[]>([]);
+  const [units, setUnits] = useState<{name: string}[]>([]);
+  const [suppliers, setSuppliers] = useState<{name: string}[]>([]);
+  const [locations, setLocations] = useState<{name: string}[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...db.category.map(c => ({ label: c.name, value: c.name }))], []);
-  const unitOptions = useMemo(() => [{ label: '', value: '' }, ...db.unit.map(u => ({ label: u.name, value: u.name }))], []);
-  const supplierOptions = useMemo(() => [{ label: '', value: '' }, ...db.supplier.map(s => ({ label: s.name, value: s.name }))], []);
-  const locationOptions = useMemo(() => [{ label: '', value: '' }, ...db.location.map(l => ({ label: l.name, value: l.name }))], []);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [
+          { data: itemsData },
+          { data: categoriesData },
+          { data: unitsData },
+          { data: suppliersData },
+          { data: locationsData },
+        ] = await Promise.all([
+          supabase.from('items').select(`
+            *,
+            category:categories(name),
+            location:locations(name),
+            supplier:suppliers(name),
+            unit:units(name)
+          `).eq('is_deleted', false),
+          supabase.from('categories').select('name').eq('is_deleted', false),
+          supabase.from('units').select('name').eq('is_deleted', false),
+          supabase.from('suppliers').select('name').eq('is_deleted', false),
+          supabase.from('locations').select('name').eq('is_deleted', false),
+        ]);
+
+        if (itemsData) {
+          const mapped: MasterItem[] = itemsData.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            manufacturer: item.manufacturer,
+            contentAmount: item.content_amount,
+            contentUnit: item.unit?.name || 'Unknown',
+            supplier: item.supplier?.name || 'Unknown',
+            standardPrice: item.standard_price,
+            standardPurchaseQty: item.standard_purchase_qty,
+            category: item.category?.name || 'Unknown',
+            location: item.location?.name || 'Unknown',
+          }));
+          setItems(mapped);
+        }
+        if (categoriesData) setCategories(categoriesData);
+        if (unitsData) setUnits(unitsData);
+        if (suppliersData) setSuppliers(suppliersData);
+        if (locationsData) setLocations(locationsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...categories.map(c => ({ label: c.name, value: c.name }))], [categories]);
+  const unitOptions = useMemo(() => [{ label: '', value: '' }, ...units.map(u => ({ label: u.name, value: u.name }))], [units]);
+  const supplierOptions = useMemo(() => [{ label: '', value: '' }, ...suppliers.map(s => ({ label: s.name, value: s.name }))], [suppliers]);
+  const locationOptions = useMemo(() => [{ label: '', value: '' }, ...locations.map(l => ({ label: l.name, value: l.name }))], [locations]);
 
   const columns: Column<MasterItem>[] = [
     { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
@@ -34,7 +90,7 @@ export function MasterPage() {
     // 削除されたIDを除外
     const afterDelete = drafts.filter(item => !deletedIds.includes(item.id));
     setItems(afterDelete);
-    alert('保存しました。');
+    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
   };
 
   const handleAdd = () => {
@@ -51,6 +107,8 @@ export function MasterPage() {
       location: ''
     } as MasterItem;
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <DataPage 

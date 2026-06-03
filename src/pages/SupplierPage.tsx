@@ -1,11 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { SupplierItem } from '../types';
-import { db } from '../mock';
+import { supabase } from '../lib/supabase';
 
 export function SupplierPage() {
-  const [items, setItems] = useState<SupplierItem[]>(db.supplier);
+  const [items, setItems] = useState<SupplierItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from('suppliers').select('*').eq('is_deleted', false);
+        if (error) throw error;
+        if (data) {
+          const mapped = data.map((d: any) => ({
+            id: d.id,
+            name: d.name,
+            contactPerson: d.contact_person,
+            phone: d.phone
+          }));
+          setItems(mapped);
+        }
+      } catch (error) {
+        console.error('Error fetching suppliers:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const columns: Column<SupplierItem>[] = [
     { key: 'name', header: '仕入先名', editable: true, inputType: 'text' },
@@ -20,7 +44,7 @@ export function SupplierPage() {
       phone: String(item.phone).replace(/-/g, '')
     }));
     setItems(afterDelete);
-    alert('保存しました。');
+    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
   };
 
   const handleAdd = () => {
@@ -31,6 +55,8 @@ export function SupplierPage() {
       phone: ''
     } as SupplierItem;
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <DataPage 

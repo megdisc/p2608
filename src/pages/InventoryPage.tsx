@@ -23,11 +23,7 @@ export function InventoryPage() {
           { data: invData },
           { data: locData }
         ] = await Promise.all([
-          supabase.from('inventories').select(`
-            *,
-            item:items(name, category:categories(name)),
-            location:locations(name)
-          `),
+          supabase.from('v_current_inventory').select('*'),
           supabase.from('locations').select('name').eq('is_deleted', false)
         ]);
 
@@ -49,9 +45,10 @@ export function InventoryPage() {
     const grouped = new Map<string, PivotInventoryItem>();
     
     inventories.forEach(inv => {
-      const itemName = inv.item?.name || 'Unknown';
-      const categoryName = inv.item?.category?.name || 'Unknown';
-      const locationName = inv.location?.name || 'Unknown';
+      const itemName = inv.item_name || 'Unknown';
+      const categoryName = inv.category_name || 'Unknown';
+      const locationName = inv.location_name || 'Unknown';
+      const qty = Number(inv.quantity) || 0;
 
       if (!grouped.has(itemName)) {
         const initialItem: PivotInventoryItem = {
@@ -67,11 +64,11 @@ export function InventoryPage() {
       }
       
       const group = grouped.get(itemName)!;
-      group.totalQuantity += inv.quantity;
+      group.totalQuantity += qty;
       
       // If the location matches, add to its specific count
       if (typeof group[locationName] === 'number') {
-        (group[locationName] as number) += inv.quantity;
+        (group[locationName] as number) += qty;
       }
     });
 

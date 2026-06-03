@@ -160,6 +160,11 @@ export function TransactionPage() {
       const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('TRX-'));
 
       for (const item of existingItems) {
+        const original = items.find(i => i.id === item.id);
+        if (original && JSON.stringify(original) === JSON.stringify(item)) {
+          continue;
+        }
+
         const dateObj = new Date(item.date.replace(' ', 'T'));
         const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
 

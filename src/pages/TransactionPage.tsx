@@ -9,7 +9,7 @@ export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
-  const [masters, setMasters] = useState<{id: string, name: string}[]>([]);
+  const [masters, setMasters] = useState<{id: string, name: string, category: string, location: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +31,7 @@ export function TransactionPage() {
           `),
           supabase.from('categories').select('id, name').eq('is_deleted', false),
           supabase.from('locations').select('id, name').eq('is_deleted', false),
-          supabase.from('items').select('id, name').eq('is_deleted', false),
+          supabase.from('items').select('id, name, category:categories(name), location:locations(name)').eq('is_deleted', false),
           supabase.from('staffs').select('id, name').eq('is_deleted', false)
         ]);
 
@@ -51,7 +51,14 @@ export function TransactionPage() {
         }
         if (catData) setCategories(catData);
         if (locData) setLocations(locData);
-        if (masterData) setMasters(masterData);
+        if (masterData) {
+          setMasters(masterData.map((m: any) => ({
+            id: m.id,
+            name: m.name,
+            category: m.category?.name || '',
+            location: m.location?.name || ''
+          })));
+        }
         if (staffData) setStaffs(staffData);
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -81,8 +88,55 @@ export function TransactionPage() {
       inputType: 'datetime-local',
       render: (item) => <DateTimeDisplay value={item.date} />
     },
-    { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
-    { key: 'itemName', header: '品目', editable: true, inputType: 'select', options: itemOptions },
+    { 
+      key: 'category', 
+      header: 'カテゴリ', 
+      editable: true, 
+      inputType: 'select', 
+      options: categoryOptions,
+      onCellChange: (newCategory, item) => {
+        const updates: Partial<TransactionItem> = {};
+        if (newCategory) {
+          const filteredItems = masters.filter(m => m.category === newCategory);
+          if (filteredItems.length === 1) {
+            updates.itemName = filteredItems[0].name;
+            if (!item.location) {
+              updates.location = filteredItems[0].location;
+            }
+          } else {
+            const currentItemValid = filteredItems.some(m => m.name === item.itemName);
+            if (!currentItemValid) updates.itemName = '';
+          }
+        } else {
+          updates.itemName = '';
+        }
+        return updates;
+      }
+    },
+    { 
+      key: 'itemName', 
+      header: '品目', 
+      editable: true, 
+      inputType: 'select', 
+      options: (item) => {
+        if (!item.category) return itemOptions;
+        const filtered = masters.filter(m => m.category === item.category);
+        return [{ label: '', value: '' }, ...filtered.map(m => ({ label: m.name, value: m.name }))];
+      },
+      onCellChange: (newItemName, item) => {
+        const updates: Partial<TransactionItem> = {};
+        if (newItemName) {
+          const masterItem = masters.find(m => m.name === newItemName);
+          if (masterItem) {
+            updates.category = masterItem.category;
+            if (!item.location) {
+              updates.location = masterItem.location;
+            }
+          }
+        }
+        return updates;
+      }
+    },
     { key: 'location', header: '保管場所', editable: true, inputType: 'select', options: locationOptions },
     { key: 'type', header: '区分', editable: true, inputType: 'select', options: typeOptions },
     { key: 'quantity', header: '数量', className: 'quantity', editable: true, inputType: 'number' },

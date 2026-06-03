@@ -12,7 +12,8 @@ export type Column<T> = {
   style?: React.CSSProperties;
   editable?: boolean;
   inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
-  options?: { label: string; value: string }[]; // For select
+  options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
+  onCellChange?: (newValue: any, item: T) => Partial<T> | void;
 };
 
 type SortConfig = { key: string; direction: 'asc' | 'desc' };
@@ -105,10 +106,17 @@ export function DataTable<T extends { id: string }>({
     });
   };
 
-  const handleCellChange = (id: string, key: string, value: any) => {
+  const handleCellChange = (id: string, key: string, value: any, col?: Column<T>) => {
     setDraftData(prev => prev.map(item => {
       if (item.id === id) {
-        return { ...item, [key]: value };
+        let newItem = { ...item, [key]: value };
+        if (col && col.onCellChange) {
+          const updates = col.onCellChange(value, newItem);
+          if (updates) {
+            newItem = { ...newItem, ...updates };
+          }
+        }
+        return newItem;
       }
       return item;
     }));
@@ -151,11 +159,12 @@ export function DataTable<T extends { id: string }>({
       const value = (item as any)[col.key] ?? '';
       
       if (col.inputType === 'select') {
+        const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options;
         return (
           <Select 
             value={value} 
-            options={col.options}
-            onChange={(e) => handleCellChange(item.id, col.key, e.target.value)}
+            options={currentOptions}
+            onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col)}
           />
         );
       }
@@ -164,7 +173,7 @@ export function DataTable<T extends { id: string }>({
         return (
           <DateTimeInput 
             value={value as string}
-            onChange={(newVal) => handleCellChange(item.id, col.key, newVal)}
+            onChange={(newVal) => handleCellChange(item.id, col.key, newVal, col)}
           />
         );
       }
@@ -174,7 +183,7 @@ export function DataTable<T extends { id: string }>({
         if (col.inputType === 'number') {
           newValue = Number(newValue);
         }
-        handleCellChange(item.id, col.key, newValue);
+        handleCellChange(item.id, col.key, newValue, col);
       };
 
       return (

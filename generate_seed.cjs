@@ -63,27 +63,27 @@ staffs.forEach(s => {
 
 sql += '\n-- Categories\n';
 categories.forEach(c => {
-    sql += `INSERT INTO categories (id, code, name, description) VALUES ('${getUuid(c.id)}', ${escapeSql(c.code)}, ${escapeSql(c.name)}, ${escapeSql(c.description)});\n`;
+    sql += `INSERT INTO categories (id, code, name, description) VALUES ('${getUuid(c.id)}', ${escapeSql(c.code || c.id)}, ${escapeSql(c.name)}, ${escapeSql(c.description)});\n`;
 });
 
 sql += '\n-- Locations\n';
 locations.forEach(l => {
-    sql += `INSERT INTO locations (id, code, name, description) VALUES ('${getUuid(l.id)}', ${escapeSql(l.code)}, ${escapeSql(l.name)}, ${escapeSql(l.description)});\n`;
+    sql += `INSERT INTO locations (id, code, name, description) VALUES ('${getUuid(l.id)}', ${escapeSql(l.code || l.id)}, ${escapeSql(l.name)}, ${escapeSql(l.description)});\n`;
 });
 
 sql += '\n-- Suppliers\n';
 suppliers.forEach(s => {
-    sql += `INSERT INTO suppliers (id, code, name, contact_person, phone) VALUES ('${getUuid(s.id)}', ${escapeSql(s.code)}, ${escapeSql(s.name)}, ${escapeSql(s.contact_person)}, ${escapeSql(s.phone)});\n`;
+    sql += `INSERT INTO suppliers (id, code, name, contact_person, phone) VALUES ('${getUuid(s.id)}', ${escapeSql(s.code || s.id)}, ${escapeSql(s.name)}, ${escapeSql(s.contact_person)}, ${escapeSql(s.phone)});\n`;
 });
 
 sql += '\n-- Units\n';
 units.forEach(u => {
-    sql += `INSERT INTO units (id, code, name, description) VALUES ('${getUuid(u.id)}', ${escapeSql(u.code)}, ${escapeSql(u.name)}, ${escapeSql(u.description)});\n`;
+    sql += `INSERT INTO units (id, code, name, description) VALUES ('${getUuid(u.id)}', ${escapeSql(u.code || u.id)}, ${escapeSql(u.name)}, ${escapeSql(u.description)});\n`;
 });
 
 sql += '\n-- Items\n';
 items.forEach(i => {
-    sql += `INSERT INTO items (id, code, name, manufacturer, content_amount, unit_id, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('${getUuid(i.id)}', ${escapeSql(i.code)}, ${escapeSql(i.name)}, ${escapeSql(i.manufacturer)}, ${i.content_amount}, '${getUuid(i.unit_id)}', '${getUuid(i.supplier_id)}', ${i.standard_price}, ${i.standard_purchase_qty}, '${getUuid(i.category_id)}', '${getUuid(i.location_id)}');\n`;
+    sql += `INSERT INTO items (id, code, name, manufacturer, content_amount, unit_id, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('${getUuid(i.id)}', ${escapeSql(i.code || i.id)}, ${escapeSql(i.name)}, ${escapeSql(i.manufacturer)}, ${i.content_amount}, '${getUuid(i.unit_id)}', '${getUuid(i.supplier_id)}', ${i.standard_price}, ${i.standard_purchase_qty}, '${getUuid(i.category_id)}', '${getUuid(i.location_id)}');\n`;
 });
 
 sql += '\n-- Inventories\n';

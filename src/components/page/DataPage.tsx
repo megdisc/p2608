@@ -9,6 +9,7 @@ type DataPageProps<T> = {
   initialSort?: { key: string; direction: 'asc' | 'desc' };
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: () => T;
+  headerRight?: React.ReactNode;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -18,12 +19,14 @@ export function DataPage<T extends { id: string }>({
   emptyMessage, 
   initialSort,
   onBatchSave,
-  onAddRow
+  onAddRow,
+  headerRight
 }: DataPageProps<T>) {
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <h2 style={{ margin: 0 }}>{title}</h2>
+        {headerRight && <div>{headerRight}</div>}
       </div>
       <DataTable 
         data={data} 

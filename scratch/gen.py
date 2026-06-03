@@ -43,15 +43,19 @@ for i in range(10):
         'location_id': location_id
     })
 
-# Generate 30 transactions (on June 1 ~ June 5)
+# Generate 30 transactions (on May 15 ~ June 15)
 for i in range(30):
     item_id = random.choice(items)
     location_id = random.choice(locations[item_id])
-    day = random.randint(1, 5)
+    month = random.choice([5, 6])
+    if month == 5:
+        day = random.randint(15, 31)
+    else:
+        day = random.randint(1, 15)
     hour = random.randint(8, 18)
     transactions.append({
         'id': str(uuid.uuid4()),
-        'date': f"2026-06-{day:02d} {hour:02d}:00",
+        'date': f"2026-{month:02d}-{day:02d} {hour:02d}:00",
         'item_id': item_id,
         'type': random.choice(['受入', '払出']),
         'quantity': random.randint(1, 20),

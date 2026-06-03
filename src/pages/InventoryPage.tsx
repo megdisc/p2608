@@ -15,6 +15,7 @@ export function InventoryPage() {
   const [inventories, setInventories] = useState<any[]>([]);
   const [locations, setLocations] = useState<{name: string}[]>([]);
   const [loading, setLoading] = useState(true);
+  const [targetDate] = useState(() => new Date());
 
   useEffect(() => {
     async function fetchData() {
@@ -23,7 +24,7 @@ export function InventoryPage() {
           { data: invData },
           { data: locData }
         ] = await Promise.all([
-          supabase.from('v_current_inventory').select('*'),
+          supabase.rpc('get_inventory_summary', { p_target_date: targetDate.toISOString() }),
           supabase.from('locations').select('name').eq('is_deleted', false)
         ]);
 
@@ -36,7 +37,7 @@ export function InventoryPage() {
       }
     }
     fetchData();
-  }, []);
+  }, [targetDate]);
 
   const { pivotItems, columns } = useMemo(() => {
     // Collect all location names for dynamic columns
@@ -77,7 +78,7 @@ export function InventoryPage() {
     const dynamicColumns: Column<PivotInventoryItem>[] = [
       { key: 'category', header: 'カテゴリ' },
       { key: 'name', header: '品目' },
-      { key: 'totalQuantity', header: '在庫数量', className: 'quantity' },
+      { key: 'totalQuantity', header: '帳簿在庫', className: 'quantity' },
     ];
 
     locationNames.forEach(locName => {
@@ -97,12 +98,15 @@ export function InventoryPage() {
 
   if (loading) return <div>Loading...</div>;
 
+  const formattedDate = `${targetDate.getFullYear()}年${String(targetDate.getMonth() + 1).padStart(2, '0')}月${String(targetDate.getDate()).padStart(2, '0')}日 ${String(targetDate.getHours()).padStart(2, '0')}:${String(targetDate.getMinutes()).padStart(2, '0')}`;
+
   return (
     <DataPage 
       title="在庫集計"
       data={pivotItems} 
       columns={columns} 
       emptyMessage="在庫データがありません" 
+      headerRight={<span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>集計日時：{formattedDate}</span>}
     />
   );
 }

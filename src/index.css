@@ -31,7 +31,8 @@ body {
 
 .app-layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   background-color: var(--color-bg);
 }
 
@@ -43,6 +44,12 @@ body {
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .header {
@@ -124,8 +131,14 @@ body {
 
 .main-content {
   flex: 1;
-  padding: 24px 48px 48px 48px;
+  padding: 24px 48px 0 48px;
   min-width: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 .main-content h2 {
@@ -141,25 +154,15 @@ body {
   overflow-y: hidden;
   background-color: var(--color-bg);
   width: 100%;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+  scrollbar-width: none;
 }
 
 .table-container::-webkit-scrollbar {
-  height: 6px;
+  display: none;
 }
 
-.table-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-}
-
-.table-container::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+.table-container:last-child {
+  margin-bottom: 48px;
 }
 
 .inventory-table {

@@ -22,24 +22,30 @@ import type {
 
 // Helper to simulate joins
 const joinMasterItem = (rawMaster: typeof masterTable[0]): MasterItem => {
-  const category = categoryTable.find((c) => c.id === rawMaster.categoryId);
-  const location = locationTable.find((l) => l.id === rawMaster.locationId);
-  const supplier = supplierTable.find((s) => s.id === rawMaster.supplierId);
+  const category = categoryTable.find((c) => c.id === rawMaster.category_id);
+  const location = locationTable.find((l) => l.id === rawMaster.location_id);
+  const supplier = supplierTable.find((s) => s.id === rawMaster.supplier_id);
 
   return {
-    ...rawMaster,
+    id: rawMaster.id,
+    name: rawMaster.name,
+    manufacturer: rawMaster.manufacturer,
+    contentAmount: rawMaster.content_amount,
+    contentUnit: rawMaster.unit_id,
+    supplier: supplier?.name ?? 'Unknown',
+    standardPrice: rawMaster.standard_price,
+    standardPurchaseQty: rawMaster.standard_purchase_qty,
     category: category?.name ?? 'Unknown',
     location: location?.name ?? 'Unknown',
-    supplier: supplier?.name ?? 'Unknown',
   };
 };
 
 export const db = {
   get inventory(): InventoryItem[] {
     return inventoryTable.map((inv) => {
-      const master = masterTable.find((m) => m.id === inv.itemId);
-      const category = categoryTable.find((c) => c.id === master?.categoryId);
-      const location = locationTable.find((l) => l.id === inv.locationId);
+      const master = masterTable.find((m) => m.id === inv.item_id);
+      const category = categoryTable.find((c) => c.id === master?.category_id);
+      const location = locationTable.find((l) => l.id === inv.location_id);
       return {
         id: inv.id,
         category: category?.name ?? 'Unknown',
@@ -67,19 +73,28 @@ export const db = {
   },
 
   get supplier(): SupplierItem[] {
-    return supplierTable;
+    return supplierTable.map(s => ({
+      id: s.id,
+      name: s.name,
+      contactPerson: s.contact_person,
+      phone: s.phone
+    }));
   },
 
   get transaction(): TransactionItem[] {
     return transactionTable.map((tx) => {
-      const master = masterTable.find((m) => m.id === tx.itemId);
-      const category = categoryTable.find((c) => c.id === master?.categoryId);
-      const location = locationTable.find((l) => l.id === tx.locationId);
-      const staff = staffTable.find((s) => s.id === tx.staffId);
+      const master = masterTable.find((m) => m.id === tx.item_id);
+      const category = categoryTable.find((c) => c.id === master?.category_id);
+      const location = locationTable.find((l) => l.id === tx.location_id);
+      const staff = staffTable.find((s) => s.id === tx.staff_id);
       return {
-        ...tx,
+        id: tx.id,
+        date: tx.date,
+        itemId: tx.item_id,
         category: category?.name ?? 'Unknown',
         itemName: master?.name ?? 'Unknown',
+        type: tx.type,
+        quantity: tx.quantity,
         location: location?.name ?? 'Unknown',
         personInCharge: staff?.name ?? 'Unknown',
       };
@@ -88,16 +103,21 @@ export const db = {
 
   get stocktaking(): StocktakingItem[] {
     return stocktakingTable.map((st) => {
-      const master = masterTable.find((m) => m.id === st.itemId);
-      const category = categoryTable.find((c) => c.id === master?.categoryId);
-      const location = locationTable.find((l) => l.id === st.locationId);
-      const staff = staffTable.find((s) => s.id === st.staffId);
+      const master = masterTable.find((m) => m.id === st.item_id);
+      const category = categoryTable.find((c) => c.id === master?.category_id);
+      const location = locationTable.find((l) => l.id === st.location_id);
+      const staff = staffTable.find((s) => s.id === st.staff_id);
       return {
-        ...st,
+        id: st.id,
+        date: st.date,
+        itemId: st.item_id,
         category: category?.name ?? 'Unknown',
         itemName: master?.name ?? 'Unknown',
-        location: location?.name ?? 'Unknown',
+        systemQty: st.system_qty,
+        actualQty: st.actual_qty,
+        difference: st.difference,
         personInCharge: staff?.name ?? 'Unknown',
+        location: location?.name ?? 'Unknown',
       };
     });
   },

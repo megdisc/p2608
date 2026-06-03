@@ -1,66 +1,98 @@
 export type InventoryTableItem = {
-  id: string; // e.g., INV-001
-  itemId: string; // e.g., ING-001
-  locationId: string; // e.g., LOC-001
+  id: string; // UUID
+  item_id: string; // UUID
+  location_id: string; // UUID
   quantity: number;
+  updated_at?: string;
 };
 
 export type MasterTableItem = {
-  id: string; // e.g., ING-001
+  id: string; // UUID
+  code: string; // e.g., ING-001
   name: string;
   manufacturer: string;
-  contentAmount: number;
-  contentUnit: string;
-  supplierId: string;
-  standardPrice: number;
-  standardPurchaseQty: number;
-  categoryId: string;
-  locationId: string;
+  content_amount: number;
+  unit_id: string; // UUID
+  supplier_id: string; // UUID
+  standard_price: number;
+  standard_purchase_qty: number;
+  category_id: string; // UUID
+  location_id: string; // UUID
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type LocationTableItem = {
-  id: string;
+  id: string; // UUID
+  code: string;
   name: string;
   description: string;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type CategoryTableItem = {
-  id: string;
+  id: string; // UUID
+  code: string;
   name: string;
   description: string;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type SupplierTableItem = {
-  id: string;
+  id: string; // UUID
+  code: string;
   name: string;
-  contactPerson: string;
+  contact_person: string;
   phone: string;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type UnitTableItem = {
+  id: string; // UUID
+  code: string;
+  name: string;
+  description: string;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type TransactionTableItem = {
-  id: string;
+  id: string; // UUID
   date: string;
-  itemId: string;
+  item_id: string; // UUID
   type: '受入' | '払出';
   quantity: number;
-  locationId: string;
-  staffId: string;
+  location_id: string; // UUID
+  staff_id: string; // UUID
+  created_at?: string;
 };
 
 export type StaffTableItem = {
-  id: string;
+  id: string; // UUID
   name: string;
   role: string;
   status: 'active' | 'inactive';
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type StocktakingTableItem = {
-  id: string;
+  id: string; // UUID
   date: string;
-  itemId: string;
-  systemQty: number;
-  actualQty: number;
+  item_id: string; // UUID
+  system_qty: number;
+  actual_qty: number;
   difference: number;
-  staffId: string;
-  locationId: string;
+  staff_id: string; // UUID
+  location_id: string; // UUID
+  created_at?: string;
 };

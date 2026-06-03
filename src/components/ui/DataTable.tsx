@@ -45,12 +45,14 @@ export function DataTable<T extends { id: string }>({
   const [draftData, setDraftData] = useState<T[]>(data);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
+  const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
   
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
     setDraftData(data);
     setDeletedIds(new Set());
     setNewRowIds(new Set());
+    setOriginalNewRows([]);
   }, [data]);
 
   useEffect(() => {
@@ -126,6 +128,7 @@ export function DataTable<T extends { id: string }>({
     const newRow = onAddRow();
     setDraftData(prev => [...prev, newRow]);
     setNewRowIds(prev => new Set(prev).add(newRow.id));
+    setOriginalNewRows(prev => [...prev, newRow]);
   };
 
   const handleSaveClick = () => {
@@ -138,6 +141,7 @@ export function DataTable<T extends { id: string }>({
     setDraftData(data);
     setDeletedIds(new Set());
     setNewRowIds(new Set());
+    setOriginalNewRows([]);
   };
 
   const renderCellContent = (col: Column<T>, item: T) => {
@@ -187,6 +191,21 @@ export function DataTable<T extends { id: string }>({
 
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
   const isEditingEnabled = !!onBatchSave;
+
+  const isExistingModified = useMemo(() => {
+    if (deletedIds.size > 0) return true;
+    const existingDrafts = draftData.filter(item => !newRowIds.has(item.id));
+    return JSON.stringify(existingDrafts) !== JSON.stringify(data);
+  }, [draftData, data, deletedIds, newRowIds]);
+
+  const isAddedRowModified = useMemo(() => {
+    if (newRowIds.size === 0) return false;
+    const addedDrafts = draftData.filter(item => newRowIds.has(item.id));
+    return JSON.stringify(addedDrafts) !== JSON.stringify(originalNewRows);
+  }, [draftData, newRowIds, originalNewRows]);
+
+  const canCancel = newRowIds.size > 0 || isExistingModified;
+  const canSave = isExistingModified || isAddedRowModified;
 
 
 // ... 
@@ -254,10 +273,10 @@ export function DataTable<T extends { id: string }>({
               追加
             </Button>
           )}
-          <Button onClick={handleCancelClick}>
+          <Button onClick={handleCancelClick} disabled={!canCancel}>
             取消
           </Button>
-          <Button onClick={handleSaveClick}>
+          <Button onClick={handleSaveClick} disabled={!canSave}>
             確定
           </Button>
         </div>

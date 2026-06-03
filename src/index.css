@@ -312,3 +312,8 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   z-index: 10;
   margin-top: 16px;
 }
+
+.action-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}

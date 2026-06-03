@@ -13,7 +13,7 @@ export type Column<T> = {
   editable?: boolean;
   inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
-  onCellChange?: (newValue: any, item: T) => Partial<T> | void;
+  onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
 };
 
 type SortConfig = { key: string; direction: 'asc' | 'desc' };
@@ -111,7 +111,10 @@ export function DataTable<T extends { id: string }>({
       if (item.id === id) {
         let newItem = { ...item, [key]: value };
         if (col && col.onCellChange) {
-          const updates = col.onCellChange(value, newItem);
+          const updateRow = (asyncUpdates: Partial<T>) => {
+            setDraftData(currentData => currentData.map(d => d.id === id ? { ...d, ...asyncUpdates } : d));
+          };
+          const updates = col.onCellChange(value, newItem, updateRow);
           if (updates) {
             newItem = { ...newItem, ...updates };
           }

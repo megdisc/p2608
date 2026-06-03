@@ -75,13 +75,44 @@ export function StocktakingPage() {
   const itemOptions = useMemo(() => [{ label: '', value: '' }, ...masters.map(m => ({ label: m.name, value: m.name }))], [masters]);
   const staffOptions = useMemo(() => [{ label: '', value: '' }, ...staffs.map(s => ({ label: s.name, value: s.name }))], [staffs]);
 
+  const recalculateSystemQty = async (updatedItem: StocktakingItem, updateRow: (updates: Partial<StocktakingItem>) => void) => {
+    if (updatedItem.itemName && updatedItem.location && updatedItem.date) {
+      const itemMaster = masters.find(m => m.name === updatedItem.itemName);
+      const locationMaster = locations.find(l => l.name === updatedItem.location);
+      
+      if (itemMaster && locationMaster) {
+        try {
+          const dateObj = new Date(updatedItem.date.replace(' ', 'T'));
+          const isoDateStr = isNaN(dateObj.getTime()) ? updatedItem.date : dateObj.toISOString();
+          
+          const { data, error } = await supabase.rpc('calculate_book_inventory', {
+            p_item_id: itemMaster.id,
+            p_location_id: locationMaster.id,
+            p_target_date: isoDateStr
+          });
+          
+          if (!error && data !== null) {
+            const sysQty = Number(data);
+            const diff = Number(updatedItem.actualQty) - sysQty;
+            updateRow({ systemQty: sysQty, difference: diff });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  };
+
   const columns: Column<StocktakingItem>[] = [
     { 
       key: 'date', 
       header: '記録日時',
       editable: true,
       inputType: 'datetime-local',
-      render: (item) => <DateTimeDisplay value={item.date} />
+      render: (item) => <DateTimeDisplay value={item.date} />,
+      onCellChange: (newDate, item, updateRow) => {
+        recalculateSystemQty({ ...item, date: newDate }, updateRow);
+      }
     },
     { 
       key: 'category', 
@@ -118,7 +149,7 @@ export function StocktakingPage() {
         const filtered = masters.filter(m => m.category === item.category);
         return [{ label: '', value: '' }, ...filtered.map(m => ({ label: m.name, value: m.name }))];
       },
-      onCellChange: (newItemName, item) => {
+      onCellChange: (newItemName, item, updateRow) => {
         const updates: Partial<StocktakingItem> = {};
         if (newItemName) {
           const masterItem = masters.find(m => m.name === newItemName);
@@ -129,12 +160,31 @@ export function StocktakingPage() {
             }
           }
         }
+        recalculateSystemQty({ ...item, itemName: newItemName, ...updates }, updateRow);
         return updates;
       }
     },
-    { key: 'location', header: '保管場所', editable: true, inputType: 'select', options: locationOptions },
+    { 
+      key: 'location', 
+      header: '保管場所', 
+      editable: true, 
+      inputType: 'select', 
+      options: locationOptions,
+      onCellChange: (newLocation, item, updateRow) => {
+        recalculateSystemQty({ ...item, location: newLocation }, updateRow);
+      }
+    },
     { key: 'systemQty', header: '帳簿在庫', className: 'quantity', editable: false },
-    { key: 'actualQty', header: '実在庫', className: 'quantity', editable: true, inputType: 'number' },
+    { 
+      key: 'actualQty', 
+      header: '実在庫', 
+      className: 'quantity', 
+      editable: true, 
+      inputType: 'number',
+      onCellChange: (newActualQty, item) => {
+        return { difference: Number(newActualQty) - item.systemQty };
+      }
+    },
     { 
       key: 'difference', 
       header: '差異', 

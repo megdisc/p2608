@@ -11,7 +11,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties;
   editable?: boolean;
-  inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local';
+  inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[]; // For select
 };
 

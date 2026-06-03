@@ -80,7 +80,7 @@ export function InventoryPage() {
     const dynamicColumns: Column<PivotInventoryItem>[] = [
       { key: 'category', header: 'カテゴリ' },
       { key: 'name', header: '品目' },
-      { key: 'totalQuantity', header: '総合数量', className: 'quantity' },
+      { key: 'totalQuantity', header: '在庫数量', className: 'quantity' },
     ];
 
     locationNames.forEach(locName => {

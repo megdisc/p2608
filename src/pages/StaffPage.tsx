@@ -25,7 +25,7 @@ export function StaffPage() {
 
   const roleOptions = [
     { label: '', value: '' },
-    { label: '管理者', value: '管理者' },
+    { label: 'システム管理者', value: 'システム管理者' },
     { label: 'スタッフ', value: 'スタッフ' }
   ];
 
@@ -38,6 +38,8 @@ export function StaffPage() {
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: '氏名', editable: true, inputType: 'text' },
     { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
+    { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
+    { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
     { 
       key: 'status', 
       header: 'ステータス',
@@ -48,21 +50,73 @@ export function StaffPage() {
     },
   ];
 
-  const handleBatchSave = (drafts: StaffItem[], deletedIds: string[]) => {
-    const afterDelete = drafts.filter(item => !deletedIds.includes(item.id)).map(item => ({
-      ...item,
-      name: item.name.replace(/[\s　]+/g, '')
-    }));
-    setItems(afterDelete);
-    alert('UI上での保存を反映しました。（※DB更新処理は未実装）');
+  const handleBatchSave = async (drafts: StaffItem[], deletedIds: string[]) => {
+    try {
+      setLoading(true);
+
+      // Handle deletes
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('staffs').update({ is_deleted: true }).in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      // Handle upserts
+      for (const item of drafts) {
+        if (!deletedIds.includes(item.id)) {
+          const cleanName = item.name.replace(/[\s　]+/g, '');
+          if (item.id.startsWith('STF-')) {
+            // New user: call RPC
+            const { error } = await supabase.rpc('create_staff_user', {
+              email: item.email || '',
+              password: item.password || '',
+              name: cleanName,
+              role: item.role,
+              status: item.status
+            });
+            if (error) throw error;
+          } else {
+            // Existing user: update staffs table
+            const { error: staffError } = await supabase.from('staffs').update({
+              name: cleanName,
+              email: item.email,
+              role: item.role,
+              status: item.status
+            }).eq('id', item.id);
+            if (staffError) throw staffError;
+
+            // If password is provided, update password via RPC
+            if (item.password) {
+              const { error: passError } = await supabase.rpc('update_staff_password', {
+                user_id: item.id,
+                new_password: item.password
+              });
+              if (passError) throw passError;
+            }
+          }
+        }
+      }
+
+      // Reload
+      const { data, error: reloadError } = await supabase.from('staffs').select('*').eq('is_deleted', false);
+      if (reloadError) throw reloadError;
+      if (data) setItems(data);
+      alert('保存が完了しました。');
+    } catch (error) {
+      console.error('Error saving staffs:', error);
+      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = () => {
     return {
       id: `STF-${Date.now()}`,
       name: '',
+      email: '',
+      password: '',
       role: '',
-      status: ''
+      status: 'active'
     } as unknown as StaffItem;
   };
 

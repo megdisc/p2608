@@ -75,11 +75,11 @@ export function DataTable<T extends { id: string }>({
     return () => clearTimeout(timer);
   }, [draftData, columns, onBatchSave]);
 
-  const sortedData = useMemo(() => {
+  const { sortedExistingRows, newRows } = useMemo(() => {
     const existingRows = draftData.filter(item => !newRowIds.has(item.id));
     const newRows = draftData.filter(item => newRowIds.has(item.id));
 
-    if (!sortConfig.key) return [...existingRows, ...newRows];
+    if (!sortConfig.key) return { sortedExistingRows: existingRows, newRows };
     
     existingRows.sort((a, b) => {
       const col = columns.find(c => c.key === sortConfig.key);
@@ -100,10 +100,10 @@ export function DataTable<T extends { id: string }>({
       return 0;
     });
 
-    return [...existingRows, ...newRows];
+    return { sortedExistingRows: existingRows, newRows };
   }, [draftData, sortConfig, newRowIds, columns]);
 
-  const totalItems = sortedData.length;
+  const totalItems = sortedExistingRows.length;
   const totalPages = pageSize === -1 ? 1 : Math.ceil(totalItems / pageSize);
 
   useEffect(() => {
@@ -113,10 +113,13 @@ export function DataTable<T extends { id: string }>({
   }, [totalPages, currentPage]);
 
   const visibleData = useMemo(() => {
-    if (pageSize === -1) return sortedData;
-    const startIndex = (currentPage - 1) * pageSize;
-    return sortedData.slice(startIndex, startIndex + pageSize);
-  }, [sortedData, currentPage, pageSize]);
+    let paginatedExisting = sortedExistingRows;
+    if (pageSize !== -1) {
+      const startIndex = (currentPage - 1) * pageSize;
+      paginatedExisting = sortedExistingRows.slice(startIndex, startIndex + pageSize);
+    }
+    return [...paginatedExisting, ...newRows];
+  }, [sortedExistingRows, newRows, currentPage, pageSize]);
 
   const handleSort = (key: string) => {
     if (!key) return;
@@ -164,19 +167,11 @@ export function DataTable<T extends { id: string }>({
     setOriginalNewRows(prev => [...prev, newRow]);
     
     setTimeout(() => {
-      if (pageSize !== -1) {
-        const newTotalItems = totalItems + 1;
-        const newTotalPages = Math.ceil(newTotalItems / pageSize);
-        setCurrentPage(newTotalPages);
+      const container = tableRef.current?.closest('.table-container');
+      if (container) {
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
       }
-      
-      setTimeout(() => {
-        const container = tableRef.current?.closest('.table-container');
-        if (container) {
-          container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-        }
-      }, 50);
-    }, 0);
+    }, 50);
   };
 
   const handleSaveClick = () => {

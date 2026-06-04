@@ -144,7 +144,17 @@ export function DataTable<T extends { id: string }>({
 
   const handleSaveClick = () => {
     if (onBatchSave) {
-      onBatchSave(draftData, Array.from(deletedIds));
+      const sanitizedDrafts = draftData.map(item => {
+        const newItem = { ...item };
+        columns.forEach(col => {
+          if (col.inputType === 'number' && (newItem as any)[col.key] === '') {
+            (newItem as any)[col.key] = 0;
+          }
+        });
+        return newItem;
+      });
+      onBatchSave(sanitizedDrafts, Array.from(deletedIds));
+      setDraftData(sanitizedDrafts);
     }
   };
 
@@ -184,7 +194,7 @@ export function DataTable<T extends { id: string }>({
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue: string | number = e.target.value;
         if (col.inputType === 'number') {
-          newValue = Number(newValue);
+          newValue = newValue === '' ? '' : Number(newValue);
         }
         handleCellChange(item.id, col.key, newValue, col);
       };

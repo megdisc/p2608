@@ -13,7 +13,9 @@ export function AppLayout({ activeTab, setActiveTab, children }: AppLayoutProps)
     <div className="app-layout">
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="main-content">
-        {children}
+        <div key={activeTab} className="page-transition">
+          {children}
+        </div>
       </main>
     </div>
   );

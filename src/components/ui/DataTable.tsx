@@ -346,12 +346,9 @@ export function DataTable<T extends { id: string }>({
         )}
 
         <div className="pagination-controls" style={{ gap: '8px' }}>
-          <span className="pagination-info" style={{ marginRight: '8px' }}>
-            {totalItems === 0 ? '0' : `${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalItems)}`} of {totalItems}
-          </span>
-          
           <div className="pagination-buttons" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             >
@@ -359,19 +356,20 @@ export function DataTable<T extends { id: string }>({
             </Button>
             
             <select 
-              className="page-size-select"
+              className="page-select-pill"
               value={currentPage}
               onChange={(e) => setCurrentPage(Number(e.target.value))}
               disabled={totalPages <= 1}
             >
               {Array.from({ length: Math.max(1, totalPages) }, (_, i) => (
                 <option key={i + 1} value={i + 1}>
-                  {i + 1} ページ
+                  {i + 1}
                 </option>
               ))}
             </select>
 
             <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               disabled={currentPage === Math.max(1, totalPages) || totalPages === 0}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             >

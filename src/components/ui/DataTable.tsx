@@ -50,8 +50,7 @@ export function DataTable<T extends { id: string }>({
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState<number>(50);
-  
+  const pageSize = 50;
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
     setDraftData(data);
@@ -104,7 +103,7 @@ export function DataTable<T extends { id: string }>({
   }, [draftData, sortConfig, newRowIds, columns]);
 
   const totalItems = sortedExistingRows.length;
-  const totalPages = pageSize === -1 ? 1 : Math.ceil(totalItems / pageSize);
+  const totalPages = Math.ceil(totalItems / pageSize);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
@@ -113,11 +112,8 @@ export function DataTable<T extends { id: string }>({
   }, [totalPages, currentPage]);
 
   const visibleData = useMemo(() => {
-    let paginatedExisting = sortedExistingRows;
-    if (pageSize !== -1) {
-      const startIndex = (currentPage - 1) * pageSize;
-      paginatedExisting = sortedExistingRows.slice(startIndex, startIndex + pageSize);
-    }
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedExisting = sortedExistingRows.slice(startIndex, startIndex + pageSize);
     return [...paginatedExisting, ...newRows];
   }, [sortedExistingRows, newRows, currentPage, pageSize]);
 
@@ -349,41 +345,38 @@ export function DataTable<T extends { id: string }>({
           <div className="action-buttons"></div>
         )}
 
-        <div className="pagination-controls">
-          <span>表示件数:</span>
-          <select 
-            className="page-size-select" 
-            value={pageSize} 
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={-1}>全て</option>
-          </select>
-          
-          <span className="pagination-info">
-            {totalItems === 0 ? '0' : `${pageSize === -1 ? 1 : (currentPage - 1) * pageSize + 1}-${pageSize === -1 ? totalItems : Math.min(currentPage * pageSize, totalItems)}`} of {totalItems}
+        <div className="pagination-controls" style={{ gap: '8px' }}>
+          <span className="pagination-info" style={{ marginRight: '8px' }}>
+            {totalItems === 0 ? '0' : `${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, totalItems)}`} of {totalItems}
           </span>
           
-          <div className="pagination-buttons">
-            <button 
-              className="icon-btn" 
-              disabled={currentPage === 1 || pageSize === -1}
+          <div className="pagination-buttons" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            <button 
-              className="icon-btn" 
-              disabled={currentPage === totalPages || totalPages === 0 || pageSize === -1}
+              ＜
+            </Button>
+            
+            <select 
+              className="page-size-select"
+              value={currentPage}
+              onChange={(e) => setCurrentPage(Number(e.target.value))}
+              disabled={totalPages <= 1}
+            >
+              {Array.from({ length: Math.max(1, totalPages) }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1} ページ
+                </option>
+              ))}
+            </select>
+
+            <Button 
+              disabled={currentPage === Math.max(1, totalPages) || totalPages === 0}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
+              ＞
+            </Button>
           </div>
         </div>
       </div>

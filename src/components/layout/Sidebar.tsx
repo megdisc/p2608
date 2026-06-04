@@ -55,12 +55,6 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             カテゴリ設定
           </button>
           <button 
-            className={`nav-button ${activeTab === 'unit' ? 'active' : ''}`}
-            onClick={() => setActiveTab('unit')}
-          >
-            単位設定
-          </button>
-          <button 
             className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
             onClick={() => setActiveTab('location')}
           >

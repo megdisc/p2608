@@ -10,9 +10,7 @@ export type MasterTableItem = {
   id: string; // UUID
   code: string; // e.g., ING-001
   name: string;
-  manufacturer: string;
-  content_amount: number;
-  unit_id: string; // UUID
+  description: string;
   supplier_id: string; // UUID
   standard_price: number;
   standard_purchase_qty: number;
@@ -49,16 +47,6 @@ export type SupplierTableItem = {
   name: string;
   contact_person: string;
   phone: string;
-  is_deleted?: boolean;
-  created_at?: string;
-  updated_at?: string;
-};
-
-export type UnitTableItem = {
-  id: string; // UUID
-  code: string;
-  name: string;
-  description: string;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;

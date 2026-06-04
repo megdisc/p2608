@@ -7,7 +7,6 @@ import {
   TransactionPage, 
   StocktakingPage, 
   MasterPage, 
-  UnitPage,
   CategoryPage, 
   SupplierPage, 
   LocationPage,
@@ -23,7 +22,6 @@ function App() {
       {activeTab === 'transaction' && <TransactionPage />}
       {activeTab === 'stocktaking' && <StocktakingPage />}
       {activeTab === 'master' && <MasterPage />}
-      {activeTab === 'unit' && <UnitPage />}
       {activeTab === 'category' && <CategoryPage />}
       {activeTab === 'supplier' && <SupplierPage />}
       {activeTab === 'location' && <LocationPage />}

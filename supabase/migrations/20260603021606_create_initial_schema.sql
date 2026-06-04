@@ -46,25 +46,12 @@ CREATE TABLE suppliers (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. units
-CREATE TABLE units (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  code VARCHAR UNIQUE NOT NULL,
-  name VARCHAR NOT NULL,
-  description TEXT,
-  is_deleted BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
 -- 6. items
 CREATE TABLE items (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code VARCHAR UNIQUE NOT NULL,
   name VARCHAR NOT NULL,
-  manufacturer VARCHAR,
-  content_amount NUMERIC NOT NULL,
-  unit_id UUID REFERENCES units(id),
+  description TEXT,
   supplier_id UUID REFERENCES suppliers(id),
   standard_price NUMERIC NOT NULL,
   standard_purchase_qty NUMERIC NOT NULL,
@@ -123,6 +110,5 @@ CREATE TRIGGER update_staffs_updated_at BEFORE UPDATE ON staffs FOR EACH ROW EXE
 CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_locations_updated_at BEFORE UPDATE ON locations FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_suppliers_updated_at BEFORE UPDATE ON suppliers FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_units_updated_at BEFORE UPDATE ON units FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_items_updated_at BEFORE UPDATE ON items FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_inventories_updated_at BEFORE UPDATE ON inventories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

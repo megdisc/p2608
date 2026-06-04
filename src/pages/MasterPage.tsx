@@ -7,7 +7,6 @@ import { supabase } from '../lib/supabase';
 export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>([]);
   const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
-  const [units, setUnits] = useState<{id: string, name: string}[]>([]);
   const [suppliers, setSuppliers] = useState<{id: string, name: string}[]>([]);
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +17,6 @@ export function MasterPage() {
         const [
           { data: itemsData },
           { data: categoriesData },
-          { data: unitsData },
           { data: suppliersData },
           { data: locationsData },
         ] = await Promise.all([
@@ -26,11 +24,9 @@ export function MasterPage() {
             *,
             category:categories(name),
             location:locations(name),
-            supplier:suppliers(name),
-            unit:units(name)
+            supplier:suppliers(name)
           `).eq('is_deleted', false),
           supabase.from('categories').select('id, name').eq('is_deleted', false),
-          supabase.from('units').select('id, name').eq('is_deleted', false),
           supabase.from('suppliers').select('id, name').eq('is_deleted', false),
           supabase.from('locations').select('id, name').eq('is_deleted', false),
         ]);
@@ -39,9 +35,7 @@ export function MasterPage() {
           const mapped: MasterItem[] = itemsData.map((item: any) => ({
             id: item.id,
             name: item.name,
-            manufacturer: item.manufacturer,
-            contentAmount: item.content_amount,
-            contentUnit: item.unit?.name || 'Unknown',
+            description: item.description || '',
             supplier: item.supplier?.name || 'Unknown',
             standardPrice: item.standard_price,
             standardPurchaseQty: item.standard_purchase_qty,
@@ -51,7 +45,6 @@ export function MasterPage() {
           setItems(mapped);
         }
         if (categoriesData) setCategories(categoriesData);
-        if (unitsData) setUnits(unitsData);
         if (suppliersData) setSuppliers(suppliersData);
         if (locationsData) setLocations(locationsData);
       } catch (error) {
@@ -64,16 +57,13 @@ export function MasterPage() {
   }, []);
 
   const categoryOptions = useMemo(() => [{ label: '', value: '' }, ...categories.map(c => ({ label: c.name, value: c.name }))], [categories]);
-  const unitOptions = useMemo(() => [{ label: '', value: '' }, ...units.map(u => ({ label: u.name, value: u.name }))], [units]);
   const supplierOptions = useMemo(() => [{ label: '', value: '' }, ...suppliers.map(s => ({ label: s.name, value: s.name }))], [suppliers]);
   const locationOptions = useMemo(() => [{ label: '', value: '' }, ...locations.map(l => ({ label: l.name, value: l.name }))], [locations]);
 
   const columns: Column<MasterItem>[] = [
     { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
     { key: 'name', header: '品目', editable: true, inputType: 'text' },
-    { key: 'manufacturer', header: '製造元', editable: true, inputType: 'text' },
-    { key: 'contentAmount', header: '内容量', className: 'quantity', editable: true, inputType: 'number' },
-    { key: 'contentUnit', header: '内容量単位', editable: true, inputType: 'select', options: unitOptions },
+    { key: 'description', header: '説明', editable: true, inputType: 'text' },
     { 
       key: 'location', 
       header: '標準保管場所',
@@ -96,7 +86,6 @@ export function MasterPage() {
       }
 
       const catMap = new Map(categories.map(c => [c.name, c.id]));
-      const unitMap = new Map(units.map(u => [u.name, u.id]));
       const supMap = new Map(suppliers.map(s => [s.name, s.id]));
       const locMap = new Map(locations.map(l => [l.name, l.id]));
 
@@ -106,9 +95,7 @@ export function MasterPage() {
       for (const item of existingItems) {
         const { error } = await supabase.from('items').update({
           name: item.name,
-          manufacturer: item.manufacturer,
-          content_amount: item.contentAmount,
-          unit_id: unitMap.get(item.contentUnit) || null,
+          description: item.description,
           supplier_id: supMap.get(item.supplier) || null,
           standard_price: item.standardPrice,
           standard_purchase_qty: item.standardPurchaseQty,
@@ -122,9 +109,7 @@ export function MasterPage() {
         const inserts = newItems.map(item => ({
           code: `MST-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
           name: item.name,
-          manufacturer: item.manufacturer,
-          content_amount: item.contentAmount,
-          unit_id: unitMap.get(item.contentUnit) || null,
+          description: item.description,
           supplier_id: supMap.get(item.supplier) || null,
           standard_price: item.standardPrice,
           standard_purchase_qty: item.standardPurchaseQty,
@@ -140,8 +125,7 @@ export function MasterPage() {
         *,
         category:categories(name),
         location:locations(name),
-        supplier:suppliers(name),
-        unit:units(name)
+        supplier:suppliers(name)
       `).eq('is_deleted', false);
       
       if (reloadError) throw reloadError;
@@ -150,9 +134,7 @@ export function MasterPage() {
         const mapped: MasterItem[] = itemsData.map((item: any) => ({
           id: item.id,
           name: item.name,
-          manufacturer: item.manufacturer,
-          contentAmount: item.content_amount,
-          contentUnit: item.unit?.name || 'Unknown',
+          description: item.description || '',
           supplier: item.supplier?.name || 'Unknown',
           standardPrice: item.standard_price,
           standardPurchaseQty: item.standard_purchase_qty,
@@ -174,9 +156,7 @@ export function MasterPage() {
     return {
       id: `MST-${Date.now()}`,
       name: '',
-      manufacturer: '',
-      contentAmount: 0,
-      contentUnit: '',
+      description: '',
       supplier: '',
       standardPrice: 0,
       standardPurchaseQty: 0,

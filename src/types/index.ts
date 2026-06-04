@@ -9,20 +9,12 @@ export type InventoryItem = {
 export type MasterItem = {
   id: string;
   name: string;
-  manufacturer: string;
-  contentAmount: number;
-  contentUnit: string;
+  description: string;
   supplier: string;
   standardPrice: number;
   standardPurchaseQty: number;
   category: string;
   location: string;
-};
-
-export type UnitItem = {
-  id: string;
-  name: string;
-  description: string;
 };
 
 export type LocationItem = {
@@ -78,4 +70,4 @@ export type StocktakingItem = {
   location: string;
 };
 
-export type Tab = 'inventory' | 'master' | 'unit' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';
+export type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';

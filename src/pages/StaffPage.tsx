@@ -37,6 +37,7 @@ export function StaffPage() {
 
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: '氏名', sortKey: 'yomigana', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'ふりがな', editable: true, inputType: 'text' },
     { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
     { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
     { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
@@ -70,6 +71,7 @@ export function StaffPage() {
               email: item.email || '',
               password: item.password || '',
               name: cleanName,
+              yomigana: item.yomigana || '',
               role: item.role,
               status: item.status
             });
@@ -78,6 +80,7 @@ export function StaffPage() {
             // Existing user: update staffs table
             const { error: staffError } = await supabase.from('staffs').update({
               name: cleanName,
+              yomigana: item.yomigana || '',
               email: item.email,
               role: item.role,
               status: item.status
@@ -113,6 +116,7 @@ export function StaffPage() {
     return {
       id: `STF-${Date.now()}`,
       name: '',
+      yomigana: '',
       email: '',
       password: '',
       role: '',

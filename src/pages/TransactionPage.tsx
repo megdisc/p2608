@@ -4,6 +4,7 @@ import { DateTimeDisplay } from '../components/ui';
 import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAlert } from '../contexts/AlertContext';
 
 export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>([]);
@@ -12,6 +13,7 @@ export function TransactionPage() {
   const [masters, setMasters] = useState<{id: string, name: string, category: string, location: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchData() {
@@ -220,10 +222,10 @@ export function TransactionPage() {
         }));
         setItems(mapped);
       }
-      alert('保存が完了しました。');
+      showAlert('保存が完了しました。', 'success');
     } catch (error) {
       console.error('Error saving transactions:', error);
-      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
     } finally {
       setLoading(false);
     }

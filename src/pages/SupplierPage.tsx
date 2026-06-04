@@ -3,10 +3,12 @@ import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { SupplierItem } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAlert } from '../contexts/AlertContext';
 
 export function SupplierPage() {
   const [items, setItems] = useState<SupplierItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchData() {
@@ -84,10 +86,10 @@ export function SupplierPage() {
         }));
         setItems(mapped);
       }
-      alert('保存が完了しました。');
+      showAlert('保存が完了しました。', 'success');
     } catch (error) {
       console.error('Error saving suppliers:', error);
-      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
     } finally {
       setLoading(false);
     }

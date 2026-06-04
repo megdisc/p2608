@@ -3,6 +3,7 @@ import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { MasterItem } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAlert } from '../contexts/AlertContext';
 
 export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>([]);
@@ -10,6 +11,7 @@ export function MasterPage() {
   const [suppliers, setSuppliers] = useState<{id: string, name: string}[]>([]);
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchData() {
@@ -150,10 +152,10 @@ export function MasterPage() {
         }));
         setItems(mapped);
       }
-      alert('保存が完了しました。');
+      showAlert('保存が完了しました。', 'success');
     } catch (error) {
       console.error('Error saving items:', error);
-      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
     } finally {
       setLoading(false);
     }

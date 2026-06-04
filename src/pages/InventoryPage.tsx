@@ -25,7 +25,7 @@ export function InventoryPage() {
           { data: locData }
         ] = await Promise.all([
           supabase.rpc('get_inventory_summary', { p_target_date: targetDate.toISOString() }),
-          supabase.from('locations').select('name').eq('is_deleted', false)
+          supabase.from('locations').select('name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
         ]);
 
         if (invData) setInventories(invData);

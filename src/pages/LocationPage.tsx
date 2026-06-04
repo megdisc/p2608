@@ -3,10 +3,12 @@ import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import type { LocationItem } from '../types';
 import { supabase } from '../lib/supabase';
+import { useAlert } from '../contexts/AlertContext';
 
 export function LocationPage() {
   const [items, setItems] = useState<LocationItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchData() {
@@ -63,10 +65,10 @@ export function LocationPage() {
       const { data, error: reloadError } = await supabase.from('locations').select('*').eq('is_deleted', false);
       if (reloadError) throw reloadError;
       if (data) setItems(data);
-      alert('保存が完了しました。');
+      showAlert('保存が完了しました。', 'success');
     } catch (error) {
       console.error('Error saving locations:', error);
-      alert('保存中にエラーが発生しました。コンソールをご確認ください。');
+      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
     } finally {
       setLoading(false);
     }

@@ -140,6 +140,13 @@ export function DataTable<T extends { id: string }>({
     setDraftData(prev => [...prev, newRow]);
     setNewRowIds(prev => new Set(prev).add(newRow.id));
     setOriginalNewRows(prev => [...prev, newRow]);
+    
+    setTimeout(() => {
+      const mainContent = document.querySelector('.main-content');
+      if (mainContent) {
+        mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   const handleSaveClick = () => {

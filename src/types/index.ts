@@ -9,6 +9,7 @@ export type InventoryItem = {
 export type MasterItem = {
   id: string;
   name: string;
+  yomigana: string;
   description: string;
   supplier: string;
   standardPrice: number;
@@ -20,18 +21,21 @@ export type MasterItem = {
 export type LocationItem = {
   id: string;
   name: string;
+  yomigana: string;
   description: string;
 };
 
 export type CategoryItem = {
   id: string;
   name: string;
+  yomigana: string;
   description: string;
 };
 
 export type SupplierItem = {
   id: string;
   name: string;
+  yomigana: string;
   contactPerson: string;
   phone: string;
 };
@@ -51,6 +55,7 @@ export type TransactionItem = {
 export type StaffItem = {
   id: string;
   name: string;
+  yomigana: string;
   email?: string;
   password?: string;
   role: string;

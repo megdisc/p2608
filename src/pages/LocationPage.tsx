@@ -25,6 +25,7 @@ export function LocationPage() {
 
   const columns: Column<LocationItem>[] = [
     { key: 'name', header: '保管場所名', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
 
@@ -42,6 +43,7 @@ export function LocationPage() {
       for (const item of existingItems) {
         const { error } = await supabase.from('locations').update({
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description
         }).eq('id', item.id);
         if (error) throw error;
@@ -51,6 +53,7 @@ export function LocationPage() {
         const inserts = newItems.map(item => ({
           code: `LOC-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description
         }));
         const { error } = await supabase.from('locations').insert(inserts);
@@ -73,6 +76,7 @@ export function LocationPage() {
     return {
       id: `LOC-${Date.now()}`,
       name: '',
+      yomigana: '',
       description: ''
     } as LocationItem;
   };
@@ -85,6 +89,7 @@ export function LocationPage() {
       data={items} 
       columns={columns} 
       emptyMessage="保管場所データがありません" 
+      initialSort={{ key: 'yomigana', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

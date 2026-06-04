@@ -35,6 +35,7 @@ export function MasterPage() {
           const mapped: MasterItem[] = itemsData.map((item: any) => ({
             id: item.id,
             name: item.name,
+            yomigana: item.yomigana,
             description: item.description || '',
             supplier: item.supplier?.name || 'Unknown',
             standardPrice: item.standard_price,
@@ -63,6 +64,7 @@ export function MasterPage() {
   const columns: Column<MasterItem>[] = [
     { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
     { key: 'name', header: '品目', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
     { 
       key: 'location', 
@@ -95,6 +97,7 @@ export function MasterPage() {
       for (const item of existingItems) {
         const { error } = await supabase.from('items').update({
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description,
           supplier_id: supMap.get(item.supplier) || null,
           standard_price: item.standardPrice,
@@ -109,6 +112,7 @@ export function MasterPage() {
         const inserts = newItems.map(item => ({
           code: `MST-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description,
           supplier_id: supMap.get(item.supplier) || null,
           standard_price: item.standardPrice,
@@ -134,6 +138,7 @@ export function MasterPage() {
         const mapped: MasterItem[] = itemsData.map((item: any) => ({
           id: item.id,
           name: item.name,
+          yomigana: item.yomigana,
           description: item.description || '',
           supplier: item.supplier?.name || 'Unknown',
           standardPrice: item.standard_price,
@@ -156,6 +161,7 @@ export function MasterPage() {
     return {
       id: `MST-${Date.now()}`,
       name: '',
+      yomigana: '',
       description: '',
       supplier: '',
       standardPrice: 0,
@@ -173,6 +179,7 @@ export function MasterPage() {
       data={items} 
       columns={columns} 
       emptyMessage="マスタデータがありません" 
+      initialSort={{ key: 'yomigana', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

@@ -10,6 +10,7 @@ export type MasterTableItem = {
   id: string; // UUID
   code: string; // e.g., ING-001
   name: string;
+  yomigana: string;
   description: string;
   supplier_id: string; // UUID
   standard_price: number;
@@ -25,6 +26,7 @@ export type LocationTableItem = {
   id: string; // UUID
   code: string;
   name: string;
+  yomigana: string;
   description: string;
   is_deleted?: boolean;
   created_at?: string;
@@ -35,6 +37,7 @@ export type CategoryTableItem = {
   id: string; // UUID
   code: string;
   name: string;
+  yomigana: string;
   description: string;
   is_deleted?: boolean;
   created_at?: string;
@@ -45,6 +48,7 @@ export type SupplierTableItem = {
   id: string; // UUID
   code: string;
   name: string;
+  yomigana: string;
   contact_person: string;
   phone: string;
   is_deleted?: boolean;
@@ -66,6 +70,7 @@ export type TransactionTableItem = {
 export type StaffTableItem = {
   id: string; // UUID
   name: string;
+  yomigana: string;
   role: string;
   status: 'active' | 'inactive';
   is_deleted?: boolean;

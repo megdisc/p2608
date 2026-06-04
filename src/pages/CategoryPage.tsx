@@ -25,6 +25,7 @@ export function CategoryPage() {
 
   const columns: Column<CategoryItem>[] = [
     { key: 'name', header: 'カテゴリ名', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
 
@@ -42,6 +43,7 @@ export function CategoryPage() {
       for (const item of existingItems) {
         const { error } = await supabase.from('categories').update({
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description
         }).eq('id', item.id);
         if (error) throw error;
@@ -51,6 +53,7 @@ export function CategoryPage() {
         const inserts = newItems.map(item => ({
           code: `CAT-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
           name: item.name,
+          yomigana: item.yomigana || '',
           description: item.description
         }));
         const { error } = await supabase.from('categories').insert(inserts);
@@ -73,6 +76,7 @@ export function CategoryPage() {
     return {
       id: `CAT-${Date.now()}`,
       name: '',
+      yomigana: '',
       description: ''
     } as CategoryItem;
   };
@@ -85,6 +89,7 @@ export function CategoryPage() {
       data={items} 
       columns={columns} 
       emptyMessage="カテゴリデータがありません" 
+      initialSort={{ key: 'yomigana', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

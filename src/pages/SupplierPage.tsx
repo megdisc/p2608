@@ -17,6 +17,7 @@ export function SupplierPage() {
           const mapped = data.map((d: any) => ({
             id: d.id,
             name: d.name,
+            yomigana: d.yomigana,
             contactPerson: d.contact_person,
             phone: d.phone
           }));
@@ -33,6 +34,7 @@ export function SupplierPage() {
 
   const columns: Column<SupplierItem>[] = [
     { key: 'name', header: '仕入先名', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'contactPerson', header: '担当者', editable: true, inputType: 'text' },
     { key: 'phone', header: '電話番号', editable: true, inputType: 'number' },
   ];
@@ -51,6 +53,7 @@ export function SupplierPage() {
       for (const item of existingItems) {
         const { error } = await supabase.from('suppliers').update({
           name: item.name,
+          yomigana: item.yomigana || '',
           contact_person: item.contactPerson.replace(/[\s　]+/g, ''),
           phone: String(item.phone).replace(/-/g, '')
         }).eq('id', item.id);
@@ -61,6 +64,7 @@ export function SupplierPage() {
         const inserts = newItems.map(item => ({
           code: `SUP-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
           name: item.name,
+          yomigana: item.yomigana || '',
           contact_person: item.contactPerson.replace(/[\s　]+/g, ''),
           phone: String(item.phone).replace(/-/g, '')
         }));
@@ -74,6 +78,7 @@ export function SupplierPage() {
         const mapped = data.map((d: any) => ({
           id: d.id,
           name: d.name,
+          yomigana: d.yomigana,
           contactPerson: d.contact_person,
           phone: d.phone
         }));
@@ -92,6 +97,7 @@ export function SupplierPage() {
     return {
       id: `SUP-${Date.now()}`,
       name: '',
+      yomigana: '',
       contactPerson: '',
       phone: ''
     } as SupplierItem;
@@ -105,6 +111,7 @@ export function SupplierPage() {
       data={items} 
       columns={columns} 
       emptyMessage="仕入先データがありません" 
+      initialSort={{ key: 'yomigana', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

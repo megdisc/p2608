@@ -40,13 +40,13 @@ export function StaffPage() {
     { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
     { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
     { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       header: 'ステータス',
       editable: true,
       inputType: 'select',
       options: statusOptions,
-      render: (item) => item.status === 'active' ? '有効' : '無効' 
+      render: (item) => item.status === 'active' ? '有効' : '無効'
     },
   ];
 
@@ -123,11 +123,11 @@ export function StaffPage() {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <DataPage 
+    <DataPage
       title="スタッフ設定"
-      data={items} 
-      columns={columns} 
-      emptyMessage="スタッフデータがありません" 
+      data={items}
+      columns={columns}
+      emptyMessage="スタッフデータがありません"
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

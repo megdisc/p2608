@@ -48,6 +48,9 @@ export function DataTable<T extends { id: string }>({
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(50);
   
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
@@ -98,7 +101,22 @@ export function DataTable<T extends { id: string }>({
     });
 
     return [...existingRows, ...newRows];
-  }, [draftData, sortConfig, newRowIds]);
+  }, [draftData, sortConfig, newRowIds, columns]);
+
+  const totalItems = sortedData.length;
+  const totalPages = pageSize === -1 ? 1 : Math.ceil(totalItems / pageSize);
+
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
+  const visibleData = useMemo(() => {
+    if (pageSize === -1) return sortedData;
+    const startIndex = (currentPage - 1) * pageSize;
+    return sortedData.slice(startIndex, startIndex + pageSize);
+  }, [sortedData, currentPage, pageSize]);
 
   const handleSort = (key: string) => {
     if (!key) return;
@@ -146,11 +164,19 @@ export function DataTable<T extends { id: string }>({
     setOriginalNewRows(prev => [...prev, newRow]);
     
     setTimeout(() => {
-      const container = tableRef.current?.closest('.table-container');
-      if (container) {
-        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+      if (pageSize !== -1) {
+        const newTotalItems = totalItems + 1;
+        const newTotalPages = Math.ceil(newTotalItems / pageSize);
+        setCurrentPage(newTotalPages);
       }
-    }, 50);
+      
+      setTimeout(() => {
+        const container = tableRef.current?.closest('.table-container');
+        if (container) {
+          container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+        }
+      }, 50);
+    }, 0);
   };
 
   const handleSaveClick = () => {
@@ -268,7 +294,7 @@ export function DataTable<T extends { id: string }>({
             </tr>
           </thead>
           <tbody>
-            {sortedData.map((item) => {
+            {visibleData.map((item) => {
               const isDeleted = deletedIds.has(item.id);
               return (
                 <tr key={item.id} style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}>
@@ -290,7 +316,7 @@ export function DataTable<T extends { id: string }>({
                 </tr>
               );
             })}
-            {sortedData.length === 0 && (
+            {visibleData.length === 0 && (
               <tr>
                 <td colSpan={columns.length + (isEditingEnabled ? 1 : 0)} className="empty-message">{emptyMessage}</td>
               </tr>
@@ -299,21 +325,73 @@ export function DataTable<T extends { id: string }>({
         </table>
       </div>
       
-      {isEditingEnabled && (
-        <div className="action-bar">
-          {onAddRow && (
-            <Button onClick={handleAddClick}>
-              追加
-            </Button>
-          )}
-          <Button onClick={handleCancelClick} disabled={!canCancel}>
-            取消
-          </Button>
-          <Button onClick={handleSaveClick} disabled={!canSave}>
-            確定
-          </Button>
+      <div className="action-bar">
+        <div className="filter-controls">
+          <div className="filter-input-wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" className="filter-input" placeholder="検索キーワード... (準備中)" disabled />
+          </div>
+          <button className="icon-btn" disabled title="絞り込み (準備中)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+          </button>
         </div>
-      )}
+
+        {isEditingEnabled ? (
+          <div className="action-buttons">
+            {onAddRow && (
+              <Button onClick={handleAddClick}>
+                追加
+              </Button>
+            )}
+            <Button onClick={handleCancelClick} disabled={!canCancel}>
+              取消
+            </Button>
+            <Button onClick={handleSaveClick} disabled={!canSave}>
+              確定
+            </Button>
+          </div>
+        ) : (
+          <div className="action-buttons"></div>
+        )}
+
+        <div className="pagination-controls">
+          <span>表示件数:</span>
+          <select 
+            className="page-size-select" 
+            value={pageSize} 
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={-1}>全て</option>
+          </select>
+          
+          <span className="pagination-info">
+            {totalItems === 0 ? '0' : `${pageSize === -1 ? 1 : (currentPage - 1) * pageSize + 1}-${pageSize === -1 ? totalItems : Math.min(currentPage * pageSize, totalItems)}`} of {totalItems}
+          </span>
+          
+          <div className="pagination-buttons">
+            <button 
+              className="icon-btn" 
+              disabled={currentPage === 1 || pageSize === -1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <button 
+              className="icon-btn" 
+              disabled={currentPage === totalPages || totalPages === 0 || pageSize === -1}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

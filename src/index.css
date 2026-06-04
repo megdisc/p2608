@@ -335,17 +335,121 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   opacity: 0.7;
 }
 
+/* Table Toolbar (Filter & Pagination) */
+.filter-controls {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.filter-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-input-wrapper svg {
+  position: absolute;
+  left: 10px;
+  color: var(--color-text-muted);
+  width: 14px;
+  height: 14px;
+}
+
+.filter-input {
+  padding: 6px 10px 6px 30px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  width: 240px;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-input:focus {
+  border-color: #868e96;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.icon-btn:hover:not(:disabled) {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: var(--color-bg-subtle);
+}
+
+.pagination-controls {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.pagination-info {
+  white-space: nowrap;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.page-size-select {
+  padding: 4px 24px 4px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23868e96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-size: 12px;
+}
+
 .action-bar {
   position: sticky;
   bottom: 0;
   background-color: var(--color-bg);
   padding: 12px 0;
   display: flex;
-  justify-content: center;
-  gap: 32px;
+  justify-content: space-between;
   align-items: center;
   z-index: 10;
   margin-top: 16px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
 }
 
 .action-btn:disabled {

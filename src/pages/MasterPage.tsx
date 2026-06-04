@@ -26,9 +26,9 @@ export function MasterPage() {
             location:locations(name),
             supplier:suppliers(name)
           `).eq('is_deleted', false),
-          supabase.from('categories').select('id, name').eq('is_deleted', false),
-          supabase.from('suppliers').select('id, name').eq('is_deleted', false),
-          supabase.from('locations').select('id, name').eq('is_deleted', false),
+          supabase.from('categories').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('suppliers').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('locations').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
         ]);
 
         if (itemsData) {

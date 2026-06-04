@@ -29,10 +29,10 @@ export function TransactionPage() {
             location:locations(name),
             staff:staffs(name)
           `),
-          supabase.from('categories').select('id, name').eq('is_deleted', false),
-          supabase.from('locations').select('id, name').eq('is_deleted', false),
-          supabase.from('items').select('id, name, category:categories(name), location:locations(name)').eq('is_deleted', false),
-          supabase.from('staffs').select('id, name').eq('is_deleted', false)
+          supabase.from('categories').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('locations').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('items').select('id, name, yomigana, category:categories(name), location:locations(name)').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
         ]);
 
         if (txData) {

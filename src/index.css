@@ -133,12 +133,9 @@ body {
   flex: 1;
   padding: 32px 32px 0 32px;
   min-width: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.main-content::-webkit-scrollbar {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .main-content h2 {
@@ -150,10 +147,11 @@ body {
 
 .table-container {
   border-radius: 8px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: auto;
   background-color: var(--color-bg);
   width: 100%;
+  flex: 1;
+  min-height: 0;
   scrollbar-width: none;
 }
 
@@ -186,7 +184,7 @@ body {
 
 th.sticky-right {
   background-color: var(--color-bg-subtle);
-  z-index: 2;
+  z-index: 3;
 }
 
 .inventory-table tbody tr:hover td.sticky-right {
@@ -200,6 +198,9 @@ th.sticky-right {
 }
 
 .inventory-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   background-color: var(--color-bg-subtle);
   font-size: 13px;
   font-weight: 600;

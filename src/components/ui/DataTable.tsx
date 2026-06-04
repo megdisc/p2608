@@ -142,9 +142,9 @@ export function DataTable<T extends { id: string }>({
     setOriginalNewRows(prev => [...prev, newRow]);
     
     setTimeout(() => {
-      const mainContent = document.querySelector('.main-content');
-      if (mainContent) {
-        mainContent.scrollTo({ top: mainContent.scrollHeight, behavior: 'smooth' });
+      const container = tableRef.current?.closest('.table-container');
+      if (container) {
+        container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
       }
     }, 50);
   };

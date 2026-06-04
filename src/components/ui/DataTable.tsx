@@ -7,6 +7,7 @@ import { DateTimeInput } from './DateTimeInput';
 export type Column<T> = {
   key: string;
   header: string;
+  sortKey?: string;
   render?: (item: T) => React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
@@ -78,8 +79,11 @@ export function DataTable<T extends { id: string }>({
     if (!sortConfig.key) return [...existingRows, ...newRows];
     
     existingRows.sort((a, b) => {
-      let aVal = (a as any)[sortConfig.key];
-      let bVal = (b as any)[sortConfig.key];
+      const col = columns.find(c => c.key === sortConfig.key);
+      const actualSortKey = col?.sortKey || sortConfig.key;
+
+      let aVal = (a as any)[actualSortKey];
+      let bVal = (b as any)[actualSortKey];
       
       if (aVal === undefined) aVal = '';
       if (bVal === undefined) bVal = '';

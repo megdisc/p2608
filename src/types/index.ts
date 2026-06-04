@@ -15,6 +15,7 @@ export type MasterItem = {
   standardPrice: number;
   standardPurchaseQty: number;
   category: string;
+  categoryYomigana?: string;
   location: string;
 };
 

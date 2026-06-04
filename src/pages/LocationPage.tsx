@@ -24,7 +24,7 @@ export function LocationPage() {
   }, []);
 
   const columns: Column<LocationItem>[] = [
-    { key: 'name', header: '保管場所名', editable: true, inputType: 'text' },
+    { key: 'name', header: '保管場所名', sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
@@ -89,7 +89,7 @@ export function LocationPage() {
       data={items} 
       columns={columns} 
       emptyMessage="保管場所データがありません" 
-      initialSort={{ key: 'yomigana', direction: 'asc' }}
+      initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

@@ -33,7 +33,7 @@ export function SupplierPage() {
   }, []);
 
   const columns: Column<SupplierItem>[] = [
-    { key: 'name', header: '仕入先名', editable: true, inputType: 'text' },
+    { key: 'name', header: '仕入先名', sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'contactPerson', header: '担当者', editable: true, inputType: 'text' },
     { key: 'phone', header: '電話番号', editable: true, inputType: 'number' },
@@ -111,7 +111,7 @@ export function SupplierPage() {
       data={items} 
       columns={columns} 
       emptyMessage="仕入先データがありません" 
-      initialSort={{ key: 'yomigana', direction: 'asc' }}
+      initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

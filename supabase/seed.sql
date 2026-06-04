@@ -4,41 +4,41 @@ INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, e
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token) VALUES ('00000000-0000-0000-0000-000000000000', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'authenticated', 'authenticated', 'staff-003@example.com', '', NOW(), NULL, NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), '', '', '', '');
 
 -- Staffs
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '佐藤健', 'サトウタケル', 'staff-001@example.com', 'システム管理者', 'active');
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '鈴木美咲', 'スズキミサキ', 'staff-002@example.com', 'スタッフ', 'active');
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '高橋大輔', 'タカハシダイスケ', 'staff-003@example.com', 'スタッフ', 'inactive');
+INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '佐藤健', 'さとうたける', 'staff-001@example.com', 'システム管理者', 'active');
+INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '鈴木美咲', 'すずきみさき', 'staff-002@example.com', 'スタッフ', 'active');
+INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '高橋大輔', 'たかはしだいすけ', 'staff-003@example.com', 'スタッフ', 'inactive');
 
 -- Categories
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'コナルイ', '強力粉、薄力粉、ライ麦粉など');
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('3e32eddf-b3d1-495a-9f0e-00e6ed06e7bb', 'CAT-002', '酵母・膨張剤', 'コウボ・ボウチョウザイ', 'イースト、ベーキングパウダーなど');
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('d738928f-ae63-469d-8665-faff952e075e', 'CAT-003', '糖類', 'トウルイ', '上白糖、グラニュー糖、三温糖など');
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('04d086c7-1b60-4c3a-b96d-204300ec49ba', 'CAT-004', '調味料', 'チョウミリョウ', '塩、スパイス類など');
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('ee588c63-abfa-4694-81a8-cb929e0c6fb8', 'CAT-005', '乳製品', 'ニュウセイヒン', 'バター、牛乳、チーズなど');
-INSERT INTO categories (id, code, name, yomigana, description) VALUES ('d8974612-313d-445c-90c9-f9b55f6c854a', 'CAT-006', '生鮮食品', 'セイセンショクヒン', '卵、生鮮フルーツ、野菜など');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'こなるい', '強力粉、薄力粉、ライ麦粉など');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('3e32eddf-b3d1-495a-9f0e-00e6ed06e7bb', 'CAT-002', '酵母・膨張剤', 'こうぼ・ぼうちょうざい', 'イースト、ベーキングパウダーなど');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('d738928f-ae63-469d-8665-faff952e075e', 'CAT-003', '糖類', 'とうるい', '上白糖、グラニュー糖、三温糖など');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('04d086c7-1b60-4c3a-b96d-204300ec49ba', 'CAT-004', '調味料', 'ちょうみりょう', '塩、スパイス類など');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('ee588c63-abfa-4694-81a8-cb929e0c6fb8', 'CAT-005', '乳製品', 'にゅうせいひん', 'バター、牛乳、チーズなど');
+INSERT INTO categories (id, code, name, yomigana, description) VALUES ('d8974612-313d-445c-90c9-f9b55f6c854a', 'CAT-006', '生鮮食品', 'せいせんしょくひん', '卵、生鮮フルーツ、野菜など');
 
 -- Locations
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('4f3672e8-daf7-4ee6-a289-1b99ad9a512c', 'LOC-001', '倉庫A', 'ソウコA', '粉類・乾物用メイン倉庫');
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('b5ee50db-97a6-4a16-ba0d-982cef68a39d', 'LOC-002', '倉庫B', 'ソウコB', '調味料・糖類・包材');
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('0a41bdf2-7741-48f9-9215-cdcd042ca397', 'LOC-003', '冷蔵庫1', 'レイゾウコ1', 'イースト・仕込み水用');
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('132dc5ef-c24f-4f02-b734-15b6acb6620b', 'LOC-004', '冷蔵庫2', 'レイゾウコ2', '乳製品（バター・牛乳等）');
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('f15ee998-9c5c-40e2-b190-1928ebb9d82c', 'LOC-005', '冷蔵庫3', 'レイゾウコ3', '生鮮食品（卵・フィリング等）');
-INSERT INTO locations (id, code, name, yomigana, description) VALUES ('0e833132-a18a-4f96-8ae7-cbd98727413c', 'LOC-006', '冷凍庫A', 'レイトウコA', '冷凍生地・冷凍フルーツ');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('4f3672e8-daf7-4ee6-a289-1b99ad9a512c', 'LOC-001', '倉庫A', 'そうこA', '粉類・乾物用メイン倉庫');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('b5ee50db-97a6-4a16-ba0d-982cef68a39d', 'LOC-002', '倉庫B', 'そうこB', '調味料・糖類・包材');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('0a41bdf2-7741-48f9-9215-cdcd042ca397', 'LOC-003', '冷蔵庫1', 'れいぞうこ1', 'イースト・仕込み水用');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('132dc5ef-c24f-4f02-b734-15b6acb6620b', 'LOC-004', '冷蔵庫2', 'れいぞうこ2', '乳製品（バター・牛乳等）');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('f15ee998-9c5c-40e2-b190-1928ebb9d82c', 'LOC-005', '冷蔵庫3', 'れいぞうこ3', '生鮮食品（卵・フィリング等）');
+INSERT INTO locations (id, code, name, yomigana, description) VALUES ('0e833132-a18a-4f96-8ae7-cbd98727413c', 'LOC-006', '冷凍庫A', 'れいとうこA', '冷凍生地・冷凍フルーツ');
 
 -- Suppliers
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('97ed7a81-8160-4a50-9cfa-edf6a7d18019', 'SUP-001', '関東製菓材料卸(株)', 'カントウセイカザイリョウオロシ', '山田太郎', '0311110001');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('f7b80af7-8479-40fe-9bce-cf36fe91d40e', 'SUP-002', '第一食材商事', 'ダイイチショクザイショウジ', '佐藤花子', '0311110002');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 'SUP-003', '丸越乳業販売(株)', 'マルコシニュウギョウハンバイ', '鈴木一郎', '0311110003');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('2faff51b-529c-486c-ba7d-4cc90d8582cc', 'SUP-004', '新鮮農産流通協同組合', 'シンセンノウサンリュウツウキョウドウクミアイ', '田中次郎', '0421110004');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('97ed7a81-8160-4a50-9cfa-edf6a7d18019', 'SUP-001', '関東製菓材料卸(株)', 'かんとうせいかざいりょうおろし', '山田太郎', '0311110001');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('f7b80af7-8479-40fe-9bce-cf36fe91d40e', 'SUP-002', '第一食材商事', 'だいいちしょくざいしょうじ', '佐藤花子', '0311110002');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 'SUP-003', '丸越乳業販売(株)', 'まるこしにゅうぎょうはんばい', '鈴木一郎', '0311110003');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('2faff51b-529c-486c-ba7d-4cc90d8582cc', 'SUP-004', '新鮮農産流通協同組合', 'しんせんのうさんりゅうつうきょうどうくみあい', '田中次郎', '0421110004');
 
 -- Items
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 'ING-001', '強力粉 (カメリヤ)', 'キョウリキコ', '日清製粉、25kg', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 7500, 1, 'fca14a0d-8f82-4203-a761-e712fd6bbf95', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('1cb7bb54-98f3-4ad5-8edd-f573cea0f7b0', 'ING-002', '薄力粉 (バイオレット)', 'ハクリキコ', '日清製粉、25kg', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 6800, 1, 'fca14a0d-8f82-4203-a761-e712fd6bbf95', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('0e39e2fa-8c31-42c0-bf47-9f787d9f0179', 'ING-003', 'ドライイースト', 'ドライイースト', 'ルサッフル、500g', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 1200, 10, '3e32eddf-b3d1-495a-9f0e-00e6ed06e7bb', '0a41bdf2-7741-48f9-9215-cdcd042ca397');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('6ed35b2c-48e3-44e0-b043-89cc0a0a6831', 'ING-004', '上白糖', 'ジョウハクトウ', '三井製糖、30kg', 'f7b80af7-8479-40fe-9bce-cf36fe91d40e', 5400, 1, 'd738928f-ae63-469d-8665-faff952e075e', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('1d5f185c-3de6-4ca2-a751-053ebb5f7d73', 'ING-005', '粗塩', 'アラジオ', '伯方塩業、5kg', 'f7b80af7-8479-40fe-9bce-cf36fe91d40e', 850, 2, '04d086c7-1b60-4c3a-b96d-204300ec49ba', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('6cc79e42-65a4-41d9-bc63-ffa796887e26', 'ING-006', '無塩バター', 'ムエンバター', 'よつ葉乳業、450g', 'ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 950, 30, 'ee588c63-abfa-4694-81a8-cb929e0c6fb8', '132dc5ef-c24f-4f02-b734-15b6acb6620b');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('a47b9b86-c9f0-456c-afd8-b0615b6fa9d4', 'ING-007', '牛乳 (業務用)', 'ギュウニュウ', '明治、1000ml', 'ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 280, 12, 'ee588c63-abfa-4694-81a8-cb929e0c6fb8', '132dc5ef-c24f-4f02-b734-15b6acb6620b');
-INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('0ac6f5e8-5bfb-40ee-ad58-e495866ad24e', 'ING-008', '鶏卵 (Lサイズ)', 'ケイラン', 'JA全農、10kg', '2faff51b-529c-486c-ba7d-4cc90d8582cc', 3200, 2, 'd8974612-313d-445c-90c9-f9b55f6c854a', 'f15ee998-9c5c-40e2-b190-1928ebb9d82c');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 'ING-001', '強力粉 (カメリヤ)', 'きょうりきこ', '日清製粉、25kg', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 7500, 1, 'fca14a0d-8f82-4203-a761-e712fd6bbf95', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('1cb7bb54-98f3-4ad5-8edd-f573cea0f7b0', 'ING-002', '薄力粉 (バイオレット)', 'はくりきこ', '日清製粉、25kg', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 6800, 1, 'fca14a0d-8f82-4203-a761-e712fd6bbf95', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('0e39e2fa-8c31-42c0-bf47-9f787d9f0179', 'ING-003', 'ドライイースト', 'どらいいーすと', 'ルサッフル、500g', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 1200, 10, '3e32eddf-b3d1-495a-9f0e-00e6ed06e7bb', '0a41bdf2-7741-48f9-9215-cdcd042ca397');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('6ed35b2c-48e3-44e0-b043-89cc0a0a6831', 'ING-004', '上白糖', 'じょうはくとう', '三井製糖、30kg', 'f7b80af7-8479-40fe-9bce-cf36fe91d40e', 5400, 1, 'd738928f-ae63-469d-8665-faff952e075e', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('1d5f185c-3de6-4ca2-a751-053ebb5f7d73', 'ING-005', '粗塩', 'あらじお', '伯方塩業、5kg', 'f7b80af7-8479-40fe-9bce-cf36fe91d40e', 850, 2, '04d086c7-1b60-4c3a-b96d-204300ec49ba', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('6cc79e42-65a4-41d9-bc63-ffa796887e26', 'ING-006', '無塩バター', 'むえんばたー', 'よつ葉乳業、450g', 'ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 950, 30, 'ee588c63-abfa-4694-81a8-cb929e0c6fb8', '132dc5ef-c24f-4f02-b734-15b6acb6620b');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('a47b9b86-c9f0-456c-afd8-b0615b6fa9d4', 'ING-007', '牛乳 (業務用)', 'ぎゅうにゅう', '明治、1000ml', 'ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 280, 12, 'ee588c63-abfa-4694-81a8-cb929e0c6fb8', '132dc5ef-c24f-4f02-b734-15b6acb6620b');
+INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('0ac6f5e8-5bfb-40ee-ad58-e495866ad24e', 'ING-008', '鶏卵 (Lサイズ)', 'けいらん', 'JA全農、10kg', '2faff51b-529c-486c-ba7d-4cc90d8582cc', 3200, 2, 'd8974612-313d-445c-90c9-f9b55f6c854a', 'f15ee998-9c5c-40e2-b190-1928ebb9d82c');
 
 -- Inventories
 INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('59919801-653e-4897-92e7-6a773563f8ff', 'ea8e1145-9aa7-422d-bd46-bfb76f2024e7', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c', 10);

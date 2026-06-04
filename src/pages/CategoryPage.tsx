@@ -24,7 +24,7 @@ export function CategoryPage() {
   }, []);
 
   const columns: Column<CategoryItem>[] = [
-    { key: 'name', header: 'カテゴリ名', editable: true, inputType: 'text' },
+    { key: 'name', header: 'カテゴリ名', sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
   ];
@@ -89,7 +89,7 @@ export function CategoryPage() {
       data={items} 
       columns={columns} 
       emptyMessage="カテゴリデータがありません" 
-      initialSort={{ key: 'yomigana', direction: 'asc' }}
+      initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

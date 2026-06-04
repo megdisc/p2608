@@ -36,7 +36,7 @@ export function StaffPage() {
   ];
 
   const columns: Column<StaffItem>[] = [
-    { key: 'name', header: '氏名', editable: true, inputType: 'text' },
+    { key: 'name', header: '氏名', sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
     { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
     { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
@@ -128,6 +128,7 @@ export function StaffPage() {
       data={items}
       columns={columns}
       emptyMessage="スタッフデータがありません"
+      initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

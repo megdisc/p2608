@@ -22,7 +22,7 @@ export function MasterPage() {
         ] = await Promise.all([
           supabase.from('items').select(`
             *,
-            category:categories(name),
+            category:categories(name, yomigana),
             location:locations(name),
             supplier:suppliers(name)
           `).eq('is_deleted', false),
@@ -41,6 +41,7 @@ export function MasterPage() {
             standardPrice: item.standard_price,
             standardPurchaseQty: item.standard_purchase_qty,
             category: item.category?.name || 'Unknown',
+            categoryYomigana: item.category?.yomigana || '',
             location: item.location?.name || 'Unknown',
           }));
           setItems(mapped);
@@ -62,8 +63,8 @@ export function MasterPage() {
   const locationOptions = useMemo(() => [{ label: '', value: '' }, ...locations.map(l => ({ label: l.name, value: l.name }))], [locations]);
 
   const columns: Column<MasterItem>[] = [
-    { key: 'category', header: 'カテゴリ', editable: true, inputType: 'select', options: categoryOptions },
-    { key: 'name', header: '品目', editable: true, inputType: 'text' },
+    { key: 'category', header: 'カテゴリ', sortKey: 'categoryYomigana', editable: true, inputType: 'select', options: categoryOptions },
+    { key: 'name', header: '品目', sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
     { key: 'description', header: '説明', editable: true, inputType: 'text' },
     { 
@@ -127,7 +128,7 @@ export function MasterPage() {
       // Reload
       const { data: itemsData, error: reloadError } = await supabase.from('items').select(`
         *,
-        category:categories(name),
+        category:categories(name, yomigana),
         location:locations(name),
         supplier:suppliers(name)
       `).eq('is_deleted', false);
@@ -144,6 +145,7 @@ export function MasterPage() {
           standardPrice: item.standard_price,
           standardPurchaseQty: item.standard_purchase_qty,
           category: item.category?.name || 'Unknown',
+          categoryYomigana: item.category?.yomigana || '',
           location: item.location?.name || 'Unknown',
         }));
         setItems(mapped);
@@ -179,7 +181,7 @@ export function MasterPage() {
       data={items} 
       columns={columns} 
       emptyMessage="マスタデータがありません" 
-      initialSort={{ key: 'yomigana', direction: 'asc' }}
+      initialSort={{ key: 'category', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

@@ -122,8 +122,9 @@ export function StocktakingPage() {
       editable: true, 
       inputType: 'select', 
       options: categoryOptions,
-      onCellChange: (newCategory, item) => {
+      onCellChange: (newCategory, item, updateRow) => {
         const updates: Partial<StocktakingItem> = {};
+        let triggerRecalculate = false;
         if (newCategory) {
           const filteredItems = masters.filter(m => m.category === newCategory);
           if (filteredItems.length === 1) {
@@ -131,6 +132,7 @@ export function StocktakingPage() {
             if (!item.location) {
               updates.location = filteredItems[0].location;
             }
+            triggerRecalculate = true;
           } else {
             const currentItemValid = filteredItems.some(m => m.name === item.itemName);
             if (!currentItemValid) updates.itemName = '';
@@ -138,6 +140,11 @@ export function StocktakingPage() {
         } else {
           updates.itemName = '';
         }
+        
+        if (triggerRecalculate) {
+          recalculateSystemQty({ ...item, ...updates }, updateRow);
+        }
+        
         return updates;
       }
     },

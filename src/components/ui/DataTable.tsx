@@ -128,22 +128,23 @@ export function DataTable<T extends { id: string }>({
   };
 
   const handleCellChange = (id: string, key: string, value: any, col?: Column<T>) => {
-    setDraftData(prev => prev.map(item => {
-      if (item.id === id) {
-        let newItem = { ...item, [key]: value };
-        if (col && col.onCellChange) {
-          const updateRow = (asyncUpdates: Partial<T>) => {
-            setDraftData(currentData => currentData.map(d => d.id === id ? { ...d, ...asyncUpdates } : d));
-          };
-          const updates = col.onCellChange(value, newItem, updateRow);
-          if (updates) {
-            newItem = { ...newItem, ...updates };
-          }
-        }
-        return newItem;
+    const currentItem = draftData.find(d => d.id === id);
+    if (!currentItem) return;
+
+    let newItem = { ...currentItem, [key]: value };
+    let syncUpdates: Partial<T> | void = undefined;
+
+    if (col && col.onCellChange) {
+      const updateRow = (asyncUpdates: Partial<T>) => {
+        setDraftData(currentData => currentData.map(d => d.id === id ? { ...d, ...asyncUpdates } : d));
+      };
+      syncUpdates = col.onCellChange(value, newItem, updateRow);
+      if (syncUpdates) {
+        newItem = { ...newItem, ...syncUpdates };
       }
-      return item;
-    }));
+    }
+
+    setDraftData(prev => prev.map(item => item.id === id ? newItem : item));
   };
 
   const toggleDelete = (id: string) => {

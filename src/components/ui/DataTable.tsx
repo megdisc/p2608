@@ -172,15 +172,25 @@ export function DataTable<T extends { id: string }>({
 
   const handleSaveClick = () => {
     if (onBatchSave) {
-      const sanitizedDrafts = draftData.map(item => {
-        const newItem = { ...item };
-        columns.forEach(col => {
-          if (col.inputType === 'number' && (newItem as any)[col.key] === '') {
-            (newItem as any)[col.key] = 0;
+      const sanitizedDrafts = draftData
+        .filter(item => {
+          if (newRowIds.has(item.id)) {
+            const original = originalNewRows.find(r => r.id === item.id);
+            if (original && JSON.stringify(original) === JSON.stringify(item)) {
+              return false;
+            }
           }
+          return true;
+        })
+        .map(item => {
+          const newItem = { ...item };
+          columns.forEach(col => {
+            if (col.inputType === 'number' && (newItem as any)[col.key] === '') {
+              (newItem as any)[col.key] = 0;
+            }
+          });
+          return newItem;
         });
-        return newItem;
-      });
       onBatchSave(sanitizedDrafts, Array.from(deletedIds));
       setDraftData(sanitizedDrafts);
     }

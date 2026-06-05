@@ -72,7 +72,6 @@ export type StaffTableItem = {
   name: string;
   yomigana: string;
   role: string;
-  status: 'active' | 'inactive';
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;

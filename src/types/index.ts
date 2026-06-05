@@ -60,7 +60,6 @@ export type StaffItem = {
   email?: string;
   password?: string;
   role: string;
-  status: 'active' | 'inactive';
 };
 
 export type StocktakingItem = {

@@ -4,9 +4,9 @@ INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, e
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token) VALUES ('00000000-0000-0000-0000-000000000000', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'authenticated', 'authenticated', 'staff-003@example.com', '', NOW(), NULL, NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), '', '', '', '');
 
 -- Staffs
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '佐藤健', 'さとうたける', 'staff-001@example.com', 'システム管理者', 'active');
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '鈴木美咲', 'すずきみさき', 'staff-002@example.com', 'スタッフ', 'active');
-INSERT INTO staffs (id, name, yomigana, email, role, status) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '高橋大輔', 'たかはしだいすけ', 'staff-003@example.com', 'スタッフ', 'inactive');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '佐藤健', 'さとうたける', 'staff-001@example.com', 'システム管理者');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '鈴木美咲', 'すずきみさき', 'staff-002@example.com', 'スタッフ');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '高橋大輔', 'たかはしだいすけ', 'staff-003@example.com', 'スタッフ');
 
 -- Categories
 INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'こなるい', '強力粉、薄力粉、ライ麦粉など');

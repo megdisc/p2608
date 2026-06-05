@@ -31,11 +31,7 @@ export function StaffPage() {
     { label: 'スタッフ', value: 'スタッフ' }
   ];
 
-  const statusOptions = [
-    { label: '', value: '' },
-    { label: '有効', value: 'active' },
-    { label: '無効', value: 'inactive' }
-  ];
+
 
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: '氏名', sortKey: 'yomigana', editable: true, inputType: 'text' },
@@ -43,14 +39,6 @@ export function StaffPage() {
     { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
     { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
     { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
-    {
-      key: 'status',
-      header: 'ステータス',
-      editable: true,
-      inputType: 'select',
-      options: statusOptions,
-      render: (item) => item.status === 'active' ? '有効' : '無効'
-    },
   ];
 
   const handleBatchSave = async (drafts: StaffItem[], deletedIds: string[]) => {
@@ -74,8 +62,7 @@ export function StaffPage() {
               password: item.password || '',
               name: cleanName,
               yomigana: item.yomigana || '',
-              role: item.role,
-              status: item.status
+              role: item.role
             });
             if (error) throw error;
           } else {
@@ -84,8 +71,7 @@ export function StaffPage() {
               name: cleanName,
               yomigana: item.yomigana || '',
               email: item.email,
-              role: item.role,
-              status: item.status
+              role: item.role
             }).eq('id', item.id);
             if (staffError) throw staffError;
 
@@ -121,8 +107,7 @@ export function StaffPage() {
       yomigana: '',
       email: '',
       password: '',
-      role: '',
-      status: 'active'
+      role: ''
     } as unknown as StaffItem;
   };
 

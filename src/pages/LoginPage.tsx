@@ -47,10 +47,11 @@ export function LoginPage() {
             />
           </div>
 
-          <div style={{ marginTop: '32px', textAlign: 'center' }}>
+          <div style={{ marginTop: '32px' }}>
             <Button 
               type="submit" 
               variant="primary" 
+              style={{ width: '100%' }}
             >
               {BUTTON_LABELS.LOGIN}
             </Button>

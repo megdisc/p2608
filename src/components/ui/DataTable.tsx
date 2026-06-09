@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
@@ -522,7 +523,7 @@ export function DataTable<T extends { id: string }>({
         </div>
       </div>
 
-      {tooltip.visible && (
+      {tooltip.visible && createPortal(
         <div 
           style={{
             position: 'fixed',
@@ -536,12 +537,13 @@ export function DataTable<T extends { id: string }>({
             fontSize: '11px',
             fontWeight: 500,
             pointerEvents: 'none',
-            zIndex: 9999,
+            zIndex: 99999,
             whiteSpace: 'nowrap'
           }}
         >
           {tooltip.text}
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

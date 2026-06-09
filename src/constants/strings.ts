@@ -4,6 +4,7 @@ export const SYSTEM_ID = 'p2608';
 export const MENU_CATEGORIES = {
   AGGREGATION: '集計系',
   RECORDING: '記録系',
+  INFORMATION: '情報系',
   SETTINGS: '設定系',
 };
 
@@ -11,7 +12,7 @@ export const PAGE_NAMES = {
   INVENTORY: '在庫集計画面',
   TRANSACTION: '受入・払出記録',
   STOCKTAKING: '棚卸記録',
-  MASTER: '品目設定',
+  MASTER: '品目情報',
   CATEGORY: 'カテゴリ設定',
   LOCATION: '保管場所設定',
   SUPPLIER: '仕入先設定',
@@ -38,7 +39,6 @@ export const TABLE_COLUMNS = {
   ROLE: '権限ロール',
   EMAIL: 'メールアドレス',
   PASSWORD: 'パスワード',
-  FURIGANA: 'ふりがな',
 
   // 仕入先
   SUPPLIER_NAME: '仕入先名',

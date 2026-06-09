@@ -36,7 +36,7 @@ export function StaffPage() {
 
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: TABLE_COLUMNS.FURIGANA, editable: true, inputType: 'text' },
+    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
     { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: roleOptions },
     { key: 'email', header: TABLE_COLUMNS.EMAIL, editable: true, inputType: 'email' },
     { key: 'password', header: TABLE_COLUMNS.PASSWORD, editable: true, inputType: 'password' },

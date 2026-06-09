@@ -45,13 +45,17 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
+          <div className="nav-category">{MENU_CATEGORIES.INFORMATION}</div>
           <button 
             className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
             onClick={() => setActiveTab('master')}
           >
             {PAGE_NAMES.MASTER}
           </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
           <button 
             className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
             onClick={() => setActiveTab('category')}

@@ -4,6 +4,63 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
 
+const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleClick = () => {
+    setIsEditing(true);
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+        try {
+          if ('showPicker' in inputRef.current) {
+            (inputRef.current as any).showPicker();
+          }
+        } catch (e) {
+          // Ignore
+        }
+      }
+    }, 10);
+  };
+
+  const formattedDate = `${value.split('-')[0]}年${value.split('-')[1]}月${value.split('-')[2]}日`;
+
+  if (isEditing) {
+    return (
+      <input
+        ref={inputRef}
+        type="date"
+        value={value}
+        onChange={(e) => {
+          if (e.target.value) {
+            onChange(e.target.value);
+          }
+        }}
+        onBlur={() => setIsEditing(false)}
+        className="filter-input"
+        style={{ width: '160px', padding: '6px 16px', borderRadius: '9999px' }}
+      />
+    );
+  }
+
+  return (
+    <div 
+      className="filter-input" 
+      onClick={handleClick}
+      style={{ width: '160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 16px', cursor: 'pointer', borderRadius: '9999px' }}
+    >
+      <span>{formattedDate}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'static' }}>
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    </div>
+  );
+};
+
 export type Column<T> = {
   key: string;
   header: string;
@@ -54,10 +111,17 @@ export function DataTable<T extends { id: string }>({
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setMonth(d.getMonth() - 2);
-    return d.toISOString().split('T')[0];
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   });
   const [endDate, setEndDate] = useState(() => {
-    return new Date().toISOString().split('T')[0];
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -353,21 +417,15 @@ export function DataTable<T extends { id: string }>({
       <div className="action-bar">
         {showDateFilter ? (
           <div className="filter-controls">
-            <div className="filter-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <input 
-                type="date" 
-                className="filter-input" 
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ width: '130px', paddingLeft: '10px' }}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <DateFilterInput 
+                value={startDate} 
+                onChange={(val) => setStartDate(val)} 
               />
               <span>～</span>
-              <input 
-                type="date" 
-                className="filter-input" 
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                style={{ width: '130px', paddingLeft: '10px' }}
+              <DateFilterInput 
+                value={endDate} 
+                onChange={(val) => setEndDate(val)} 
               />
             </div>
           </div>

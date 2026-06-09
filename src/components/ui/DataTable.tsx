@@ -90,6 +90,7 @@ type DataTableProps<T> = {
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
+  footerLeft?: React.ReactNode;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -102,7 +103,8 @@ export function DataTable<T extends { id: string }>({
   showDateFilter,
   canEditRow,
   canDeleteRow,
-  showRestrictionColumn
+  showRestrictionColumn,
+  footerLeft
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -447,8 +449,8 @@ export function DataTable<T extends { id: string }>({
       </div>
       
       <div className="action-bar">
-        {showDateFilter ? (
-          <div className="filter-controls">
+        <div className="filter-controls">
+          {showDateFilter ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <DateFilterInput 
                 value={startDate} 
@@ -460,10 +462,10 @@ export function DataTable<T extends { id: string }>({
                 onChange={(val) => setEndDate(val)} 
               />
             </div>
-          </div>
-        ) : (
-          <div className="filter-controls"></div>
-        )}
+          ) : footerLeft ? (
+            footerLeft
+          ) : null}
+        </div>
 
         {isEditingEnabled ? (
           <div className="action-buttons">

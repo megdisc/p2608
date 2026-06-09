@@ -108,7 +108,7 @@ export function InventoryPage() {
       data={pivotItems} 
       columns={columns} 
       emptyMessage={MESSAGES.EMPTY_INVENTORY} 
-      headerRight={<span style={{ color: 'var(--color-text)', fontSize: '14px' }}>集計日時：{formattedDate}</span>}
+      footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>集計日時：{formattedDate}</span>}
     />
   );
 }

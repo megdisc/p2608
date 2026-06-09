@@ -13,6 +13,7 @@ type DataPageProps<T> = {
   showDateFilter?: boolean;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
+  showRestrictionColumn?: boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -26,7 +27,8 @@ export function DataPage<T extends { id: string }>({
   headerRight,
   showDateFilter,
   canEditRow,
-  canDeleteRow
+  canDeleteRow,
+  showRestrictionColumn
 }: DataPageProps<T>) {
   return (
     <>
@@ -44,6 +46,7 @@ export function DataPage<T extends { id: string }>({
         showDateFilter={showDateFilter}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
+        showRestrictionColumn={showRestrictionColumn}
       />
     </>
   );

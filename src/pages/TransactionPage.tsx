@@ -300,6 +300,7 @@ export function TransactionPage() {
       showDateFilter={true}
       canEditRow={canEditRow}
       canDeleteRow={canEditRow}
+      showRestrictionColumn={true}
     />
   );
 }

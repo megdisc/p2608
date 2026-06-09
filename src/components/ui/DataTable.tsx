@@ -3,7 +3,7 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
-import { BUTTON_LABELS } from '../../constants';
+import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
 
 const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -87,6 +87,7 @@ type DataTableProps<T> = {
   showDateFilter?: boolean;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
+  showRestrictionColumn?: boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -98,9 +99,11 @@ export function DataTable<T extends { id: string }>({
   onAddRow,
   showDateFilter,
   canEditRow,
-  canDeleteRow
+  canDeleteRow,
+  showRestrictionColumn
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
+  const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
   const tableRef = useRef<HTMLTableElement>(null);
   
   const [sortConfig, setSortConfig] = useState<SortConfig>(() => initialSort || {
@@ -382,22 +385,40 @@ export function DataTable<T extends { id: string }>({
                   </div>
                 </th>
               ))}
-              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center' }}>{BUTTON_LABELS.DELETE}</th>}
+              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
+              {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
             </tr>
           </thead>
           <tbody>
             {visibleData.map((item) => {
               const isDeleted = deletedIds.has(item.id);
               const isRowDeletable = canDeleteRow ? canDeleteRow(item) : true;
+              const isRowEditable = canEditRow ? canEditRow(item) : true;
               return (
-                <tr key={item.id} style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}>
+                <tr 
+                  key={item.id} 
+                  style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}
+                  onMouseEnter={(e) => {
+                    if (showRestrictionColumn && !isRowEditable) {
+                      setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: MESSAGES.RESTRICTED_EDIT });
+                    }
+                  }}
+                  onMouseMove={(e) => {
+                    if (showRestrictionColumn && !isRowEditable) {
+                      setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setTooltip(prev => ({ ...prev, visible: false }));
+                  }}
+                >
                   {columns.map((col, idx) => (
                     <td key={col.key || idx} className={col.className} style={col.style}>
                       {renderCellContent(col, item)}
                     </td>
                   ))}
                   {isEditingEnabled && (
-                    <td className="sticky-right" style={{ textAlign: 'center' }}>
+                    <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
                       {isRowDeletable && (
                         <Input 
                           type="checkbox" 
@@ -405,6 +426,16 @@ export function DataTable<T extends { id: string }>({
                           onChange={() => toggleDelete(item.id)}
                           style={{ cursor: 'pointer' }}
                         />
+                      )}
+                    </td>
+                  )}
+                  {showRestrictionColumn && (
+                    <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
+                      {!isRowEditable && (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
                       )}
                     </td>
                   )}
@@ -490,6 +521,28 @@ export function DataTable<T extends { id: string }>({
           </div>
         </div>
       </div>
+
+      {tooltip.visible && (
+        <div 
+          style={{
+            position: 'fixed',
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translate(-50%, -100%)',
+            backgroundColor: 'var(--color-text)',
+            color: 'var(--color-bg)',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '11px',
+            fontWeight: 500,
+            pointerEvents: 'none',
+            zIndex: 9999,
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
     </>
   );
 }

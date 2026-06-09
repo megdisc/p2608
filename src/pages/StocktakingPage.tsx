@@ -361,6 +361,7 @@ export function StocktakingPage() {
       showDateFilter={true}
       canEditRow={canEditRow}
       canDeleteRow={canEditRow}
+      showRestrictionColumn={true}
     />
   );
 }

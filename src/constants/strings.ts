@@ -58,6 +58,7 @@ export const TABLE_COLUMNS = {
   LOCATION: '保管場所',
   TYPE: '区分',
   QUANTITY: '数量',
+  RESTRICTION: '制限',
 };
 
 export const LOGIN_LABELS = {
@@ -87,6 +88,7 @@ export const MESSAGES = {
   EMPTY_SUPPLIER: '仕入先データがありません',
   EMPTY_STAFF: 'スタッフデータがありません',
   DELETE_CONFIRM: '本当に削除しますか？',
+  RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',
 };
 
 export const PLACEHOLDERS = {

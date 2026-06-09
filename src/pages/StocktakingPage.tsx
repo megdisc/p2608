@@ -78,6 +78,34 @@ export function StocktakingPage() {
   const itemOptions = useMemo(() => [{ label: '', value: '' }, ...masters.map(m => ({ label: m.name, value: m.name }))], [masters]);
   const staffOptions = useMemo(() => [{ label: '', value: '' }, ...staffs.map(s => ({ label: s.name, value: s.name }))], [staffs]);
 
+  // 最新の棚卸日時マップを作成
+  const latestStocktakingMap = useMemo(() => {
+    const map = new Map<string, Date>(); // key: "itemName_location", value: Date
+    for (const item of items) {
+      if (item.id.startsWith('STK-')) continue; // 新規追加行は無視
+      const key = `${item.itemName}_${item.location}`;
+      const d = new Date(item.date);
+      if (isNaN(d.getTime())) continue;
+      
+      const currentLatest = map.get(key);
+      if (!currentLatest || d > currentLatest) {
+        map.set(key, d);
+      }
+    }
+    return map;
+  }, [items]);
+
+  const canEditRow = (item: StocktakingItem) => {
+    if (item.id.startsWith('STK-')) return true; // 新規行は編集可能
+    const key = `${item.itemName}_${item.location}`;
+    const latestDate = latestStocktakingMap.get(key);
+    if (!latestDate) return true;
+    
+    const d = new Date(item.date);
+    // 自身の時間が最新時間と同じ、もしくは未来の場合は編集可能
+    return d.getTime() >= latestDate.getTime();
+  };
+
   const recalculateSystemQty = async (updatedItem: StocktakingItem, updateRow: (updates: Partial<StocktakingItem>) => void) => {
     if (updatedItem.itemName && updatedItem.location && updatedItem.date) {
       const itemMaster = masters.find(m => m.name === updatedItem.itemName);
@@ -331,6 +359,8 @@ export function StocktakingPage() {
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       showDateFilter={true}
+      canEditRow={canEditRow}
+      canDeleteRow={canEditRow}
     />
   );
 }

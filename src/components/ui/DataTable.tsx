@@ -69,7 +69,7 @@ export type Column<T> = {
   render?: (item: T) => React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
-  editable?: boolean;
+  editable?: boolean | ((item: T) => boolean);
   inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
@@ -85,6 +85,8 @@ type DataTableProps<T> = {
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: () => T;
   showDateFilter?: boolean;
+  canEditRow?: (item: T) => boolean;
+  canDeleteRow?: (item: T) => boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -94,7 +96,9 @@ export function DataTable<T extends { id: string }>({
   initialSort,
   onBatchSave,
   onAddRow,
-  showDateFilter
+  showDateFilter,
+  canEditRow,
+  canDeleteRow
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -293,7 +297,8 @@ export function DataTable<T extends { id: string }>({
   };
 
   const renderCellContent = (col: Column<T>, item: T) => {
-    const isEditable = !!onBatchSave && col.editable !== false && col.inputType;
+    const isRowEditable = canEditRow ? canEditRow(item) : true;
+    const isEditable = isRowEditable && !!onBatchSave && (typeof col.editable === 'function' ? col.editable(item) : col.editable !== false) && col.inputType;
     
     if (isEditable) {
       const value = (item as any)[col.key] ?? '';
@@ -356,9 +361,6 @@ export function DataTable<T extends { id: string }>({
   const canCancel = newRowIds.size > 0 || isExistingModified;
   const canSave = isExistingModified || isAddedRowModified;
 
-
-// ... 
-
   return (
     <>
       <div className="table-container">
@@ -386,6 +388,7 @@ export function DataTable<T extends { id: string }>({
           <tbody>
             {visibleData.map((item) => {
               const isDeleted = deletedIds.has(item.id);
+              const isRowDeletable = canDeleteRow ? canDeleteRow(item) : true;
               return (
                 <tr key={item.id} style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}>
                   {columns.map((col, idx) => (
@@ -395,12 +398,14 @@ export function DataTable<T extends { id: string }>({
                   ))}
                   {isEditingEnabled && (
                     <td className="sticky-right" style={{ textAlign: 'center' }}>
-                      <Input 
-                        type="checkbox" 
-                        checked={isDeleted}
-                        onChange={() => toggleDelete(item.id)}
-                        style={{ cursor: 'pointer' }}
-                      />
+                      {isRowDeletable && (
+                        <Input 
+                          type="checkbox" 
+                          checked={isDeleted}
+                          onChange={() => toggleDelete(item.id)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      )}
                     </td>
                   )}
                 </tr>

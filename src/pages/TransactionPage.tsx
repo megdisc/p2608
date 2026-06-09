@@ -13,6 +13,7 @@ export function TransactionPage() {
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [masters, setMasters] = useState<{id: string, name: string, category: string, location: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
+  const [stocktakings, setStocktakings] = useState<{itemName: string, location: string, date: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
@@ -24,7 +25,8 @@ export function TransactionPage() {
           { data: catData },
           { data: locData },
           { data: masterData },
-          { data: staffData }
+          { data: staffData },
+          { data: stData }
         ] = await Promise.all([
           supabase.from('transactions').select(`
             *,
@@ -35,7 +37,8 @@ export function TransactionPage() {
           supabase.from('categories').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('locations').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('items').select('id, name, yomigana, category:categories(name), location:locations(name)').eq('is_deleted', false).order('yomigana', { ascending: true }),
-          supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
+          supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('stocktakings').select('date, item:items(name), location:locations(name)')
         ]);
 
         if (txData) {
@@ -63,6 +66,13 @@ export function TransactionPage() {
           })));
         }
         if (staffData) setStaffs(staffData);
+        if (stData) {
+          setStocktakings(stData.map((st: any) => ({
+            itemName: st.item?.name || 'Unknown',
+            location: st.location?.name || 'Unknown',
+            date: st.date
+          })));
+        }
       } catch (error) {
         console.error('Error fetching transactions:', error);
       } finally {
@@ -82,6 +92,33 @@ export function TransactionPage() {
     { label: '受入', value: '受入' },
     { label: '払出', value: '払出' }
   ];
+
+  // 最新の棚卸日時マップを作成
+  const latestStocktakingMap = useMemo(() => {
+    const map = new Map<string, Date>(); // key: "itemName_location", value: Date
+    for (const st of stocktakings) {
+      const key = `${st.itemName}_${st.location}`;
+      const d = new Date(st.date);
+      if (isNaN(d.getTime())) continue;
+      
+      const currentLatest = map.get(key);
+      if (!currentLatest || d > currentLatest) {
+        map.set(key, d);
+      }
+    }
+    return map;
+  }, [stocktakings]);
+
+  const canEditRow = (item: TransactionItem) => {
+    if (item.id.startsWith('TRX-')) return true; // 新規行は編集可能
+    const key = `${item.itemName}_${item.location}`;
+    const latestDate = latestStocktakingMap.get(key);
+    if (!latestDate) return true;
+    
+    const d = new Date(item.date);
+    // トランザクションの場合は棚卸日時より後でなければ編集不可
+    return d.getTime() > latestDate.getTime();
+  };
 
   const columns: Column<TransactionItem>[] = [
     { 
@@ -261,6 +298,8 @@ export function TransactionPage() {
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       showDateFilter={true}
+      canEditRow={canEditRow}
+      canDeleteRow={canEditRow}
     />
   );
 }

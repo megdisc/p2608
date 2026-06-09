@@ -106,7 +106,7 @@ export function InventoryPage() {
       data={pivotItems} 
       columns={columns} 
       emptyMessage="在庫データがありません" 
-      headerRight={<span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>集計日時：{formattedDate}</span>}
+      headerRight={<span style={{ color: 'var(--color-text)', fontSize: '14px' }}>集計日時：{formattedDate}</span>}
     />
   );
 }

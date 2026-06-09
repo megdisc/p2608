@@ -1,5 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
+import { SYSTEM_NAME, SYSTEM_ID, MENU_CATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type SidebarProps = {
   activeTab: Tab;
@@ -12,68 +13,68 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   return (
     <aside className="sidebar">
       <header className="header">
-        <h1>在庫管理システム</h1>
-        <span className="system-id">p2608</span>
+        <h1>{SYSTEM_NAME}</h1>
+        <span className="system-id">{SYSTEM_ID}</span>
       </header>
       
       <nav className="nav-menu">
         <div className="nav-section">
-          <div className="nav-category">集計系</div>
+          <div className="nav-category">{MENU_CATEGORIES.AGGREGATION}</div>
           <button 
             className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
           >
-            在庫集計
+            {PAGE_NAMES.INVENTORY}
           </button>
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">記録系</div>
+          <div className="nav-category">{MENU_CATEGORIES.RECORDING}</div>
           <button 
             className={`nav-button ${activeTab === 'transaction' ? 'active' : ''}`}
             onClick={() => setActiveTab('transaction')}
           >
-            受入・払出記録
+            {PAGE_NAMES.TRANSACTION}
           </button>
           <button 
             className={`nav-button ${activeTab === 'stocktaking' ? 'active' : ''}`}
             onClick={() => setActiveTab('stocktaking')}
           >
-            棚卸記録
+            {PAGE_NAMES.STOCKTAKING}
           </button>
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">設定系</div>
+          <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
           <button 
             className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
             onClick={() => setActiveTab('master')}
           >
-            品目設定
+            {PAGE_NAMES.MASTER}
           </button>
           <button 
             className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
             onClick={() => setActiveTab('category')}
           >
-            カテゴリ設定
+            {PAGE_NAMES.CATEGORY}
           </button>
           <button 
             className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
             onClick={() => setActiveTab('location')}
           >
-            保管場所設定
+            {PAGE_NAMES.LOCATION}
           </button>
           <button 
             className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
             onClick={() => setActiveTab('supplier')}
           >
-            仕入先設定
+            {PAGE_NAMES.SUPPLIER}
           </button>
           <button 
             className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
             onClick={() => setActiveTab('staff')}
           >
-            スタッフ設定
+            {PAGE_NAMES.STAFF}
           </button>
         </div>
       </nav>
@@ -103,7 +104,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             e.currentTarget.style.color = '#aaaaaa';
           }}
         >
-          ログアウト
+          {BUTTON_LABELS.LOGOUT}
         </button>
       </div>
     </aside>

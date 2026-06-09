@@ -3,6 +3,7 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
+import { BUTTON_LABELS } from '../../constants';
 
 const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -379,7 +380,7 @@ export function DataTable<T extends { id: string }>({
                   </div>
                 </th>
               ))}
-              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center' }}>削除</th>}
+              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center' }}>{BUTTON_LABELS.DELETE}</th>}
             </tr>
           </thead>
           <tbody>
@@ -437,14 +438,14 @@ export function DataTable<T extends { id: string }>({
           <div className="action-buttons">
             {onAddRow && (
               <Button onClick={handleAddClick}>
-                追加
+                {BUTTON_LABELS.ADD}
               </Button>
             )}
             <Button onClick={handleCancelClick} disabled={!canCancel}>
-              取消
+              {BUTTON_LABELS.CANCEL}
             </Button>
-            <Button onClick={handleSaveClick} disabled={!canSave}>
-              確定
+            <Button variant="primary" onClick={handleSaveClick} disabled={!canSave}>
+              {BUTTON_LABELS.SAVE}
             </Button>
           </div>
         ) : (

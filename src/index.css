@@ -225,7 +225,6 @@ th.sticky-right {
   background-color: var(--color-bg-subtle);
   font-size: 13px;
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
 }

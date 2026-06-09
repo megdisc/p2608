@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { DataPage } from '../components/page';
 import { DateTimeDisplay } from '../components/ui';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { supabase } from '../lib/supabase';
@@ -117,7 +118,7 @@ export function TransactionPage() {
     },
     { 
       key: 'itemName', 
-      header: '品目', 
+      header: TABLE_COLUMNS.ITEM, 
       editable: true, 
       inputType: 'select', 
       options: (item) => {
@@ -139,10 +140,10 @@ export function TransactionPage() {
         return updates;
       }
     },
-    { key: 'location', header: '保管場所', editable: true, inputType: 'select', options: locationOptions },
-    { key: 'type', header: '区分', editable: true, inputType: 'select', options: typeOptions },
-    { key: 'quantity', header: '数量', className: 'quantity', editable: true, inputType: 'number' },
-    { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
+    { key: 'location', header: TABLE_COLUMNS.LOCATION, editable: true, inputType: 'select', options: locationOptions },
+    { key: 'type', header: TABLE_COLUMNS.TYPE, editable: true, inputType: 'select', options: typeOptions },
+    { key: 'quantity', header: TABLE_COLUMNS.QUANTITY, className: 'quantity', editable: true, inputType: 'number' },
+    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = async (drafts: TransactionItem[], deletedIds: string[]) => {
@@ -222,10 +223,10 @@ export function TransactionPage() {
         }));
         setItems(mapped);
       }
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving transactions:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -252,10 +253,10 @@ export function TransactionPage() {
 
   return (
     <DataPage 
-      title="受入・払出記録"
+      title={PAGE_NAMES.TRANSACTION}
       data={items} 
       columns={columns} 
-      emptyMessage="記録データがありません" 
+      emptyMessage={MESSAGES.EMPTY_TRANSACTION}
       initialSort={{ key: 'date', direction: 'desc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

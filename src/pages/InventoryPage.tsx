@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
 
 type PivotInventoryItem = {
@@ -76,9 +77,9 @@ export function InventoryPage() {
     const items = Array.from(grouped.values());
 
     const dynamicColumns: Column<PivotInventoryItem>[] = [
-      { key: 'category', header: 'カテゴリ' },
-      { key: 'name', header: '品目' },
-      { key: 'totalQuantity', header: '帳簿在庫', className: 'quantity' },
+      { key: 'category', header: TABLE_COLUMNS.CATEGORY },
+      { key: 'name', header: TABLE_COLUMNS.ITEM },
+      { key: 'totalQuantity', header: TABLE_COLUMNS.BOOK_INVENTORY, className: 'quantity' },
     ];
 
     locationNames.forEach(locName => {
@@ -102,10 +103,10 @@ export function InventoryPage() {
 
   return (
     <DataPage 
-      title="在庫集計"
+      title={PAGE_NAMES.INVENTORY}
       data={pivotItems} 
       columns={columns} 
-      emptyMessage="在庫データがありません" 
+      emptyMessage={MESSAGES.EMPTY_INVENTORY} 
       headerRight={<span style={{ color: 'var(--color-text)', fontSize: '14px' }}>集計日時：{formattedDate}</span>}
     />
   );

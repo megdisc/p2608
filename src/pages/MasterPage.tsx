@@ -4,6 +4,7 @@ import type { Column } from '../components/ui';
 import type { MasterItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 
 export function MasterPage() {
   const [items, setItems] = useState<MasterItem[]>([]);
@@ -65,20 +66,21 @@ export function MasterPage() {
   const locationOptions = useMemo(() => [{ label: '', value: '' }, ...locations.map(l => ({ label: l.name, value: l.name }))], [locations]);
 
   const columns: Column<MasterItem>[] = [
-    { key: 'category', header: 'カテゴリ', sortKey: 'categoryYomigana', editable: true, inputType: 'select', options: categoryOptions },
-    { key: 'name', header: '品目', sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
-    { key: 'description', header: '説明', editable: true, inputType: 'text' },
+    { key: 'category', header: TABLE_COLUMNS.CATEGORY, sortKey: 'categoryYomigana', editable: true, inputType: 'select', options: categoryOptions },
+    { key: 'name', header: TABLE_COLUMNS.ITEM, sortKey: 'yomigana', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text' },
     { 
       key: 'location', 
-      header: '標準保管場所',
-      editable: true,
-      inputType: 'select',
-      options: locationOptions
+      header: TABLE_COLUMNS.STANDARD_LOCATION, 
+      sortKey: 'locationYomigana', 
+      editable: true, 
+      inputType: 'select', 
+      options: locationOptions 
     },
-    { key: 'supplier', header: '仕入先', editable: true, inputType: 'select', options: supplierOptions },
-    { key: 'standardPrice', header: '標準単価 (円)', className: 'quantity', editable: true, inputType: 'number', render: (item) => item.standardPrice.toLocaleString() },
-    { key: 'standardPurchaseQty', header: '標準仕入数量', className: 'quantity', editable: true, inputType: 'number' },
+    { key: 'supplier', header: TABLE_COLUMNS.SUPPLIER, editable: true, inputType: 'select', options: supplierOptions },
+    { key: 'standardPrice', header: TABLE_COLUMNS.STANDARD_PRICE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.standardPrice.toLocaleString() },
+    { key: 'standardPurchaseQty', header: TABLE_COLUMNS.STANDARD_PURCHASE_QTY, className: 'quantity', editable: true, inputType: 'number' },
   ];
 
   const handleBatchSave = async (drafts: MasterItem[], deletedIds: string[]) => {
@@ -152,10 +154,10 @@ export function MasterPage() {
         }));
         setItems(mapped);
       }
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving items:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -179,10 +181,10 @@ export function MasterPage() {
 
   return (
     <DataPage 
-      title="品目設定"
+      title={PAGE_NAMES.MASTER}
       data={items} 
       columns={columns} 
-      emptyMessage="マスタデータがありません" 
+      emptyMessage={MESSAGES.EMPTY_MASTER} 
       initialSort={{ key: 'category', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

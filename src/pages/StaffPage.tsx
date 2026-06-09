@@ -4,6 +4,7 @@ import type { Column } from '../components/ui';
 import type { StaffItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 
 export function StaffPage() {
   const [items, setItems] = useState<StaffItem[]>([]);
@@ -34,11 +35,11 @@ export function StaffPage() {
 
 
   const columns: Column<StaffItem>[] = [
-    { key: 'name', header: '氏名', sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'ふりがな', editable: true, inputType: 'text' },
-    { key: 'role', header: '権限ロール', editable: true, inputType: 'select', options: roleOptions },
-    { key: 'email', header: 'メールアドレス', editable: true, inputType: 'email' },
-    { key: 'password', header: 'パスワード', editable: true, inputType: 'password' },
+    { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: TABLE_COLUMNS.FURIGANA, editable: true, inputType: 'text' },
+    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: roleOptions },
+    { key: 'email', header: TABLE_COLUMNS.EMAIL, editable: true, inputType: 'email' },
+    { key: 'password', header: TABLE_COLUMNS.PASSWORD, editable: true, inputType: 'password' },
   ];
 
   const handleBatchSave = async (drafts: StaffItem[], deletedIds: string[]) => {
@@ -91,10 +92,10 @@ export function StaffPage() {
       const { data, error: reloadError } = await supabase.from('staffs').select('*').eq('is_deleted', false);
       if (reloadError) throw reloadError;
       if (data) setItems(data);
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving staffs:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -115,10 +116,10 @@ export function StaffPage() {
 
   return (
     <DataPage
-      title="スタッフ設定"
+      title={PAGE_NAMES.STAFF}
       data={items}
       columns={columns}
-      emptyMessage="スタッフデータがありません"
+      emptyMessage={MESSAGES.EMPTY_STAFF}
       initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

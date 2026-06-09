@@ -4,6 +4,7 @@ import type { Column } from '../components/ui';
 import type { LocationItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 
 export function LocationPage() {
   const [items, setItems] = useState<LocationItem[]>([]);
@@ -26,9 +27,9 @@ export function LocationPage() {
   }, []);
 
   const columns: Column<LocationItem>[] = [
-    { key: 'name', header: '保管場所名', sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
-    { key: 'description', header: '説明', editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.LOCATION_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text' },
   ];
 
   const handleBatchSave = async (drafts: LocationItem[], deletedIds: string[]) => {
@@ -65,10 +66,10 @@ export function LocationPage() {
       const { data, error: reloadError } = await supabase.from('locations').select('*').eq('is_deleted', false);
       if (reloadError) throw reloadError;
       if (data) setItems(data);
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving locations:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -87,10 +88,10 @@ export function LocationPage() {
 
   return (
     <DataPage 
-      title="保管場所設定"
+      title={PAGE_NAMES.LOCATION}
       data={items} 
       columns={columns} 
-      emptyMessage="保管場所データがありません" 
+      emptyMessage={MESSAGES.EMPTY_LOCATION} 
       initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

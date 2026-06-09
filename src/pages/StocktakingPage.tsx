@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { DataPage } from '../components/page';
 import { DateTimeDisplay } from '../components/ui';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import type { Column } from '../components/ui';
 import type { StocktakingItem } from '../types';
 import { supabase } from '../lib/supabase';
@@ -175,7 +176,7 @@ export function StocktakingPage() {
     },
     { 
       key: 'location', 
-      header: '保管場所', 
+      header: TABLE_COLUMNS.LOCATION, 
       editable: true, 
       inputType: 'select', 
       options: locationOptions,
@@ -183,10 +184,10 @@ export function StocktakingPage() {
         recalculateSystemQty({ ...item, location: newLocation }, updateRow);
       }
     },
-    { key: 'systemQty', header: '帳簿在庫', className: 'quantity', editable: false },
+    { key: 'systemQty', header: TABLE_COLUMNS.BOOK_INVENTORY, className: 'quantity', editable: false },
     { 
       key: 'actualQty', 
-      header: '実在庫', 
+      header: TABLE_COLUMNS.ACTUAL_INVENTORY, 
       className: 'quantity', 
       editable: true, 
       inputType: 'number',
@@ -196,7 +197,7 @@ export function StocktakingPage() {
     },
     { 
       key: 'difference', 
-      header: '差異', 
+      header: TABLE_COLUMNS.DIFFERENCE, 
       className: 'quantity',
       editable: false,
       render: (item) => {
@@ -208,7 +209,7 @@ export function StocktakingPage() {
         );
       }
     },
-    { key: 'personInCharge', header: '記録者', editable: true, inputType: 'select', options: staffOptions },
+    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = async (drafts: StocktakingItem[], deletedIds: string[]) => {
@@ -291,10 +292,10 @@ export function StocktakingPage() {
         }));
         setItems(mapped);
       }
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving stocktakings:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -322,10 +323,10 @@ export function StocktakingPage() {
 
   return (
     <DataPage 
-      title="棚卸記録"
+      title={PAGE_NAMES.STOCKTAKING}
       data={items} 
       columns={columns} 
-      emptyMessage="棚卸記録がありません" 
+      emptyMessage={MESSAGES.EMPTY_STOCKTAKING}
       initialSort={{ key: 'date', direction: 'desc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

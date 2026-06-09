@@ -4,6 +4,7 @@ import type { Column } from '../components/ui';
 import type { SupplierItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 
 export function SupplierPage() {
   const [items, setItems] = useState<SupplierItem[]>([]);
@@ -35,10 +36,10 @@ export function SupplierPage() {
   }, []);
 
   const columns: Column<SupplierItem>[] = [
-    { key: 'name', header: '仕入先名', sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'よみがな', editable: true, inputType: 'text' },
-    { key: 'contactPerson', header: '担当者', editable: true, inputType: 'text' },
-    { key: 'phone', header: '電話番号', editable: true, inputType: 'number' },
+    { key: 'name', header: TABLE_COLUMNS.SUPPLIER_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
+    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
+    { key: 'contactPerson', header: TABLE_COLUMNS.CONTACT_PERSON, editable: true, inputType: 'text' },
+    { key: 'phone', header: TABLE_COLUMNS.PHONE, editable: true, inputType: 'number' },
   ];
 
   const handleBatchSave = async (drafts: SupplierItem[], deletedIds: string[]) => {
@@ -86,10 +87,10 @@ export function SupplierPage() {
         }));
         setItems(mapped);
       }
-      showAlert('保存が完了しました。', 'success');
-    } catch (error) {
-      console.error('Error saving suppliers:', error);
-      showAlert('保存中にエラーが発生しました。コンソールをご確認ください。', 'error');
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
     } finally {
       setLoading(false);
     }
@@ -109,10 +110,10 @@ export function SupplierPage() {
 
   return (
     <DataPage 
-      title="仕入先設定"
+      title={PAGE_NAMES.SUPPLIER}
       data={items} 
       columns={columns} 
-      emptyMessage="仕入先データがありません" 
+      emptyMessage={MESSAGES.EMPTY_SUPPLIER} 
       initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

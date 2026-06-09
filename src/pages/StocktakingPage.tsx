@@ -6,6 +6,7 @@ import type { Column } from '../components/ui';
 import type { StocktakingItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { parseLocalInputAsUTC, formatJSTForInput } from '../utils/date';
 
 export function StocktakingPage() {
   const [items, setItems] = useState<StocktakingItem[]>([]);
@@ -113,8 +114,7 @@ export function StocktakingPage() {
       
       if (itemMaster && locationMaster) {
         try {
-          const dateObj = new Date(updatedItem.date.replace(' ', 'T'));
-          const isoDateStr = isNaN(dateObj.getTime()) ? updatedItem.date : dateObj.toISOString();
+          const isoDateStr = parseLocalInputAsUTC(updatedItem.date);
           
           const { data, error } = await supabase.rpc('calculate_book_inventory', {
             p_item_id: itemMaster.id,
@@ -262,8 +262,7 @@ export function StocktakingPage() {
           continue;
         }
 
-        const dateObj = new Date(item.date.replace(' ', 'T'));
-        const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+        const isoDateStr = parseLocalInputAsUTC(item.date);
 
         const { error } = await supabase.from('stocktakings').update({
           date: isoDateStr,
@@ -279,8 +278,7 @@ export function StocktakingPage() {
 
       if (newItems.length > 0) {
         const inserts = newItems.map(item => {
-          const dateObj = new Date(item.date.replace(' ', 'T'));
-          const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+          const isoDateStr = parseLocalInputAsUTC(item.date);
           
           return {
             date: isoDateStr,
@@ -330,8 +328,7 @@ export function StocktakingPage() {
   };
 
   const handleAdd = () => {
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const formattedDate = formatJSTForInput(new Date());
     
     return {
       id: `STK-${Date.now()}`,

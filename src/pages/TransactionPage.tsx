@@ -6,6 +6,7 @@ import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
+import { parseLocalInputAsUTC, formatJSTForInput } from '../utils/date';
 
 export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>([]);
@@ -205,8 +206,7 @@ export function TransactionPage() {
           continue;
         }
 
-        const dateObj = new Date(item.date.replace(' ', 'T'));
-        const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+        const isoDateStr = parseLocalInputAsUTC(item.date);
 
         const { error } = await supabase.from('transactions').update({
           date: isoDateStr,
@@ -221,8 +221,7 @@ export function TransactionPage() {
 
       if (newItems.length > 0) {
         const inserts = newItems.map(item => {
-          const dateObj = new Date(item.date.replace(' ', 'T'));
-          const isoDateStr = isNaN(dateObj.getTime()) ? item.date : dateObj.toISOString();
+          const isoDateStr = parseLocalInputAsUTC(item.date);
           
           return {
             date: isoDateStr,
@@ -270,8 +269,7 @@ export function TransactionPage() {
   };
 
   const handleAdd = () => {
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const formattedDate = formatJSTForInput(new Date());
     
     return {
       id: `TRX-${Date.now()}`,

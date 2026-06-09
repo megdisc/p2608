@@ -3,6 +3,7 @@ import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
+import { getCurrentISOString, formatJST } from '../utils/date';
 
 type PivotInventoryItem = {
   id: string;
@@ -16,7 +17,7 @@ export function InventoryPage() {
   const [inventories, setInventories] = useState<any[]>([]);
   const [locations, setLocations] = useState<{name: string}[]>([]);
   const [loading, setLoading] = useState(true);
-  const [targetDate] = useState(() => new Date());
+  const [targetDate] = useState(() => getCurrentISOString());
 
   useEffect(() => {
     async function fetchData() {
@@ -25,7 +26,7 @@ export function InventoryPage() {
           { data: invData },
           { data: locData }
         ] = await Promise.all([
-          supabase.rpc('get_inventory_summary', { p_target_date: targetDate.toISOString() }),
+          supabase.rpc('get_inventory_summary', { p_target_date: targetDate }),
           supabase.from('locations').select('name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
         ]);
 
@@ -99,7 +100,7 @@ export function InventoryPage() {
 
   if (loading) return <div>Loading...</div>;
 
-  const formattedDate = `${targetDate.getFullYear()}年${String(targetDate.getMonth() + 1).padStart(2, '0')}月${String(targetDate.getDate()).padStart(2, '0')}日 ${String(targetDate.getHours()).padStart(2, '0')}:${String(targetDate.getMinutes()).padStart(2, '0')}`;
+  const formattedDate = formatJST(targetDate);
 
   return (
     <DataPage 

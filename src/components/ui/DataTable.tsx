@@ -5,6 +5,7 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
+import { formatJSTDateOnly, getCurrentJSTDateOnly } from '../../utils/date';
 
 const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -118,20 +119,12 @@ export function DataTable<T extends { id: string }>({
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
 
   const [startDate, setStartDate] = useState(() => {
+    // 2ヶ月前の日付をJSTで取得
     const d = new Date();
     d.setMonth(d.getMonth() - 2);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
+    return formatJSTDateOnly(d);
   });
-  const [endDate, setEndDate] = useState(() => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  });
+  const [endDate, setEndDate] = useState(() => getCurrentJSTDateOnly());
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
@@ -166,7 +159,7 @@ export function DataTable<T extends { id: string }>({
       sourceData = sourceData.filter(item => {
         const dateVal = (item as any)['date'];
         if (!dateVal) return false;
-        const dStr = typeof dateVal === 'string' ? dateVal.substring(0, 10) : new Date(dateVal).toISOString().substring(0, 10);
+        const dStr = formatJSTDateOnly(dateVal);
         return dStr >= effStart && dStr <= effEnd;
       });
     }

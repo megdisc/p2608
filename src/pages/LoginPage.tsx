@@ -18,7 +18,6 @@ export function LoginPage() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <div className="login-logo">📦</div>
           <h1>{SYSTEM_NAME}</h1>
           <span className="system-id">{SYSTEM_ID}</span>
         </div>
@@ -48,11 +47,10 @@ export function LoginPage() {
             />
           </div>
 
-          <div style={{ marginTop: '32px' }}>
+          <div style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button 
               type="submit" 
               variant="primary" 
-              style={{ width: '100%', padding: '12px', fontSize: '15px' }}
             >
               {BUTTON_LABELS.LOGIN}
             </Button>

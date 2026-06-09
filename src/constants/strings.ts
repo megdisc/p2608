@@ -8,7 +8,7 @@ export const MENU_CATEGORIES = {
 };
 
 export const PAGE_NAMES = {
-  INVENTORY: '在庫集計',
+  INVENTORY: '在庫集計画面',
   TRANSACTION: '受入・払出記録',
   STOCKTAKING: '棚卸記録',
   MASTER: '品目設定',

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './index.css';
 import type { Tab } from './types';
 import { AppLayout } from './components/layout';
@@ -22,6 +22,15 @@ function AppContent() {
     const saved = localStorage.getItem('activeTab');
     return (saved as Tab) || 'inventory';
   });
+
+  const prevAuth = useRef(isAuthenticated);
+
+  useEffect(() => {
+    if (!prevAuth.current && isAuthenticated) {
+      setActiveTab('inventory');
+    }
+    prevAuth.current = isAuthenticated;
+  }, [isAuthenticated]);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);

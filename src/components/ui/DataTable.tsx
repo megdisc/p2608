@@ -40,17 +40,17 @@ const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: s
           }
         }}
         onBlur={() => setIsEditing(false)}
-        className="filter-input"
-        style={{ width: '160px', padding: '6px 16px', borderRadius: '9999px' }}
+        className="date-filter-pill"
+        style={{ width: '160px' }}
       />
     );
   }
 
   return (
     <div 
-      className="filter-input" 
+      className="date-filter-pill" 
       onClick={handleClick}
-      style={{ width: '160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 12px 6px 16px', cursor: 'pointer', borderRadius: '9999px' }}
+      style={{ width: '160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
     >
       <span>{formattedDate}</span>
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'static' }}>

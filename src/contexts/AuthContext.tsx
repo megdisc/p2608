@@ -1,9 +1,12 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { supabase } from '../lib/supabase';
 
 type User = {
   id: string;
   email: string;
+  name: string;
+  role: string;
 } | null;
 
 type AuthContextType = {
@@ -22,11 +25,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [user, setUser] = useState<User>(null);
 
-  const login = async (email?: string, _password?: string) => {
+  useEffect(() => {
+    async function fetchDummyUser() {
+      if (isAuthenticated) {
+        try {
+          const { data, error } = await supabase
+            .from('staffs')
+            .select('id, email, name, role')
+            .eq('name', '佐藤健')
+            .single();
+
+          if (data && !error) {
+            setUser({
+              id: data.id,
+              email: data.email,
+              name: data.name,
+              role: data.role
+            });
+          }
+        } catch (error) {
+          console.error('Failed to fetch dummy user:', error);
+        }
+      } else {
+        setUser(null);
+      }
+    }
+    fetchDummyUser();
+  }, [isAuthenticated]);
+
+  const login = async (_email?: string, _password?: string) => {
     // 将来的にはここで supabase.auth.signInWithPassword などを呼び出す
     // 現状はダミーとして常に成功させる
     setIsAuthenticated(true);
-    setUser({ id: 'dummy-id', email: email || 'dummy@example.com' });
     localStorage.setItem('isAuthenticated', 'true');
   };
 

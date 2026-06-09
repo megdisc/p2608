@@ -7,7 +7,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   return (
     <aside className="sidebar">
@@ -78,18 +78,21 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </div>
       </nav>
 
-      <div style={{ marginTop: 'auto', padding: '16px', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+        {user && (
+          <div style={{ color: '#cccccc', fontSize: '13px', textAlign: 'center', lineHeight: '1.5' }}>
+            <div style={{ fontWeight: 600 }}>{user.name}</div>
+            <div style={{ fontSize: '11px', color: '#aaaaaa' }}>{user.role}</div>
+          </div>
+        )}
         <button 
+          className="action-btn"
           onClick={logout}
           style={{ 
-            background: 'none', 
+            background: 'transparent', 
             border: '1px solid #555555', 
             color: '#aaaaaa', 
-            padding: '8px 16px', 
-            borderRadius: '9999px',
-            fontSize: '12px',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            width: '100%'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#444444';

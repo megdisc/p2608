@@ -1,6 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
-import { SYSTEM_NAME, SYSTEM_ID, MENU_CATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
+import { SYSTEM_NAME, SYSTEM_ID, MENU_CATEGORIES, MENU_SUBCATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type SidebarProps = {
   activeTab: Tab;
@@ -19,7 +19,10 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       
       <nav className="nav-menu">
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.AGGREGATION}</div>
+          <div className="nav-category">
+            {MENU_CATEGORIES.AGGREGATION}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
+          </div>
           <button 
             className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
@@ -29,7 +32,10 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.RECORDING}</div>
+          <div className="nav-category">
+            {MENU_CATEGORIES.RECORDING}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
+          </div>
           <button 
             className={`nav-button ${activeTab === 'transaction' ? 'active' : ''}`}
             onClick={() => setActiveTab('transaction')}
@@ -45,7 +51,10 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.INFORMATION}</div>
+          <div className="nav-category">
+            {MENU_CATEGORIES.INFORMATION}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.INFORMATION}</div>
+          </div>
           <button 
             className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
             onClick={() => setActiveTab('master')}
@@ -55,7 +64,10 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
+          <div className="nav-category">
+            {MENU_CATEGORIES.SETTINGS}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SETTINGS}</div>
+          </div>
           <button 
             className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
             onClick={() => setActiveTab('category')}

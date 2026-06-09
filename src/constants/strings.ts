@@ -8,6 +8,13 @@ export const MENU_CATEGORIES = {
   SETTINGS: '設定系',
 };
 
+export const MENU_SUBCATEGORIES = {
+  AGGREGATION: 'レポート',
+  RECORDING: 'トランザクション',
+  INFORMATION: 'メインマスタ',
+  SETTINGS: 'サブマスタ',
+};
+
 export const PAGE_NAMES = {
   INVENTORY: '在庫集計画面',
   TRANSACTION: '受入・払出記録',

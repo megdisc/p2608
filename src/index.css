@@ -253,6 +253,10 @@ th.sticky-right {
   color: var(--color-text);
 }
 
+.deleted-row td {
+  color: var(--color-text-muted) !important;
+}
+
 .item-id {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color: var(--color-text-muted) !important;
@@ -301,6 +305,38 @@ th.sticky-right {
   transition: background-color 0.2s;
   box-sizing: border-box;
   border: none;
+}
+
+.custom-checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  vertical-align: middle;
+  transition: all 0.2s;
+}
+
+.custom-checkbox:checked {
+  background-color: #868e96;
+  border-color: #868e96;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -2px;
 }
 
 .inline-input:hover {

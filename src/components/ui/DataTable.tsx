@@ -301,8 +301,9 @@ export function DataTable<T extends { id: string }>({
   };
 
   const renderCellContent = (col: Column<T>, item: T) => {
+    const isDeleted = deletedIds.has(item.id);
     const isRowEditable = canEditRow ? canEditRow(item) : true;
-    const isEditable = isRowEditable && !!onBatchSave && (typeof col.editable === 'function' ? col.editable(item) : col.editable !== false) && col.inputType;
+    const isEditable = !isDeleted && isRowEditable && !!onBatchSave && (typeof col.editable === 'function' ? col.editable(item) : col.editable !== false) && col.inputType;
     
     if (isEditable) {
       const value = (item as any)[col.key] ?? '';
@@ -398,7 +399,7 @@ export function DataTable<T extends { id: string }>({
               return (
                 <tr 
                   key={item.id} 
-                  style={{ opacity: isDeleted ? 0.5 : 1, textDecoration: isDeleted ? 'line-through' : 'none' }}
+                  className={isDeleted ? 'deleted-row' : ''}
                   onMouseEnter={(e) => {
                     if (showRestrictionColumn && !isRowEditable) {
                       setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: MESSAGES.RESTRICTED_EDIT });
@@ -425,7 +426,7 @@ export function DataTable<T extends { id: string }>({
                           type="checkbox" 
                           checked={isDeleted}
                           onChange={() => toggleDelete(item.id)}
-                          style={{ cursor: 'pointer' }}
+                          className="custom-checkbox"
                         />
                       )}
                     </td>

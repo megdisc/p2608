@@ -1,4 +1,5 @@
 import type { Tab } from '../../types';
+import { useAuth } from '../../contexts/AuthContext';
 
 type SidebarProps = {
   activeTab: Tab;
@@ -6,6 +7,8 @@ type SidebarProps = {
 };
 
 export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
+  const { logout } = useAuth();
+
   return (
     <aside className="sidebar">
       <header className="header">
@@ -74,6 +77,32 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           </button>
         </div>
       </nav>
+
+      <div style={{ marginTop: 'auto', padding: '16px', display: 'flex', justifyContent: 'center' }}>
+        <button 
+          onClick={logout}
+          style={{ 
+            background: 'none', 
+            border: '1px solid #555555', 
+            color: '#aaaaaa', 
+            padding: '8px 16px', 
+            borderRadius: '9999px',
+            fontSize: '12px',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#444444';
+            e.currentTarget.style.color = '#ffffff';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.color = '#aaaaaa';
+          }}
+        >
+          ログアウト
+        </button>
+      </div>
     </aside>
   );
 }

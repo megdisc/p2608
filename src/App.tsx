@@ -10,11 +10,14 @@ import {
   CategoryPage, 
   SupplierPage, 
   LocationPage,
-  StaffPage
+  StaffPage,
+  LoginPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-function App() {
+function AppContent() {
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = localStorage.getItem('activeTab');
     return (saved as Tab) || 'inventory';
@@ -23,6 +26,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
+
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   return (
     <AlertProvider>
@@ -37,6 +44,14 @@ function App() {
         {activeTab === 'staff' && <StaffPage />}
       </AppLayout>
     </AlertProvider>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 

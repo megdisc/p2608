@@ -10,6 +10,7 @@ type DataPageProps<T> = {
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: () => T;
   headerRight?: React.ReactNode;
+  showDateFilter?: boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -20,7 +21,8 @@ export function DataPage<T extends { id: string }>({
   initialSort,
   onBatchSave,
   onAddRow,
-  headerRight
+  headerRight,
+  showDateFilter
 }: DataPageProps<T>) {
   return (
     <>
@@ -35,6 +37,7 @@ export function DataPage<T extends { id: string }>({
         initialSort={initialSort} 
         onBatchSave={onBatchSave}
         onAddRow={onAddRow}
+        showDateFilter={showDateFilter}
       />
     </>
   );

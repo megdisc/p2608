@@ -259,6 +259,7 @@ export function TransactionPage() {
       initialSort={{ key: 'date', direction: 'desc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      showDateFilter={true}
     />
   );
 }

@@ -26,6 +26,7 @@ type DataTableProps<T> = {
   initialSort?: SortConfig;
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: () => T;
+  showDateFilter?: boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -34,7 +35,8 @@ export function DataTable<T extends { id: string }>({
   emptyMessage, 
   initialSort,
   onBatchSave,
-  onAddRow
+  onAddRow,
+  showDateFilter
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const tableRef = useRef<HTMLTableElement>(null);
@@ -48,6 +50,15 @@ export function DataTable<T extends { id: string }>({
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
+
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 2);
+    return d.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
@@ -75,8 +86,20 @@ export function DataTable<T extends { id: string }>({
   }, [draftData, columns, onBatchSave]);
 
   const { sortedExistingRows, newRows } = useMemo(() => {
-    const existingRows = draftData.filter(item => !newRowIds.has(item.id));
-    const newRows = draftData.filter(item => newRowIds.has(item.id));
+    let sourceData = draftData;
+    if (showDateFilter) {
+      const effStart = startDate <= endDate ? startDate : endDate;
+      const effEnd = startDate <= endDate ? endDate : startDate;
+      sourceData = sourceData.filter(item => {
+        const dateVal = (item as any)['date'];
+        if (!dateVal) return false;
+        const dStr = typeof dateVal === 'string' ? dateVal.substring(0, 10) : new Date(dateVal).toISOString().substring(0, 10);
+        return dStr >= effStart && dStr <= effEnd;
+      });
+    }
+
+    const existingRows = sourceData.filter(item => !newRowIds.has(item.id));
+    const newRows = sourceData.filter(item => newRowIds.has(item.id));
 
     if (!sortConfig.key) return { sortedExistingRows: existingRows, newRows };
     
@@ -100,7 +123,7 @@ export function DataTable<T extends { id: string }>({
     });
 
     return { sortedExistingRows: existingRows, newRows };
-  }, [draftData, sortConfig, newRowIds, columns]);
+  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, startDate, endDate]);
 
   const totalItems = sortedExistingRows.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -328,15 +351,29 @@ export function DataTable<T extends { id: string }>({
       </div>
       
       <div className="action-bar">
-        <div className="filter-controls">
-          <div className="filter-input-wrapper">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" className="filter-input" placeholder="検索キーワード... (準備中)" disabled />
+        {showDateFilter ? (
+          <div className="filter-controls">
+            <div className="filter-input-wrapper" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input 
+                type="date" 
+                className="filter-input" 
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                style={{ width: '130px', paddingLeft: '10px' }}
+              />
+              <span>～</span>
+              <input 
+                type="date" 
+                className="filter-input" 
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                style={{ width: '130px', paddingLeft: '10px' }}
+              />
+            </div>
           </div>
-          <button className="icon-btn" disabled title="絞り込み (準備中)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-          </button>
-        </div>
+        ) : (
+          <div className="filter-controls"></div>
+        )}
 
         {isEditingEnabled ? (
           <div className="action-buttons">

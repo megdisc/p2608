@@ -329,6 +329,7 @@ export function StocktakingPage() {
       initialSort={{ key: 'date', direction: 'desc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      showDateFilter={true}
     />
   );
 }

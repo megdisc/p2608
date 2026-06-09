@@ -16,7 +16,7 @@ export const MENU_SUBCATEGORIES = {
 };
 
 export const PAGE_NAMES = {
-  INVENTORY: '在庫集計画面',
+  INVENTORY: '在庫集計',
   TRANSACTION: '受入・払出記録',
   STOCKTAKING: '棚卸記録',
   MASTER: '品目情報',
@@ -77,8 +77,8 @@ export const BUTTON_LABELS = {
   LOGIN: 'ログイン',
   LOGOUT: 'ログアウト',
   ADD: '追加',
-  SAVE: '保存',
-  CANCEL: 'キャンセル',
+  SAVE: '確定',
+  CANCEL: '取消',
   DELETE: '削除',
   EDIT: '編集',
 };

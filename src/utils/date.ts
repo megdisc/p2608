@@ -9,9 +9,9 @@ function parseToDate(input: string | Date | null | undefined): Date {
   // Replace space with T
   let str = input.replace(' ', 'T');
   
-  // If it doesn't contain a timezone indicator, treat it as UTC
+  // If it doesn't contain a timezone indicator, treat it as JST (local input)
   if (!str.includes('Z') && !str.includes('+') && !str.match(/-\d{2}:\d{2}$/)) {
-    str += 'Z';
+    str += '+09:00';
   }
   
   return new Date(str);
@@ -100,9 +100,15 @@ export function getCurrentISOString(): string {
  */
 export function parseLocalInputAsUTC(input: string): string {
   if (!input) return '';
+  if (input.includes('Z') || input.includes('+') || input.match(/-\d{2}:\d{2}$/)) {
+    const d = new Date(input);
+    return isNaN(d.getTime()) ? input : d.toISOString();
+  }
   const isDateOnly = input.length <= 10;
   // Append +09:00 to explicitly parse as JST
-  const str = isDateOnly ? `${input}T00:00:00+09:00` : `${input.replace(' ', 'T')}:00+09:00`;
+  // Ensure we only append :00 if it's "YYYY-MM-DDTHH:mm" format (length 16)
+  const base = input.replace(' ', 'T');
+  const str = isDateOnly ? `${base}T00:00:00+09:00` : (base.length === 16 ? `${base}:00+09:00` : `${base}+09:00`);
   const date = new Date(str);
   if (isNaN(date.getTime())) return input; // fallback
   return date.toISOString();

@@ -2,27 +2,27 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button, Input } from '../components/ui';
 import { SYSTEM_NAME, SYSTEM_ID, LOGIN_LABELS, BUTTON_LABELS, PLACEHOLDERS } from '../constants';
+import type { SystemType } from '../types';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (systemType: SystemType) => {
     // 現状はバリデーションせずに login() を呼び出す
-    await login(email, password);
+    await login(email, password, systemType);
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>{SYSTEM_NAME}</h1>
           <span className="system-id">{SYSTEM_ID}</span>
+          <h1>{SYSTEM_NAME}</h1>
         </div>
         
-        <form onSubmit={handleSubmit} className="login-form">
+        <div className="login-form">
           <div className="login-form-group">
             <label htmlFor="email">{LOGIN_LABELS.EMAIL}</label>
             <Input
@@ -47,16 +47,25 @@ export function LoginPage() {
             />
           </div>
 
-          <div style={{ marginTop: '32px' }}>
+          <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Button 
-              type="submit" 
+              type="button" 
               variant="primary" 
               style={{ width: '100%' }}
+              onClick={() => handleLogin('inventory')}
             >
-              {BUTTON_LABELS.LOGIN}
+              {BUTTON_LABELS.LOGIN_INVENTORY}
+            </Button>
+            <Button 
+              type="button" 
+              variant="secondary" 
+              style={{ width: '100%' }}
+              onClick={() => handleLogin('project')}
+            >
+              {BUTTON_LABELS.LOGIN_PROJECT}
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,6 @@
-export const SYSTEM_NAME = '在庫管理システム';
+export const SYSTEM_NAME = '統合管理システム';
+export const SYSTEM_NAME_INVENTORY = '在庫管理システム';
+export const SYSTEM_NAME_PROJECT = '案件管理システム';
 export const SYSTEM_ID = 'p2608';
 
 export const MENU_CATEGORIES = {
@@ -75,6 +77,8 @@ export const LOGIN_LABELS = {
 
 export const BUTTON_LABELS = {
   LOGIN: 'ログイン',
+  LOGIN_INVENTORY: '在庫管理システムへログイン',
+  LOGIN_PROJECT: '案件管理システムへログイン',
   LOGOUT: 'ログアウト',
   ADD: '追加',
   SAVE: '確定',

@@ -1,6 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth } from '../../contexts/AuthContext';
-import { SYSTEM_NAME, SYSTEM_ID, MENU_CATEGORIES, MENU_SUBCATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
+import { SYSTEM_NAME_INVENTORY, SYSTEM_ID, MENU_CATEGORIES, MENU_SUBCATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type SidebarProps = {
   activeTab: Tab;
@@ -13,8 +13,8 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
   return (
     <aside className="sidebar">
       <header className="header">
-        <h1>{SYSTEM_NAME}</h1>
         <span className="system-id">{SYSTEM_ID}</span>
+        <h1>{SYSTEM_NAME_INVENTORY}</h1>
       </header>
       
       <nav className="nav-menu">

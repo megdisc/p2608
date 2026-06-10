@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import type { SystemType } from '../types';
 
 type User = {
   id: string;
@@ -12,7 +13,8 @@ type User = {
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User;
-  login: (email?: string, password?: string) => Promise<void>;
+  activeSystem: SystemType | null;
+  login: (email?: string, password?: string, system?: SystemType) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -23,6 +25,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 開発用にローカルストレージから状態を復元（任意）
     return localStorage.getItem('isAuthenticated') === 'true';
   });
+  
+  const [activeSystem, setActiveSystem] = useState<SystemType | null>(() => {
+    return (localStorage.getItem('activeSystem') as SystemType) || null;
+  });
+  
   const [user, setUser] = useState<User>(null);
 
   useEffect(() => {
@@ -53,22 +60,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchDummyUser();
   }, [isAuthenticated]);
 
-  const login = async (_email?: string, _password?: string) => {
+  const login = async (_email?: string, _password?: string, system?: SystemType) => {
     // 将来的にはここで supabase.auth.signInWithPassword などを呼び出す
     // 現状はダミーとして常に成功させる
+    const selectedSystem = system || 'inventory';
     setIsAuthenticated(true);
+    setActiveSystem(selectedSystem);
     localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('activeSystem', selectedSystem);
   };
 
   const logout = async () => {
     // 将来的にはここで supabase.auth.signOut などを呼び出す
     setIsAuthenticated(false);
     setUser(null);
+    setActiveSystem(null);
     localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('activeSystem');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, activeSystem, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

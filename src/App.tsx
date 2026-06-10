@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './index.css';
 import type { Tab } from './types';
-import { AppLayout } from './components/layout';
+import { AppLayout, ProjectAppLayout } from './components/layout';
 import { 
   InventoryPage, 
   TransactionPage, 
@@ -17,7 +17,7 @@ import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, activeSystem } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = localStorage.getItem('activeTab');
     return (saved as Tab) || 'inventory';
@@ -27,10 +27,12 @@ function AppContent() {
 
   useEffect(() => {
     if (!prevAuth.current && isAuthenticated) {
-      setActiveTab('inventory');
+      if (activeSystem === 'inventory') {
+        setActiveTab('inventory');
+      }
     }
     prevAuth.current = isAuthenticated;
-  }, [isAuthenticated]);
+  }, [isAuthenticated, activeSystem]);
 
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab);
@@ -38,6 +40,19 @@ function AppContent() {
 
   if (!isAuthenticated) {
     return <LoginPage />;
+  }
+
+  if (activeSystem === 'project') {
+    return (
+      <AlertProvider>
+        <ProjectAppLayout>
+          <div style={{ padding: '32px' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件管理ダッシュボード</h2>
+            <p style={{ color: 'var(--color-text-muted)' }}>案件管理システムの機能は現在開発中です。</p>
+          </div>
+        </ProjectAppLayout>
+      </AlertProvider>
+    );
   }
 
   return (

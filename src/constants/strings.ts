@@ -18,6 +18,7 @@ export const MENU_SUBCATEGORIES = {
 };
 
 export const PAGE_NAMES = {
+  // 在庫管理
   INVENTORY: '在庫集計',
   TRANSACTION: '受入・払出記録',
   STOCKTAKING: '棚卸記録',
@@ -26,6 +27,10 @@ export const PAGE_NAMES = {
   LOCATION: '保管場所設定',
   SUPPLIER: '仕入先設定',
   STAFF: 'スタッフ設定',
+  
+  // 案件管理
+  PROJECT_DASHBOARD: '案件ダッシュボード',
+  PROJECT_LIST: '案件一覧',
 };
 
 export const TABLE_COLUMNS = {

@@ -29,6 +29,8 @@ function AppContent() {
     if (!prevAuth.current && isAuthenticated) {
       if (activeSystem === 'inventory') {
         setActiveTab('inventory');
+      } else if (activeSystem === 'project') {
+        setActiveTab('project_dashboard');
       }
     }
     prevAuth.current = isAuthenticated;
@@ -45,11 +47,20 @@ function AppContent() {
   if (activeSystem === 'project') {
     return (
       <AlertProvider>
-        <ProjectAppLayout>
-          <div style={{ padding: '32px' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件管理ダッシュボード</h2>
-            <p style={{ color: 'var(--color-text-muted)' }}>案件管理システムの機能は現在開発中です。</p>
-          </div>
+        <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          {activeTab === 'staff' ? (
+            <StaffPage />
+          ) : activeTab === 'project_list' ? (
+            <div style={{ padding: '32px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件一覧</h2>
+              <p style={{ color: 'var(--color-text-muted)' }}>案件一覧機能は現在開発中です。</p>
+            </div>
+          ) : (
+            <div style={{ padding: '32px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件管理ダッシュボード</h2>
+              <p style={{ color: 'var(--color-text-muted)' }}>案件管理システムの機能は現在開発中です。</p>
+            </div>
+          )}
         </ProjectAppLayout>
       </AlertProvider>
     );

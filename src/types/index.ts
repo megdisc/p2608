@@ -75,6 +75,9 @@ export type StocktakingItem = {
   location: string;
 };
 
-export type Tab = 'inventory' | 'master' | 'location' | 'category' | 'supplier' | 'transaction' | 'stocktaking' | 'staff';
+export type Tab = 
+  | 'inventory' | 'master' | 'location' | 'category' 
+  | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
+  | 'project_dashboard' | 'project_list';
 
 export type SystemType = 'inventory' | 'project';

@@ -29,8 +29,7 @@ export const PAGE_NAMES = {
   STAFF: 'スタッフ設定',
   
   // 案件管理
-  PROJECT_DASHBOARD: '案件ダッシュボード',
-  PROJECT_LIST: '案件一覧',
+  PROJECT_INFO: '案件情報',
 };
 
 export const TABLE_COLUMNS = {
@@ -73,6 +72,15 @@ export const TABLE_COLUMNS = {
   TYPE: '区分',
   QUANTITY: '数量',
   RESTRICTION: '制限',
+
+  // 案件情報
+  PROJECT_ID: '案件ID',
+  PROJECT_NAME: '案件名',
+  CLIENT_NAME: 'クライアント名',
+  STATUS: 'ステータス',
+  START_DATE: '開始日',
+  END_DATE: '終了日',
+  MANAGER: '担当者',
 };
 
 export const LOGIN_LABELS = {

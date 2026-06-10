@@ -7,3 +7,4 @@ export * from './SupplierPage';
 export * from './LocationPage';
 export * from './StaffPage';
 export * from './LoginPage';
+export * from './ProjectPage';

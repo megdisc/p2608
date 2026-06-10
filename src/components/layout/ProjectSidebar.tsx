@@ -23,12 +23,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {MENU_CATEGORIES.AGGREGATION}
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
           </div>
-          <button 
-            className={`nav-button ${activeTab === 'project_dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('project_dashboard')}
-          >
-            {PAGE_NAMES.PROJECT_DASHBOARD}
-          </button>
+          {/* 追加予定 */}
         </div>
 
         <div className="nav-section">
@@ -45,10 +40,10 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.INFORMATION}</div>
           </div>
           <button 
-            className={`nav-button ${activeTab === 'project_list' ? 'active' : ''}`}
-            onClick={() => setActiveTab('project_list')}
+            className={`nav-button ${activeTab === 'project' ? 'active' : ''}`}
+            onClick={() => setActiveTab('project')}
           >
-            {PAGE_NAMES.PROJECT_LIST}
+            {PAGE_NAMES.PROJECT_INFO}
           </button>
         </div>
 

@@ -75,9 +75,19 @@ export type StocktakingItem = {
   location: string;
 };
 
+export type ProjectItem = {
+  id: string;
+  name: string;
+  clientName: string;
+  status: '進行中' | '完了' | '保留' | '計画中';
+  startDate: string;
+  endDate?: string;
+  manager: string;
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project_dashboard' | 'project_list';
+  | 'project';
 
 export type SystemType = 'inventory' | 'project';

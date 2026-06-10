@@ -11,7 +11,8 @@ import {
   SupplierPage, 
   LocationPage,
   StaffPage,
-  LoginPage
+  LoginPage,
+  ProjectPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -30,7 +31,7 @@ function AppContent() {
       if (activeSystem === 'inventory') {
         setActiveTab('inventory');
       } else if (activeSystem === 'project') {
-        setActiveTab('project_dashboard');
+        setActiveTab('project');
       }
     }
     prevAuth.current = isAuthenticated;
@@ -50,15 +51,11 @@ function AppContent() {
         <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
           {activeTab === 'staff' ? (
             <StaffPage />
-          ) : activeTab === 'project_list' ? (
-            <div style={{ padding: '32px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件一覧</h2>
-              <p style={{ color: 'var(--color-text-muted)' }}>案件一覧機能は現在開発中です。</p>
-            </div>
+          ) : activeTab === 'project' ? (
+            <ProjectPage />
           ) : (
             <div style={{ padding: '32px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>案件管理ダッシュボード</h2>
-              <p style={{ color: 'var(--color-text-muted)' }}>案件管理システムの機能は現在開発中です。</p>
+              <p style={{ color: 'var(--color-text-muted)' }}>選択されたページは現在開発中です。</p>
             </div>
           )}
         </ProjectAppLayout>

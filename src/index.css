@@ -5,57 +5,43 @@
 
 :root {
   /* --- Primitive Tokens --- */
-  /* Colors */
   --palette-white: #ffffff;
-  --palette-gray-50: #f8f9fa;
   --palette-gray-100: #f1f3f5;
-  --palette-gray-200: #dee2e6;
-  --palette-gray-300: #cccccc;
-  --palette-gray-400: #adb5bd;
-  --palette-gray-500: #aaaaaa;
-  --palette-gray-600: #868e96;
-  --palette-gray-700: #777777;
-  --palette-gray-800: #555555;
-  --palette-gray-850: #444444;
-  --palette-gray-900: #333333;
-  --palette-gray-950: #212529;
+  --palette-gray-300: #dee2e6;
+  --palette-gray-500: #868e96;
+  --palette-gray-700: #444444;
+  --palette-gray-900: #212529;
   
-  --palette-black-alpha-03: rgba(0, 0, 0, 0.03);
-  --palette-black-alpha-20: rgba(0, 0, 0, 0.2);
+  --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
   
   --palette-green: #2b8a3e;
   --palette-red: #e03131;
 
   /* --- Semantic Tokens --- */
-  /* App Colors */
-  --color-bg: var(--palette-white);
-  --color-bg-subtle: var(--palette-gray-50);
-  --color-bg-hover: var(--palette-gray-100);
-  
-  --color-text: var(--palette-gray-950);
-  --color-text-muted: var(--palette-gray-600);
+  /* Backgrounds */
+  --color-bg-main: var(--palette-white);
+  --color-bg-subtle: var(--palette-gray-100);
+  --color-bg-inverse: var(--palette-gray-900);
+  --color-bg-inverse-hover: var(--palette-gray-700);
+
+  /* Text */
+  --color-text-main: var(--palette-gray-900);
+  --color-text-muted: var(--palette-gray-500);
   --color-text-inverse: var(--palette-white);
-  --color-text-placeholder: var(--palette-gray-400);
 
-  --color-border: var(--palette-gray-200);
-  --color-border-dark: var(--palette-gray-950);
+  /* Borders */
+  --color-border: var(--palette-gray-300);
 
-  --color-sidebar-bg: var(--palette-gray-900);
-  --color-sidebar-hover: var(--palette-gray-850);
-  --color-sidebar-active: var(--palette-gray-800);
-  --color-sidebar-text: var(--palette-gray-300);
-  --color-sidebar-text-active: var(--palette-white);
-  --color-sidebar-category: var(--palette-gray-500);
-  --color-sidebar-subcategory: var(--palette-gray-700);
-
-  --color-overlay: var(--palette-black-alpha-50);
-  --shadow-sm: 0 1px 3px var(--palette-black-alpha-20);
-  --shadow-md: -2px 0 5px var(--palette-black-alpha-03);
-  --shadow-lg: 0 10px 25px var(--palette-black-alpha-20);
-
+  /* Status */
   --color-success: var(--palette-green);
   --color-error: var(--palette-red);
+
+  /* Overlays & Shadows */
+  --color-overlay: var(--palette-black-alpha-50);
+  --shadow-sm: 0 1px 3px var(--palette-black-alpha-10);
+  --shadow-md: 0 4px 6px var(--palette-black-alpha-10);
+  --shadow-lg: 0 10px 25px var(--palette-black-alpha-10);
 
   /* Typography */
   --font-sans: "YuGothic-Windows", "Yu Gothic", "YuGothic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
@@ -94,8 +80,8 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -109,14 +95,14 @@ body {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
 }
 
 .sidebar {
   width: auto;
   min-width: max-content;
   flex-shrink: 0;
-  background-color: var(--color-sidebar-bg);
+  background-color: var(--color-bg-inverse);
   display: flex;
   flex-direction: column;
 }
@@ -169,7 +155,7 @@ body {
 .nav-category {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: var(--color-sidebar-category);
+  color: var(--color-text-muted);
   text-align: center;
   margin-bottom: var(--space-1);
   letter-spacing: 0.05em;
@@ -177,14 +163,14 @@ body {
 
 .nav-subcategory {
   font-size: var(--text-xs);
-  color: var(--color-sidebar-subcategory);
+  color: var(--color-text-muted);
   margin-top: 2px;
   letter-spacing: 0;
 }
 
 .nav-placeholder {
   font-size: var(--text-sm);
-  color: var(--color-sidebar-subcategory);
+  color: var(--color-text-muted);
   text-align: center;
   padding: var(--space-2) 0;
 }
@@ -195,7 +181,7 @@ body {
   padding: var(--space-2) var(--space-3);
   font-size: var(--text-md);
   font-weight: var(--weight-medium);
-  color: var(--color-sidebar-text);
+  color: var(--color-text-muted);
   cursor: pointer;
   border-radius: var(--radius-full);
   transition: all 0.2s ease;
@@ -203,13 +189,13 @@ body {
 }
 
 .nav-button:hover {
-  color: var(--color-sidebar-text-active);
-  background-color: var(--color-sidebar-hover);
+  color: var(--color-text-inverse);
+  background-color: var(--color-bg-inverse-hover);
 }
 
 .nav-button.active {
-  color: var(--color-sidebar-text-active);
-  background-color: var(--color-sidebar-active);
+  color: var(--color-text-inverse);
+  background-color: var(--color-bg-inverse-hover);
   box-shadow: var(--shadow-sm);
 }
 
@@ -245,13 +231,13 @@ body {
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   margin: 0 0 var(--space-6) 0;
-  color: var(--color-text);
+  color: var(--color-text-main);
 }
 
 .table-container {
   border-radius: var(--radius-lg);
   overflow: auto;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   width: 100%;
   flex: 1;
   min-height: 0;
@@ -280,7 +266,7 @@ body {
 .sticky-right {
   position: sticky;
   right: 0;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   z-index: 1;
   box-shadow: var(--shadow-md);
 }
@@ -291,7 +277,7 @@ th.sticky-right {
 }
 
 .inventory-table tbody tr:hover td.sticky-right {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-subtle);
 }
 
 .inventory-table th,
@@ -328,12 +314,12 @@ th.sticky-right {
 }
 
 .inventory-table tbody tr:hover {
-  background-color: var(--color-bg-hover);
+  background-color: var(--color-bg-subtle);
 }
 
 .inventory-table td {
   font-size: var(--text-base);
-  color: var(--color-text);
+  color: var(--color-text-main);
 }
 
 .deleted-row td {
@@ -365,13 +351,13 @@ th.sticky-right {
   font-size: var(--text-md);
   cursor: pointer;
   border: none;
-  background-color: var(--color-sidebar-bg);
+  background-color: var(--color-bg-inverse);
   color: var(--color-text-inverse);
   transition: background-color 0.2s;
 }
 
 .action-btn:hover {
-  background-color: var(--color-sidebar-hover);
+  background-color: var(--color-bg-inverse-hover);
 }
 
 /* Inline Input for DataTable */
@@ -396,7 +382,7 @@ th.sticky-right {
   height: 18px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -407,8 +393,8 @@ th.sticky-right {
 }
 
 .custom-checkbox:checked {
-  background-color: var(--palette-gray-600);
-  border-color: var(--palette-gray-600);
+  background-color: var(--palette-gray-500);
+  border-color: var(--palette-gray-500);
 }
 
 .custom-checkbox:checked::after {
@@ -428,12 +414,12 @@ th.sticky-right {
 
 .inline-input:focus {
   outline: none;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
 }
 
 select.inline-input {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cccccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23868e96' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right center;
   background-size: 16px;
@@ -484,13 +470,13 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   border-radius: var(--radius-md);
   font-size: var(--text-md);
   width: 240px;
-  color: var(--color-text);
+  color: var(--color-text-main);
   outline: none;
   transition: border-color 0.2s;
 }
 
 .filter-input:focus {
-  border-color: var(--palette-gray-600);
+  border-color: var(--palette-gray-500);
 }
 
 .icon-btn {
@@ -509,8 +495,8 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 .icon-btn:hover:not(:disabled) {
-  background-color: var(--color-bg-hover);
-  color: var(--color-text);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-main);
 }
 
 .icon-btn:disabled {
@@ -543,8 +529,8 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   font-size: var(--text-md);
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-main);
   outline: none;
   cursor: pointer;
   appearance: none;
@@ -560,8 +546,8 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   font-size: var(--text-md);
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-main);
   outline: none;
   cursor: pointer;
   appearance: none;
@@ -577,20 +563,20 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   font-size: var(--text-md);
-  color: var(--color-text);
-  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  background-color: var(--color-bg-main);
   outline: none;
   cursor: pointer;
   box-sizing: border-box;
 }
 .date-filter-pill:focus {
-  border-color: var(--palette-gray-600);
+  border-color: var(--palette-gray-500);
 }
 
 .action-bar {
   position: sticky;
   bottom: 0;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   padding: var(--space-3) 0;
   display: flex;
   justify-content: space-between;
@@ -627,7 +613,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 .modal-content {
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   border-radius: var(--radius-xl);
   padding: var(--space-8) var(--space-10);
   max-width: 400px;
@@ -647,7 +633,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 .modal-message {
   font-size: var(--text-lg);
   margin: 0 0 var(--space-6) 0;
-  color: var(--color-text);
+  color: var(--color-text-main);
   line-height: 1.5;
   white-space: pre-wrap;
 }
@@ -677,11 +663,11 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   justify-content: center;
   min-height: 100vh;
   background-color: var(--color-bg-subtle);
-  color: var(--color-text);
+  color: var(--color-text-main);
 }
 
 .login-card {
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-main);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-12);
@@ -699,7 +685,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   font-size: var(--text-xl);
   font-weight: var(--weight-semibold);
   margin: 0 0 var(--space-2) 0;
-  color: var(--color-text);
+  color: var(--color-text-main);
 }
 
 .login-header .system-id {
@@ -732,19 +718,19 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-full) !important;
   font-size: var(--text-md) !important;
-  color: var(--color-text) !important;
-  background-color: var(--color-bg) !important;
+  color: var(--color-text-main) !important;
+  background-color: var(--color-bg-main) !important;
   transition: border-color 0.2s !important;
 }
 
 .login-input:focus {
-  border-color: var(--palette-gray-600) !important;
+  border-color: var(--palette-gray-500) !important;
   outline: none !important;
-  background-color: var(--color-bg) !important;
+  background-color: var(--color-bg-main) !important;
 }
 
 .login-input::placeholder {
-  color: var(--color-text-placeholder);
+  color: var(--color-text-muted);
 }
 
 .login-footer {

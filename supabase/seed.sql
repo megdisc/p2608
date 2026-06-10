@@ -40,17 +40,6 @@ INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_
 INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('a47b9b86-c9f0-456c-afd8-b0615b6fa9d4', 'ING-007', '牛乳 (業務用)', 'ぎゅうにゅう', '明治、1000ml', 'ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 280, 12, 'ee588c63-abfa-4694-81a8-cb929e0c6fb8', '132dc5ef-c24f-4f02-b734-15b6acb6620b');
 INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('0ac6f5e8-5bfb-40ee-ad58-e495866ad24e', 'ING-008', '鶏卵 (Lサイズ)', 'けいらん', 'JA全農、10kg', '2faff51b-529c-486c-ba7d-4cc90d8582cc', 3200, 2, 'd8974612-313d-445c-90c9-f9b55f6c854a', 'f15ee998-9c5c-40e2-b190-1928ebb9d82c');
 
--- Inventories
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('59919801-653e-4897-92e7-6a773563f8ff', 'ea8e1145-9aa7-422d-bd46-bfb76f2024e7', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c', 10);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('42d9bc4d-e83e-4a7b-b11a-b49ff83b006a', 'ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d', 2);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('3c991d55-daca-464e-a1e9-dbccdaeec532', '1cb7bb54-98f3-4ad5-8edd-f573cea0f7b0', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c', 5);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('a51a12c4-89c0-4130-b2c0-e23d6d359637', '0e39e2fa-8c31-42c0-bf47-9f787d9f0179', '0a41bdf2-7741-48f9-9215-cdcd042ca397', 20);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('61a7363f-e69b-43b7-8d02-f3a87bd3b5c2', '6ed35b2c-48e3-44e0-b043-89cc0a0a6831', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d', 3);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('353019bd-a237-45f3-a431-60eb9f662f09', '1d5f185c-3de6-4ca2-a751-053ebb5f7d73', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d', 8);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('5feabf2c-f9c0-434c-af84-46c1d1043003', '6cc79e42-65a4-41d9-bc63-ffa796887e26', '132dc5ef-c24f-4f02-b734-15b6acb6620b', 30);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('b6abe9da-e7cf-435e-b59d-0900d7f84638', '6cc79e42-65a4-41d9-bc63-ffa796887e26', 'f15ee998-9c5c-40e2-b190-1928ebb9d82c', 10);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('fe8e886b-8cff-42c3-b380-3704e30659ef', 'a47b9b86-c9f0-456c-afd8-b0615b6fa9d4', '132dc5ef-c24f-4f02-b734-15b6acb6620b', 24);
-INSERT INTO inventories (id, item_id, location_id, quantity) VALUES ('ed04d5be-9298-48e3-b3e2-cbcc8a99adbd', '0ac6f5e8-5bfb-40ee-ad58-e495866ad24e', 'f15ee998-9c5c-40e2-b190-1928ebb9d82c', 4);
 
 -- Transactions
 INSERT INTO transactions (id, date, item_id, type, quantity, location_id, staff_id) VALUES ('bdd27aff-0b44-41ae-ad12-01c164c42f81', '2026-05-15 15:00', 'a47b9b86-c9f0-456c-afd8-b0615b6fa9d4', '受入', 4, '132dc5ef-c24f-4f02-b734-15b6acb6620b', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');

@@ -8,3 +8,5 @@ export * from './LocationPage';
 export * from './StaffPage';
 export * from './LoginPage';
 export * from './ProjectPage';
+export * from './ProjectUserPage';
+export * from './SkillPage';

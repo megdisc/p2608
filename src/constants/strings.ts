@@ -30,6 +30,8 @@ export const PAGE_NAMES = {
   
   // 案件管理
   PROJECT_INFO: '案件情報',
+  PROJECT_USER: '利用者設定',
+  SKILL: 'スキル設定',
 };
 
 export const TABLE_COLUMNS = {
@@ -81,6 +83,7 @@ export const TABLE_COLUMNS = {
   TASK: 'タスク',
   REQUIRED_SKILLS: '必要スキル',
   ESTIMATED_INCENTIVE: 'インセンティブ見込額',
+  SKILL_NAME: 'スキル名',
 };
 
 export const LOGIN_LABELS = {
@@ -111,6 +114,8 @@ export const MESSAGES = {
   EMPTY_LOCATION: '保管場所データがありません',
   EMPTY_SUPPLIER: '仕入先データがありません',
   EMPTY_STAFF: 'スタッフデータがありません',
+  EMPTY_PROJECT_USER: '利用者データがありません',
+  EMPTY_SKILL: 'スキルデータがありません',
   DELETE_CONFIRM: '本当に削除しますか？',
   RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',
 };

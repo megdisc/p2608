@@ -12,7 +12,9 @@ import {
   LocationPage,
   StaffPage,
   LoginPage,
-  ProjectPage
+  ProjectPage,
+  ProjectUserPage,
+  SkillPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -50,10 +52,14 @@ function AppContent() {
     return (
       <AlertProvider>
         <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {activeTab === 'staff' ? (
-            <StaffPage />
+          {activeTab === 'projectUser' ? (
+            <ProjectUserPage />
+          ) : activeTab === 'skill' ? (
+            <SkillPage />
           ) : activeTab === 'project' ? (
             <ProjectPage />
+          ) : activeTab === 'staff' ? (
+            <StaffPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>選択されたページは現在開発中です。</p>

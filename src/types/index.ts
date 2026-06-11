@@ -86,9 +86,16 @@ export type ProjectItem = {
   estimatedIncentive: number;
 };
 
+export type SkillItem = {
+  id: string;
+  name: string;
+  yomigana: string;
+  description: string;
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project';
+  | 'project' | 'projectUser' | 'skill';
 
 export type SystemType = 'inventory' | 'project';

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { DataPage } from '../components/page';
 import { DateTimeDisplay } from '../components/ui';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, TRANSACTION_TYPE_OPTIONS } from '../constants';
 import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
 import { supabase } from '../lib/supabase';
@@ -88,11 +88,7 @@ export function TransactionPage() {
   const itemOptions = useMemo(() => [{ label: '', value: '' }, ...masters.map(m => ({ label: m.name, value: m.name }))], [masters]);
   const staffOptions = useMemo(() => [{ label: '', value: '' }, ...staffs.map(s => ({ label: s.name, value: s.name }))], [staffs]);
 
-  const typeOptions = [
-    { label: '', value: '' },
-    { label: '受入', value: '受入' },
-    { label: '払出', value: '払出' }
-  ];
+
 
   // 最新の棚卸日時マップを作成
   const latestStocktakingMap = useMemo(() => {
@@ -179,7 +175,7 @@ export function TransactionPage() {
       }
     },
     { key: 'location', header: TABLE_COLUMNS.LOCATION, editable: true, inputType: 'select', options: locationOptions },
-    { key: 'type', header: TABLE_COLUMNS.TYPE, editable: true, inputType: 'select', options: typeOptions },
+    { key: 'type', header: TABLE_COLUMNS.TYPE, editable: true, inputType: 'select', options: TRANSACTION_TYPE_OPTIONS },
     { key: 'quantity', header: TABLE_COLUMNS.QUANTITY, className: 'quantity', editable: true, inputType: 'number' },
     { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, editable: true, inputType: 'select', options: staffOptions },
   ];

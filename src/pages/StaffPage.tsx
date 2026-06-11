@@ -4,7 +4,7 @@ import type { Column } from '../components/ui';
 import type { StaffItem } from '../types';
 import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
 
 export function StaffPage() {
   const [items, setItems] = useState<StaffItem[]>([]);
@@ -26,18 +26,14 @@ export function StaffPage() {
     fetchData();
   }, []);
 
-  const roleOptions = [
-    { label: '', value: '' },
-    { label: 'システム管理者', value: 'システム管理者' },
-    { label: 'スタッフ', value: 'スタッフ' }
-  ];
+
 
 
 
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
-    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: roleOptions },
+    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: STAFF_ROLE_OPTIONS },
     { key: 'email', header: TABLE_COLUMNS.EMAIL, editable: true, inputType: 'email' },
     { key: 'password', header: TABLE_COLUMNS.PASSWORD, editable: true, inputType: 'password' },
   ];

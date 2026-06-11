@@ -22,7 +22,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // 開発用にローカルストレージから状態を復元（任意）
     return localStorage.getItem('isAuthenticated') === 'true';
   });
   
@@ -77,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setActiveSystem(null);
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('activeSystem');
+    sessionStorage.removeItem('activeTab');
   };
 
   return (

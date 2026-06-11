@@ -18,8 +18,8 @@ export function LoginPage() {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <span className="system-id">{SYSTEM_ID}</span>
           <h1>{SYSTEM_NAME}</h1>
+          <span className="system-id">{SYSTEM_ID}</span>
         </div>
         
         <div className="login-form">

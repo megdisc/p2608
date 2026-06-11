@@ -20,8 +20,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 function AppContent() {
   const { isAuthenticated, activeSystem } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>(() => {
-    const saved = localStorage.getItem('activeTab');
-    return (saved as Tab) || 'inventory';
+    const saved = sessionStorage.getItem('activeTab');
+    if (saved) return saved as Tab;
+    return activeSystem === 'project' ? 'project' : 'inventory';
   });
 
   const prevAuth = useRef(isAuthenticated);
@@ -38,7 +39,7 @@ function AppContent() {
   }, [isAuthenticated, activeSystem]);
 
   useEffect(() => {
-    localStorage.setItem('activeTab', activeTab);
+    sessionStorage.setItem('activeTab', activeTab);
   }, [activeTab]);
 
   if (!isAuthenticated) {

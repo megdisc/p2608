@@ -78,11 +78,12 @@ export type StocktakingItem = {
 export type ProjectItem = {
   id: string;
   name: string;
-  clientName: string;
-  status: '進行中' | '完了' | '保留' | '計画中';
-  startDate: string;
-  endDate?: string;
-  manager: string;
+  yomigana: string;
+  deliveryDate: string;
+  estimatedRevenue: number;
+  task: string;
+  requiredSkills: string;
+  estimatedIncentive: number;
 };
 
 export type Tab = 

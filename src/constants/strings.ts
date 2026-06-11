@@ -76,11 +76,11 @@ export const TABLE_COLUMNS = {
   // 案件情報
   PROJECT_ID: '案件ID',
   PROJECT_NAME: '案件名',
-  CLIENT_NAME: 'クライアント名',
-  STATUS: 'ステータス',
-  START_DATE: '開始日',
-  END_DATE: '終了日',
-  MANAGER: '担当者',
+  DELIVERY_DATE: '納期',
+  ESTIMATED_REVENUE: '収益見込額',
+  TASK: 'タスク',
+  REQUIRED_SKILLS: '必要スキル',
+  ESTIMATED_INCENTIVE: 'インセンティブ見込額',
 };
 
 export const LOGIN_LABELS = {

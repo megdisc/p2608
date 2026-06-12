@@ -33,8 +33,22 @@ export function ProjectPage() {
         </button>
       )
     },
-    { key: 'requiredSkills', header: TABLE_COLUMNS.REQUIRED_SKILLS, editable: true, inputType: 'text', rowType: 'sub' },
     { key: 'estimatedIncentive', header: TABLE_COLUMNS.ESTIMATED_INCENTIVE, className: 'quantity', editable: true, inputType: 'number', render: (item: any) => item.estimatedIncentive?.toLocaleString(), rowType: 'sub' },
+    { 
+      key: 'skill', 
+      header: TABLE_COLUMNS.REQUIRED_SKILLS, 
+      editable: true, 
+      inputType: 'text', 
+      rowType: 'sub-sub',
+      mainRender: (_item, addSubSubRow) => (
+        <button 
+          onClick={addSubSubRow}
+          style={{ padding: '4px 8px', cursor: 'pointer', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)', fontSize: '12px' }}
+        >
+          ＋ スキル追加
+        </button>
+      )
+    },
   ];
 
   const handleBatchSave = async (drafts: ProjectItem[], deletedIds: string[]) => {
@@ -70,8 +84,15 @@ export function ProjectPage() {
     return {
       id: `${parentId}-TASK-${Date.now()}`,
       task: '',
-      requiredSkills: '',
+      requiredSkills: [],
       estimatedIncentive: 0,
+    };
+  };
+
+  const handleAddSubSubRow = (_parentId: string, subParentId: string) => {
+    return {
+      id: `${subParentId}-SKILL-${Date.now()}`,
+      skill: '',
     };
   };
 
@@ -87,6 +108,8 @@ export function ProjectPage() {
       onAddRow={handleAdd}
       subItemsKey="tasks"
       onAddSubRow={handleAddSubRow}
+      subSubItemsKey="requiredSkills"
+      onAddSubSubRow={handleAddSubSubRow}
     />
   );
 }

@@ -17,6 +17,8 @@ type DataPageProps<T> = {
   showRestrictionColumn?: boolean;
   subItemsKey?: keyof T;
   onAddSubRow?: (parentId: string) => any;
+  subSubItemsKey?: string;
+  onAddSubSubRow?: (parentId: string, subParentId: string) => any;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -34,7 +36,9 @@ export function DataPage<T extends { id: string }>({
   canDeleteRow,
   showRestrictionColumn,
   subItemsKey,
-  onAddSubRow
+  onAddSubRow,
+  subSubItemsKey,
+  onAddSubSubRow
 }: DataPageProps<T>) {
   return (
     <>
@@ -56,6 +60,8 @@ export function DataPage<T extends { id: string }>({
         footerLeft={footerLeft}
         subItemsKey={subItemsKey}
         onAddSubRow={onAddSubRow}
+        subSubItemsKey={subSubItemsKey}
+        onAddSubSubRow={onAddSubSubRow}
       />
     </>
   );

@@ -11,7 +11,10 @@ export const mockProjects: ProjectItem[] = [
       {
         id: 'PRJ-2023-001-TASK-1',
         task: '要件定義',
-        requiredSkills: 'ネットワーク設計, Cisco',
+        requiredSkills: [
+          { id: 'PRJ-2023-001-TASK-1-SKILL-1', skill: 'ネットワーク設計' },
+          { id: 'PRJ-2023-001-TASK-1-SKILL-2', skill: 'Cisco' }
+        ],
         estimatedIncentive: 100000,
       }
     ],
@@ -26,7 +29,10 @@ export const mockProjects: ProjectItem[] = [
       {
         id: 'PRJ-2023-002-TASK-1',
         task: 'サーバー構築',
-        requiredSkills: 'Linux, Windows Server',
+        requiredSkills: [
+          { id: 'PRJ-2023-002-TASK-1-SKILL-1', skill: 'Linux' },
+          { id: 'PRJ-2023-002-TASK-1-SKILL-2', skill: 'Windows Server' }
+        ],
         estimatedIncentive: 70000,
       }
     ],
@@ -41,7 +47,11 @@ export const mockProjects: ProjectItem[] = [
       {
         id: 'PRJ-2023-003-TASK-1',
         task: 'UI/UXデザイン',
-        requiredSkills: 'React, TypeScript, Figma',
+        requiredSkills: [
+          { id: 'PRJ-2023-003-TASK-1-SKILL-1', skill: 'React' },
+          { id: 'PRJ-2023-003-TASK-1-SKILL-2', skill: 'TypeScript' },
+          { id: 'PRJ-2023-003-TASK-1-SKILL-3', skill: 'Figma' }
+        ],
         estimatedIncentive: 240000,
       }
     ],
@@ -56,7 +66,11 @@ export const mockProjects: ProjectItem[] = [
       {
         id: 'PRJ-2023-004-TASK-1',
         task: 'データ移行計画',
-        requiredSkills: 'Oracle, PL/SQL, Python',
+        requiredSkills: [
+          { id: 'PRJ-2023-004-TASK-1-SKILL-1', skill: 'Oracle' },
+          { id: 'PRJ-2023-004-TASK-1-SKILL-2', skill: 'PL/SQL' },
+          { id: 'PRJ-2023-004-TASK-1-SKILL-3', skill: 'Python' }
+        ],
         estimatedIncentive: 500000,
       }
     ],
@@ -71,7 +85,10 @@ export const mockProjects: ProjectItem[] = [
       {
         id: 'PRJ-2024-001-TASK-1',
         task: '脆弱性診断',
-        requiredSkills: 'セキュリティ監査, ペネトレーションテスト',
+        requiredSkills: [
+          { id: 'PRJ-2024-001-TASK-1-SKILL-1', skill: 'セキュリティ監査' },
+          { id: 'PRJ-2024-001-TASK-1-SKILL-2', skill: 'ペネトレーションテスト' }
+        ],
         estimatedIncentive: 80000,
       }
     ],

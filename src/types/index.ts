@@ -75,10 +75,15 @@ export type StocktakingItem = {
   location: string;
 };
 
+export type TaskSkill = {
+  id: string;
+  skill: string;
+};
+
 export type ProjectTask = {
   id: string;
   task: string;
-  requiredSkills: string;
+  requiredSkills: TaskSkill[];
   estimatedIncentive: number;
 };
 

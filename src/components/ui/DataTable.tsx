@@ -69,6 +69,8 @@ export type Column<T> = {
   header: string;
   sortKey?: string;
   render?: (item: T) => React.ReactNode;
+  mainRender?: (item: T, addSubRow?: () => void) => React.ReactNode;
+  rowType?: 'main' | 'sub';
   className?: string;
   style?: React.CSSProperties;
   editable?: boolean | ((item: T) => boolean);
@@ -91,6 +93,8 @@ type DataTableProps<T> = {
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
   footerLeft?: React.ReactNode;
+  subItemsKey?: keyof T;
+  onAddSubRow?: (parentId: string) => any;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -104,7 +108,9 @@ export function DataTable<T extends { id: string }>({
   canEditRow,
   canDeleteRow,
   showRestrictionColumn,
-  footerLeft
+  footerLeft,
+  subItemsKey,
+  onAddSubRow
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -218,7 +224,21 @@ export function DataTable<T extends { id: string }>({
     });
   };
 
-  const handleCellChange = (id: string, key: string, value: any, col?: Column<T>) => {
+  const handleCellChange = (id: string, key: string, value: any, col?: Column<T>, isSubItem: boolean = false, parentId?: string) => {
+    if (isSubItem && parentId && subItemsKey) {
+      setDraftData(prev => prev.map(item => {
+        if (item.id === parentId) {
+          const subItems = ((item as any)[subItemsKey] as any[]) || [];
+          const newSubItems = subItems.map(subItem => 
+            subItem.id === id ? { ...subItem, [key]: value } : subItem
+          );
+          return { ...item, [subItemsKey]: newSubItems };
+        }
+        return item;
+      }));
+      return;
+    }
+
     const currentItem = draftData.find(d => d.id === id);
     if (!currentItem) return;
 
@@ -262,6 +282,18 @@ export function DataTable<T extends { id: string }>({
     }, 50);
   };
 
+  const handleAddSubRowClick = (parentId: string) => {
+    if (!onAddSubRow || !subItemsKey) return;
+    const newSubRow = onAddSubRow(parentId);
+    setDraftData(prev => prev.map(item => {
+      if (item.id === parentId) {
+        const subItems = ((item as any)[subItemsKey] as any[]) || [];
+        return { ...item, [subItemsKey]: [...subItems, newSubRow] };
+      }
+      return item;
+    }));
+  };
+
   const handleSaveClick = () => {
     if (onBatchSave) {
       const sanitizedDrafts = draftData
@@ -276,6 +308,9 @@ export function DataTable<T extends { id: string }>({
         })
         .map(item => {
           const newItem = { ...item };
+          if (subItemsKey && (newItem as any)[subItemsKey]) {
+            (newItem as any)[subItemsKey] = ((newItem as any)[subItemsKey] as any[]).filter(sub => !deletedIds.has(sub.id));
+          }
           columns.forEach(col => {
             if (col.inputType === 'number' && (newItem as any)[col.key] === '') {
               (newItem as any)[col.key] = 0;
@@ -295,13 +330,13 @@ export function DataTable<T extends { id: string }>({
     setOriginalNewRows([]);
   };
 
-  const renderCellContent = (col: Column<T>, item: T) => {
+  const renderCellContent = (col: Column<T>, item: any, isSubItem: boolean = false, parentId?: string) => {
     const isDeleted = deletedIds.has(item.id);
-    const isRowEditable = canEditRow ? canEditRow(item) : true;
+    const isRowEditable = canEditRow && !isSubItem ? canEditRow(item) : true;
     const isEditable = !isDeleted && isRowEditable && !!onBatchSave && (typeof col.editable === 'function' ? col.editable(item) : col.editable !== false) && col.inputType;
     
     if (isEditable) {
-      const value = (item as any)[col.key] ?? '';
+      const value = item[col.key] ?? '';
       
       if (col.inputType === 'select') {
         const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options;
@@ -309,7 +344,7 @@ export function DataTable<T extends { id: string }>({
           <Select 
             value={value} 
             options={currentOptions}
-            onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col)}
+            onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId)}
           />
         );
       }
@@ -318,7 +353,7 @@ export function DataTable<T extends { id: string }>({
         return (
           <DateTimeInput 
             value={value as string}
-            onChange={(newVal) => handleCellChange(item.id, col.key, newVal, col)}
+            onChange={(newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId)}
           />
         );
       }
@@ -328,7 +363,7 @@ export function DataTable<T extends { id: string }>({
         if (col.inputType === 'number') {
           newValue = newValue === '' ? '' : Number(newValue);
         }
-        handleCellChange(item.id, col.key, newValue, col);
+        handleCellChange(item.id, col.key, newValue, col, isSubItem, parentId);
       };
 
       return (
@@ -340,7 +375,7 @@ export function DataTable<T extends { id: string }>({
       );
     }
     
-    return col.render ? col.render(item) : (item as any)[col.key];
+    return col.render ? col.render(item) : item[col.key];
   };
 
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
@@ -391,52 +426,87 @@ export function DataTable<T extends { id: string }>({
               const isDeleted = deletedIds.has(item.id);
               const isRowDeletable = canDeleteRow ? canDeleteRow(item) : true;
               const isRowEditable = canEditRow ? canEditRow(item) : true;
+              const subItems = subItemsKey ? ((item as any)[subItemsKey] as any[]) || [] : [];
               return (
-                <tr 
-                  key={item.id} 
-                  className={isDeleted ? 'deleted-row' : ''}
-                  onMouseEnter={(e) => {
-                    if (showRestrictionColumn && !isRowEditable) {
-                      setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: MESSAGES.RESTRICTED_EDIT });
-                    }
-                  }}
-                  onMouseMove={(e) => {
-                    if (showRestrictionColumn && !isRowEditable) {
-                      setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    setTooltip(prev => ({ ...prev, visible: false }));
-                  }}
-                >
-                  {columns.map((col, idx) => (
-                    <td key={col.key || idx} className={col.className} style={col.style}>
-                      {renderCellContent(col, item)}
-                    </td>
-                  ))}
-                  {isEditingEnabled && (
-                    <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                      {isRowDeletable && (
-                        <Input 
-                          type="checkbox" 
-                          checked={isDeleted}
-                          onChange={() => toggleDelete(item.id)}
-                          className="custom-checkbox"
-                        />
-                      )}
-                    </td>
-                  )}
-                  {showRestrictionColumn && (
-                    <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
-                      {!isRowEditable && (
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                      )}
-                    </td>
-                  )}
-                </tr>
+                <React.Fragment key={item.id}>
+                  <tr 
+                    className={isDeleted ? 'deleted-row' : ''}
+                    onMouseEnter={(e) => {
+                      if (showRestrictionColumn && !isRowEditable) {
+                        setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: MESSAGES.RESTRICTED_EDIT });
+                      }
+                    }}
+                    onMouseMove={(e) => {
+                      if (showRestrictionColumn && !isRowEditable) {
+                        setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      setTooltip(prev => ({ ...prev, visible: false }));
+                    }}
+                  >
+                    {columns.map((col, idx) => (
+                      <td key={col.key || idx} className={col.className} style={col.style}>
+                        {col.rowType === 'sub' ? 
+                          (col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null) 
+                          : renderCellContent(col, item, false)}
+                      </td>
+                    ))}
+                    {isEditingEnabled && (
+                      <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                        {isRowDeletable && (
+                          <Input 
+                            type="checkbox" 
+                            checked={isDeleted}
+                            onChange={() => toggleDelete(item.id)}
+                            className="custom-checkbox"
+                          />
+                        )}
+                      </td>
+                    )}
+                    {showRestrictionColumn && (
+                      <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
+                        {!isRowEditable && (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        )}
+                      </td>
+                    )}
+                  </tr>
+                  
+                  {subItems.map(subItem => {
+                    const isSubDeleted = deletedIds.has(subItem.id);
+                    return (
+                      <tr 
+                        key={subItem.id} 
+                        className={isSubDeleted || isDeleted ? 'deleted-row' : ''}
+                      >
+                        {columns.map((col, idx) => (
+                          <td key={col.key || idx} className={col.className} style={col.style}>
+                            {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id) : null}
+                          </td>
+                        ))}
+                        {isEditingEnabled && (
+                          <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                            <Input 
+                              type="checkbox" 
+                              checked={isSubDeleted || isDeleted}
+                              onChange={() => toggleDelete(subItem.id)}
+                              className="custom-checkbox"
+                              disabled={isDeleted}
+                            />
+                          </td>
+                        )}
+                        {showRestrictionColumn && (
+                          <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
               );
             })}
             {visibleData.length === 0 && (

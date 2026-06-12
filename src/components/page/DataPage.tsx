@@ -15,6 +15,8 @@ type DataPageProps<T> = {
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
+  subItemsKey?: keyof T;
+  onAddSubRow?: (parentId: string) => any;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -30,7 +32,9 @@ export function DataPage<T extends { id: string }>({
   showDateFilter,
   canEditRow,
   canDeleteRow,
-  showRestrictionColumn
+  showRestrictionColumn,
+  subItemsKey,
+  onAddSubRow
 }: DataPageProps<T>) {
   return (
     <>
@@ -50,6 +54,8 @@ export function DataPage<T extends { id: string }>({
         canDeleteRow={canDeleteRow}
         showRestrictionColumn={showRestrictionColumn}
         footerLeft={footerLeft}
+        subItemsKey={subItemsKey}
+        onAddSubRow={onAddSubRow}
       />
     </>
   );

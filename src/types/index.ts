@@ -75,15 +75,20 @@ export type StocktakingItem = {
   location: string;
 };
 
+export type ProjectTask = {
+  id: string;
+  task: string;
+  requiredSkills: string;
+  estimatedIncentive: number;
+};
+
 export type ProjectItem = {
   id: string;
   name: string;
   yomigana: string;
   deliveryDate: string;
   estimatedRevenue: number;
-  task: string;
-  requiredSkills: string;
-  estimatedIncentive: number;
+  tasks: ProjectTask[];
 };
 
 export type SkillItem = {

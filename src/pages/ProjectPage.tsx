@@ -14,13 +14,27 @@ export function ProjectPage() {
   const { showAlert } = useAlert();
 
   const columns: Column<ProjectItem>[] = [
-    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text' },
-    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
-    { key: 'deliveryDate', header: TABLE_COLUMNS.DELIVERY_DATE, editable: true, inputType: 'date' },
-    { key: 'estimatedRevenue', header: TABLE_COLUMNS.ESTIMATED_REVENUE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.estimatedRevenue.toLocaleString() },
-    { key: 'task', header: TABLE_COLUMNS.TASK, editable: true, inputType: 'text' },
-    { key: 'requiredSkills', header: TABLE_COLUMNS.REQUIRED_SKILLS, editable: true, inputType: 'text' },
-    { key: 'estimatedIncentive', header: TABLE_COLUMNS.ESTIMATED_INCENTIVE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.estimatedIncentive.toLocaleString() },
+    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
+    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
+    { key: 'deliveryDate', header: TABLE_COLUMNS.DELIVERY_DATE, editable: true, inputType: 'date', rowType: 'main' },
+    { key: 'estimatedRevenue', header: TABLE_COLUMNS.ESTIMATED_REVENUE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.estimatedRevenue?.toLocaleString(), rowType: 'main' },
+    { 
+      key: 'task', 
+      header: TABLE_COLUMNS.TASK, 
+      editable: true, 
+      inputType: 'text', 
+      rowType: 'sub',
+      mainRender: (_item, addSubRow) => (
+        <button 
+          onClick={addSubRow}
+          style={{ padding: '4px 8px', cursor: 'pointer', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)', fontSize: '12px' }}
+        >
+          ＋ タスク追加
+        </button>
+      )
+    },
+    { key: 'requiredSkills', header: TABLE_COLUMNS.REQUIRED_SKILLS, editable: true, inputType: 'text', rowType: 'sub' },
+    { key: 'estimatedIncentive', header: TABLE_COLUMNS.ESTIMATED_INCENTIVE, className: 'quantity', editable: true, inputType: 'number', render: (item: any) => item.estimatedIncentive?.toLocaleString(), rowType: 'sub' },
   ];
 
   const handleBatchSave = async (drafts: ProjectItem[], deletedIds: string[]) => {
@@ -48,10 +62,17 @@ export function ProjectPage() {
       yomigana: '',
       deliveryDate: new Date().toISOString().split('T')[0],
       estimatedRevenue: 0,
+      tasks: [],
+    } as ProjectItem;
+  };
+
+  const handleAddSubRow = (parentId: string) => {
+    return {
+      id: `${parentId}-TASK-${Date.now()}`,
       task: '',
       requiredSkills: '',
-      estimatedIncentive: 0
-    } as ProjectItem;
+      estimatedIncentive: 0,
+    };
   };
 
   if (loading) return <div>Loading...</div>;
@@ -64,6 +85,8 @@ export function ProjectPage() {
       emptyMessage="案件データがありません"
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      subItemsKey="tasks"
+      onAddSubRow={handleAddSubRow}
     />
   );
 }

@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
+import { MultiSelectDropdown } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { mockProjects } from '../mocks/projects';
+import { mockSkills } from '../mocks/skills';
 import type { ProjectItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 
@@ -35,19 +37,46 @@ export function ProjectPage() {
     },
     { key: 'estimatedIncentive', header: TABLE_COLUMNS.ESTIMATED_INCENTIVE, className: 'quantity', editable: true, inputType: 'number', render: (item: any) => item.estimatedIncentive?.toLocaleString(), rowType: 'sub' },
     { 
-      key: 'skill', 
+      key: 'requiredSkills', 
       header: TABLE_COLUMNS.REQUIRED_SKILLS, 
       editable: true, 
       inputType: 'text', 
-      rowType: 'sub-sub',
-      mainRender: (_item, addSubSubRow) => (
-        <button 
-          onClick={addSubSubRow}
-          style={{ padding: '4px 8px', cursor: 'pointer', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)', fontSize: '12px' }}
-        >
-          ＋ スキル追加
-        </button>
-      )
+      rowType: 'sub',
+      render: (item: any) => {
+        const skills = item.requiredSkills || [];
+        return (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {skills.map((s: any) => (
+              <span key={s.id} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                {s.skill}
+              </span>
+            ))}
+          </div>
+        );
+      },
+      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
+        const currentSkills = value || [];
+        const currentSkillNames = currentSkills.map((s: any) => s.skill);
+        const options = mockSkills.map(s => ({ value: s.name, label: s.name }));
+        
+        const handleChange = (newSkillNames: string[]) => {
+           const newSkills = newSkillNames.map(name => {
+             const existing = currentSkills.find((s: any) => s.skill === name);
+             if (existing) return existing;
+             return { id: `${item.id}-SKILL-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, skill: name };
+           });
+           onChange(newSkills);
+        };
+        
+        return (
+          <MultiSelectDropdown 
+            options={options}
+            value={currentSkillNames}
+            onChange={handleChange}
+            placeholder="スキルを選択"
+          />
+        );
+      }
     },
   ];
 
@@ -89,13 +118,6 @@ export function ProjectPage() {
     };
   };
 
-  const handleAddSubSubRow = (_parentId: string, subParentId: string) => {
-    return {
-      id: `${subParentId}-SKILL-${Date.now()}`,
-      skill: '',
-    };
-  };
-
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -108,8 +130,6 @@ export function ProjectPage() {
       onAddRow={handleAdd}
       subItemsKey="tasks"
       onAddSubRow={handleAddSubRow}
-      subSubItemsKey="requiredSkills"
-      onAddSubSubRow={handleAddSubSubRow}
     />
   );
 }

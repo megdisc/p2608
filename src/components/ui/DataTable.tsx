@@ -77,6 +77,7 @@ export type Column<T> = {
   inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
+  customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;
 };
 
 type SortConfig = { key: string; direction: 'asc' | 'desc' };
@@ -129,6 +130,7 @@ export function DataTable<T extends { id: string }>({
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
+  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
 
   const [startDate, setStartDate] = useState(() => {
     // 2ヶ月前の日付をJSTで取得
@@ -292,6 +294,15 @@ export function DataTable<T extends { id: string }>({
     });
   };
 
+  const toggleExpand = (id: string) => {
+    setExpandedRowIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const handleAddClick = () => {
     if (!onAddRow) return;
     const newRow = onAddRow();
@@ -389,6 +400,10 @@ export function DataTable<T extends { id: string }>({
     
     if (isEditable) {
       const value = item[col.key] ?? '';
+      
+      if (col.customEditRender) {
+        return col.customEditRender(value, item, (newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId));
+      }
       
       if (col.inputType === 'select') {
         const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options;
@@ -532,7 +547,7 @@ export function DataTable<T extends { id: string }>({
                       if (col.rowType === 'sub') {
                         return (
                           <td key={col.key || idx} className={col.className} style={col.style}>
-                            {subItems.length > 0 ? renderCellContent(col, subItems[0], true, item.id) : null}
+                            {expandedRowIds.has(item.id) && subItems.length > 0 ? renderCellContent(col, subItems[0], true, item.id) : null}
                           </td>
                         );
                       }
@@ -540,13 +555,23 @@ export function DataTable<T extends { id: string }>({
                         const subSubItems = subItems.length > 0 && subSubItemsKey ? (subItems[0][subSubItemsKey] as any[]) || [] : [];
                         return (
                           <td key={col.key || idx} className={col.className} style={col.style}>
-                            {subSubItems.length > 0 ? renderCellContent(col, subSubItems[0], false, undefined, true, subItems[0].id) : null}
+                            {expandedRowIds.has(item.id) && subSubItems.length > 0 ? renderCellContent(col, subSubItems[0], false, undefined, true, subItems[0].id) : null}
                           </td>
                         );
                       }
                       return (
                         <td key={col.key || idx} className={col.className} style={col.style}>
-                          {renderCellContent(col, item, false)}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {idx === 0 && subItemsKey && (
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: '10px', color: 'var(--color-text-muted)' }}
+                              >
+                                {expandedRowIds.has(item.id) ? '▼' : '▶'}
+                              </button>
+                            )}
+                            {renderCellContent(col, item, false)}
+                          </div>
                         </td>
                       );
                     })}
@@ -574,9 +599,9 @@ export function DataTable<T extends { id: string }>({
                     )}
                   </tr>
 
-                  {subItems.length > 0 && renderSubSubRows(subItems[0])}
+                  {expandedRowIds.has(item.id) && subItems.length > 0 && renderSubSubRows(subItems[0])}
                   
-                  {subItems.slice(1).map(subItem => {
+                  {expandedRowIds.has(item.id) && subItems.slice(1).map(subItem => {
                     const isSubDeleted = deletedIds.has(subItem.id);
                     const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                     return (
@@ -610,7 +635,7 @@ export function DataTable<T extends { id: string }>({
                     );
                   })}
 
-                  {subItemsKey && (
+                  {expandedRowIds.has(item.id) && subItemsKey && (
                     <tr className={isDeleted ? 'deleted-row' : ''}>
                       {columns.map((col, idx) => (
                         <td key={col.key || idx} className={col.className} style={col.style}>

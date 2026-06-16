@@ -66,15 +66,28 @@ export function DailyWorkRecordPage() {
       render: (item) => mockProjectUsers.find(u => u.id === item.userId)?.name || ''
     },
     { 
-      key: 'taskId', 
-      header: TABLE_COLUMNS.WORK_CONTENT, 
+      key: 'projectId', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
       editable: false, 
-      style: { minWidth: '300px' },
+      style: { minWidth: '200px' },
+      render: (item) => {
+        if (item.taskId === 'none') return '-';
+        for (const p of mockProjects) {
+          if (p.tasks.some(task => task.id === item.taskId)) return p.name;
+        }
+        return '';
+      }
+    },
+    { 
+      key: 'taskId', 
+      header: TABLE_COLUMNS.TASK, 
+      editable: false, 
+      style: { minWidth: '200px' },
       render: (item) => {
         if (item.taskId === 'none') return '担当タスクなし';
         for (const p of mockProjects) {
           const t = p.tasks.find(task => task.id === item.taskId);
-          if (t) return `${p.name} - ${t.task}`;
+          if (t) return t.task;
         }
         return '';
       }

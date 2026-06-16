@@ -33,6 +33,7 @@ export const PAGE_NAMES = {
   PROJECT_USER: '利用者設定',
   CLIENT: '取引先設定',
   SKILL: 'スキル設定',
+  DAILY_WORK_RECORD: '日次作業記録',
 };
 
 export const TABLE_COLUMNS = {
@@ -87,6 +88,11 @@ export const TABLE_COLUMNS = {
   ASSIGNEE_TYPE: '担当者区分',
   ASSIGNEE: '担当者',
   SKILL_NAME: 'スキル名',
+  
+  // 日次作業記録
+  USER_NAME: '氏名',
+  WORK_CONTENT: '作業内容',
+  WORK_TIME: '作業時間',
 };
 
 export const LOGIN_LABELS = {
@@ -120,6 +126,7 @@ export const MESSAGES = {
   EMPTY_PROJECT_USER: '利用者データがありません',
   EMPTY_CLIENT: '取引先データがありません',
   EMPTY_SKILL: 'スキルデータがありません',
+  EMPTY_DAILY_WORK_RECORD: '作業記録がありません',
   DELETE_CONFIRM: '本当に削除しますか？',
   RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',
 };

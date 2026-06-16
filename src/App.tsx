@@ -15,7 +15,8 @@ import {
   ProjectPage,
   ProjectUserPage,
   SkillPage,
-  ClientPage
+  ClientPage,
+  DailyWorkRecordPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -57,6 +58,8 @@ function AppContent() {
             <ProjectUserPage />
           ) : activeTab === 'skill' ? (
             <SkillPage />
+          ) : activeTab === 'dailyWorkRecord' ? (
+            <DailyWorkRecordPage />
           ) : activeTab === 'client' ? (
             <ClientPage />
           ) : activeTab === 'project' ? (

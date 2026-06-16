@@ -11,3 +11,4 @@ export * from './ProjectPage';
 export * from './ProjectUserPage';
 export * from './SkillPage';
 export * from './ClientPage';
+export * from './DailyWorkRecordPage';

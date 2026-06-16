@@ -31,7 +31,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {MENU_CATEGORIES.RECORDING}
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
           </div>
-          {/* 追加予定 */}
+          <button 
+            className={`nav-button ${activeTab === 'dailyWorkRecord' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dailyWorkRecord')}
+          >
+            {PAGE_NAMES.DAILY_WORK_RECORD}
+          </button>
         </div>
 
         <div className="nav-section">

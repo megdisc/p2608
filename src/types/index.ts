@@ -112,9 +112,17 @@ export type ClientItem = {
   phone: string;
 };
 
+export type DailyWorkRecordItem = {
+  id: string;
+  date: string;
+  userId: string;
+  taskId: string;
+  workTime: number;
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord';
 
 export type SystemType = 'inventory' | 'project';

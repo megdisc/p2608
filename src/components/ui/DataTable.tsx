@@ -130,7 +130,6 @@ export function DataTable<T extends { id: string }>({
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
-  const [expandedRowIds, setExpandedRowIds] = useState<Set<string>>(new Set());
 
   const [startDate, setStartDate] = useState(() => {
     // 2ヶ月前の日付をJSTで取得
@@ -294,14 +293,7 @@ export function DataTable<T extends { id: string }>({
     });
   };
 
-  const toggleExpand = (id: string) => {
-    setExpandedRowIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+
 
   const handleAddClick = () => {
     if (!onAddRow) return;
@@ -499,28 +491,27 @@ export function DataTable<T extends { id: string }>({
                 const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                 return (
                   <React.Fragment key={`${subItem.id}-skills`}>
-                    {subSubItems.slice(1).map(subSubItem => (
+                    {subSubItems.map(subSubItem => (
                       <tr key={subSubItem.id} className={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted ? 'deleted-row' : ''}>
                         {columns.map((col, idx) => (
                           <td key={col.key || idx} className={col.className} style={col.style}>
                             {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, undefined, true, subItem.id) : null}
                           </td>
                         ))}
-                        {isEditingEnabled && <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}></td>}
+                        {isEditingEnabled && (
+                          <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                            <Input 
+                              type="checkbox" 
+                              checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
+                              disabled={deletedIds.has(subItem.id) || isDeleted}
+                              onChange={() => toggleDelete(subSubItem.id)}
+                              className="custom-checkbox"
+                            />
+                          </td>
+                        )}
                         {showRestrictionColumn && <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}></td>}
                       </tr>
                     ))}
-                    {subSubItemsKey && (
-                      <tr className={deletedIds.has(subItem.id) || isDeleted ? 'deleted-row' : ''}>
-                        {columns.map((col, idx) => (
-                          <td key={col.key || idx} className={col.className} style={col.style}>
-                            {col.rowType === 'sub-sub' && col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id)) : null}
-                          </td>
-                        ))}
-                        {isEditingEnabled && <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}></td>}
-                        {showRestrictionColumn && <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}></td>}
-                      </tr>
-                    )}
                   </React.Fragment>
                 );
               };
@@ -547,29 +538,20 @@ export function DataTable<T extends { id: string }>({
                       if (col.rowType === 'sub') {
                         return (
                           <td key={col.key || idx} className={col.className} style={col.style}>
-                            {expandedRowIds.has(item.id) && subItems.length > 0 ? renderCellContent(col, subItems[0], true, item.id) : null}
+                            {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
                           </td>
                         );
                       }
                       if (col.rowType === 'sub-sub') {
-                        const subSubItems = subItems.length > 0 && subSubItemsKey ? (subItems[0][subSubItemsKey] as any[]) || [] : [];
                         return (
                           <td key={col.key || idx} className={col.className} style={col.style}>
-                            {expandedRowIds.has(item.id) && subSubItems.length > 0 ? renderCellContent(col, subSubItems[0], false, undefined, true, subItems[0].id) : null}
+                            {null}
                           </td>
                         );
                       }
                       return (
                         <td key={col.key || idx} className={col.className} style={col.style}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            {idx === 0 && subItemsKey && (
-                              <button 
-                                onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', fontSize: '10px', color: 'var(--color-text-muted)' }}
-                              >
-                                {expandedRowIds.has(item.id) ? '▼' : '▶'}
-                              </button>
-                            )}
                             {renderCellContent(col, item, false)}
                           </div>
                         </td>
@@ -599,11 +581,8 @@ export function DataTable<T extends { id: string }>({
                     )}
                   </tr>
 
-                  {expandedRowIds.has(item.id) && subItems.length > 0 && renderSubSubRows(subItems[0])}
-                  
-                  {expandedRowIds.has(item.id) && subItems.slice(1).map(subItem => {
+                  {subItems.map(subItem => {
                     const isSubDeleted = deletedIds.has(subItem.id);
-                    const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                     return (
                       <React.Fragment key={subItem.id}>
                         <tr className={isSubDeleted || isDeleted ? 'deleted-row' : ''}>
@@ -611,7 +590,7 @@ export function DataTable<T extends { id: string }>({
                             if (col.rowType === 'sub-sub') {
                               return (
                                 <td key={col.key || idx} className={col.className} style={col.style}>
-                                  {subSubItems.length > 0 ? renderCellContent(col, subSubItems[0], false, undefined, true, subItem.id) : null}
+                                  {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id)) : null}
                                 </td>
                               );
                             }
@@ -623,6 +602,13 @@ export function DataTable<T extends { id: string }>({
                           })}
                           {isEditingEnabled && (
                             <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                              <Input 
+                                type="checkbox" 
+                                checked={isSubDeleted || isDeleted}
+                                disabled={isDeleted}
+                                onChange={() => toggleDelete(subItem.id)}
+                                className="custom-checkbox"
+                              />
                             </td>
                           )}
                           {showRestrictionColumn && (
@@ -634,24 +620,6 @@ export function DataTable<T extends { id: string }>({
                       </React.Fragment>
                     );
                   })}
-
-                  {expandedRowIds.has(item.id) && subItemsKey && (
-                    <tr className={isDeleted ? 'deleted-row' : ''}>
-                      {columns.map((col, idx) => (
-                        <td key={col.key || idx} className={col.className} style={col.style}>
-                          {col.rowType === 'sub' && col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
-                        </td>
-                      ))}
-                      {isEditingEnabled && (
-                        <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                        </td>
-                      )}
-                      {showRestrictionColumn && (
-                        <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
-                        </td>
-                      )}
-                    </tr>
-                  )}
                 </React.Fragment>
               );
             })}

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 export type Option = {
   value: string;
@@ -15,16 +16,43 @@ type MultiSelectDropdownProps = {
 export function MultiSelectDropdown({ options, value, onChange, placeholder = '選択してください' }: MultiSelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownCoords, setDropdownCoords] = useState<{ top: number; left: number; width: number } | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const isOutsideContainer = containerRef.current && !containerRef.current.contains(event.target as Node);
+      const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(event.target as Node);
+      if (isOutsideContainer && isOutsideDropdown) {
         setIsOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const updateCoords = () => {
+    if (containerRef.current && isOpen) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setDropdownCoords({
+        top: rect.bottom + 4,
+        left: rect.left,
+        width: rect.width,
+      });
+    }
+  };
+
+  useEffect(() => {
+    updateCoords();
+    if (isOpen) {
+      window.addEventListener('resize', updateCoords);
+      window.addEventListener('scroll', updateCoords, true);
+    }
+    return () => {
+      window.removeEventListener('resize', updateCoords);
+      window.removeEventListener('scroll', updateCoords, true);
+    };
+  }, [isOpen]);
 
   const handleToggle = (optionValue: string) => {
     if (value.includes(optionValue)) {
@@ -92,21 +120,21 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = '�
         ))}
       </div>
 
-      {isOpen && (
+      {isOpen && dropdownCoords && createPortal(
         <div 
+          ref={dropdownRef}
           className="multi-select-dropdown"
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            right: 0,
-            marginTop: '4px',
+            position: 'fixed',
+            top: `${dropdownCoords.top}px`,
+            left: `${dropdownCoords.left}px`,
+            width: `${dropdownCoords.width}px`,
             background: 'var(--color-bg-base)',
             border: '1px solid var(--color-border)',
             borderRadius: '4px',
             maxHeight: '200px',
             overflowY: 'auto',
-            zIndex: 1000,
+            zIndex: 999999,
             boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
           }}
         >
@@ -116,9 +144,8 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = '�
             </div>
           ) : (
             options.map(opt => (
-              <div 
+              <label 
                 key={opt.value}
-                onClick={() => handleToggle(opt.value)}
                 style={{
                   padding: '8px 12px',
                   cursor: 'pointer',
@@ -127,6 +154,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = '�
                   gap: '8px',
                   fontSize: '13px',
                   background: value.includes(opt.value) ? 'var(--color-bg-subtle)' : 'transparent',
+                  margin: 0
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg-subtle)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = value.includes(opt.value) ? 'var(--color-bg-subtle)' : 'transparent'}
@@ -134,14 +162,15 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = '�
                 <input 
                   type="checkbox" 
                   checked={value.includes(opt.value)} 
-                  readOnly 
-                  style={{ cursor: 'pointer' }}
+                  onChange={() => handleToggle(opt.value)}
+                  style={{ cursor: 'pointer', margin: 0 }}
                 />
                 {opt.label}
-              </div>
+              </label>
             ))
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

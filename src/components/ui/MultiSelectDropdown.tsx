@@ -128,7 +128,8 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = 'é
             position: 'fixed',
             top: `${dropdownCoords.top}px`,
             left: `${dropdownCoords.left}px`,
-            width: `${dropdownCoords.width}px`,
+            minWidth: `${dropdownCoords.width}px`,
+            width: 'max-content',
             background: 'var(--color-bg-base)',
             border: '1px solid var(--color-border)',
             borderRadius: '4px',
@@ -154,7 +155,8 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = 'é
                   gap: '8px',
                   fontSize: '13px',
                   background: value.includes(opt.value) ? 'var(--color-bg-subtle)' : 'transparent',
-                  margin: 0
+                  margin: 0,
+                  whiteSpace: 'nowrap'
                 }}
                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg-subtle)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = value.includes(opt.value) ? 'var(--color-bg-subtle)' : 'transparent'}

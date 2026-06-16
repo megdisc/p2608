@@ -12,7 +12,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-001-TASK-1',
         task: '要件定義',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1001',
+        assigneeIds: ['STF-1001'],
         requiredSkills: [
           { id: 'PRJ-2023-001-TASK-1-SKILL-1', skill: 'ネットワーク設計' },
           { id: 'PRJ-2023-001-TASK-1-SKILL-2', skill: 'Cisco' }
@@ -22,7 +22,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-001-TASK-2',
         task: '基本・詳細設計',
         assigneeType: 'outsource',
-        assigneeId: 'CLI-002',
+        assigneeIds: ['CLI-002'],
         requiredSkills: [
           { id: 'PRJ-2023-001-TASK-2-SKILL-1', skill: 'ネットワーク設計' },
           { id: 'PRJ-2023-001-TASK-2-SKILL-2', skill: 'Cisco' }
@@ -32,7 +32,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-001-TASK-3',
         task: '構築・テスト',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1002',
+        assigneeIds: ['STF-1002'],
         requiredSkills: [
           { id: 'PRJ-2023-001-TASK-3-SKILL-1', skill: 'Cisco' },
           { id: 'PRJ-2023-001-TASK-3-SKILL-2', skill: 'Linux' }
@@ -51,7 +51,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-002-TASK-1',
         task: 'サーバー構築',
         assigneeType: 'outsource',
-        assigneeId: 'CLI-003',
+        assigneeIds: ['CLI-003'],
         requiredSkills: [
           { id: 'PRJ-2023-002-TASK-1-SKILL-1', skill: 'Linux' },
           { id: 'PRJ-2023-002-TASK-1-SKILL-2', skill: 'Windows Server' }
@@ -70,7 +70,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-003-TASK-1',
         task: 'UI/UXデザイン',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1003',
+        assigneeIds: ['STF-1003'],
         requiredSkills: [
           { id: 'PRJ-2023-003-TASK-1-SKILL-1', skill: 'React' },
           { id: 'PRJ-2023-003-TASK-1-SKILL-2', skill: 'TypeScript' },
@@ -90,7 +90,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2023-004-TASK-1',
         task: 'データ移行計画',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1001',
+        assigneeIds: ['STF-1001'],
         requiredSkills: [
           { id: 'PRJ-2023-004-TASK-1-SKILL-1', skill: 'Oracle' },
           { id: 'PRJ-2023-004-TASK-1-SKILL-2', skill: 'PL/SQL' },
@@ -110,7 +110,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2024-001-TASK-1',
         task: '脆弱性診断',
         assigneeType: 'outsource',
-        assigneeId: 'CLI-001',
+        assigneeIds: ['CLI-001'],
         requiredSkills: [
           { id: 'PRJ-2024-001-TASK-1-SKILL-1', skill: 'セキュリティ監査' },
           { id: 'PRJ-2024-001-TASK-1-SKILL-2', skill: 'ペネトレーションテスト' }
@@ -120,7 +120,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2024-001-TASK-2',
         task: '対策実装',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1002',
+        assigneeIds: ['STF-1002'],
         requiredSkills: [
           { id: 'PRJ-2024-001-TASK-2-SKILL-1', skill: 'Linux' },
           { id: 'PRJ-2024-001-TASK-2-SKILL-2', skill: 'Windows Server' }
@@ -130,7 +130,7 @@ export const mockProjects: ProjectItem[] = [
         id: 'PRJ-2024-001-TASK-3',
         task: '再診断・完了報告',
         assigneeType: 'inhouse',
-        assigneeId: 'STF-1001',
+        assigneeIds: ['STF-1001'],
         requiredSkills: [
           { id: 'PRJ-2024-001-TASK-3-SKILL-1', skill: 'セキュリティ監査' }
         ]

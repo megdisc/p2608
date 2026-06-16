@@ -51,6 +51,7 @@ export function ProjectPage() {
       editable: true, 
       inputType: 'text', 
       rowType: 'sub',
+      style: { minWidth: '200px' },
       render: (item: any) => {
         const skills = item.requiredSkills || [];
         return (
@@ -120,29 +121,50 @@ export function ProjectPage() {
       )
     },
     {
-      key: 'assigneeId',
+      key: 'assigneeIds',
       header: TABLE_COLUMNS.ASSIGNEE,
       editable: true,
-      inputType: 'select',
+      inputType: 'text',
       rowType: 'sub',
-      options: (item: any) => {
-        const defaultOption = { label: '未選択', value: '' };
-        if (item.assigneeType === 'inhouse') {
-          return [defaultOption, ...mockProjectUsers.map(u => ({ label: u.name, value: u.id }))];
-        }
-        if (item.assigneeType === 'outsource') {
-          return [defaultOption, ...mockClients.map(c => ({ label: c.name, value: c.id }))];
-        }
-        return [defaultOption];
-      },
+      style: { minWidth: '280px' },
       render: (item: any) => {
+        const ids = item.assigneeIds || [];
+        if (ids.length === 0) return '';
+        
+        let labels: string[] = [];
         if (item.assigneeType === 'inhouse') {
-          return mockProjectUsers.find(u => u.id === item.assigneeId)?.name || '';
+          labels = ids.map((id: string) => mockProjectUsers.find(u => u.id === id)?.name).filter(Boolean) as string[];
+        } else if (item.assigneeType === 'outsource') {
+          labels = ids.map((id: string) => mockClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
         }
-        if (item.assigneeType === 'outsource') {
-          return mockClients.find(c => c.id === item.assigneeId)?.name || '';
+        
+        return (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+            {labels.map((label: string, idx: number) => (
+              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+                {label}
+              </span>
+            ))}
+          </div>
+        );
+      },
+      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
+        const currentIds = value || [];
+        let options: { value: string, label: string }[] = [];
+        if (item.assigneeType === 'inhouse') {
+          options = mockProjectUsers.map(u => ({ value: u.id, label: u.name }));
+        } else if (item.assigneeType === 'outsource') {
+          options = mockClients.map(c => ({ value: c.id, label: c.name }));
         }
-        return '';
+        
+        return (
+          <MultiSelectDropdown 
+            options={options}
+            value={currentIds}
+            onChange={onChange}
+            placeholder="担当者を選択"
+          />
+        );
       }
     },
   ];
@@ -182,7 +204,7 @@ export function ProjectPage() {
       task: '',
       requiredSkills: [],
       assigneeType: undefined,
-      assigneeId: '',
+      assigneeIds: [],
     };
   };
 

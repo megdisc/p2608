@@ -85,7 +85,7 @@ export type ProjectTask = {
   task: string;
   requiredSkills: TaskSkill[];
   assigneeType?: 'inhouse' | 'outsource';
-  assigneeId?: string;
+  assigneeIds?: string[];
 };
 
 export type ProjectItem = {

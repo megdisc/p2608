@@ -84,12 +84,15 @@ export type ProjectTask = {
   id: string;
   task: string;
   requiredSkills: TaskSkill[];
+  assigneeType?: 'inhouse' | 'outsource';
+  assigneeId?: string;
 };
 
 export type ProjectItem = {
   id: string;
   name: string;
   yomigana: string;
+  customerId?: string;
   deliveryDate: string;
   tasks: ProjectTask[];
 };
@@ -101,9 +104,17 @@ export type SkillItem = {
   description: string;
 };
 
+export type ClientItem = {
+  id: string;
+  name: string;
+  yomigana: string;
+  contactPerson: string;
+  phone: string;
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'skill';
+  | 'project' | 'projectUser' | 'client' | 'skill';
 
 export type SystemType = 'inventory' | 'project';

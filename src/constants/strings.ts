@@ -31,6 +31,7 @@ export const PAGE_NAMES = {
   // 案件管理
   PROJECT_INFO: '案件情報',
   PROJECT_USER: '利用者設定',
+  CLIENT: '取引先設定',
   SKILL: 'スキル設定',
 };
 
@@ -57,6 +58,7 @@ export const TABLE_COLUMNS = {
 
   // 仕入先
   SUPPLIER_NAME: '仕入先名',
+  CLIENT_NAME: '取引先名',
   CONTACT_PERSON: '担当者',
   PHONE: '電話番号',
 
@@ -79,8 +81,11 @@ export const TABLE_COLUMNS = {
   PROJECT_ID: '案件ID',
   PROJECT_NAME: '案件名',
   DELIVERY_DATE: '納期',
+  CUSTOMER: '顧客',
   TASK: 'タスク',
   REQUIRED_SKILLS: '必要スキル',
+  ASSIGNEE_TYPE: '担当者区分',
+  ASSIGNEE: '担当者',
   SKILL_NAME: 'スキル名',
 };
 
@@ -113,6 +118,7 @@ export const MESSAGES = {
   EMPTY_SUPPLIER: '仕入先データがありません',
   EMPTY_STAFF: 'スタッフデータがありません',
   EMPTY_PROJECT_USER: '利用者データがありません',
+  EMPTY_CLIENT: '取引先データがありません',
   EMPTY_SKILL: 'スキルデータがありません',
   DELETE_CONFIRM: '本当に削除しますか？',
   RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',

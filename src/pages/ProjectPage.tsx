@@ -5,6 +5,8 @@ import { MultiSelectDropdown, Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { mockProjects } from '../mocks/projects';
 import { mockSkills } from '../mocks/skills';
+import { mockClients } from '../mocks/clients';
+import { mockProjectUsers } from '../mocks/projectUsers';
 import type { ProjectItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 
@@ -18,6 +20,15 @@ export function ProjectPage() {
   const columns: Column<ProjectItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
+    { 
+      key: 'customerId', 
+      header: TABLE_COLUMNS.CUSTOMER, 
+      editable: true, 
+      inputType: 'select', 
+      options: [{ label: '未選択', value: '' }, ...mockClients.map(c => ({ label: c.name, value: c.id }))],
+      render: (item: any) => mockClients.find(c => c.id === item.customerId)?.name || '',
+      rowType: 'main' 
+    },
     { key: 'deliveryDate', header: TABLE_COLUMNS.DELIVERY_DATE, editable: true, inputType: 'date', rowType: 'main' },
     { 
       key: 'task', 
@@ -76,6 +87,64 @@ export function ProjectPage() {
         );
       }
     },
+    {
+      key: 'assigneeType',
+      header: TABLE_COLUMNS.ASSIGNEE_TYPE,
+      editable: true,
+      inputType: 'text',
+      rowType: 'sub',
+      render: (item: any) => item.assigneeType === 'inhouse' ? '内製' : item.assigneeType === 'outsource' ? '外注' : '',
+      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => (
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name={`assigneeType-${item.id}`} 
+              value="inhouse" 
+              checked={value === 'inhouse'} 
+              onChange={() => onChange('inhouse')} 
+            />
+            内製
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name={`assigneeType-${item.id}`} 
+              value="outsource" 
+              checked={value === 'outsource'} 
+              onChange={() => onChange('outsource')} 
+            />
+            外注
+          </label>
+        </div>
+      )
+    },
+    {
+      key: 'assigneeId',
+      header: TABLE_COLUMNS.ASSIGNEE,
+      editable: true,
+      inputType: 'select',
+      rowType: 'sub',
+      options: (item: any) => {
+        const defaultOption = { label: '未選択', value: '' };
+        if (item.assigneeType === 'inhouse') {
+          return [defaultOption, ...mockProjectUsers.map(u => ({ label: u.name, value: u.id }))];
+        }
+        if (item.assigneeType === 'outsource') {
+          return [defaultOption, ...mockClients.map(c => ({ label: c.name, value: c.id }))];
+        }
+        return [defaultOption];
+      },
+      render: (item: any) => {
+        if (item.assigneeType === 'inhouse') {
+          return mockProjectUsers.find(u => u.id === item.assigneeId)?.name || '';
+        }
+        if (item.assigneeType === 'outsource') {
+          return mockClients.find(c => c.id === item.assigneeId)?.name || '';
+        }
+        return '';
+      }
+    },
   ];
 
   const handleBatchSave = async (drafts: ProjectItem[], deletedIds: string[]) => {
@@ -101,6 +170,7 @@ export function ProjectPage() {
       id: `PRJ-${Date.now()}`,
       name: '',
       yomigana: '',
+      customerId: '',
       deliveryDate: new Date().toISOString().split('T')[0],
       tasks: [],
     } as ProjectItem;
@@ -111,6 +181,8 @@ export function ProjectPage() {
       id: `${parentId}-TASK-${Date.now()}`,
       task: '',
       requiredSkills: [],
+      assigneeType: undefined,
+      assigneeId: '',
     };
   };
 

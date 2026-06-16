@@ -10,3 +10,4 @@ export * from './LoginPage';
 export * from './ProjectPage';
 export * from './ProjectUserPage';
 export * from './SkillPage';
+export * from './ClientPage';

@@ -65,6 +65,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.PROJECT_USER}
           </button>
           <button 
+            className={`nav-button ${activeTab === 'client' ? 'active' : ''}`}
+            onClick={() => setActiveTab('client')}
+          >
+            {PAGE_NAMES.CLIENT}
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'skill' ? 'active' : ''}`}
             onClick={() => setActiveTab('skill')}
           >

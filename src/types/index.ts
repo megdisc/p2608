@@ -84,7 +84,6 @@ export type ProjectTask = {
   id: string;
   task: string;
   requiredSkills: TaskSkill[];
-  estimatedIncentive: number;
 };
 
 export type ProjectItem = {
@@ -92,7 +91,6 @@ export type ProjectItem = {
   name: string;
   yomigana: string;
   deliveryDate: string;
-  estimatedRevenue: number;
   tasks: ProjectTask[];
 };
 

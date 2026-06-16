@@ -79,10 +79,8 @@ export const TABLE_COLUMNS = {
   PROJECT_ID: '案件ID',
   PROJECT_NAME: '案件名',
   DELIVERY_DATE: '納期',
-  ESTIMATED_REVENUE: '収益見込額',
   TASK: 'タスク',
   REQUIRED_SKILLS: '必要スキル',
-  ESTIMATED_INCENTIVE: 'インセンティブ見込額',
   SKILL_NAME: 'スキル名',
 };
 

@@ -19,7 +19,6 @@ export function ProjectPage() {
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
     { key: 'deliveryDate', header: TABLE_COLUMNS.DELIVERY_DATE, editable: true, inputType: 'date', rowType: 'main' },
-    { key: 'estimatedRevenue', header: TABLE_COLUMNS.ESTIMATED_REVENUE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.estimatedRevenue?.toLocaleString(), rowType: 'main' },
     { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
@@ -35,7 +34,6 @@ export function ProjectPage() {
         </button>
       )
     },
-    { key: 'estimatedIncentive', header: TABLE_COLUMNS.ESTIMATED_INCENTIVE, className: 'quantity', editable: true, inputType: 'number', render: (item: any) => item.estimatedIncentive?.toLocaleString(), rowType: 'sub' },
     { 
       key: 'requiredSkills', 
       header: TABLE_COLUMNS.REQUIRED_SKILLS, 
@@ -104,7 +102,6 @@ export function ProjectPage() {
       name: '',
       yomigana: '',
       deliveryDate: new Date().toISOString().split('T')[0],
-      estimatedRevenue: 0,
       tasks: [],
     } as ProjectItem;
   };
@@ -114,7 +111,6 @@ export function ProjectPage() {
       id: `${parentId}-TASK-${Date.now()}`,
       task: '',
       requiredSkills: [],
-      estimatedIncentive: 0,
     };
   };
 

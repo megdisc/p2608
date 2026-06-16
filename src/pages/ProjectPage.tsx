@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
-import { MultiSelectDropdown } from '../components/ui';
+import { MultiSelectDropdown, Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { mockProjects } from '../mocks/projects';
 import { mockSkills } from '../mocks/skills';
@@ -26,12 +26,12 @@ export function ProjectPage() {
       inputType: 'text', 
       rowType: 'sub',
       mainRender: (_item, addSubRow) => (
-        <button 
+        <Button 
           onClick={addSubRow}
-          style={{ padding: '4px 8px', cursor: 'pointer', borderRadius: '4px', border: '1px solid var(--color-border)', background: 'var(--color-bg-subtle)', fontSize: '12px' }}
+          style={{ padding: '4px 8px', fontSize: '12px' }}
         >
           ＋ タスク追加
-        </button>
+        </Button>
       )
     },
     { 

@@ -12,6 +12,7 @@ type DataPageProps<T> = {
   headerRight?: React.ReactNode;
   footerLeft?: React.ReactNode;
   showDateFilter?: boolean;
+  showSingleDateFilter?: boolean;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
@@ -32,6 +33,7 @@ export function DataPage<T extends { id: string }>({
   headerRight,
   footerLeft,
   showDateFilter,
+  showSingleDateFilter,
   canEditRow,
   canDeleteRow,
   showRestrictionColumn,
@@ -54,6 +56,7 @@ export function DataPage<T extends { id: string }>({
         onBatchSave={onBatchSave}
         onAddRow={onAddRow}
         showDateFilter={showDateFilter}
+        showSingleDateFilter={showSingleDateFilter}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
         showRestrictionColumn={showRestrictionColumn}

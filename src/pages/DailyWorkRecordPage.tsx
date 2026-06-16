@@ -109,7 +109,7 @@ export function DailyWorkRecordPage() {
       emptyMessage={MESSAGES.EMPTY_DAILY_WORK_RECORD}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
-      showDateFilter={true}
+      showSingleDateFilter={true}
     />
   );
 }

@@ -90,6 +90,7 @@ type DataTableProps<T> = {
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: () => T;
   showDateFilter?: boolean;
+  showSingleDateFilter?: boolean;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
@@ -108,6 +109,7 @@ export function DataTable<T extends { id: string }>({
   onBatchSave,
   onAddRow,
   showDateFilter,
+  showSingleDateFilter,
   canEditRow,
   canDeleteRow,
   showRestrictionColumn,
@@ -138,6 +140,7 @@ export function DataTable<T extends { id: string }>({
     return formatJSTDateOnly(d);
   });
   const [endDate, setEndDate] = useState(() => getCurrentJSTDateOnly());
+  const [singleDate, setSingleDate] = useState(() => getCurrentJSTDateOnly());
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
@@ -175,6 +178,13 @@ export function DataTable<T extends { id: string }>({
         const dStr = formatJSTDateOnly(dateVal);
         return dStr >= effStart && dStr <= effEnd;
       });
+    } else if (showSingleDateFilter) {
+      sourceData = sourceData.filter(item => {
+        const dateVal = (item as any)['date'];
+        if (!dateVal) return false;
+        const dStr = formatJSTDateOnly(dateVal);
+        return dStr === singleDate;
+      });
     }
 
     const existingRows = sourceData.filter(item => !newRowIds.has(item.id));
@@ -202,7 +212,7 @@ export function DataTable<T extends { id: string }>({
     });
 
     return { sortedExistingRows: existingRows, newRows };
-  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, startDate, endDate]);
+  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, showSingleDateFilter, startDate, endDate, singleDate]);
 
   const totalItems = sortedExistingRows.length;
   const totalPages = Math.ceil(totalItems / pageSize);
@@ -681,6 +691,40 @@ export function DataTable<T extends { id: string }>({
                 value={endDate} 
                 onChange={(val) => setEndDate(val)} 
               />
+            </div>
+          ) : showSingleDateFilter ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  const d = new Date(singleDate);
+                  d.setDate(d.getDate() - 1);
+                  setSingleDate(formatJSTDateOnly(d));
+                }}
+              >
+                ＜
+              </Button>
+              <DateFilterInput 
+                value={singleDate} 
+                onChange={(val) => setSingleDate(val)} 
+              />
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  const d = new Date(singleDate);
+                  d.setDate(d.getDate() + 1);
+                  setSingleDate(formatJSTDateOnly(d));
+                }}
+              >
+                ＞
+              </Button>
+              <Button 
+                variant="secondary"
+                style={{ padding: '0 12px', height: '28px', fontSize: '12px' }}
+                onClick={() => setSingleDate(getCurrentJSTDateOnly())}
+              >
+                今日
+              </Button>
             </div>
           ) : footerLeft ? (
             footerLeft

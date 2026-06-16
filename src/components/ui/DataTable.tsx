@@ -72,7 +72,7 @@ export type Column<T> = {
   mainRender?: (item: T, addSubRow?: () => void) => React.ReactNode;
   rowType?: 'main' | 'sub' | 'sub-sub';
   className?: string;
-  style?: React.CSSProperties;
+  style?: React.CSSProperties | ((item: T) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
   inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
@@ -95,6 +95,7 @@ type DataTableProps<T> = {
   onSingleDateChange?: (date: string) => void;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
+  hideDeleteColumn?: boolean;
   showRestrictionColumn?: boolean;
   footerLeft?: React.ReactNode;
   subItemsKey?: keyof T;
@@ -116,6 +117,7 @@ export function DataTable<T extends { id: string }>({
   onSingleDateChange,
   canEditRow,
   canDeleteRow,
+  hideDeleteColumn,
   showRestrictionColumn,
   footerLeft,
   subItemsKey,
@@ -456,6 +458,7 @@ export function DataTable<T extends { id: string }>({
 
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
   const isEditingEnabled = !!onBatchSave;
+  const showDeleteCol = isEditingEnabled && !hideDeleteColumn;
 
   const isExistingModified = useMemo(() => {
     if (deletedIds.size > 0) return true;
@@ -493,7 +496,7 @@ export function DataTable<T extends { id: string }>({
                   </div>
                 </th>
               ))}
-              {isEditingEnabled && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
+              {showDeleteCol && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
               {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
             </tr>
           </thead>
@@ -526,14 +529,15 @@ export function DataTable<T extends { id: string }>({
                               borderBottomStyle = 'none';
                             }
                           }
-                          const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+                          const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
+                          const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
                           return (
                             <td key={col.key || idx} className={col.className} style={customStyle}>
                               {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, undefined, true, subItem.id) : null}
                             </td>
                           );
                         })}
-                        {isEditingEnabled && (
+                        {showDeleteCol && (
                           <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
                             <Input 
                               type="checkbox" 
@@ -575,7 +579,8 @@ export function DataTable<T extends { id: string }>({
                       if (isMainCol && subItems.length > 0) {
                         borderBottomStyle = 'none';
                       }
-                      const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+                      const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
+                      const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
 
                       if (col.rowType === 'sub') {
                         return (
@@ -599,7 +604,7 @@ export function DataTable<T extends { id: string }>({
                         </td>
                       );
                     })}
-                    {isEditingEnabled && (
+                    {showDeleteCol && (
                       <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
                         {isRowDeletable && (
                           <Input 
@@ -638,7 +643,8 @@ export function DataTable<T extends { id: string }>({
                                 borderBottomStyle = 'none';
                               }
                             }
-                            const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+                            const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
+                            const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
 
                             if (col.rowType === 'sub-sub') {
                               return (
@@ -653,7 +659,7 @@ export function DataTable<T extends { id: string }>({
                               </td>
                             );
                           })}
-                          {isEditingEnabled && (
+                          {showDeleteCol && (
                             <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
                               <Input 
                                 type="checkbox" 
@@ -678,7 +684,7 @@ export function DataTable<T extends { id: string }>({
             })}
             {visibleData.length === 0 && (
               <tr>
-                <td colSpan={columns.length + (isEditingEnabled ? 1 : 0)} className="empty-message">{emptyMessage}</td>
+                <td colSpan={columns.length + (showDeleteCol ? 1 : 0) + (showRestrictionColumn ? 1 : 0)} className="empty-message">{emptyMessage}</td>
               </tr>
             )}
           </tbody>

@@ -9,6 +9,22 @@ import type { DailyWorkRecordItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 import { getCurrentJSTDateOnly } from '../utils/date';
 
+type DisplayRow = {
+  id: string;
+  date: string;
+  userId: string;
+  userName: string;
+  projectId: string;
+  projectName: string;
+  taskId: string;
+  taskName: string;
+  workTime: number;
+  isFirstForUser: boolean;
+  isFirstForProject: boolean;
+  isLastForUser: boolean;
+  isLastForProject: boolean;
+};
+
 export function DailyWorkRecordPage() {
   const [items, setItems] = useState<DailyWorkRecordItem[]>(mockDailyWorkRecords);
   const [loading, setLoading] = useState(false);
@@ -16,14 +32,11 @@ export function DailyWorkRecordPage() {
   const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
 
   const displayData = useMemo(() => {
-    // 該当日付においてアクティブな案件を抽出
     const activeProjects = mockProjects.filter(p => p.startDate <= currentDate && currentDate <= p.endDate);
+    const rows: DisplayRow[] = [];
 
-    const generatedRows: DailyWorkRecordItem[] = [];
-
-    // 全利用者に対してループ
     for (const user of mockProjectUsers) {
-      // ユーザーがアサインされているアクティブなタスクを抽出
+      // Find all tasks assigned to this user in active projects
       const assignedTasks = activeProjects.flatMap(p => 
         p.tasks
           .filter(t => t.assigneeIds?.includes(user.id))
@@ -31,66 +44,90 @@ export function DailyWorkRecordPage() {
       );
 
       if (assignedTasks.length === 0) {
-        // 担当タスクがない場合、1行だけ「担当タスクなし」として生成
+        // No tasks at all for this user
         const existingRecord = items.find(item => item.date === currentDate && item.userId === user.id && item.taskId === 'none');
-        generatedRows.push({
+        rows.push({
           id: existingRecord?.id || `DWR-${currentDate}-${user.id}-none`,
           date: currentDate,
           userId: user.id,
+          userName: user.name,
+          projectId: 'none',
+          projectName: '-',
           taskId: 'none',
+          taskName: '担当タスクなし',
           workTime: existingRecord?.workTime || 0,
+          isFirstForUser: true,
+          isFirstForProject: true,
+          isLastForUser: true,
+          isLastForProject: true
         });
       } else {
-        // 担当タスクがある場合、各タスクごとに行を生成
-        for (const { task } of assignedTasks) {
-          const existingRecord = items.find(item => item.date === currentDate && item.userId === user.id && item.taskId === task.id);
-          generatedRows.push({
-            id: existingRecord?.id || `DWR-${currentDate}-${user.id}-${task.id}`,
-            date: currentDate,
-            userId: user.id,
-            taskId: task.id,
-            workTime: existingRecord?.workTime || 0,
-          });
+        // Group tasks by project
+        const projectMap = new Map<string, { project: typeof mockProjects[0], tasks: typeof mockProjects[0]['tasks'] }>();
+        for (const { project, task } of assignedTasks) {
+          if (!projectMap.has(project.id)) {
+            projectMap.set(project.id, { project, tasks: [] });
+          }
+          projectMap.get(project.id)!.tasks.push(task);
+        }
+
+        let isFirstForUser = true;
+        const projectEntries = Array.from(projectMap.entries());
+        for (let pIdx = 0; pIdx < projectEntries.length; pIdx++) {
+          const [projectId, { project, tasks }] = projectEntries[pIdx];
+          const isLastProjectForUser = pIdx === projectEntries.length - 1;
+          
+          let isFirstForProject = true;
+          for (let tIdx = 0; tIdx < tasks.length; tIdx++) {
+            const task = tasks[tIdx];
+            const isLastTaskForProject = tIdx === tasks.length - 1;
+            
+            const existingRecord = items.find(item => item.date === currentDate && item.userId === user.id && item.taskId === task.id);
+            rows.push({
+              id: existingRecord?.id || `DWR-${currentDate}-${user.id}-${task.id}`,
+              date: currentDate,
+              userId: user.id,
+              userName: user.name,
+              projectId: project.id,
+              projectName: project.name,
+              taskId: task.id,
+              taskName: task.task,
+              workTime: existingRecord?.workTime || 0,
+              isFirstForUser,
+              isFirstForProject,
+              isLastForProject: isLastTaskForProject,
+              isLastForUser: isLastProjectForUser && isLastTaskForProject
+            });
+            isFirstForUser = false;
+            isFirstForProject = false;
+          }
         }
       }
     }
 
-    return generatedRows;
+    return rows;
   }, [currentDate, items]);
 
-  const columns: Column<DailyWorkRecordItem>[] = [
+  const columns: Column<DisplayRow>[] = [
     { 
-      key: 'userId', 
+      key: 'userName', 
       header: TABLE_COLUMNS.USER_NAME, 
       editable: false, 
-      render: (item) => mockProjectUsers.find(u => u.id === item.userId)?.name || ''
+      style: (item) => ({ borderBottom: item.isLastForUser ? undefined : 'none' }),
+      render: (item) => item.isFirstForUser ? item.userName : ''
     },
     { 
-      key: 'projectId', 
+      key: 'projectName', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
       editable: false, 
-      style: { minWidth: '200px' },
-      render: (item) => {
-        if (item.taskId === 'none') return '-';
-        for (const p of mockProjects) {
-          if (p.tasks.some(task => task.id === item.taskId)) return p.name;
-        }
-        return '';
-      }
+      style: (item) => ({ minWidth: '200px', borderBottom: item.isLastForProject ? undefined : 'none' }),
+      render: (item) => item.isFirstForProject ? item.projectName : ''
     },
     { 
-      key: 'taskId', 
+      key: 'taskName', 
       header: TABLE_COLUMNS.TASK, 
       editable: false, 
-      style: { minWidth: '200px' },
-      render: (item) => {
-        if (item.taskId === 'none') return '担当タスクなし';
-        for (const p of mockProjects) {
-          const t = p.tasks.find(task => task.id === item.taskId);
-          if (t) return t.task;
-        }
-        return '';
-      }
+      style: { minWidth: '200px' }
     },
     { 
       key: 'workTime', 
@@ -101,13 +138,21 @@ export function DailyWorkRecordPage() {
     },
   ];
 
-  const handleBatchSave = async (drafts: DailyWorkRecordItem[]) => {
+  const handleBatchSave = async (drafts: DisplayRow[]) => {
     try {
       setLoading(true);
-      // Simulate network request
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      const validDrafts = drafts.filter(d => d.workTime > 0 && d.taskId !== 'none');
+      const validDrafts: DailyWorkRecordItem[] = drafts
+        .filter(d => d.workTime > 0 && d.taskId !== 'none')
+        .map(d => ({
+          id: d.id,
+          date: d.date,
+          userId: d.userId,
+          taskId: d.taskId,
+          workTime: d.workTime
+        }));
+
       setItems(prev => {
         const otherDates = prev.filter(item => item.date !== currentDate);
         return [...otherDates, ...validDrafts];
@@ -135,6 +180,7 @@ export function DailyWorkRecordPage() {
       singleDate={currentDate}
       onSingleDateChange={setCurrentDate}
       canDeleteRow={() => false}
+      hideDeleteColumn={true}
     />
   );
 }

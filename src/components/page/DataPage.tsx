@@ -17,6 +17,7 @@ type DataPageProps<T> = {
   onSingleDateChange?: (date: string) => void;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
+  hideDeleteColumn?: boolean;
   showRestrictionColumn?: boolean;
   subItemsKey?: keyof T;
   onAddSubRow?: (parentId: string) => any;
@@ -40,6 +41,7 @@ export function DataPage<T extends { id: string }>({
   onSingleDateChange,
   canEditRow,
   canDeleteRow,
+  hideDeleteColumn,
   showRestrictionColumn,
   subItemsKey,
   onAddSubRow,
@@ -65,6 +67,7 @@ export function DataPage<T extends { id: string }>({
         onSingleDateChange={onSingleDateChange}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
+        hideDeleteColumn={hideDeleteColumn}
         showRestrictionColumn={showRestrictionColumn}
         footerLeft={footerLeft}
         subItemsKey={subItemsKey}

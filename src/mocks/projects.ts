@@ -16,6 +16,24 @@ export const mockProjects: ProjectItem[] = [
           { id: 'PRJ-2023-001-TASK-1-SKILL-2', skill: 'Cisco' }
         ],
         estimatedIncentive: 100000,
+      },
+      {
+        id: 'PRJ-2023-001-TASK-2',
+        task: '基本・詳細設計',
+        requiredSkills: [
+          { id: 'PRJ-2023-001-TASK-2-SKILL-1', skill: 'ネットワーク設計' },
+          { id: 'PRJ-2023-001-TASK-2-SKILL-2', skill: 'Cisco' }
+        ],
+        estimatedIncentive: 150000,
+      },
+      {
+        id: 'PRJ-2023-001-TASK-3',
+        task: '構築・テスト',
+        requiredSkills: [
+          { id: 'PRJ-2023-001-TASK-3-SKILL-1', skill: 'Cisco' },
+          { id: 'PRJ-2023-001-TASK-3-SKILL-2', skill: 'Linux' }
+        ],
+        estimatedIncentive: 200000,
       }
     ],
   },
@@ -90,6 +108,23 @@ export const mockProjects: ProjectItem[] = [
           { id: 'PRJ-2024-001-TASK-1-SKILL-2', skill: 'ペネトレーションテスト' }
         ],
         estimatedIncentive: 80000,
+      },
+      {
+        id: 'PRJ-2024-001-TASK-2',
+        task: '対策実装',
+        requiredSkills: [
+          { id: 'PRJ-2024-001-TASK-2-SKILL-1', skill: 'Linux' },
+          { id: 'PRJ-2024-001-TASK-2-SKILL-2', skill: 'Windows Server' }
+        ],
+        estimatedIncentive: 120000,
+      },
+      {
+        id: 'PRJ-2024-001-TASK-3',
+        task: '再診断・完了報告',
+        requiredSkills: [
+          { id: 'PRJ-2024-001-TASK-3-SKILL-1', skill: 'セキュリティ監査' }
+        ],
+        estimatedIncentive: 50000,
       }
     ],
   },

@@ -493,11 +493,29 @@ export function DataTable<T extends { id: string }>({
                   <React.Fragment key={`${subItem.id}-skills`}>
                     {subSubItems.map(subSubItem => (
                       <tr key={subSubItem.id} className={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted ? 'deleted-row' : ''}>
-                        {columns.map((col, idx) => (
-                          <td key={col.key || idx} className={col.className} style={col.style}>
-                            {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, undefined, true, subItem.id) : null}
-                          </td>
-                        ))}
+                        {columns.map((col, idx) => {
+                          const isMainCol = col.rowType === 'main' || !col.rowType;
+                          const isSubCol = col.rowType === 'sub';
+                          let borderBottomStyle: string | undefined;
+                          if (isMainCol) {
+                            const isLastSubItem = subItem === subItems[subItems.length - 1];
+                            const isLastSubSubItem = subSubItem === subSubItems[subSubItems.length - 1];
+                            if (!isLastSubItem || !isLastSubSubItem) {
+                              borderBottomStyle = 'none';
+                            }
+                          } else if (isSubCol) {
+                            const isLastSubSubItem = subSubItem === subSubItems[subSubItems.length - 1];
+                            if (!isLastSubSubItem) {
+                              borderBottomStyle = 'none';
+                            }
+                          }
+                          const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+                          return (
+                            <td key={col.key || idx} className={col.className} style={customStyle}>
+                              {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, undefined, true, subItem.id) : null}
+                            </td>
+                          );
+                        })}
                         {isEditingEnabled && (
                           <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
                             <Input 
@@ -535,22 +553,29 @@ export function DataTable<T extends { id: string }>({
                     }}
                   >
                     {columns.map((col, idx) => {
+                      const isMainCol = col.rowType === 'main' || !col.rowType;
+                      let borderBottomStyle: string | undefined;
+                      if (isMainCol && subItems.length > 0) {
+                        borderBottomStyle = 'none';
+                      }
+                      const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+
                       if (col.rowType === 'sub') {
                         return (
-                          <td key={col.key || idx} className={col.className} style={col.style}>
+                          <td key={col.key || idx} className={col.className} style={customStyle}>
                             {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
                           </td>
                         );
                       }
                       if (col.rowType === 'sub-sub') {
                         return (
-                          <td key={col.key || idx} className={col.className} style={col.style}>
+                          <td key={col.key || idx} className={col.className} style={customStyle}>
                             {null}
                           </td>
                         );
                       }
                       return (
-                        <td key={col.key || idx} className={col.className} style={col.style}>
+                        <td key={col.key || idx} className={col.className} style={customStyle}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {renderCellContent(col, item, false)}
                           </div>
@@ -587,15 +612,26 @@ export function DataTable<T extends { id: string }>({
                       <React.Fragment key={subItem.id}>
                         <tr className={isSubDeleted || isDeleted ? 'deleted-row' : ''}>
                           {columns.map((col, idx) => {
+                            const isMainCol = col.rowType === 'main' || !col.rowType;
+                            let borderBottomStyle: string | undefined;
+                            if (isMainCol) {
+                              const isLastSubItem = subItem === subItems[subItems.length - 1];
+                              const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
+                              if (!isLastSubItem || subSubItems.length > 0) {
+                                borderBottomStyle = 'none';
+                              }
+                            }
+                            const customStyle = borderBottomStyle ? { ...col.style, borderBottom: borderBottomStyle } : col.style;
+
                             if (col.rowType === 'sub-sub') {
                               return (
-                                <td key={col.key || idx} className={col.className} style={col.style}>
+                                <td key={col.key || idx} className={col.className} style={customStyle}>
                                   {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id)) : null}
                                 </td>
                               );
                             }
                             return (
-                              <td key={col.key || idx} className={col.className} style={col.style}>
+                              <td key={col.key || idx} className={col.className} style={customStyle}>
                                 {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id) : null}
                               </td>
                             );

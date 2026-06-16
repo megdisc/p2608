@@ -91,6 +91,8 @@ type DataTableProps<T> = {
   onAddRow?: () => T;
   showDateFilter?: boolean;
   showSingleDateFilter?: boolean;
+  singleDate?: string;
+  onSingleDateChange?: (date: string) => void;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   showRestrictionColumn?: boolean;
@@ -110,6 +112,8 @@ export function DataTable<T extends { id: string }>({
   onAddRow,
   showDateFilter,
   showSingleDateFilter,
+  singleDate: externalSingleDate,
+  onSingleDateChange,
   canEditRow,
   canDeleteRow,
   showRestrictionColumn,
@@ -140,7 +144,10 @@ export function DataTable<T extends { id: string }>({
     return formatJSTDateOnly(d);
   });
   const [endDate, setEndDate] = useState(() => getCurrentJSTDateOnly());
-  const [singleDate, setSingleDate] = useState(() => getCurrentJSTDateOnly());
+  const [internalSingleDate, setInternalSingleDate] = useState(() => getCurrentJSTDateOnly());
+
+  const singleDate = externalSingleDate !== undefined ? externalSingleDate : internalSingleDate;
+  const setSingleDate = onSingleDateChange || setInternalSingleDate;
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;

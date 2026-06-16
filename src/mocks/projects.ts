@@ -6,7 +6,8 @@ export const mockProjects: ProjectItem[] = [
     name: '本社オフィスネットワーク構築',
     yomigana: 'ほんしゃおふぃすねっとわーくこうちく',
     customerId: 'CLI-001',
-    deliveryDate: '2023-12-31',
+    startDate: '2023-01-01',
+    endDate: '2023-12-31',
     tasks: [
       {
         id: 'PRJ-2023-001-TASK-1',
@@ -45,7 +46,8 @@ export const mockProjects: ProjectItem[] = [
     name: '支社サーバーリプレイス',
     yomigana: 'ししゃさーばーりぷれいす',
     customerId: 'CLI-002',
-    deliveryDate: '2023-08-20',
+    startDate: '2023-04-01',
+    endDate: '2023-08-20',
     tasks: [
       {
         id: 'PRJ-2023-002-TASK-1',
@@ -64,7 +66,8 @@ export const mockProjects: ProjectItem[] = [
     name: '新規Webサービス開発支援',
     yomigana: 'しんきうぇぶさーびすかいはつしえん',
     customerId: 'CLI-003',
-    deliveryDate: '2024-03-31',
+    startDate: '2023-10-01',
+    endDate: '2024-03-31',
     tasks: [
       {
         id: 'PRJ-2023-003-TASK-1',
@@ -84,7 +87,8 @@ export const mockProjects: ProjectItem[] = [
     name: '社内基幹システム移行',
     yomigana: 'しゃないきかんしすてむいこう',
     customerId: 'CLI-001',
-    deliveryDate: '2024-06-30',
+    startDate: '2024-01-01',
+    endDate: '2024-06-30',
     tasks: [
       {
         id: 'PRJ-2023-004-TASK-1',
@@ -104,7 +108,8 @@ export const mockProjects: ProjectItem[] = [
     name: 'セキュリティ監査と対策実装',
     yomigana: 'せきゅりてぃかんさとたいさくじっそう',
     customerId: 'CLI-002',
-    deliveryDate: '2024-04-15',
+    startDate: '2024-02-01',
+    endDate: '2024-04-15',
     tasks: [
       {
         id: 'PRJ-2024-001-TASK-1',

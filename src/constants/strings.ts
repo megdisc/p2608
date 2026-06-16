@@ -81,7 +81,8 @@ export const TABLE_COLUMNS = {
   // 案件情報
   PROJECT_ID: '案件ID',
   PROJECT_NAME: '案件名',
-  DELIVERY_DATE: '納期',
+  START_DATE: '開始日',
+  END_DATE: '終了日',
   CUSTOMER: '顧客',
   TASK: 'タスク',
   REQUIRED_SKILLS: '必要スキル',

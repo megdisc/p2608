@@ -29,7 +29,8 @@ export function ProjectPage() {
       render: (item: any) => mockClients.find(c => c.id === item.customerId)?.name || '',
       rowType: 'main' 
     },
-    { key: 'deliveryDate', header: TABLE_COLUMNS.DELIVERY_DATE, editable: true, inputType: 'date', rowType: 'main' },
+    { key: 'startDate', header: TABLE_COLUMNS.START_DATE, editable: true, inputType: 'date', rowType: 'main' },
+    { key: 'endDate', header: TABLE_COLUMNS.END_DATE, editable: true, inputType: 'date', rowType: 'main' },
     { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
@@ -193,7 +194,8 @@ export function ProjectPage() {
       name: '',
       yomigana: '',
       customerId: '',
-      deliveryDate: new Date().toISOString().split('T')[0],
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
       tasks: [],
     } as ProjectItem;
   };

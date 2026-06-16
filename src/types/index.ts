@@ -93,7 +93,8 @@ export type ProjectItem = {
   name: string;
   yomigana: string;
   customerId?: string;
-  deliveryDate: string;
+  startDate: string;
+  endDate: string;
   tasks: ProjectTask[];
 };
 

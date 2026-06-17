@@ -3,32 +3,78 @@ import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import { MultiSelectDropdown, Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { mockProjects } from '../mocks/projects';
-import { mockSkills } from '../mocks/skills';
-import { mockClients } from '../mocks/clients';
 import { supabase } from '../lib/supabase';
-import type { ProjectItem, MemberItem } from '../types';
+import type { ProjectItem, MemberItem, ClientItem, SkillItem, ProjectTask } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 
 export function ProjectPage() {
-  const [items, setItems] = useState<ProjectItem[]>(mockProjects);
+  const [items, setItems] = useState<ProjectItem[]>([]);
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
+  const [dbClients, setDbClients] = useState<ClientItem[]>([]);
+  const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data, error } = await supabase.from('members').select('*').eq('is_deleted', false);
-        if (error) throw error;
-        if (data) setDbMembers(data);
-      } catch (error) {
-        console.error('Error fetching members:', error);
-      } finally {
-        setLoading(false);
-      }
+  const fetchAllData = async () => {
+    try {
+      setLoading(true);
+      const [membersRes, clientsRes, skillsRes, projectsRes] = await Promise.all([
+        supabase.from('members').select('*').eq('is_deleted', false),
+        supabase.from('clients').select('*').eq('is_deleted', false),
+        supabase.from('skills').select('*').eq('is_deleted', false),
+        supabase.from('projects').select(`
+          id, name, yomigana, client_id, start_date, end_date,
+          project_tasks (
+            id, name, assignee_type, is_deleted,
+            project_task_skills ( skill_id, skills(name) ),
+            project_task_assignees ( member_id, client_id )
+          )
+        `).eq('is_deleted', false)
+      ]);
+
+      if (membersRes.error) throw membersRes.error;
+      if (clientsRes.error) throw clientsRes.error;
+      if (skillsRes.error) throw skillsRes.error;
+      if (projectsRes.error) throw projectsRes.error;
+
+      setDbMembers(membersRes.data || []);
+      setDbClients(clientsRes.data || []);
+      setDbSkills(skillsRes.data || []);
+
+      const formattedProjects: ProjectItem[] = (projectsRes.data || []).map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        yomigana: p.yomigana || '',
+        customerId: p.client_id || '',
+        startDate: p.start_date,
+        endDate: p.end_date,
+        tasks: (p.project_tasks || [])
+          .filter((pt: any) => !pt.is_deleted)
+          .map((pt: any) => ({
+            id: pt.id,
+            task: pt.name,
+            assigneeType: pt.assignee_type as 'inhouse' | 'outsource',
+            requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
+              id: pts.skill_id,
+              skill: pts.skills?.name
+            })),
+            assigneeIds: (pt.project_task_assignees || [])
+              .map((pta: any) => pta.member_id || pta.client_id)
+              .filter(Boolean)
+          }))
+      }));
+
+      setItems(formattedProjects);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      showAlert('データ取得に失敗しました', 'error');
+    } finally {
+      setLoading(false);
     }
-    fetchData();
+  };
+
+  useEffect(() => {
+    fetchAllData();
   }, []);
 
   const columns: Column<ProjectItem>[] = [
@@ -39,8 +85,8 @@ export function ProjectPage() {
       header: TABLE_COLUMNS.CUSTOMER, 
       editable: true, 
       inputType: 'select', 
-      options: [{ label: '未選択', value: '' }, ...mockClients.map(c => ({ label: c.name, value: c.id }))],
-      render: (item: any) => mockClients.find(c => c.id === item.customerId)?.name || '',
+      options: [{ label: '未選択', value: '' }, ...dbClients.map(c => ({ label: c.name, value: c.id }))],
+      render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || '',
       rowType: 'main' 
     },
     { key: 'startDate', header: TABLE_COLUMNS.START_DATE, editable: true, inputType: 'date', rowType: 'main' },
@@ -71,8 +117,8 @@ export function ProjectPage() {
         const skills = item.requiredSkills || [];
         return (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            {skills.map((s: any) => (
-              <span key={s.id} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+            {skills.map((s: any, idx: number) => (
+              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
                 {s.skill}
               </span>
             ))}
@@ -82,13 +128,14 @@ export function ProjectPage() {
       customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
         const currentSkills = value || [];
         const currentSkillNames = currentSkills.map((s: any) => s.skill);
-        const options = mockSkills.map(s => ({ value: s.name, label: s.name }));
+        const options = dbSkills.map(s => ({ value: s.name, label: s.name }));
         
         const handleChange = (newSkillNames: string[]) => {
            const newSkills = newSkillNames.map(name => {
              const existing = currentSkills.find((s: any) => s.skill === name);
              if (existing) return existing;
-             return { id: `${item.id}-SKILL-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, skill: name };
+             const dbSkill = dbSkills.find(s => s.name === name);
+             return { id: dbSkill?.id || '', skill: name };
            });
            onChange(newSkills);
         };
@@ -118,7 +165,14 @@ export function ProjectPage() {
               name={`assigneeType-${item.id}`} 
               value="inhouse" 
               checked={value === 'inhouse'} 
-              onChange={() => onChange('inhouse')} 
+              onChange={() => {
+                // Clear assignees if type changes
+                if (value !== 'inhouse') {
+                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
+                  if (task) task.assigneeIds = [];
+                }
+                onChange('inhouse')
+              }} 
             />
             内製
           </label>
@@ -128,7 +182,13 @@ export function ProjectPage() {
               name={`assigneeType-${item.id}`} 
               value="outsource" 
               checked={value === 'outsource'} 
-              onChange={() => onChange('outsource')} 
+              onChange={() => {
+                if (value !== 'outsource') {
+                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
+                  if (task) task.assigneeIds = [];
+                }
+                onChange('outsource')
+              }} 
             />
             外注
           </label>
@@ -150,7 +210,7 @@ export function ProjectPage() {
         if (item.assigneeType === 'inhouse') {
           labels = ids.map((id: string) => dbMembers.find(u => u.id === id)?.name).filter(Boolean) as string[];
         } else if (item.assigneeType === 'outsource') {
-          labels = ids.map((id: string) => mockClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
+          labels = ids.map((id: string) => dbClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
         }
         
         return (
@@ -169,7 +229,7 @@ export function ProjectPage() {
         if (item.assigneeType === 'inhouse') {
           options = dbMembers.map(u => ({ value: u.id, label: u.name }));
         } else if (item.assigneeType === 'outsource') {
-          options = mockClients.map(c => ({ value: c.id, label: c.name }));
+          options = dbClients.map(c => ({ value: c.id, label: c.name }));
         }
         
         return (
@@ -187,13 +247,78 @@ export function ProjectPage() {
   const handleBatchSave = async (drafts: ProjectItem[], deletedIds: string[]) => {
     try {
       setLoading(true);
-      // Simulate network request
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const newItems = drafts.filter(item => !deletedIds.includes(item.id));
-      setItems(newItems);
-      
+
+      // Handle project deletions (logical delete)
+      if (deletedIds.length > 0) {
+        const pIdsToDelete = deletedIds.filter(id => !id.includes('TASK'));
+        const tIdsToDelete = deletedIds.filter(id => id.includes('TASK'));
+
+        if (pIdsToDelete.length > 0) {
+          await supabase.from('projects').update({ is_deleted: true }).in('id', pIdsToDelete);
+        }
+        if (tIdsToDelete.length > 0) {
+          await supabase.from('project_tasks').update({ is_deleted: true }).in('id', tIdsToDelete);
+        }
+      }
+
+      const activeProjects = drafts.filter(item => !deletedIds.includes(item.id));
+
+      for (const p of activeProjects) {
+        // Prepare project data
+        const projData = {
+          id: p.id,
+          name: p.name,
+          yomigana: p.yomigana,
+          client_id: p.customerId || null,
+          start_date: p.startDate,
+          end_date: p.endDate
+        };
+
+        // Upsert project
+        const { error: pErr } = await supabase.from('projects').upsert(projData);
+        if (pErr) throw pErr;
+
+        // Upsert tasks
+        for (const t of p.tasks) {
+          if (deletedIds.includes(t.id)) continue;
+
+          const taskData = {
+            id: t.id,
+            project_id: p.id,
+            name: t.task,
+            assignee_type: t.assigneeType
+          };
+
+          const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);
+          if (tErr) throw tErr;
+
+          // Replace skills
+          await supabase.from('project_task_skills').delete().eq('task_id', t.id);
+          if (t.requiredSkills?.length > 0) {
+            const skillInserts = t.requiredSkills.map(s => ({
+              task_id: t.id,
+              skill_id: s.id
+            })).filter(s => s.skill_id); // ensure valid UUID
+            if (skillInserts.length > 0) {
+              await supabase.from('project_task_skills').insert(skillInserts);
+            }
+          }
+
+          // Replace assignees
+          await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
+          if (t.assigneeIds?.length > 0) {
+            const assigneeInserts = t.assigneeIds.map(aid => ({
+              task_id: t.id,
+              member_id: t.assigneeType === 'inhouse' ? aid : null,
+              client_id: t.assigneeType === 'outsource' ? aid : null,
+            }));
+            await supabase.from('project_task_assignees').insert(assigneeInserts);
+          }
+        }
+      }
+
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+      await fetchAllData();
     } catch (err) {
       console.error(err);
       showAlert(MESSAGES.SAVE_ERROR, 'error');
@@ -202,9 +327,18 @@ export function ProjectPage() {
     }
   };
 
+  const generateId = () => {
+    return typeof crypto !== 'undefined' && crypto.randomUUID 
+      ? crypto.randomUUID() 
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.random() * 16 | 0;
+          return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+  };
+
   const handleAdd = () => {
     return {
-      id: `PRJ-${Date.now()}`,
+      id: generateId(),
       name: '',
       yomigana: '',
       customerId: '',
@@ -216,7 +350,7 @@ export function ProjectPage() {
 
   const handleAddSubRow = (parentId: string) => {
     return {
-      id: `${parentId}-TASK-${Date.now()}`,
+      id: generateId(),
       task: '',
       requiredSkills: [],
       assigneeType: undefined,

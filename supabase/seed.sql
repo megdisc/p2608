@@ -145,3 +145,20 @@ INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('d6b67bb
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
+
+-- Additional Daily Work Records
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);

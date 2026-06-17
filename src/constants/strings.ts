@@ -33,7 +33,7 @@ export const PAGE_NAMES = {
   PROJECT_USER: '利用者設定',
   CLIENT: '取引先設定',
   SKILL: 'スキル設定',
-  DAILY_WORK_RECORD: '日次作業記録',
+  DAILY_WORK_RECORD: '作業記録',
 };
 
 export const TABLE_COLUMNS = {

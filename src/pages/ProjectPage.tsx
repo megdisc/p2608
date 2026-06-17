@@ -4,7 +4,7 @@ import type { Column } from '../components/ui';
 import { MultiSelectDropdown, Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
-import type { ProjectItem, MemberItem, ClientItem, SkillItem, ProjectTask } from '../types';
+import type { ProjectItem, MemberItem, ClientItem, SkillItem, StaffItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 
 export function ProjectPage() {
@@ -12,22 +12,24 @@ export function ProjectPage() {
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
+  const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [membersRes, clientsRes, skillsRes, projectsRes] = await Promise.all([
+      const [membersRes, clientsRes, skillsRes, staffsRes, projectsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false),
         supabase.from('clients').select('*').eq('is_deleted', false),
         supabase.from('skills').select('*').eq('is_deleted', false),
+        supabase.from('staffs').select('*').eq('is_deleted', false),
         supabase.from('projects').select(`
           id, name, yomigana, client_id, start_date, end_date,
           project_tasks (
             id, name, assignee_type, is_deleted,
             project_task_skills ( skill_id, skills(name) ),
-            project_task_assignees ( member_id, client_id )
+            project_task_assignees ( member_id, client_id, staff_id )
           )
         `).eq('is_deleted', false)
       ]);
@@ -35,11 +37,13 @@ export function ProjectPage() {
       if (membersRes.error) throw membersRes.error;
       if (clientsRes.error) throw clientsRes.error;
       if (skillsRes.error) throw skillsRes.error;
+      if (staffsRes.error) throw staffsRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
       setDbMembers(membersRes.data || []);
       setDbClients(clientsRes.data || []);
       setDbSkills(skillsRes.data || []);
+      setDbStaffs(staffsRes.data || []);
 
       const formattedProjects: ProjectItem[] = (projectsRes.data || []).map((p: any) => ({
         id: p.id,
@@ -59,7 +63,7 @@ export function ProjectPage() {
               skill: pts.skills?.name
             })),
             assigneeIds: (pt.project_task_assignees || [])
-              .map((pta: any) => pta.member_id || pta.client_id)
+              .map((pta: any) => pta.member_id || pta.client_id || pta.staff_id)
               .filter(Boolean)
           }))
       }));
@@ -208,7 +212,13 @@ export function ProjectPage() {
         
         let labels: string[] = [];
         if (item.assigneeType === 'inhouse') {
-          labels = ids.map((id: string) => dbMembers.find(u => u.id === id)?.name).filter(Boolean) as string[];
+          labels = ids.map((id: string) => {
+            const member = dbMembers.find(u => u.id === id);
+            if (member) return `[利用者] ${member.name}`;
+            const staff = dbStaffs.find(s => s.id === id);
+            if (staff) return `[職員] ${staff.name}`;
+            return undefined;
+          }).filter(Boolean) as string[];
         } else if (item.assigneeType === 'outsource') {
           labels = ids.map((id: string) => dbClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
         }
@@ -227,7 +237,10 @@ export function ProjectPage() {
         const currentIds = value || [];
         let options: { value: string, label: string }[] = [];
         if (item.assigneeType === 'inhouse') {
-          options = dbMembers.map(u => ({ value: u.id, label: u.name }));
+          options = [
+            ...dbStaffs.map(s => ({ value: s.id, label: `[職員] ${s.name}` })),
+            ...dbMembers.map(u => ({ value: u.id, label: `[利用者] ${u.name}` }))
+          ];
         } else if (item.assigneeType === 'outsource') {
           options = dbClients.map(c => ({ value: c.id, label: c.name }));
         }
@@ -307,11 +320,16 @@ export function ProjectPage() {
           // Replace assignees
           await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
           if (t.assigneeIds?.length > 0) {
-            const assigneeInserts = t.assigneeIds.map(aid => ({
-              task_id: t.id,
-              member_id: t.assigneeType === 'inhouse' ? aid : null,
-              client_id: t.assigneeType === 'outsource' ? aid : null,
-            }));
+            const assigneeInserts = t.assigneeIds.map(aid => {
+              const isStaff = dbStaffs.some(s => s.id === aid);
+              const isMember = dbMembers.some(m => m.id === aid);
+              return {
+                task_id: t.id,
+                member_id: t.assigneeType === 'inhouse' && isMember ? aid : null,
+                staff_id: t.assigneeType === 'inhouse' && isStaff ? aid : null,
+                client_id: t.assigneeType === 'outsource' ? aid : null,
+              };
+            });
             await supabase.from('project_task_assignees').insert(assigneeInserts);
           }
         }

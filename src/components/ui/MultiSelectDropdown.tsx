@@ -79,7 +79,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = 'é
           flexWrap: 'wrap',
           gap: '4px',
           cursor: 'pointer',
-          background: 'var(--color-bg-base)'
+          background: 'var(--color-bg-main)'
         }}
       >
         {selectedOptions.length === 0 && (
@@ -130,7 +130,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = 'é
             left: `${dropdownCoords.left}px`,
             minWidth: `${dropdownCoords.width}px`,
             width: 'max-content',
-            background: 'var(--color-bg-base)',
+            background: 'var(--color-bg-main)',
             border: '1px solid var(--color-border)',
             borderRadius: '4px',
             maxHeight: '200px',

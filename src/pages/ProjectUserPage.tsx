@@ -1,32 +1,73 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
-import type { StaffItem } from '../types';
-import { mockProjectUsers } from '../mocks/projectUsers';
+import type { MemberItem } from '../types';
+import { supabase } from '../lib/supabase';
 import { useAlert } from '../contexts/AlertContext';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, MEMBER_ROLE_OPTIONS } from '../constants';
 
 export function ProjectUserPage() {
-  const [items, setItems] = useState<StaffItem[]>(mockProjectUsers);
-  const [loading, setLoading] = useState(false);
+  const [items, setItems] = useState<MemberItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
-  const columns: Column<StaffItem>[] = [
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from('members').select('*').eq('is_deleted', false);
+        if (error) throw error;
+        if (data) setItems(data);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  const columns: Column<MemberItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
-    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: STAFF_ROLE_OPTIONS },
-    { key: 'email', header: TABLE_COLUMNS.EMAIL, editable: true, inputType: 'email' },
-    { key: 'password', header: TABLE_COLUMNS.PASSWORD, editable: true, inputType: 'password' },
+    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: MEMBER_ROLE_OPTIONS },
+    { key: 'notes', header: TABLE_COLUMNS.NOTES, editable: true, inputType: 'text' },
   ];
 
-  const handleBatchSave = async (drafts: StaffItem[], deletedIds: string[]) => {
+  const handleBatchSave = async (drafts: MemberItem[], deletedIds: string[]) => {
     try {
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const newItems = drafts.filter(item => !deletedIds.includes(item.id));
-      setItems(newItems);
-      
+      if (deletedIds.length > 0) {
+        const { error } = await supabase.from('members').update({ is_deleted: true }).in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('MBR-'));
+      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('MBR-'));
+
+      for (const item of existingItems) {
+        const { error } = await supabase.from('members').update({
+          name: item.name,
+          yomigana: item.yomigana || '',
+          role: item.role,
+          notes: item.notes || ''
+        }).eq('id', item.id);
+        if (error) throw error;
+      }
+
+      if (newItems.length > 0) {
+        const inserts = newItems.map(item => ({
+          name: item.name,
+          yomigana: item.yomigana || '',
+          role: item.role,
+          notes: item.notes || ''
+        }));
+        const { error } = await supabase.from('members').insert(inserts);
+        if (error) throw error;
+      }
+
+      const { data, error: reloadError } = await supabase.from('members').select('*').eq('is_deleted', false);
+      if (reloadError) throw reloadError;
+      if (data) setItems(data);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       console.error(err);
@@ -38,13 +79,12 @@ export function ProjectUserPage() {
 
   const handleAdd = () => {
     return {
-      id: `USR-${Date.now()}`,
+      id: `MBR-${Date.now()}`,
       name: '',
       yomigana: '',
-      email: '',
-      password: '',
-      role: ''
-    } as unknown as StaffItem;
+      notes: '',
+      role: '利用者'
+    } as MemberItem;
   };
 
   if (loading) return <div>Loading...</div>;

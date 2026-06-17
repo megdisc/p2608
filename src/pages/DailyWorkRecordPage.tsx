@@ -1,12 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import { Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { mockDailyWorkRecords } from '../mocks/dailyWorkRecords';
-import { mockProjectUsers } from '../mocks/projectUsers';
 import { mockProjects } from '../mocks/projects';
-import type { DailyWorkRecordItem } from '../types';
+import { supabase } from '../lib/supabase';
+import type { DailyWorkRecordItem, MemberItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 import { getCurrentJSTDateOnly } from '../utils/date';
 
@@ -27,15 +27,31 @@ type DisplayUserRow = {
 
 export function DailyWorkRecordPage() {
   const [items, setItems] = useState<DailyWorkRecordItem[]>(mockDailyWorkRecords);
-  const [loading, setLoading] = useState(false);
+  const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
   const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from('members').select('*').eq('is_deleted', false);
+        if (error) throw error;
+        if (data) setDbMembers(data);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const displayData = useMemo(() => {
     const activeProjects = mockProjects.filter(p => p.startDate <= currentDate && currentDate <= p.endDate);
     const rows: DisplayUserRow[] = [];
 
-    for (const user of mockProjectUsers) {
+    for (const user of dbMembers) {
       const userRecords = items.filter(item => item.date === currentDate && item.userId === user.id);
       let records: DisplaySubRow[] = [];
 
@@ -87,8 +103,8 @@ export function DailyWorkRecordPage() {
       header: TABLE_COLUMNS.USER_NAME, 
       editable: true, 
       inputType: 'select',
-      options: [{ label: '選択してください', value: '' }, ...mockProjectUsers.map(u => ({ label: u.name, value: u.id }))],
-      render: (item: any) => mockProjectUsers.find(u => u.id === item.userId)?.name || '',
+      options: [{ label: '選択してください', value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
+      render: (item: any) => dbMembers.find(u => u.id === item.userId)?.name || '',
       rowType: 'main'
     },
     { 

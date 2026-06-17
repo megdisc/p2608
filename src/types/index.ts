@@ -62,6 +62,14 @@ export type StaffItem = {
   role: string;
 };
 
+export type MemberItem = {
+  id: string;
+  name: string;
+  yomigana: string;
+  role: string;
+  notes?: string;
+};
+
 export type StocktakingItem = {
   id: string;
   date: string;

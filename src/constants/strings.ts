@@ -26,7 +26,7 @@ export const PAGE_NAMES = {
   CATEGORY: 'カテゴリ設定',
   LOCATION: '保管場所設定',
   SUPPLIER: '仕入先設定',
-  STAFF: 'スタッフ設定',
+  STAFF: '職員設定',
   
   // 案件管理
   PROJECT_INFO: '案件情報',
@@ -52,7 +52,7 @@ export const TABLE_COLUMNS = {
   // カテゴリ
   CATEGORY_NAME: 'カテゴリ名',
 
-  // スタッフ
+  // 職員
   ROLE: '権限ロール',
   EMAIL: 'メールアドレス',
   PASSWORD: 'パスワード',
@@ -94,6 +94,7 @@ export const TABLE_COLUMNS = {
   USER_NAME: '氏名',
   WORK_CONTENT: '作業内容',
   WORK_TIME: '作業時間',
+  NOTES: '備考',
 };
 
 export const LOGIN_LABELS = {
@@ -123,7 +124,7 @@ export const MESSAGES = {
   EMPTY_CATEGORY: 'カテゴリデータがありません',
   EMPTY_LOCATION: '保管場所データがありません',
   EMPTY_SUPPLIER: '仕入先データがありません',
-  EMPTY_STAFF: 'スタッフデータがありません',
+  EMPTY_STAFF: '職員データがありません',
   EMPTY_PROJECT_USER: '利用者データがありません',
   EMPTY_CLIENT: '取引先データがありません',
   EMPTY_SKILL: 'スキルデータがありません',

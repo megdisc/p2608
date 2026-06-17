@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DataPage } from '../components/page';
 import type { Column } from '../components/ui';
 import { MultiSelectDropdown, Button } from '../components/ui';
@@ -6,16 +6,30 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { mockProjects } from '../mocks/projects';
 import { mockSkills } from '../mocks/skills';
 import { mockClients } from '../mocks/clients';
-import { mockProjectUsers } from '../mocks/projectUsers';
-import type { ProjectItem } from '../types';
+import { supabase } from '../lib/supabase';
+import type { ProjectItem, MemberItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
-
-// Removed statusOptions as status is no longer needed.
 
 export function ProjectPage() {
   const [items, setItems] = useState<ProjectItem[]>(mockProjects);
-  const [loading, setLoading] = useState(false);
+  const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const { data, error } = await supabase.from('members').select('*').eq('is_deleted', false);
+        if (error) throw error;
+        if (data) setDbMembers(data);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   const columns: Column<ProjectItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
@@ -134,7 +148,7 @@ export function ProjectPage() {
         
         let labels: string[] = [];
         if (item.assigneeType === 'inhouse') {
-          labels = ids.map((id: string) => mockProjectUsers.find(u => u.id === id)?.name).filter(Boolean) as string[];
+          labels = ids.map((id: string) => dbMembers.find(u => u.id === id)?.name).filter(Boolean) as string[];
         } else if (item.assigneeType === 'outsource') {
           labels = ids.map((id: string) => mockClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
         }
@@ -153,7 +167,7 @@ export function ProjectPage() {
         const currentIds = value || [];
         let options: { value: string, label: string }[] = [];
         if (item.assigneeType === 'inhouse') {
-          options = mockProjectUsers.map(u => ({ value: u.id, label: u.name }));
+          options = dbMembers.map(u => ({ value: u.id, label: u.name }));
         } else if (item.assigneeType === 'outsource') {
           options = mockClients.map(c => ({ value: c.id, label: c.name }));
         }

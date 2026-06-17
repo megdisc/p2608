@@ -4,9 +4,9 @@ INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, e
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token) VALUES ('00000000-0000-0000-0000-000000000000', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'authenticated', 'authenticated', 'staff-003@example.com', '', NOW(), NULL, NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), '', '', '', '');
 
 -- Staffs
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '佐藤健', 'さとうたける', 'staff-001@example.com', 'システム管理者');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '鈴木美咲', 'すずきみさき', 'staff-002@example.com', 'スタッフ');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '高橋大輔', 'たかはしだいすけ', 'staff-003@example.com', 'スタッフ');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '相澤 翔太', 'あいざわ しょうた', 'staff-001@example.com', 'システム管理者');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上 結衣', 'いのうえ ゆい', 'staff-002@example.com', 'スタッフ');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田 拓海', 'うえだ たくみ', 'staff-003@example.com', 'スタッフ');
 
 -- Categories
 INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'こなるい', '強力粉、薄力粉、ライ麦粉など');
@@ -25,10 +25,10 @@ INSERT INTO locations (id, code, name, yomigana, description) VALUES ('f15ee998-
 INSERT INTO locations (id, code, name, yomigana, description) VALUES ('0e833132-a18a-4f96-8ae7-cbd98727413c', 'LOC-006', '冷凍庫A', 'れいとうこA', '冷凍生地・冷凍フルーツ');
 
 -- Suppliers
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('97ed7a81-8160-4a50-9cfa-edf6a7d18019', 'SUP-001', '関東製菓材料卸(株)', 'かんとうせいかざいりょうおろし', '山田太郎', '0311110001');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('f7b80af7-8479-40fe-9bce-cf36fe91d40e', 'SUP-002', '第一食材商事', 'だいいちしょくざいしょうじ', '佐藤花子', '0311110002');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 'SUP-003', '丸越乳業販売(株)', 'まるこしにゅうぎょうはんばい', '鈴木一郎', '0311110003');
-INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('2faff51b-529c-486c-ba7d-4cc90d8582cc', 'SUP-004', '新鮮農産流通協同組合', 'しんせんのうさんりゅうつうきょうどうくみあい', '田中次郎', '0421110004');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('97ed7a81-8160-4a50-9cfa-edf6a7d18019', 'SUP-001', '関東製菓材料卸(株)', 'かんとうせいかざいりょうおろし', '加藤 剛', '0311110001');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('f7b80af7-8479-40fe-9bce-cf36fe91d40e', 'SUP-002', '第一食材商事', 'だいいちしょくざいしょうじ', '木下 楓', '0311110002');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('ff4c7a97-a5d1-44ff-b7b9-f36412c97b1e', 'SUP-003', '丸越乳業販売(株)', 'まるこしにゅうぎょうはんばい', '工藤 蓮', '0311110003');
+INSERT INTO suppliers (id, code, name, yomigana, contact_person, phone) VALUES ('2faff51b-529c-486c-ba7d-4cc90d8582cc', 'SUP-004', '新鮮農産流通協同組合', 'しんせんのうさんりゅうつうきょうどうくみあい', '小泉 葵', '0421110004');
 
 -- Items
 INSERT INTO items (id, code, name, yomigana, description, supplier_id, standard_price, standard_purchase_qty, category_id, location_id) VALUES ('ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 'ING-001', '強力粉 (カメリヤ)', 'きょうりきこ', '日清製粉、25kg', '97ed7a81-8160-4a50-9cfa-edf6a7d18019', 7500, 1, 'fca14a0d-8f82-4203-a761-e712fd6bbf95', '4f3672e8-daf7-4ee6-a289-1b99ad9a512c');
@@ -84,3 +84,7 @@ INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference,
 INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference, staff_id, location_id) VALUES ('60b38d5c-dc07-4343-ab39-171db5fb0dd8', '2026-05-31 17:00', '0e39e2fa-8c31-42c0-bf47-9f787d9f0179', 28, 12, -16, 'de2d336b-254d-4af7-8e49-5acbda340e67', '0a41bdf2-7741-48f9-9215-cdcd042ca397');
 INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference, staff_id, location_id) VALUES ('3307a58a-43d8-4c88-806a-baa66564fa21', '2026-05-31 18:00', '1d5f185c-3de6-4ca2-a751-053ebb5f7d73', 47, 43, -4, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
 INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference, staff_id, location_id) VALUES ('4be7e9b5-d0b9-45d5-8d53-878c16455fc4', '2026-05-31 19:00', 'ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 17, 38, 21, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
+
+-- Members
+INSERT INTO members (id, name, yomigana, role, notes) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口 春奈', 'えぐち はるな', '利用者', '週3日利用');
+INSERT INTO members (id, name, yomigana, role, notes) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西 智也', 'おおにし ともや', '利用者', '配慮事項あり');

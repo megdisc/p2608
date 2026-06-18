@@ -373,6 +373,7 @@ export function ProgressRecordPage() {
       subItemsKey="records"
       onAddRow={handleAddRow}
       onAddSubRow={handleAddSubRow}
+      disableAddButton={true}
     />
   );
 }

@@ -314,6 +314,7 @@ export function DailyWorkRecordPage() {
       subItemsKey="records"
       onAddRow={handleAddRow}
       onAddSubRow={handleAddSubRow}
+      disableAddButton={true}
     />
   );
 }

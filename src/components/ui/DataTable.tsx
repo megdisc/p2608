@@ -105,6 +105,7 @@ type DataTableProps<T> = {
   showMonthFilter?: boolean;
   singleMonth?: string;
   onSingleMonthChange?: (month: string) => void;
+  disableAddButton?: boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -129,7 +130,8 @@ export function DataTable<T extends { id: string }>({
   onAddSubSubRow,
   showMonthFilter,
   singleMonth,
-  onSingleMonthChange
+  onSingleMonthChange,
+  disableAddButton
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -814,7 +816,7 @@ export function DataTable<T extends { id: string }>({
         {isEditingEnabled ? (
           <div className="action-buttons">
             {onAddRow && (
-              <Button onClick={handleAddClick}>
+              <Button onClick={handleAddClick} disabled={disableAddButton}>
                 {BUTTON_LABELS.ADD}
               </Button>
             )}

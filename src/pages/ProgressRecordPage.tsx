@@ -134,10 +134,7 @@ export function ProgressRecordPage() {
   const displayData = useMemo(() => {
     if (dbProjects.length === 0) return [];
     
-    const [year, month] = currentMonth.split('-');
-    const lastDay = new Date(parseInt(year), parseInt(month), 0);
-    const lastDayStr = `${year}-${month}-${lastDay.getDate().toString().padStart(2, '0')}`;
-    const firstDayStr = `${year}-${month}-01`;
+
     
     const rows: DisplayProjectRow[] = [];
 
@@ -145,62 +142,53 @@ export function ProgressRecordPage() {
       const taskIdsInProject = project.tasks.map(t => t.id);
       const projectRecords = currentMonthRecords.filter(r => taskIdsInProject.includes(r.task_id));
       
-      const isActive = project.startDate <= lastDayStr && firstDayStr <= project.endDate;
-      if (!isActive && projectRecords.length === 0) {
-        continue;
-      }
-
       const taskMap = new Map<string, DisplaySubRow>();
 
-      // 1. 保存済みの進捗実績をセット
-      for (const r of projectRecords) {
-        const prevRec = prevMonthRecords.find(pr => pr.task_id === r.task_id && pr.member_id === r.member_id);
-        const prevProgress = prevRec ? prevRec.current_progress : '-';
-        const workTime = workTimeSummary[`${r.member_id}_${r.task_id}`] || 0;
+      for (const t of project.tasks) {
+        const membersToProcess = new Set<string>(t.assigneeIds || []);
         
-        taskMap.set(`${r.task_id}_${r.member_id}`, {
-          id: r.id,
-          taskId: r.task_id,
-          userId: r.member_id,
-          prevProgress,
-          currentProgress: Number(r.current_progress),
-          workTime,
-          contributionRatio: Number(r.contribution_ratio),
-          isSaved: true
-        });
-      }
-
-      // 2. 現在の割り当てタスク、または今月作業時間があるタスクをセット（未保存のもの）
-      if (isActive) {
-        for (const t of project.tasks) {
-          // アサインされているメンバー
-          const membersToProcess = new Set<string>(t.assigneeIds || []);
-          
-          // または、このタスクに今月作業時間があるメンバー
-          for (const member of dbMembers) {
-            if ((workTimeSummary[`${member.id}_${t.id}`] || 0) > 0) {
-              membersToProcess.add(member.id);
-            }
+        // 今月作業時間があるメンバーを追加
+        for (const member of dbMembers) {
+          if ((workTimeSummary[`${member.id}_${t.id}`] || 0) > 0) {
+            membersToProcess.add(member.id);
           }
+        }
 
-          for (const memberId of membersToProcess) {
-            const mapKey = `${t.id}_${memberId}`;
-            if (!taskMap.has(mapKey)) {
-              const prevRec = prevMonthRecords.find(pr => pr.task_id === t.id && pr.member_id === memberId);
-              const prevProgress = prevRec ? prevRec.current_progress : '-';
-              const workTime = workTimeSummary[`${memberId}_${t.id}`] || 0;
+        // 今月の保存済み進捗記録があるメンバーを追加
+        const taskRecords = projectRecords.filter(r => r.task_id === t.id);
+        for (const r of taskRecords) {
+          membersToProcess.add(r.member_id);
+        }
 
-              taskMap.set(mapKey, {
-                id: `UNSAVED-${currentMonth}-${memberId}-${t.id}`,
-                taskId: t.id,
-                userId: memberId,
-                prevProgress,
-                currentProgress: prevRec ? Number(prevRec.current_progress) : 0,
-                workTime,
-                contributionRatio: 0,
-                isSaved: false
-              });
-            }
+        for (const memberId of membersToProcess) {
+          const mapKey = `${t.id}_${memberId}`;
+          const savedRecord = taskRecords.find(r => r.member_id === memberId);
+          const prevRec = prevMonthRecords.find(pr => pr.task_id === t.id && pr.member_id === memberId);
+          const prevProgress = prevRec ? prevRec.current_progress : '-';
+          const workTime = workTimeSummary[`${memberId}_${t.id}`] || 0;
+
+          if (savedRecord) {
+            taskMap.set(mapKey, {
+              id: savedRecord.id,
+              taskId: t.id,
+              userId: memberId,
+              prevProgress,
+              currentProgress: Number(savedRecord.current_progress),
+              workTime,
+              contributionRatio: Number(savedRecord.contribution_ratio),
+              isSaved: true
+            });
+          } else {
+            taskMap.set(mapKey, {
+              id: `UNSAVED-${currentMonth}-${memberId}-${t.id}`,
+              taskId: t.id,
+              userId: memberId,
+              prevProgress,
+              currentProgress: prevRec ? Number(prevRec.current_progress) : 0,
+              workTime,
+              contributionRatio: 0,
+              isSaved: false
+            });
           }
         }
       }

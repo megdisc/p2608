@@ -102,6 +102,9 @@ type DataTableProps<T> = {
   onAddSubRow?: (parentId: string) => any;
   subSubItemsKey?: string;
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
+  showMonthFilter?: boolean;
+  singleMonth?: string;
+  onSingleMonthChange?: (month: string) => void;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -123,7 +126,10 @@ export function DataTable<T extends { id: string }>({
   subItemsKey,
   onAddSubRow,
   subSubItemsKey,
-  onAddSubSubRow
+  onAddSubSubRow,
+  showMonthFilter,
+  singleMonth,
+  onSingleMonthChange
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -737,6 +743,50 @@ export function DataTable<T extends { id: string }>({
                 onClick={() => setSingleDate(getCurrentJSTDateOnly())}
               >
                 今日
+              </Button>
+            </div>
+          ) : showMonthFilter ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  if (singleMonth && onSingleMonthChange) {
+                    const [y, m] = singleMonth.split('-');
+                    let date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                    date.setMonth(date.getMonth() - 1);
+                    const newY = date.getFullYear();
+                    const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                    onSingleMonthChange(`${newY}-${newM}`);
+                  }
+                }}
+              >
+                ＜
+              </Button>
+              <input 
+                type="month"
+                value={singleMonth || ''}
+                onChange={(e) => {
+                  if (e.target.value && onSingleMonthChange) {
+                    onSingleMonthChange(e.target.value);
+                  }
+                }}
+                className="date-filter-pill"
+                style={{ width: '160px' }}
+              />
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  if (singleMonth && onSingleMonthChange) {
+                    const [y, m] = singleMonth.split('-');
+                    let date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                    date.setMonth(date.getMonth() + 1);
+                    const newY = date.getFullYear();
+                    const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                    onSingleMonthChange(`${newY}-${newM}`);
+                  }
+                }}
+              >
+                ＞
               </Button>
             </div>
           ) : footerLeft ? (

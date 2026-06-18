@@ -88,6 +88,34 @@ export function getCurrentJSTDateOnly(): string {
 }
 
 /**
+ * Returns the current year and month formatted as "YYYY-MM" in JST
+ */
+export function getCurrentJSTMonth(): string {
+  const dateOnly = getCurrentJSTDateOnly();
+  return dateOnly.substring(0, 7);
+}
+
+/**
+ * Given a "YYYY-MM" string, returns the previous month "YYYY-MM"
+ */
+export function getPreviousMonth(yearMonth: string): string {
+  if (!yearMonth || yearMonth.length < 7) return yearMonth;
+  const [yearStr, monthStr] = yearMonth.split('-');
+  let year = parseInt(yearStr, 10);
+  let month = parseInt(monthStr, 10);
+  
+  if (isNaN(year) || isNaN(month)) return yearMonth;
+  
+  month -= 1;
+  if (month < 1) {
+    month = 12;
+    year -= 1;
+  }
+  
+  return `${year}-${month.toString().padStart(2, '0')}`;
+}
+
+/**
  * Returns an ISO string for database insertion, based on current time.
  */
 export function getCurrentISOString(): string {

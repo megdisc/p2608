@@ -37,6 +37,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.DAILY_WORK_RECORD}
           </button>
+          <button 
+            className={`nav-button ${activeTab === 'progressRecord' ? 'active' : ''}`}
+            onClick={() => setActiveTab('progressRecord')}
+          >
+            {PAGE_NAMES.PROGRESS_RECORD}
+          </button>
         </div>
 
         <div className="nav-section">

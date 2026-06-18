@@ -15,6 +15,9 @@ type DataPageProps<T> = {
   showSingleDateFilter?: boolean;
   singleDate?: string;
   onSingleDateChange?: (date: string) => void;
+  showMonthFilter?: boolean;
+  singleMonth?: string;
+  onSingleMonthChange?: (month: string) => void;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   hideDeleteColumn?: boolean;
@@ -39,6 +42,9 @@ export function DataPage<T extends { id: string }>({
   showSingleDateFilter,
   singleDate,
   onSingleDateChange,
+  showMonthFilter,
+  singleMonth,
+  onSingleMonthChange,
   canEditRow,
   canDeleteRow,
   hideDeleteColumn,
@@ -65,6 +71,9 @@ export function DataPage<T extends { id: string }>({
         showSingleDateFilter={showSingleDateFilter}
         singleDate={singleDate}
         onSingleDateChange={onSingleDateChange}
+        showMonthFilter={showMonthFilter}
+        singleMonth={singleMonth}
+        onSingleMonthChange={onSingleMonthChange}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
         hideDeleteColumn={hideDeleteColumn}

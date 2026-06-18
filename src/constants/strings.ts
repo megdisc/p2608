@@ -34,6 +34,7 @@ export const PAGE_NAMES = {
   CLIENT: '取引先設定',
   SKILL: 'スキル設定',
   DAILY_WORK_RECORD: '作業記録',
+  PROGRESS_RECORD: '進捗記録',
 };
 
 export const TABLE_COLUMNS = {
@@ -95,6 +96,12 @@ export const TABLE_COLUMNS = {
   WORK_CONTENT: '作業内容',
   WORK_TIME: '作業時間',
   NOTES: '備考',
+  
+  // 進捗記録
+  PREV_MONTH_PROGRESS: '前月進捗率 (%)',
+  CURRENT_MONTH_PROGRESS: '今月進捗率 (%)',
+  CURRENT_MONTH_WORK_TIME: '今月作業時間',
+  CONTRIBUTION_RATIO: '貢献比率',
 };
 
 export const LOGIN_LABELS = {
@@ -129,6 +136,7 @@ export const MESSAGES = {
   EMPTY_CLIENT: '取引先データがありません',
   EMPTY_SKILL: 'スキルデータがありません',
   EMPTY_DAILY_WORK_RECORD: '作業記録がありません',
+  EMPTY_PROGRESS_RECORD: '進捗記録がありません',
   DELETE_CONFIRM: '本当に削除しますか？',
   RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',
 };

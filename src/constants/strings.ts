@@ -92,7 +92,7 @@ export const TABLE_COLUMNS = {
   SKILL_NAME: 'スキル名',
   
   // 日次作業記録
-  USER_NAME: '氏名',
+  USER_NAME: '担当者',
   WORK_CONTENT: '作業内容',
   WORK_TIME: '作業時間',
   NOTES: '備考',

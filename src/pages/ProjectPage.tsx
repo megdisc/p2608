@@ -129,7 +129,7 @@ export function ProjectPage() {
           </div>
         );
       },
-      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
+      customEditRender: (value: any, _item: any, onChange: (newValue: any) => void) => {
         const currentSkills = value || [];
         const currentSkillNames = currentSkills.map((s: any) => s.skill);
         const options = dbSkills.map(s => ({ value: s.name, label: s.name }));
@@ -319,7 +319,7 @@ export function ProjectPage() {
 
           // Replace assignees
           await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
-          if (t.assigneeIds?.length > 0) {
+          if (t.assigneeIds && t.assigneeIds.length > 0) {
             const assigneeInserts = t.assigneeIds.map(aid => {
               const isStaff = dbStaffs.some(s => s.id === aid);
               const isMember = dbMembers.some(m => m.id === aid);
@@ -366,7 +366,7 @@ export function ProjectPage() {
     } as ProjectItem;
   };
 
-  const handleAddSubRow = (parentId: string) => {
+  const handleAddSubRow = (_parentId: string) => {
     return {
       id: generateId(),
       task: '',

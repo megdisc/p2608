@@ -279,11 +279,7 @@ export function DailyWorkRecordPage() {
     }
   };
 
-  const handleAddRow = () => {
-    return null; // メイン行は全利用者を自動表示するため手動追加は不要
-  };
-
-  const handleAddSubRow = (parentId: string) => {
+  const handleAddSubRow = (_parentId: string) => {
     return {
       id: `TEMP-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       projectId: '',
@@ -305,7 +301,6 @@ export function DailyWorkRecordPage() {
       showSingleDateFilter={true}
       singleDate={currentDate}
       onSingleDateChange={setCurrentDate}
-      onAddRow={handleAddRow}
       subItemsKey="records"
       onAddSubRow={handleAddSubRow}
     />

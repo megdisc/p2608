@@ -289,6 +289,16 @@ export function DailyWorkRecordPage() {
     };
   };
 
+  const handleAddRow = () => {
+    return {
+      id: `TEMP-MAIN-${Date.now()}`,
+      userId: '',
+      userName: '',
+      date: currentDate,
+      records: []
+    };
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -302,6 +312,7 @@ export function DailyWorkRecordPage() {
       singleDate={currentDate}
       onSingleDateChange={setCurrentDate}
       subItemsKey="records"
+      onAddRow={handleAddRow}
       onAddSubRow={handleAddSubRow}
     />
   );

@@ -740,8 +740,7 @@ export function DataTable<T extends { id: string }>({
               <Button 
                 variant="secondary"
                 style={{ 
-                  padding: '0 12px', height: '28px', fontSize: '12px',
-                  ...(singleDate === getCurrentJSTDateOnly() ? { backgroundColor: '#cccccc', color: '#666666', cursor: 'not-allowed', borderColor: '#cccccc' } : {})
+                  padding: '0 12px', height: '28px', fontSize: '12px'
                 }}
                 onClick={() => setSingleDate(getCurrentJSTDateOnly())}
                 disabled={singleDate === getCurrentJSTDateOnly()}
@@ -795,8 +794,7 @@ export function DataTable<T extends { id: string }>({
               <Button 
                 variant="secondary"
                 style={{ 
-                  padding: '0 12px', height: '28px', fontSize: '12px',
-                  ...(singleMonth === getCurrentJSTMonth() ? { backgroundColor: '#cccccc', color: '#666666', cursor: 'not-allowed', borderColor: '#cccccc' } : {})
+                  padding: '0 12px', height: '28px', fontSize: '12px'
                 }}
                 onClick={() => {
                   if (onSingleMonthChange) {

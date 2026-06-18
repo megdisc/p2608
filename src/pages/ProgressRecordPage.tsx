@@ -349,6 +349,15 @@ export function ProgressRecordPage() {
     };
   };
 
+  const handleAddRow = () => {
+    return {
+      id: `TEMP-MAIN-${Date.now()}`,
+      projectId: '',
+      yearMonth: currentMonth,
+      records: []
+    };
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -362,6 +371,7 @@ export function ProgressRecordPage() {
       singleMonth={currentMonth}
       onSingleMonthChange={setCurrentMonth}
       subItemsKey="records"
+      onAddRow={handleAddRow}
       onAddSubRow={handleAddSubRow}
     />
   );

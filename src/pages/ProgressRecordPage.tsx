@@ -20,8 +20,6 @@ type MonthlyRecord = {
 type DisplayAssigneeRow = {
   id: string;
   userId: string;
-  prevProgress: string | number;
-  currentProgress: number;
   workTime: number;
   contributionRatio: number;
   isSaved: boolean;
@@ -30,6 +28,8 @@ type DisplayAssigneeRow = {
 type DisplayTaskRow = {
   id: string;
   taskId: string;
+  prevProgress: string | number;
+  currentProgress: number;
   assignees: DisplayAssigneeRow[];
 };
 
@@ -172,19 +172,26 @@ export function ProgressRecordPage() {
         }
 
         const assignees: DisplayAssigneeRow[] = [];
+        let taskPrevProgress: string | number = '-';
+        let taskCurrentProgress: number = 0;
 
         for (const memberId of membersToProcess) {
           const savedRecord = taskRecords.find(r => r.member_id === memberId);
           const prevRec = prevMonthRecords.find(pr => pr.task_id === t.id && pr.member_id === memberId);
-          const prevProgress = prevRec ? prevRec.current_progress : '-';
+          
+          if (savedRecord && taskCurrentProgress === 0) {
+            taskCurrentProgress = Number(savedRecord.current_progress);
+          }
+          if (prevRec && taskPrevProgress === '-') {
+            taskPrevProgress = Number(prevRec.current_progress);
+          }
+
           const workTime = workTimeSummary[`${memberId}_${t.id}`] || 0;
 
           if (savedRecord) {
             assignees.push({
               id: savedRecord.id,
               userId: memberId,
-              prevProgress,
-              currentProgress: Number(savedRecord.current_progress),
               workTime,
               contributionRatio: Number(savedRecord.contribution_ratio),
               isSaved: true
@@ -193,8 +200,6 @@ export function ProgressRecordPage() {
             assignees.push({
               id: `UNSAVED-${currentMonth}-${memberId}-${t.id}`,
               userId: memberId,
-              prevProgress,
-              currentProgress: prevRec ? Number(prevRec.current_progress) : 0,
               workTime,
               contributionRatio: 0,
               isSaved: false
@@ -206,6 +211,8 @@ export function ProgressRecordPage() {
           tasks.push({
             id: t.id,
             taskId: t.id,
+            prevProgress: taskPrevProgress,
+            currentProgress: taskCurrentProgress,
             assignees
           });
         }
@@ -238,7 +245,6 @@ export function ProgressRecordPage() {
       editable: true, 
       inputType: 'select',
       options: (_item: any) => {
-        // subRowから直接projectIdが取れないため、dbProjects全体から該当タスクを探す
         const taskOptions = dbProjects.flatMap(p => p.tasks).map(t => ({ label: t.task, value: t.id }));
         return [{ label: '選択してください', value: '' }, ...taskOptions];
       },
@@ -257,6 +263,21 @@ export function ProgressRecordPage() {
       ),
     },
     { 
+      key: 'prevProgress', 
+      header: TABLE_COLUMNS.PREV_MONTH_PROGRESS, 
+      editable: false,
+      rowType: 'sub',
+      style: { width: '120px', textAlign: 'right' }
+    },
+    { 
+      key: 'currentProgress', 
+      header: TABLE_COLUMNS.CURRENT_MONTH_PROGRESS, 
+      editable: true,
+      inputType: 'number',
+      rowType: 'sub',
+      style: { width: '120px' }
+    },
+    { 
       key: 'userId', 
       header: TABLE_COLUMNS.USER_NAME, 
       editable: true, 
@@ -272,21 +293,6 @@ export function ProgressRecordPage() {
           ＋ 担当者追加
         </Button>
       ),
-    },
-    { 
-      key: 'prevProgress', 
-      header: TABLE_COLUMNS.PREV_MONTH_PROGRESS, 
-      editable: false,
-      rowType: 'sub-sub',
-      style: { width: '120px', textAlign: 'right' }
-    },
-    { 
-      key: 'currentProgress', 
-      header: TABLE_COLUMNS.CURRENT_MONTH_PROGRESS, 
-      editable: true,
-      inputType: 'number',
-      rowType: 'sub-sub',
-      style: { width: '120px' }
     },
     { 
       key: 'workTime', 
@@ -330,7 +336,7 @@ export function ProgressRecordPage() {
                 year_month: currentMonth,
                 member_id: r.userId,
                 task_id: t.taskId,
-                current_progress: r.currentProgress || 0,
+                current_progress: t.currentProgress || 0,
                 contribution_ratio: r.contributionRatio || 0
               });
             }
@@ -371,6 +377,8 @@ export function ProgressRecordPage() {
     return {
       id: `TEMP-TASK-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       taskId: '',
+      prevProgress: '-',
+      currentProgress: 0,
       assignees: []
     };
   };
@@ -379,8 +387,6 @@ export function ProgressRecordPage() {
     return {
       id: `TEMP-ASSIGNEE-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       userId: '',
-      prevProgress: '-',
-      currentProgress: 0,
       workTime: 0,
       contributionRatio: 0,
       isSaved: false

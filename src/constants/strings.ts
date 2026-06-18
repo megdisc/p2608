@@ -98,8 +98,8 @@ export const TABLE_COLUMNS = {
   NOTES: '備考',
   
   // 進捗記録
-  PREV_MONTH_PROGRESS: '前月進捗率 (%)',
-  CURRENT_MONTH_PROGRESS: '今月進捗率 (%)',
+  PREV_MONTH_PROGRESS: '月初進捗率 (%)',
+  CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',
   CURRENT_MONTH_WORK_TIME: '今月作業時間',
   CONTRIBUTION_RATIO: '貢献比率',
 };

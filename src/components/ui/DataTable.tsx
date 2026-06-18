@@ -5,7 +5,7 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
-import { formatJSTDateOnly, getCurrentJSTDateOnly } from '../../utils/date';
+import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils/date';
 
 const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -739,8 +739,12 @@ export function DataTable<T extends { id: string }>({
               </Button>
               <Button 
                 variant="secondary"
-                style={{ padding: '0 12px', height: '28px', fontSize: '12px' }}
+                style={{ 
+                  padding: '0 12px', height: '28px', fontSize: '12px',
+                  ...(singleDate === getCurrentJSTDateOnly() ? { backgroundColor: '#cccccc', color: '#666666', cursor: 'not-allowed', borderColor: '#cccccc' } : {})
+                }}
                 onClick={() => setSingleDate(getCurrentJSTDateOnly())}
+                disabled={singleDate === getCurrentJSTDateOnly()}
               >
                 今日
               </Button>
@@ -787,6 +791,21 @@ export function DataTable<T extends { id: string }>({
                 }}
               >
                 ＞
+              </Button>
+              <Button 
+                variant="secondary"
+                style={{ 
+                  padding: '0 12px', height: '28px', fontSize: '12px',
+                  ...(singleMonth === getCurrentJSTMonth() ? { backgroundColor: '#cccccc', color: '#666666', cursor: 'not-allowed', borderColor: '#cccccc' } : {})
+                }}
+                onClick={() => {
+                  if (onSingleMonthChange) {
+                    onSingleMonthChange(getCurrentJSTMonth());
+                  }
+                }}
+                disabled={singleMonth === getCurrentJSTMonth()}
+              >
+                今月
               </Button>
             </div>
           ) : footerLeft ? (

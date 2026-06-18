@@ -97,10 +97,16 @@ export function ProgressRecordPage() {
       setLoading(true);
       const prevMonthStr = getPreviousMonth(monthStr);
 
+      const [year, month] = monthStr.split('-').map(Number);
+      const startDate = `${monthStr}-01`;
+      const nextMonth = month === 12 ? 1 : month + 1;
+      const nextYear = month === 12 ? year + 1 : year;
+      const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+
       const [currentRes, prevRes, workTimeRes] = await Promise.all([
         supabase.from('monthly_progress_records').select('*').eq('year_month', monthStr),
         supabase.from('monthly_progress_records').select('*').eq('year_month', prevMonthStr),
-        supabase.from('daily_work_records').select('member_id, task_id, work_time').like('date', `${monthStr}-%`)
+        supabase.from('daily_work_records').select('member_id, task_id, work_time').gte('date', startDate).lt('date', endDate)
       ]);
       
       if (currentRes.error) throw currentRes.error;

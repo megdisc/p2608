@@ -54,18 +54,28 @@ export function ProjectPage() {
         endDate: p.end_date,
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
-          .map((pt: any) => ({
-            id: pt.id,
-            task: pt.name,
-            assigneeType: pt.assignee_type as 'inhouse' | 'outsource',
-            requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
-              id: pts.skill_id,
-              skill: pts.skills?.name
-            })),
-            assigneeIds: (pt.project_task_assignees || [])
-              .map((pta: any) => pta.member_id || pta.client_id || pta.staff_id)
-              .filter(Boolean)
-          }))
+          .map((pt: any) => {
+            const assignees = pt.project_task_assignees || [];
+            let aType = pt.assignee_type;
+            // 移行措置: inhouse の場合は staff か member に分ける
+            if (aType === 'inhouse') {
+              if (assignees.some((a: any) => a.staff_id)) aType = 'staff';
+              else aType = 'member';
+            }
+
+            return {
+              id: pt.id,
+              task: pt.name,
+              assigneeType: aType as 'member' | 'staff' | 'outsource',
+              requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
+                id: pts.skill_id,
+                skill: pts.skills?.name
+              })),
+              assigneeIds: assignees
+                .map((pta: any) => pta.member_id || pta.client_id || pta.staff_id)
+                .filter(Boolean)
+            };
+          })
       }));
 
       setItems(formattedProjects);
@@ -160,25 +170,43 @@ export function ProjectPage() {
       editable: true,
       inputType: 'text',
       rowType: 'sub',
-      render: (item: any) => item.assigneeType === 'inhouse' ? '内製' : item.assigneeType === 'outsource' ? '外注' : '',
+      render: (item: any) => 
+        item.assigneeType === 'member' ? '利用者' : 
+        item.assigneeType === 'staff' ? '職員' : 
+        item.assigneeType === 'outsource' ? '外注' : '',
       customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => (
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
             <input 
               type="radio" 
               name={`assigneeType-${item.id}`} 
-              value="inhouse" 
-              checked={value === 'inhouse'} 
+              value="member" 
+              checked={value === 'member'} 
               onChange={() => {
-                // Clear assignees if type changes
-                if (value !== 'inhouse') {
+                if (value !== 'member') {
                   const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
                   if (task) task.assigneeIds = [];
                 }
-                onChange('inhouse')
+                onChange('member')
               }} 
             />
-            内製
+            利用者
+          </label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+            <input 
+              type="radio" 
+              name={`assigneeType-${item.id}`} 
+              value="staff" 
+              checked={value === 'staff'} 
+              onChange={() => {
+                if (value !== 'staff') {
+                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
+                  if (task) task.assigneeIds = [];
+                }
+                onChange('staff')
+              }} 
+            />
+            職員
           </label>
           <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
             <input 
@@ -211,14 +239,10 @@ export function ProjectPage() {
         if (ids.length === 0) return '';
         
         let labels: string[] = [];
-        if (item.assigneeType === 'inhouse') {
-          labels = ids.map((id: string) => {
-            const member = dbMembers.find(u => u.id === id);
-            if (member) return `[利用者] ${member.name}`;
-            const staff = dbStaffs.find(s => s.id === id);
-            if (staff) return `[職員] ${staff.name}`;
-            return undefined;
-          }).filter(Boolean) as string[];
+        if (item.assigneeType === 'member') {
+          labels = ids.map((id: string) => dbMembers.find(u => u.id === id)?.name).filter(Boolean) as string[];
+        } else if (item.assigneeType === 'staff') {
+          labels = ids.map((id: string) => dbStaffs.find(s => s.id === id)?.name).filter(Boolean) as string[];
         } else if (item.assigneeType === 'outsource') {
           labels = ids.map((id: string) => dbClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
         }
@@ -236,11 +260,10 @@ export function ProjectPage() {
       customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
         const currentIds = value || [];
         let options: { value: string, label: string }[] = [];
-        if (item.assigneeType === 'inhouse') {
-          options = [
-            ...dbStaffs.map(s => ({ value: s.id, label: `[職員] ${s.name}` })),
-            ...dbMembers.map(u => ({ value: u.id, label: `[利用者] ${u.name}` }))
-          ];
+        if (item.assigneeType === 'member') {
+          options = dbMembers.map(u => ({ value: u.id, label: u.name }));
+        } else if (item.assigneeType === 'staff') {
+          options = dbStaffs.map(s => ({ value: s.id, label: s.name }));
         } else if (item.assigneeType === 'outsource') {
           options = dbClients.map(c => ({ value: c.id, label: c.name }));
         }
@@ -321,12 +344,10 @@ export function ProjectPage() {
           await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
           if (t.assigneeIds && t.assigneeIds.length > 0) {
             const assigneeInserts = t.assigneeIds.map(aid => {
-              const isStaff = dbStaffs.some(s => s.id === aid);
-              const isMember = dbMembers.some(m => m.id === aid);
               return {
                 task_id: t.id,
-                member_id: t.assigneeType === 'inhouse' && isMember ? aid : null,
-                staff_id: t.assigneeType === 'inhouse' && isStaff ? aid : null,
+                member_id: t.assigneeType === 'member' ? aid : null,
+                staff_id: t.assigneeType === 'staff' ? aid : null,
                 client_id: t.assigneeType === 'outsource' ? aid : null,
               };
             });

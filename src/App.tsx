@@ -28,7 +28,7 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = sessionStorage.getItem('activeTab');
     if (saved) return saved as Tab;
-    return activeSystem === 'project' ? 'project' : 'inventory';
+    return activeSystem === 'project' ? 'projectSummary' : 'inventory';
   });
 
   const prevAuth = useRef(isAuthenticated);
@@ -38,7 +38,7 @@ function AppContent() {
       if (activeSystem === 'inventory') {
         setActiveTab('inventory');
       } else if (activeSystem === 'project') {
-        setActiveTab('project');
+        setActiveTab('projectSummary');
       }
     }
     prevAuth.current = isAuthenticated;

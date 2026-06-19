@@ -21,13 +21,8 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem('isAuthenticated') === 'true';
-  });
-  
-  const [activeSystem, setActiveSystem] = useState<SystemType | null>(() => {
-    return (localStorage.getItem('activeSystem') as SystemType) || null;
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [activeSystem, setActiveSystem] = useState<SystemType | null>(null);
   
   const [user, setUser] = useState<User>(null);
 
@@ -65,8 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const selectedSystem = system || 'inventory';
     setIsAuthenticated(true);
     setActiveSystem(selectedSystem);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('activeSystem', selectedSystem);
+    sessionStorage.removeItem('activeTab');
   };
 
   const logout = async () => {
@@ -74,8 +68,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
     setUser(null);
     setActiveSystem(null);
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('activeSystem');
     sessionStorage.removeItem('activeTab');
   };
 

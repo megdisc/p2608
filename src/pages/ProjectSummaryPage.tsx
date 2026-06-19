@@ -10,6 +10,7 @@ type SummaryRow = {
   projectName: string;
   taskName: string;
   progressRate: number;
+  assigneeType: string;
   assigneeName: string;
   isFirstInProject: boolean;
   isFirstInTask: boolean;
@@ -36,7 +37,7 @@ export function ProjectSummaryPage() {
           supabase.from('projects').select(`
             id, name,
             project_tasks (
-              id, name, is_deleted,
+              id, name, is_deleted, assignee_type,
               project_task_assignees (
                 id, member_id, client_id, staff_id
               )
@@ -85,6 +86,7 @@ export function ProjectSummaryPage() {
               taskId: 'no_task',
               taskName: '',
               progressRate: 0,
+              assigneeType: '',
               assigneeId: 'no_assignee',
               assigneeName: ''
             });
@@ -95,6 +97,16 @@ export function ProjectSummaryPage() {
             const assignees = t.project_task_assignees || [];
             const progressRate = latestProgressMap.get(t.id) || 0;
             
+            let aType = t.assignee_type;
+            if (aType === 'inhouse') {
+              if (assignees.some((a: any) => a.staff_id)) aType = 'staff';
+              else aType = 'member';
+            }
+            const displayAssigneeType = 
+              aType === 'member' ? '利用者' : 
+              aType === 'staff' ? '職員' : 
+              aType === 'outsource' ? '外注' : '';
+            
             if (assignees.length === 0) {
               tempRows.push({
                 projectId: p.id,
@@ -102,6 +114,7 @@ export function ProjectSummaryPage() {
                 taskId: t.id,
                 taskName: t.name,
                 progressRate,
+                assigneeType: displayAssigneeType,
                 assigneeId: 'unassigned',
                 assigneeName: '未割り当て'
               });
@@ -122,6 +135,7 @@ export function ProjectSummaryPage() {
                   taskId: t.id,
                   taskName: t.name,
                   progressRate,
+                  assigneeType: displayAssigneeType,
                   assigneeId: a.id || `${a.member_id || a.client_id || a.staff_id}`,
                   assigneeName
                 });
@@ -161,6 +175,7 @@ export function ProjectSummaryPage() {
             projectName: r.projectName,
             taskName: r.taskName,
             progressRate: r.progressRate,
+            assigneeType: r.assigneeType,
             assigneeName: r.assigneeName,
             isFirstInProject,
             isFirstInTask,
@@ -204,6 +219,14 @@ export function ProjectSummaryPage() {
       header: TABLE_COLUMNS.PROGRESS_RATE, 
       className: 'quantity',
       render: (item) => item.isFirstInTask && item.taskName ? `${item.progressRate}%` : '',
+      style: (item) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
+    },
+    { 
+      key: 'assigneeType', 
+      header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
+      render: (item) => item.isFirstInTask ? item.assigneeType : '',
       style: (item) => ({
         borderBottom: item.isLastInTask ? undefined : 'none'
       })

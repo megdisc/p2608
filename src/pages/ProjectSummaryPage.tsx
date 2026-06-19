@@ -5,26 +5,20 @@ import { TABLE_COLUMNS, PAGE_NAMES } from '../constants';
 import { supabase } from '../lib/supabase';
 import { getCurrentISOString, formatJST } from '../utils/date';
 
-type DisplayAssigneeRow = {
-  id: string;
-  assigneeName: string;
-};
-
-type DisplayTaskRow = {
-  id: string;
-  taskName: string;
-  progressRate: number;
-  assignees: DisplayAssigneeRow[];
-};
-
-type DisplayProjectRow = {
+type SummaryRow = {
   id: string;
   projectName: string;
-  tasks: DisplayTaskRow[];
+  taskName: string;
+  progressRate: number;
+  assigneeName: string;
+  isFirstInProject: boolean;
+  isFirstInTask: boolean;
+  isLastInProject: boolean;
+  isLastInTask: boolean;
 };
 
 export function ProjectSummaryPage() {
-  const [data, setData] = useState<DisplayProjectRow[]>([]);
+  const [data, setData] = useState<SummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetDate] = useState(() => getCurrentISOString());
 
@@ -78,28 +72,42 @@ export function ProjectSummaryPage() {
           latestProgressMap.set(r.task_id, Number(r.current_progress));
         }
 
-        const projectRows: DisplayProjectRow[] = [];
+        // プロジェクト名、タスク名でソートするために一時配列を作成
+        const tempRows: any[] = [];
 
         for (const p of projects) {
           const projectTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
           
-          if (projectTasks.length === 0) continue;
+          if (projectTasks.length === 0) {
+            tempRows.push({
+              projectId: p.id,
+              projectName: p.name,
+              taskId: 'no_task',
+              taskName: '',
+              progressRate: 0,
+              assigneeId: 'no_assignee',
+              assigneeName: ''
+            });
+            continue;
+          }
 
-          const taskRows: DisplayTaskRow[] = [];
-          
           for (const t of projectTasks) {
             const assignees = t.project_task_assignees || [];
-            const assigneeRows: DisplayAssigneeRow[] = [];
+            const progressRate = latestProgressMap.get(t.id) || 0;
             
             if (assignees.length === 0) {
-              assigneeRows.push({
-                id: `${p.id}_${t.id}_unassigned`,
+              tempRows.push({
+                projectId: p.id,
+                projectName: p.name,
+                taskId: t.id,
+                taskName: t.name,
+                progressRate,
+                assigneeId: 'unassigned',
                 assigneeName: '未割り当て'
               });
             } else {
               for (const a of assignees) {
                 let assigneeName = '不明';
-                
                 if (a.member_id) {
                   assigneeName = memberMap.get(a.member_id) || '不明';
                 } else if (a.client_id) {
@@ -108,35 +116,63 @@ export function ProjectSummaryPage() {
                   assigneeName = staffMap.get(a.staff_id) || '不明';
                 }
 
-                assigneeRows.push({
-                  id: a.id || `${p.id}_${t.id}_${a.member_id || a.client_id || a.staff_id}`,
+                tempRows.push({
+                  projectId: p.id,
+                  projectName: p.name,
+                  taskId: t.id,
+                  taskName: t.name,
+                  progressRate,
+                  assigneeId: a.id || `${a.member_id || a.client_id || a.staff_id}`,
                   assigneeName
                 });
               }
             }
-
-            assigneeRows.sort((a, b) => a.assigneeName.localeCompare(b.assigneeName));
-
-            taskRows.push({
-              id: t.id,
-              taskName: t.name,
-              progressRate: latestProgressMap.get(t.id) || 0,
-              assignees: assigneeRows
-            });
           }
-
-          taskRows.sort((a, b) => a.taskName.localeCompare(b.taskName));
-
-          projectRows.push({
-            id: p.id,
-            projectName: p.name,
-            tasks: taskRows
-          });
         }
 
-        projectRows.sort((a, b) => a.projectName.localeCompare(b.projectName));
+        // ソート: プロジェクト名 -> タスク名 -> 担当者名
+        tempRows.sort((a, b) => {
+          if (a.projectName !== b.projectName) return a.projectName.localeCompare(b.projectName);
+          if (a.taskName !== b.taskName) return a.taskName.localeCompare(b.taskName);
+          return a.assigneeName.localeCompare(b.assigneeName);
+        });
 
-        setData(projectRows);
+        // フラグ付け
+        const flatRows: SummaryRow[] = [];
+        let prevProjectId = '';
+        let prevTaskId = '';
+
+        for (let i = 0; i < tempRows.length; i++) {
+          const r = tempRows[i];
+          const isFirstInProject = r.projectId !== prevProjectId;
+          const isFirstInTask = isFirstInProject || r.taskId !== prevTaskId;
+
+          // 次の行と比較してLastかどうかを判定
+          let isLastInProject = true;
+          let isLastInTask = true;
+          if (i < tempRows.length - 1) {
+            const next = tempRows[i + 1];
+            if (next.projectId === r.projectId) isLastInProject = false;
+            if (next.taskId === r.taskId) isLastInTask = false;
+          }
+
+          flatRows.push({
+            id: `${r.projectId}_${r.taskId}_${r.assigneeId}`,
+            projectName: r.projectName,
+            taskName: r.taskName,
+            progressRate: r.progressRate,
+            assigneeName: r.assigneeName,
+            isFirstInProject,
+            isFirstInTask,
+            isLastInProject,
+            isLastInTask
+          });
+
+          prevProjectId = r.projectId;
+          prevTaskId = r.taskId;
+        }
+
+        setData(flatRows);
       } catch (err) {
         console.error('Error fetching project summary:', err);
       } finally {
@@ -146,28 +182,37 @@ export function ProjectSummaryPage() {
     fetchData();
   }, []);
 
-  const columns: Column<any>[] = useMemo(() => [
+  const columns: Column<SummaryRow>[] = useMemo(() => [
     { 
       key: 'projectName', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      rowType: 'main'
+      render: (item) => item.isFirstInProject ? item.projectName : '',
+      style: (item) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
     },
     { 
       key: 'taskName', 
       header: TABLE_COLUMNS.TASK, 
-      rowType: 'sub'
+      render: (item) => item.isFirstInTask ? item.taskName : '',
+      style: (item) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
     },
     { 
       key: 'progressRate', 
       header: TABLE_COLUMNS.PROGRESS_RATE, 
       className: 'quantity',
-      rowType: 'sub',
-      render: (item) => `${item.progressRate}%`
+      render: (item) => item.isFirstInTask && item.taskName ? `${item.progressRate}%` : '',
+      style: (item) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
     },
     { 
       key: 'assigneeName', 
       header: TABLE_COLUMNS.ASSIGNEE,
-      rowType: 'sub-sub'
+      render: (item) => item.assigneeName,
+      // 担当者は毎行表示なので通常のボーダー
     }
   ], []);
 
@@ -182,8 +227,7 @@ export function ProjectSummaryPage() {
       columns={columns}
       emptyMessage="案件の集計データがありません"
       footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>集計日時：{formattedDate}</span>}
-      subItemsKey="tasks"
-      subSubItemsKey="assignees"
+      // 階層構造は使用しないため subItemsKey などは渡さない
     />
   );
 }

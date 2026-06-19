@@ -8,12 +8,18 @@ import type { MemberItem, ProjectItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 import { getCurrentJSTMonth, getPreviousMonth } from '../utils/date';
 
-type MonthlyRecord = {
+type MonthlyTaskRecord = {
+  id: string;
+  year_month: string;
+  task_id: string;
+  current_progress: number;
+};
+
+type MonthlyContributionRecord = {
   id: string;
   year_month: string;
   member_id: string;
   task_id: string;
-  current_progress: number;
   contribution_ratio: number;
 };
 
@@ -30,6 +36,7 @@ type DisplayTaskRow = {
   taskId: string;
   prevProgress: string | number;
   currentProgress: number;
+  isSaved: boolean;
   assignees: DisplayAssigneeRow[];
 };
 
@@ -43,8 +50,12 @@ type DisplayProjectRow = {
 export function ProgressRecordPage() {
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
-  const [currentMonthRecords, setCurrentMonthRecords] = useState<MonthlyRecord[]>([]);
-  const [prevMonthRecords, setPrevMonthRecords] = useState<MonthlyRecord[]>([]);
+  
+  const [currentMonthTaskRecords, setCurrentMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
+  const [prevMonthTaskRecords, setPrevMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
+  const [currentMonthMemberRecords, setCurrentMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
+  const [prevMonthMemberRecords, setPrevMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
+  
   const [workTimeSummary, setWorkTimeSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
@@ -108,18 +119,24 @@ export function ProgressRecordPage() {
       const nextYear = month === 12 ? year + 1 : year;
       const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
-      const [currentRes, prevRes, workTimeRes] = await Promise.all([
-        supabase.from('monthly_progress_records').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_progress_records').select('*').eq('year_month', prevMonthStr),
+      const [cTaskRes, pTaskRes, cMemRes, pMemRes, workTimeRes] = await Promise.all([
+        supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
+        supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
+        supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
+        supabase.from('monthly_member_contributions').select('*').eq('year_month', prevMonthStr),
         supabase.from('daily_work_records').select('member_id, task_id, work_time').gte('date', startDate).lt('date', endDate)
       ]);
       
-      if (currentRes.error) throw currentRes.error;
-      if (prevRes.error) throw prevRes.error;
+      if (cTaskRes.error) throw cTaskRes.error;
+      if (pTaskRes.error) throw pTaskRes.error;
+      if (cMemRes.error) throw cMemRes.error;
+      if (pMemRes.error) throw pMemRes.error;
       if (workTimeRes.error) throw workTimeRes.error;
 
-      setCurrentMonthRecords(currentRes.data || []);
-      setPrevMonthRecords(prevRes.data || []);
+      setCurrentMonthTaskRecords(cTaskRes.data || []);
+      setPrevMonthTaskRecords(pTaskRes.data || []);
+      setCurrentMonthMemberRecords(cMemRes.data || []);
+      setPrevMonthMemberRecords(pMemRes.data || []);
 
       const timeMap: Record<string, number> = {};
       (workTimeRes.data || []).forEach((r: any) => {
@@ -145,13 +162,13 @@ export function ProgressRecordPage() {
   const displayData = useMemo(() => {
     if (dbProjects.length === 0) return [];
     
-
-    
     const rows: DisplayProjectRow[] = [];
 
     for (const project of dbProjects) {
       const taskIdsInProject = project.tasks.map(t => t.id);
-      const projectRecords = currentMonthRecords.filter(r => taskIdsInProject.includes(r.task_id));
+      
+      const projectTaskRecords = currentMonthTaskRecords.filter(r => taskIdsInProject.includes(r.task_id));
+      const projectMemberRecords = currentMonthMemberRecords.filter(r => taskIdsInProject.includes(r.task_id));
       
       const tasks: DisplayTaskRow[] = [];
 
@@ -165,35 +182,30 @@ export function ProgressRecordPage() {
           }
         }
 
-        // 今月の保存済み進捗記録があるメンバーを追加
-        const taskRecords = projectRecords.filter(r => r.task_id === t.id);
-        for (const r of taskRecords) {
+        // 今月の保存済み貢献記録があるメンバーを追加
+        const taskMemberRecords = projectMemberRecords.filter(r => r.task_id === t.id);
+        for (const r of taskMemberRecords) {
           membersToProcess.add(r.member_id);
         }
 
         const assignees: DisplayAssigneeRow[] = [];
-        let taskPrevProgress: string | number = '-';
-        let taskCurrentProgress: number = 0;
+        
+        const taskRecord = projectTaskRecords.find(r => r.task_id === t.id);
+        const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
+        
+        const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : 0;
+        const taskPrevProgress = prevTaskRecord ? Number(prevTaskRecord.current_progress) : '-';
 
         for (const memberId of membersToProcess) {
-          const savedRecord = taskRecords.find(r => r.member_id === memberId);
-          const prevRec = prevMonthRecords.find(pr => pr.task_id === t.id && pr.member_id === memberId);
-          
-          if (savedRecord && taskCurrentProgress === 0) {
-            taskCurrentProgress = Number(savedRecord.current_progress);
-          }
-          if (prevRec && taskPrevProgress === '-') {
-            taskPrevProgress = Number(prevRec.current_progress);
-          }
-
+          const savedMemberRecord = taskMemberRecords.find(r => r.member_id === memberId);
           const workTime = workTimeSummary[`${memberId}_${t.id}`] || 0;
 
-          if (savedRecord) {
+          if (savedMemberRecord) {
             assignees.push({
-              id: savedRecord.id,
+              id: savedMemberRecord.id,
               userId: memberId,
               workTime,
-              contributionRatio: Number(savedRecord.contribution_ratio),
+              contributionRatio: Number(savedMemberRecord.contribution_ratio),
               isSaved: true
             });
           } else {
@@ -209,10 +221,11 @@ export function ProgressRecordPage() {
 
         if (assignees.length > 0 || project.tasks.includes(t)) {
           tasks.push({
-            id: t.id,
+            id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
             taskId: t.id,
             prevProgress: taskPrevProgress,
             currentProgress: taskCurrentProgress,
+            isSaved: !!taskRecord,
             assignees
           });
         }
@@ -227,7 +240,7 @@ export function ProgressRecordPage() {
     }
 
     return rows;
-  }, [currentMonth, dbMembers, dbProjects, currentMonthRecords, prevMonthRecords, workTimeSummary]);
+  }, [currentMonth, dbMembers, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, workTimeSummary]);
 
   const columns: Column<any>[] = [
     { 
@@ -315,28 +328,44 @@ export function ProgressRecordPage() {
     try {
       setLoading(true);
       
-      const upserts: any[] = [];
-      const deletes: string[] = [];
+      const taskUpserts: any[] = [];
+      const taskDeletes: string[] = [];
+      const memberUpserts: any[] = [];
+      const memberDeletes: string[] = [];
 
       for (const projectRow of drafts) {
         if (deletedIds.includes(projectRow.id)) continue;
 
         for (const t of projectRow.tasks) {
-          if (deletedIds.includes(t.id)) continue;
+          if (deletedIds.includes(t.id)) {
+            if (t.isSaved) taskDeletes.push(t.id);
+            for (const r of t.assignees) {
+              if (r.isSaved) memberDeletes.push(r.id);
+            }
+            continue;
+          }
+
+          if (t.taskId) {
+            taskUpserts.push({
+              ...(t.isSaved && !t.id.startsWith('TEMP') && !t.id.startsWith('UNSAVED') ? { id: t.id } : {}),
+              year_month: currentMonth,
+              task_id: t.taskId,
+              current_progress: t.currentProgress || 0
+            });
+          }
 
           for (const r of t.assignees) {
             if (deletedIds.includes(r.id)) {
-              if (r.isSaved) deletes.push(r.id);
+              if (r.isSaved) memberDeletes.push(r.id);
               continue;
             }
 
             if (t.taskId && r.userId) {
-              upserts.push({
-                ...(r.isSaved ? { id: r.id } : {}),
+              memberUpserts.push({
+                ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
                 year_month: currentMonth,
                 member_id: r.userId,
                 task_id: t.taskId,
-                current_progress: t.currentProgress || 0,
                 contribution_ratio: r.contributionRatio || 0
               });
             }
@@ -344,14 +373,25 @@ export function ProgressRecordPage() {
         }
       }
 
-      if (deletes.length > 0) {
-        const { error } = await supabase.from('monthly_progress_records').delete().in('id', deletes);
-        if (error) throw error;
+      const promises = [];
+
+      if (taskDeletes.length > 0) {
+        promises.push(supabase.from('monthly_task_progress').delete().in('id', taskDeletes));
+      }
+      if (memberDeletes.length > 0) {
+        promises.push(supabase.from('monthly_member_contributions').delete().in('id', memberDeletes));
       }
       
-      if (upserts.length > 0) {
-        const { error } = await supabase.from('monthly_progress_records').upsert(upserts, { onConflict: 'year_month,member_id,task_id' });
-        if (error) throw error;
+      if (taskUpserts.length > 0) {
+        promises.push(supabase.from('monthly_task_progress').upsert(taskUpserts, { onConflict: 'year_month,task_id' }));
+      }
+      if (memberUpserts.length > 0) {
+        promises.push(supabase.from('monthly_member_contributions').upsert(memberUpserts, { onConflict: 'year_month,member_id,task_id' }));
+      }
+
+      const results = await Promise.all(promises);
+      for (const res of results) {
+        if (res.error) throw res.error;
       }
 
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
@@ -379,6 +419,7 @@ export function ProgressRecordPage() {
       taskId: '',
       prevProgress: '-',
       currentProgress: 0,
+      isSaved: false,
       assignees: []
     };
   };

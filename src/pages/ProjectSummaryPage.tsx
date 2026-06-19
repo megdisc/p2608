@@ -5,16 +5,26 @@ import { TABLE_COLUMNS, PAGE_NAMES } from '../constants';
 import { supabase } from '../lib/supabase';
 import { getCurrentISOString, formatJST } from '../utils/date';
 
-type SummaryRow = {
-  id: string; // 一意のID
-  projectName: string;
-  taskName: string;
-  progressRate: number;
+type DisplayAssigneeRow = {
+  id: string;
   assigneeName: string;
 };
 
+type DisplayTaskRow = {
+  id: string;
+  taskName: string;
+  progressRate: number;
+  assignees: DisplayAssigneeRow[];
+};
+
+type DisplayProjectRow = {
+  id: string;
+  projectName: string;
+  tasks: DisplayTaskRow[];
+};
+
 export function ProjectSummaryPage() {
-  const [data, setData] = useState<SummaryRow[]>([]);
+  const [data, setData] = useState<DisplayProjectRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetDate] = useState(() => getCurrentISOString());
 
@@ -41,7 +51,7 @@ export function ProjectSummaryPage() {
           supabase.from('members').select('id, name').eq('is_deleted', false),
           supabase.from('clients').select('id, name').eq('is_deleted', false),
           supabase.from('staffs').select('id, name').eq('is_deleted', false),
-          supabase.from('monthly_progress_records').select('member_id, task_id, current_progress, year_month')
+          supabase.from('monthly_task_progress').select('task_id, current_progress, year_month')
         ]);
 
         if (projectsRes.error) throw projectsRes.error;
@@ -61,64 +71,72 @@ export function ProjectSummaryPage() {
         const clientMap = new Map(clients.map(c => [c.id, c.name]));
         const staffMap = new Map(staffs.map(s => [s.id, s.name]));
 
-        // task_id + member_id ごとに最新の進捗率を取得
+        // task_id ごとに最新の進捗率を取得
         const latestProgressMap = new Map<string, number>();
         const sortedRecords = [...records].sort((a, b) => a.year_month.localeCompare(b.year_month));
         for (const r of sortedRecords) {
-          const key = `${r.task_id}_${r.member_id}`;
-          latestProgressMap.set(key, Number(r.current_progress));
+          latestProgressMap.set(r.task_id, Number(r.current_progress));
         }
 
-        const rows: SummaryRow[] = [];
+        const projectRows: DisplayProjectRow[] = [];
 
         for (const p of projects) {
-          const tasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
-          for (const t of tasks) {
+          const projectTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
+          
+          if (projectTasks.length === 0) continue;
+
+          const taskRows: DisplayTaskRow[] = [];
+          
+          for (const t of projectTasks) {
             const assignees = t.project_task_assignees || [];
+            const assigneeRows: DisplayAssigneeRow[] = [];
+            
             if (assignees.length === 0) {
-              rows.push({
+              assigneeRows.push({
                 id: `${p.id}_${t.id}_unassigned`,
-                projectName: p.name,
-                taskName: t.name,
-                progressRate: 0,
                 assigneeName: '未割り当て'
               });
-              continue;
-            }
+            } else {
+              for (const a of assignees) {
+                let assigneeName = '不明';
+                
+                if (a.member_id) {
+                  assigneeName = memberMap.get(a.member_id) || '不明';
+                } else if (a.client_id) {
+                  assigneeName = clientMap.get(a.client_id) || '不明';
+                } else if (a.staff_id) {
+                  assigneeName = staffMap.get(a.staff_id) || '不明';
+                }
 
-            for (const a of assignees) {
-              let assigneeName = '不明';
-              let progressRate = 0;
-              
-              if (a.member_id) {
-                assigneeName = memberMap.get(a.member_id) || '不明';
-                const pKey = `${t.id}_${a.member_id}`;
-                progressRate = latestProgressMap.get(pKey) || 0;
-              } else if (a.client_id) {
-                assigneeName = clientMap.get(a.client_id) || '不明';
-              } else if (a.staff_id) {
-                assigneeName = staffMap.get(a.staff_id) || '不明';
+                assigneeRows.push({
+                  id: a.id || `${p.id}_${t.id}_${a.member_id || a.client_id || a.staff_id}`,
+                  assigneeName
+                });
               }
-
-              rows.push({
-                id: a.id || `${p.id}_${t.id}_${a.member_id || a.client_id || a.staff_id}`,
-                projectName: p.name,
-                taskName: t.name,
-                progressRate,
-                assigneeName
-              });
             }
+
+            assigneeRows.sort((a, b) => a.assigneeName.localeCompare(b.assigneeName));
+
+            taskRows.push({
+              id: t.id,
+              taskName: t.name,
+              progressRate: latestProgressMap.get(t.id) || 0,
+              assignees: assigneeRows
+            });
           }
+
+          taskRows.sort((a, b) => a.taskName.localeCompare(b.taskName));
+
+          projectRows.push({
+            id: p.id,
+            projectName: p.name,
+            tasks: taskRows
+          });
         }
 
-        // ソート: 案件名 -> タスク名 -> 担当者名
-        rows.sort((a, b) => {
-          if (a.projectName !== b.projectName) return a.projectName.localeCompare(b.projectName);
-          if (a.taskName !== b.taskName) return a.taskName.localeCompare(b.taskName);
-          return a.assigneeName.localeCompare(b.assigneeName);
-        });
+        projectRows.sort((a, b) => a.projectName.localeCompare(b.projectName));
 
-        setData(rows);
+        setData(projectRows);
       } catch (err) {
         console.error('Error fetching project summary:', err);
       } finally {
@@ -128,16 +146,29 @@ export function ProjectSummaryPage() {
     fetchData();
   }, []);
 
-  const columns: Column<SummaryRow>[] = useMemo(() => [
-    { key: 'projectName', header: TABLE_COLUMNS.PROJECT_NAME },
-    { key: 'taskName', header: TABLE_COLUMNS.TASK },
+  const columns: Column<any>[] = useMemo(() => [
+    { 
+      key: 'projectName', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
+      rowType: 'main'
+    },
+    { 
+      key: 'taskName', 
+      header: TABLE_COLUMNS.TASK, 
+      rowType: 'sub'
+    },
     { 
       key: 'progressRate', 
       header: TABLE_COLUMNS.PROGRESS_RATE, 
       className: 'quantity',
+      rowType: 'sub',
       render: (item) => `${item.progressRate}%`
     },
-    { key: 'assigneeName', header: TABLE_COLUMNS.ASSIGNEE }
+    { 
+      key: 'assigneeName', 
+      header: TABLE_COLUMNS.ASSIGNEE,
+      rowType: 'sub-sub'
+    }
   ], []);
 
   if (loading) return <div>Loading...</div>;
@@ -151,6 +182,8 @@ export function ProjectSummaryPage() {
       columns={columns}
       emptyMessage="案件の集計データがありません"
       footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>集計日時：{formattedDate}</span>}
+      subItemsKey="tasks"
+      subSubItemsKey="assignees"
     />
   );
 }

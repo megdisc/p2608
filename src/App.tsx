@@ -17,7 +17,8 @@ import {
   SkillPage,
   ClientPage,
   DailyWorkRecordPage,
-  ProgressRecordPage
+  ProgressRecordPage,
+  ProjectSummaryPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -69,6 +70,8 @@ function AppContent() {
             <ProjectPage />
           ) : activeTab === 'staff' ? (
             <StaffPage />
+          ) : activeTab === 'projectSummary' ? (
+            <ProjectSummaryPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>選択されたページは現在開発中です。</p>

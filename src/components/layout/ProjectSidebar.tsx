@@ -23,7 +23,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {MENU_CATEGORIES.AGGREGATION}
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
           </div>
-          {/* 追加予定 */}
+          <button 
+            className={`nav-button ${activeTab === 'projectSummary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('projectSummary')}
+          >
+            {PAGE_NAMES.PROJECT_SUMMARY}
+          </button>
         </div>
 
         <div className="nav-section">

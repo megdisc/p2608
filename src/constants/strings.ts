@@ -35,6 +35,7 @@ export const PAGE_NAMES = {
   SKILL: 'スキル設定',
   DAILY_WORK_RECORD: '作業記録',
   PROGRESS_RECORD: '進捗記録',
+  PROJECT_SUMMARY: '案件集計',
 };
 
 export const TABLE_COLUMNS = {
@@ -102,6 +103,7 @@ export const TABLE_COLUMNS = {
   CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',
   CURRENT_MONTH_WORK_TIME: '今月作業時間',
   CONTRIBUTION_RATIO: '貢献比率',
+  PROGRESS_RATE: '進捗率',
 };
 
 export const LOGIN_LABELS = {

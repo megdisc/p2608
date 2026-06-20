@@ -56,24 +56,21 @@ export function ProjectPage() {
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => {
             const assignees = pt.project_task_assignees || [];
-            let aType = pt.assignee_type;
-            // 移行措置: inhouse の場合は staff か member に分ける
-            if (aType === 'inhouse') {
-              if (assignees.some((a: any) => a.staff_id)) aType = 'staff';
-              else aType = 'member';
-            }
 
             return {
               id: pt.id,
               task: pt.name,
-              assigneeType: aType as 'member' | 'staff' | 'outsource',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: pts.skill_id,
                 skill: pts.skills?.name
               })),
-              assigneeIds: assignees
-                .map((pta: any) => pta.member_id || pta.client_id || pta.staff_id)
-                .filter(Boolean)
+              assigneeIds: assignees.flatMap((pta: any) => {
+                const res = [];
+                if (pta.member_id) res.push(`member_${pta.member_id}`);
+                if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
+                if (pta.client_id) res.push(`outsource_${pta.client_id}`);
+                return res;
+              })
             };
           })
       }));
@@ -165,69 +162,6 @@ export function ProjectPage() {
       }
     },
     {
-      key: 'assigneeType',
-      header: TABLE_COLUMNS.ASSIGNEE_TYPE,
-      editable: true,
-      inputType: 'text',
-      rowType: 'sub',
-      render: (item: any) => 
-        item.assigneeType === 'member' ? '利用者' : 
-        item.assigneeType === 'staff' ? '職員' : 
-        item.assigneeType === 'outsource' ? '外注' : '',
-      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-            <input 
-              type="radio" 
-              name={`assigneeType-${item.id}`} 
-              value="member" 
-              checked={value === 'member'} 
-              onChange={() => {
-                if (value !== 'member') {
-                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
-                  if (task) task.assigneeIds = [];
-                }
-                onChange('member')
-              }} 
-            />
-            利用者
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-            <input 
-              type="radio" 
-              name={`assigneeType-${item.id}`} 
-              value="staff" 
-              checked={value === 'staff'} 
-              onChange={() => {
-                if (value !== 'staff') {
-                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
-                  if (task) task.assigneeIds = [];
-                }
-                onChange('staff')
-              }} 
-            />
-            職員
-          </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-            <input 
-              type="radio" 
-              name={`assigneeType-${item.id}`} 
-              value="outsource" 
-              checked={value === 'outsource'} 
-              onChange={() => {
-                if (value !== 'outsource') {
-                  const task = items.flatMap(p => p.tasks).find(t => t.id === item.id);
-                  if (task) task.assigneeIds = [];
-                }
-                onChange('outsource')
-              }} 
-            />
-            外注
-          </label>
-        </div>
-      )
-    },
-    {
       key: 'assigneeIds',
       header: TABLE_COLUMNS.ASSIGNEE,
       editable: true,
@@ -238,14 +172,20 @@ export function ProjectPage() {
         const ids = item.assigneeIds || [];
         if (ids.length === 0) return '';
         
-        let labels: string[] = [];
-        if (item.assigneeType === 'member') {
-          labels = ids.map((id: string) => dbMembers.find(u => u.id === id)?.name).filter(Boolean) as string[];
-        } else if (item.assigneeType === 'staff') {
-          labels = ids.map((id: string) => dbStaffs.find(s => s.id === id)?.name).filter(Boolean) as string[];
-        } else if (item.assigneeType === 'outsource') {
-          labels = ids.map((id: string) => dbClients.find(c => c.id === id)?.name).filter(Boolean) as string[];
-        }
+        const labels: string[] = ids.map((prefixedId: string) => {
+          const [type, id] = prefixedId.split('_');
+          if (type === 'member') {
+            const name = dbMembers.find(u => u.id === id)?.name;
+            return name ? `${name} (利用者)` : null;
+          } else if (type === 'staff') {
+            const name = dbStaffs.find(s => s.id === id)?.name;
+            return name ? `${name} (職員)` : null;
+          } else if (type === 'outsource') {
+            const name = dbClients.find(c => c.id === id)?.name;
+            return name ? `${name} (外注先)` : null;
+          }
+          return null;
+        }).filter(Boolean) as string[];
         
         return (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
@@ -257,16 +197,13 @@ export function ProjectPage() {
           </div>
         );
       },
-      customEditRender: (value: any, item: any, onChange: (newValue: any) => void) => {
+      customEditRender: (value: any, _item: any, onChange: (newValue: any) => void) => {
         const currentIds = value || [];
-        let options: { value: string, label: string }[] = [];
-        if (item.assigneeType === 'member') {
-          options = dbMembers.map(u => ({ value: u.id, label: u.name }));
-        } else if (item.assigneeType === 'staff') {
-          options = dbStaffs.map(s => ({ value: s.id, label: s.name }));
-        } else if (item.assigneeType === 'outsource') {
-          options = dbClients.map(c => ({ value: c.id, label: c.name }));
-        }
+        const options = [
+          ...dbMembers.map(u => ({ value: `member_${u.id}`, label: `${u.name} (利用者)` })),
+          ...dbStaffs.map(s => ({ value: `staff_${s.id}`, label: `${s.name} (職員)` })),
+          ...dbClients.map(c => ({ value: `outsource_${c.id}`, label: `${c.name} (外注先)` }))
+        ];
         
         return (
           <MultiSelectDropdown 
@@ -322,7 +259,7 @@ export function ProjectPage() {
             id: t.id,
             project_id: p.id,
             name: t.task,
-            assignee_type: t.assigneeType
+            assignee_type: null
           };
 
           const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);
@@ -343,12 +280,13 @@ export function ProjectPage() {
           // Replace assignees
           await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
           if (t.assigneeIds && t.assigneeIds.length > 0) {
-            const assigneeInserts = t.assigneeIds.map(aid => {
+            const assigneeInserts = t.assigneeIds.map(prefixedId => {
+              const [type, id] = prefixedId.split('_');
               return {
                 task_id: t.id,
-                member_id: t.assigneeType === 'member' ? aid : null,
-                staff_id: t.assigneeType === 'staff' ? aid : null,
-                client_id: t.assigneeType === 'outsource' ? aid : null,
+                member_id: type === 'member' ? id : null,
+                staff_id: type === 'staff' ? id : null,
+                client_id: type === 'outsource' ? id : null,
               };
             });
             await supabase.from('project_task_assignees').insert(assigneeInserts);
@@ -392,7 +330,6 @@ export function ProjectPage() {
       id: generateId(),
       task: '',
       requiredSkills: [],
-      assigneeType: undefined,
       assigneeIds: [],
     };
   };

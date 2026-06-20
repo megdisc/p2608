@@ -4,7 +4,7 @@ import type { Column } from '../components/ui';
 import { Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
-import type { MemberItem, ProjectItem } from '../types';
+import type { MemberItem, ProjectItem, StaffItem, ClientItem } from '../types';
 import { useAlert } from '../contexts/AlertContext';
 import { getCurrentJSTMonth, getPreviousMonth } from '../utils/date';
 
@@ -18,7 +18,9 @@ type MonthlyTaskRecord = {
 type MonthlyContributionRecord = {
   id: string;
   year_month: string;
-  member_id: string;
+  member_id?: string;
+  staff_id?: string;
+  client_id?: string;
   task_id: string;
   contribution_ratio: number;
 };
@@ -26,7 +28,7 @@ type MonthlyContributionRecord = {
 type DisplayAssigneeRow = {
   id: string;
   userId: string;
-  workTime: number;
+  workTime: number | string;
   contributionRatio: number;
   isSaved: boolean;
 };
@@ -49,6 +51,8 @@ type DisplayProjectRow = {
 
 export function ProgressRecordPage() {
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
+  const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
+  const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
   
   const [currentMonthTaskRecords, setCurrentMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
@@ -65,21 +69,27 @@ export function ProgressRecordPage() {
     async function fetchMasters() {
       try {
         setLoading(true);
-        const [membersRes, projectsRes] = await Promise.all([
+        const [membersRes, staffsRes, clientsRes, projectsRes] = await Promise.all([
           supabase.from('members').select('*').eq('is_deleted', false),
+          supabase.from('staffs').select('*').eq('is_deleted', false),
+          supabase.from('clients').select('*').eq('is_deleted', false),
           supabase.from('projects').select(`
             id, name, start_date, end_date,
             project_tasks (
               id, name, assignee_type, is_deleted,
-              project_task_assignees ( member_id )
+              project_task_assignees ( member_id, staff_id, client_id )
             )
           `).eq('is_deleted', false)
         ]);
 
         if (membersRes.error) throw membersRes.error;
+        if (staffsRes.error) throw staffsRes.error;
+        if (clientsRes.error) throw clientsRes.error;
         if (projectsRes.error) throw projectsRes.error;
 
         setDbMembers(membersRes.data || []);
+        setDbStaffs(staffsRes.data || []);
+        setDbClients(clientsRes.data || []);
         
         const formattedProjects = (projectsRes.data || []).map((p: any) => ({
           id: p.id,
@@ -92,8 +102,13 @@ export function ProgressRecordPage() {
               id: pt.id,
               task: pt.name,
               assigneeIds: (pt.project_task_assignees || [])
-                .map((pta: any) => pta.member_id)
-                .filter(Boolean)
+                .flatMap((pta: any) => {
+                  const res = [];
+                  if (pta.member_id) res.push(`member_${pta.member_id}`);
+                  if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
+                  if (pta.client_id) res.push(`outsource_${pta.client_id}`);
+                  return res;
+                })
             }))
         }));
         setDbProjects(formattedProjects as ProjectItem[]);
@@ -140,8 +155,10 @@ export function ProgressRecordPage() {
 
       const timeMap: Record<string, number> = {};
       (workTimeRes.data || []).forEach((r: any) => {
-        const key = `${r.member_id}_${r.task_id}`;
-        timeMap[key] = (timeMap[key] || 0) + Number(r.work_time);
+        if (r.member_id) {
+          const key = `member_${r.member_id}_${r.task_id}`;
+          timeMap[key] = (timeMap[key] || 0) + Number(r.work_time);
+        }
       });
       setWorkTimeSummary(timeMap);
 
@@ -177,15 +194,17 @@ export function ProgressRecordPage() {
         
         // 今月作業時間があるメンバーを追加
         for (const member of dbMembers) {
-          if ((workTimeSummary[`${member.id}_${t.id}`] || 0) > 0) {
-            membersToProcess.add(member.id);
+          if ((workTimeSummary[`member_${member.id}_${t.id}`] || 0) > 0) {
+            membersToProcess.add(`member_${member.id}`);
           }
         }
 
-        // 今月の保存済み貢献記録があるメンバーを追加
+        // 今月の保存済み貢献記録がある担当者を追加
         const taskMemberRecords = projectMemberRecords.filter(r => r.task_id === t.id);
         for (const r of taskMemberRecords) {
-          membersToProcess.add(r.member_id);
+          if (r.member_id) membersToProcess.add(`member_${r.member_id}`);
+          if (r.staff_id) membersToProcess.add(`staff_${r.staff_id}`);
+          if (r.client_id) membersToProcess.add(`outsource_${r.client_id}`);
         }
 
         const assignees: DisplayAssigneeRow[] = [];
@@ -196,22 +215,27 @@ export function ProgressRecordPage() {
         const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : 0;
         const taskPrevProgress = prevTaskRecord ? Number(prevTaskRecord.current_progress) : '-';
 
-        for (const memberId of membersToProcess) {
-          const savedMemberRecord = taskMemberRecords.find(r => r.member_id === memberId);
-          const workTime = workTimeSummary[`${memberId}_${t.id}`] || 0;
+        for (const prefixedId of membersToProcess) {
+          const [type, id] = prefixedId.split('_');
+          let savedMemberRecord;
+          if (type === 'member') savedMemberRecord = taskMemberRecords.find(r => r.member_id === id);
+          else if (type === 'staff') savedMemberRecord = taskMemberRecords.find(r => r.staff_id === id);
+          else if (type === 'outsource') savedMemberRecord = taskMemberRecords.find(r => r.client_id === id);
+
+          const workTime = type === 'member' ? (workTimeSummary[`${prefixedId}_${t.id}`] || 0) : '-';
 
           if (savedMemberRecord) {
             assignees.push({
               id: savedMemberRecord.id,
-              userId: memberId,
+              userId: prefixedId,
               workTime,
               contributionRatio: Number(savedMemberRecord.contribution_ratio),
               isSaved: true
             });
           } else {
             assignees.push({
-              id: `UNSAVED-${currentMonth}-${memberId}-${t.id}`,
-              userId: memberId,
+              id: `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
+              userId: prefixedId,
               workTime,
               contributionRatio: 0,
               isSaved: false
@@ -240,7 +264,7 @@ export function ProgressRecordPage() {
     }
 
     return rows;
-  }, [currentMonth, dbMembers, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, workTimeSummary]);
+  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, workTimeSummary]);
 
   const columns: Column<any>[] = [
     { 
@@ -295,8 +319,20 @@ export function ProgressRecordPage() {
       header: TABLE_COLUMNS.USER_NAME, 
       editable: true, 
       inputType: 'select',
-      options: [{ label: '選択してください', value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
-      render: (item: any) => dbMembers.find(u => u.id === item.userId)?.name || '',
+      options: [
+        { label: '選択してください', value: '' },
+        ...dbMembers.map(u => ({ label: `${u.name} (利用者)`, value: `member_${u.id}` })),
+        ...dbStaffs.map(s => ({ label: `${s.name} (職員)`, value: `staff_${s.id}` })),
+        ...dbClients.map(c => ({ label: `${c.name} (外注先)`, value: `outsource_${c.id}` }))
+      ],
+      render: (item: any) => {
+        if (!item.userId) return '';
+        const [type, id] = item.userId.split('_');
+        if (type === 'member') return `${dbMembers.find(u => u.id === id)?.name || ''} (利用者)`;
+        if (type === 'staff') return `${dbStaffs.find(s => s.id === id)?.name || ''} (職員)`;
+        if (type === 'outsource') return `${dbClients.find(c => c.id === id)?.name || ''} (外注先)`;
+        return '';
+      },
       rowType: 'sub-sub',
       mainRender: (_item: any, addSubSubRow?: () => void) => (
         <Button 
@@ -361,10 +397,13 @@ export function ProgressRecordPage() {
             }
 
             if (t.taskId && r.userId) {
+              const [type, id] = r.userId.split('_');
               memberUpserts.push({
                 ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
                 year_month: currentMonth,
-                member_id: r.userId,
+                member_id: type === 'member' ? id : null,
+                staff_id: type === 'staff' ? id : null,
+                client_id: type === 'outsource' ? id : null,
                 task_id: t.taskId,
                 contribution_ratio: r.contributionRatio || 0
               });
@@ -386,7 +425,7 @@ export function ProgressRecordPage() {
         promises.push(supabase.from('monthly_task_progress').upsert(taskUpserts, { onConflict: 'year_month,task_id' }));
       }
       if (memberUpserts.length > 0) {
-        promises.push(supabase.from('monthly_member_contributions').upsert(memberUpserts, { onConflict: 'year_month,member_id,task_id' }));
+        promises.push(supabase.from('monthly_member_contributions').upsert(memberUpserts));
       }
 
       const results = await Promise.all(promises);
@@ -428,7 +467,7 @@ export function ProgressRecordPage() {
     return {
       id: `TEMP-ASSIGNEE-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
       userId: '',
-      workTime: 0,
+      workTime: '-',
       contributionRatio: 0,
       isSaved: false
     };

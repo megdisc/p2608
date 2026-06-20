@@ -88,7 +88,6 @@ export const TABLE_COLUMNS = {
   CUSTOMER: '顧客',
   TASK: 'タスク',
   REQUIRED_SKILLS: '必要スキル',
-  ASSIGNEE_TYPE: '担当者区分',
   ASSIGNEE: '担当者',
   SKILL_NAME: 'スキル名',
   

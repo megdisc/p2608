@@ -67,7 +67,6 @@ export function ProjectPage() {
                 if (pta.member_id) res.push(`member_${pta.member_id}`);
                 if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
-                alert(MESSAGES.FEATURE_NOT_IMPLEMENTED);
                 return res;
               })
             };
@@ -110,7 +109,7 @@ export function ProjectPage() {
       mainRender: (_item, addSubRow) => (
         <Button 
           onClick={addSubRow}
-          style={{ padding: '4px 8px', fontSize: '12px' }}
+          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
         >
           ＋ タスク追加
         </Button>
@@ -128,7 +127,7 @@ export function ProjectPage() {
         return (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {skills.map((s: any, idx: number) => (
-              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: 'var(--text-caption)' }}>
                 {s.skill}
               </span>
             ))}
@@ -189,7 +188,7 @@ export function ProjectPage() {
         return (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {labels.map((label: string, idx: number) => (
-              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: '12px' }}>
+              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: 'var(--text-caption)' }}>
                 {label}
               </span>
             ))}

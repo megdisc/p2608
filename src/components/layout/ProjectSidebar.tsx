@@ -97,9 +97,9 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
 
       <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
         {user && (
-          <div style={{ color: '#cccccc', fontSize: '13px', textAlign: 'center', lineHeight: '1.5' }}>
-            <div style={{ fontWeight: 600 }}>{user.name}</div>
-            <div style={{ fontSize: '11px', color: '#aaaaaa' }}>{user.role}</div>
+          <div style={{ color: '#cccccc', textAlign: 'center', lineHeight: '1.5' }}>
+            <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)' }}>{user.name}</div>
+            <div style={{ fontSize: 'var(--text-nano)', color: '#aaaaaa' }}>{user.role}</div>
           </div>
         )}
         <button 

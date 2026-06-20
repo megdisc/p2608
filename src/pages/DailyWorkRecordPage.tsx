@@ -192,7 +192,7 @@ export function DailyWorkRecordPage() {
       mainRender: (_item: any, addSubRow?: () => void) => (
         <Button 
           onClick={addSubRow}
-          style={{ padding: '4px 8px', fontSize: '12px' }}
+          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
         >
           ＋ 案件追加
         </Button>

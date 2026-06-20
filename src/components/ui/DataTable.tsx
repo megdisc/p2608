@@ -498,7 +498,7 @@ export function DataTable<T extends { id: string }>({
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     {col.header}
-                    <span style={{ fontSize: '0.8em', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                    <span style={{ fontSize: 'var(--text-caption)', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
                       {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
                     </span>
                   </div>
@@ -742,7 +742,7 @@ export function DataTable<T extends { id: string }>({
               <Button 
                 variant="secondary"
                 style={{ 
-                  padding: '0 12px', height: '28px', fontSize: '12px'
+                  padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)'
                 }}
                 onClick={() => setSingleDate(getCurrentJSTDateOnly())}
                 disabled={singleDate === getCurrentJSTDateOnly()}
@@ -796,7 +796,7 @@ export function DataTable<T extends { id: string }>({
               <Button 
                 variant="secondary"
                 style={{ 
-                  padding: '0 12px', height: '28px', fontSize: '12px'
+                  padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)'
                 }}
                 onClick={() => {
                   if (onSingleMonthChange) {
@@ -876,7 +876,7 @@ export function DataTable<T extends { id: string }>({
             color: 'var(--color-text-inverse)',
             padding: '4px 8px',
             borderRadius: '4px',
-            fontSize: '11px',
+            fontSize: 'var(--text-caption)',
             fontWeight: 500,
             pointerEvents: 'none',
             zIndex: 99999,

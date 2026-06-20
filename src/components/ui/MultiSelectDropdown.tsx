@@ -84,7 +84,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
         }}
       >
         {selectedOptions.length === 0 && (
-          <span style={{ color: 'var(--color-text-muted)', padding: '2px 4px', fontSize: '13px' }}>
+          <span style={{ color: 'var(--color-text-muted)', padding: '2px 4px', fontSize: 'var(--text-body)' }}>
             {placeholder}
           </span>
         )}
@@ -96,7 +96,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
               border: '1px solid var(--color-border)',
               borderRadius: '12px',
               padding: '2px 8px',
-              fontSize: '12px',
+              fontSize: 'var(--text-caption)',
               display: 'flex',
               alignItems: 'center',
               gap: '4px'
@@ -110,7 +110,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
                 border: 'none',
                 cursor: 'pointer',
                 padding: '0',
-                fontSize: '12px',
+                fontSize: 'var(--text-caption)',
                 color: 'var(--color-text-muted)',
                 lineHeight: 1
               }}
@@ -141,7 +141,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
           }}
         >
           {options.length === 0 ? (
-            <div style={{ padding: '8px', color: 'var(--color-text-muted)', fontSize: '13px', textAlign: 'center' }}>
+            <div style={{ padding: '8px', color: 'var(--color-text-muted)', fontSize: 'var(--text-body)', textAlign: 'center' }}>
               選択肢がありません
             </div>
           ) : (
@@ -154,7 +154,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  fontSize: '13px',
+                  fontSize: 'var(--text-body)',
                   background: value.includes(opt.value) ? 'var(--color-bg-subtle)' : 'transparent',
                   margin: 0,
                   whiteSpace: 'nowrap'

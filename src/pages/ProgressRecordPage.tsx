@@ -291,7 +291,7 @@ export function ProgressRecordPage() {
       mainRender: (_item: any, addSubRow?: () => void) => (
         <Button 
           onClick={addSubRow}
-          style={{ padding: '4px 8px', fontSize: '12px' }}
+          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
         >
           ＋ タスク追加
         </Button>
@@ -335,7 +335,7 @@ export function ProgressRecordPage() {
       mainRender: (_item: any, addSubSubRow?: () => void) => (
         <Button 
           onClick={addSubSubRow}
-          style={{ padding: '4px 8px', fontSize: '12px' }}
+          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
         >
           ＋ 担当者追加
         </Button>

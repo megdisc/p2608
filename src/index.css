@@ -4,61 +4,43 @@
 }
 
 :root {
-  /* --- Primitive Tokens --- */
+  /* ==========================================================================
+     第一階層：Primitive Tokens（値そのものの定義）
+     ========================================================================== */
+
+  /* --- 色 (パレット) --- */
   --palette-white: #ffffff;
-  --palette-gray-100: #f1f3f5;
-  --palette-gray-300: #dee2e6;
-  --palette-gray-500: #868e96;
-  --palette-gray-700: #444444;
-  --palette-gray-900: #212529;
-  
+  --palette-gray-100: #e6e6e6;
+  --palette-gray-300: #cccccc;
+  --palette-gray-500: #999999;
+  --palette-gray-700: #333333;
+  --palette-gray-900: #1a1a1a;
+
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
-  
-  --palette-green: #2b8a3e;
-  --palette-red: #e03131;
 
-  /* --- Semantic Tokens --- */
-  /* Backgrounds */
-  --color-bg-main: var(--palette-white);
-  --color-bg-subtle: var(--palette-gray-100);
-  --color-bg-inverse: var(--palette-gray-900);
-  --color-bg-inverse-hover: var(--palette-gray-700);
+  --palette-green-600: #2b8a3e;
+  --palette-red-600: #e03131;
 
-  /* Text */
-  --color-text-main: var(--palette-gray-900);
-  --color-text-muted: var(--palette-gray-500);
-  --color-text-inverse: var(--palette-white);
+  /* --- タイポグラフィ --- */
+  --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;
+  --font-family-mono: monospace;
 
-  /* Borders */
-  --color-border: var(--palette-gray-300);
+  /* 文字サイズ */
+  --font-size-2xs: 8px;
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
 
-  /* Status */
-  --color-success: var(--palette-green);
-  --color-error: var(--palette-red);
+  /* フォントの太さ */
+  --font-weight-regular: normal;
+  --font-weight-medium: 500;
+  --font-weight-semibold: bold;
 
-  /* Overlays & Shadows */
-  --color-overlay: var(--palette-black-alpha-50);
-  --shadow-sm: 0 1px 3px var(--palette-black-alpha-10);
-  --shadow-md: 0 4px 6px var(--palette-black-alpha-10);
-  --shadow-lg: 0 10px 25px var(--palette-black-alpha-10);
-
-  /* Typography */
-  --font-sans: "YuGothic-Windows", "Yu Gothic", "YuGothic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  --text-xs: 8px;
-  --text-sm: 11px;
-  --text-md: 13px;
-  --text-base: 14px;
-  --text-lg: 16px;
-  --text-xl: 20px;
-
-  --weight-normal: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-
-  /* Spacing */
+  /* --- 余白 (スペーシング) --- */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -69,12 +51,59 @@
   --space-10: 40px;
   --space-12: 48px;
 
-  /* Border Radius */
+  /* --- 角丸 (ボーダーラジアス) --- */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
   --radius-full: 9999px;
+
+  /* --- 影 (シャドウ) --- */
+  --shadow-sm: 0 1px 3px var(--palette-black-alpha-10);
+  --shadow-md: 0 4px 6px var(--palette-black-alpha-10);
+  --shadow-lg: 0 10px 25px var(--palette-black-alpha-10);
+
+
+  /* ==========================================================================
+     第二階層：Semantic Tokens（用途・文脈の定義）
+     ========================================================================== */
+
+  /* --- 背景 --- */
+  --color-bg-main: var(--palette-white);
+  --color-bg-subtle: var(--palette-gray-100);
+  --color-bg-inverse: var(--palette-gray-900);
+  --color-bg-inverse-hover: var(--palette-gray-700);
+
+  /* --- テキスト --- */
+  --color-text-main: var(--palette-gray-900);
+  --color-text-muted: var(--palette-gray-500);
+  --color-text-inverse: var(--palette-white);
+
+  /* --- ボーダー --- */
+  --color-border: var(--palette-gray-300);
+
+  /* --- ステータス --- */
+  --color-success: var(--palette-green-600);
+  --color-error: var(--palette-red-600);
+
+  /* --- オーバーレイ --- */
+  --color-overlay: var(--palette-black-alpha-50);
+
+  /* --- タイポグラフィ用途 --- */
+  --text-body: var(--font-size-md);
+  --text-caption: var(--font-size-sm);
+  --text-micro: var(--font-size-xs);
+  --text-nano: var(--font-size-2xs);
+  --text-heading-1: var(--font-size-2xl);
+  --text-heading-2: var(--font-size-xl);
+  --text-heading-3: var(--font-size-lg);
+
+  --weight-body: var(--font-weight-regular);
+  --weight-heading: var(--font-weight-semibold);
+  --weight-strong: var(--font-weight-medium);
+
+  --font-sans: var(--font-family-sans);
+  --font-mono: var(--font-family-mono);
 }
 
 body {
@@ -87,7 +116,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -120,15 +151,15 @@ body {
 
 .header h1 {
   margin: 0;
-  font-size: var(--text-lg);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-heading-3);
+  font-weight: var(--weight-heading);
   letter-spacing: -0.02em;
   color: var(--color-text-inverse);
   line-height: 1.4;
 }
 
 .system-id {
-  font-size: var(--text-sm);
+  font-size: var(--text-caption);
   color: var(--color-text-inverse);
   font-family: var(--font-mono);
 }
@@ -153,8 +184,8 @@ body {
 }
 
 .nav-category {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
   color: var(--color-text-muted);
   text-align: center;
   margin-bottom: var(--space-1);
@@ -162,14 +193,14 @@ body {
 }
 
 .nav-subcategory {
-  font-size: var(--text-xs);
+  font-size: var(--text-nano);
   color: var(--color-text-muted);
   margin-top: 2px;
   letter-spacing: 0;
 }
 
 .nav-placeholder {
-  font-size: var(--text-sm);
+  font-size: var(--text-caption);
   color: var(--color-text-muted);
   text-align: center;
   padding: var(--space-2) 0;
@@ -179,8 +210,8 @@ body {
   text-align: center;
   background: none;
   padding: var(--space-2) var(--space-3);
-  font-size: var(--text-md);
-  font-weight: var(--weight-medium);
+  font-size: var(--text-body);
+  font-weight: var(--weight-strong);
   color: var(--color-text-muted);
   cursor: pointer;
   border-radius: var(--radius-full);
@@ -221,6 +252,7 @@ body {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -228,8 +260,8 @@ body {
 }
 
 .main-content h2 {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-heading-2);
+  font-weight: var(--weight-heading);
   margin: 0 0 var(--space-6) 0;
   color: var(--color-text-main);
 }
@@ -291,8 +323,8 @@ th.sticky-right {
   top: 0;
   z-index: 1;
   background-color: var(--color-bg-subtle);
-  font-size: var(--text-md);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-body);
+  font-weight: var(--weight-heading);
   letter-spacing: 0.05em;
   color: var(--color-text-muted);
 }
@@ -307,6 +339,7 @@ th.sticky-right {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -318,7 +351,7 @@ th.sticky-right {
 }
 
 .inventory-table td {
-  font-size: var(--text-base);
+  font-size: var(--text-body);
   color: var(--color-text-main);
 }
 
@@ -329,12 +362,12 @@ th.sticky-right {
 .item-id {
   font-family: var(--font-mono);
   color: var(--color-text-muted) !important;
-  font-size: var(--text-md) !important;
+  font-size: var(--text-body) !important;
 }
 
 .quantity {
   font-variant-numeric: tabular-nums;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-strong);
 }
 
 .empty-message {
@@ -348,7 +381,7 @@ th.sticky-right {
   height: 28px;
   padding: 0 var(--space-4);
   border-radius: var(--radius-full);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   cursor: pointer;
   border: none;
   background-color: var(--color-bg-inverse);
@@ -468,7 +501,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   padding: 6px 10px 6px 30px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   width: 240px;
   color: var(--color-text-main);
   outline: none;
@@ -511,7 +544,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-4);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   color: var(--color-text-muted);
 }
 
@@ -528,7 +561,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   padding: 4px 24px 4px var(--space-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   color: var(--color-text-main);
   background-color: var(--color-bg-main);
   outline: none;
@@ -545,7 +578,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   padding: 0 28px 0 var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   color: var(--color-text-main);
   background-color: var(--color-bg-main);
   outline: none;
@@ -562,13 +595,14 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   padding: 0 var(--space-4);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  font-size: var(--text-md);
+  font-size: var(--text-body);
   color: var(--color-text-main);
   background-color: var(--color-bg-main);
   outline: none;
   cursor: pointer;
   box-sizing: border-box;
 }
+
 .date-filter-pill:focus {
   border-color: var(--palette-gray-500);
 }
@@ -631,7 +665,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 .modal-message {
-  font-size: var(--text-lg);
+  font-size: var(--text-heading-3);
   margin: 0 0 var(--space-6) 0;
   color: var(--color-text-main);
   line-height: 1.5;
@@ -647,13 +681,25 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Login Page Styles */
@@ -682,14 +728,14 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 .login-header h1 {
-  font-size: var(--text-xl);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-heading-2);
+  font-weight: var(--weight-heading);
   margin: 0 0 var(--space-2) 0;
   color: var(--color-text-main);
 }
 
 .login-header .system-id {
-  font-size: var(--text-sm);
+  font-size: var(--text-caption);
   color: var(--color-text-muted);
   font-family: var(--font-mono);
 }
@@ -707,8 +753,8 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
 }
 
 .form-group label {
-  font-size: var(--text-md);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-body);
+  font-weight: var(--weight-heading);
   color: var(--color-text-muted);
 }
 
@@ -717,7 +763,7 @@ input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   padding: 0 var(--space-4) !important;
   border: 1px solid var(--color-border) !important;
   border-radius: var(--radius-full) !important;
-  font-size: var(--text-md) !important;
+  font-size: var(--text-body) !important;
   color: var(--color-text-main) !important;
   background-color: var(--color-bg-main) !important;
   transition: border-color 0.2s !important;

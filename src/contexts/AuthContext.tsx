@@ -28,7 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return (sessionStorage.getItem('activeSystem') as SystemType) || null;
   });
   
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<User>(() => {
+    return sessionStorage.getItem('isAuthenticated') === 'true' 
+      ? { id: 'dummy', email: 'dummy@example.com', name: '佐藤健', role: 'システム管理者' } 
+      : null;
+  });
 
 
 
@@ -37,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 現状はダミーとして常に成功させる
     const selectedSystem = system || 'inventory';
     setIsAuthenticated(true);
+    setUser({ id: 'dummy', email: 'dummy@example.com', name: '佐藤健', role: 'システム管理者' });
     setActiveSystem(selectedSystem);
     sessionStorage.setItem('isAuthenticated', 'true');
     sessionStorage.setItem('activeSystem', selectedSystem);

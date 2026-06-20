@@ -2,6 +2,41 @@
  * 第一階層：抽象定義（Global / Primitive Tokens）
  */
 
+// システム・モジュール名に関する定数群
+export const WORDS_SYSTEM = {
+  SYSTEM_ID: 'p2608',
+  SYSTEM_NAME: '統合管理システム',
+  SYSTEM_NAME_INVENTORY: '在庫管理システム',
+  SYSTEM_NAME_PROJECT: '案件管理システム',
+
+  // モジュール名
+  AGGREGATION: '集計系',
+  RECORDING: '記録系',
+  INFORMATION: '情報系',
+  SETTINGS: '設定系',
+  REPORT: 'レポート',
+  TRANSACTION_KANA: 'トランザクション',
+  MAIN_MASTER: 'メインマスタ',
+  SUB_MASTER: 'サブマスタ',
+
+  // メニュー・画面名
+  INVENTORY: '在庫集計',
+  TRANSACTION: '受入・払出記録',
+  STOCKTAKING: '棚卸記録',
+  MASTER: '品目情報',
+  CATEGORY_SETTING: 'カテゴリ設定',
+  LOCATION_SETTING: '保管場所設定',
+  SUPPLIER_SETTING: '仕入先設定',
+  STAFF_SETTING: '職員設定',
+  PROJECT_INFO: '案件情報',
+  PROJECT_USER: '利用者設定',
+  CLIENT_SETTING: '取引先設定',
+  SKILL_SETTING: 'スキル設定',
+  DAILY_WORK_RECORD: '作業記録',
+  PROGRESS_RECORD: '進捗記録',
+  PROJECT_SUMMARY: '案件集計',
+};
+
 // 汎用・共通の定数群
 export const WORDS_COMMON = {
   CATEGORY: 'カテゴリ',
@@ -22,7 +57,7 @@ export const WORDS_COMMON = {
 // 人に関する定数群
 export const WORDS_PERSON = {
   NAME: '氏名',
-  ROLE: '権限ロール',
+  ROLE: 'ロール',
   PERSON_IN_CHARGE: '記録者',
   CUSTOMER: '顧客',
   ASSIGNEE: '担当者',
@@ -76,41 +111,6 @@ export const WORDS_PROJECT = {
   CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',
   CONTRIBUTION_RATIO: '貢献比率',
   PROGRESS_RATE: '進捗率 (%)',
-};
-
-// システム・モジュール名に関する定数群
-export const WORDS_SYSTEM = {
-  SYSTEM_NAME: '統合管理システム',
-  SYSTEM_NAME_INVENTORY: '在庫管理システム',
-  SYSTEM_NAME_PROJECT: '案件管理システム',
-  SYSTEM_ID: 'p2608',
-
-  // モジュール名
-  INVENTORY: '在庫集計',
-  TRANSACTION: '受入・払出記録',
-  STOCKTAKING: '棚卸記録',
-  MASTER: '品目情報',
-  CATEGORY_SETTING: 'カテゴリ設定',
-  LOCATION_SETTING: '保管場所設定',
-  SUPPLIER_SETTING: '仕入先設定',
-  STAFF_SETTING: '職員設定',
-  PROJECT_INFO: '案件情報',
-  PROJECT_USER: '利用者設定',
-  CLIENT_SETTING: '取引先設定',
-  SKILL_SETTING: 'スキル設定',
-  DAILY_WORK_RECORD: '作業記録',
-  PROGRESS_RECORD: '進捗記録',
-  PROJECT_SUMMARY: '案件集計',
-
-  // メニュー名
-  AGGREGATION: '集計系',
-  RECORDING: '記録系',
-  INFORMATION: '情報系',
-  SETTINGS: '設定系',
-  REPORT: 'レポート',
-  TRANSACTION_KANA: 'トランザクション',
-  MAIN_MASTER: 'メインマスタ',
-  SUB_MASTER: 'サブマスタ',
 };
 
 // メッセージに関する定数群

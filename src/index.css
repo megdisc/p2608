@@ -10,8 +10,8 @@
 
   /* --- 色 (パレット) --- */
   --palette-white: #ffffff;
-  --palette-gray-100: #e6e6e6;
-  --palette-gray-300: #cccccc;
+  --palette-gray-100: #f2f2f2;
+  --palette-gray-300: #e6e6e6;
   --palette-gray-500: #999999;
   --palette-gray-700: #333333;
   --palette-gray-900: #1a1a1a;
@@ -19,8 +19,8 @@
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-green-600: #2b8a3e;
-  --palette-red-600: #e03131;
+  --palette-green-600: #268c40;
+  --palette-red-600: #d93333;
 
   /* --- タイポグラフィ --- */
   --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;
@@ -75,7 +75,7 @@
   --color-bg-inverse-hover: var(--palette-gray-700);
 
   /* --- テキスト --- */
-  --color-text-main: var(--palette-gray-900);
+  --color-text-main: var(--palette-gray-700);
   --color-text-muted: var(--palette-gray-500);
   --color-text-inverse: var(--palette-white);
 

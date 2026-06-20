@@ -16,7 +16,6 @@ export const WORDS_COMMON = {
   SAVE: '確定',
   CANCEL: '取消',
   CLOSE: '閉じる',
-  SELECT: '選択してください',
   YOMIGANA: 'よみがな',
 };
 
@@ -136,6 +135,7 @@ export const WORDS_MESSAGE = {
   FEATURE_NOT_IMPLEMENTED: '編集機能は未実装です',
   FETCH_ERROR: 'データの取得に失敗しました',
   LOADING: 'Loading...',
+  SELECT: '選択してください',
 };
 
 /**
@@ -281,5 +281,5 @@ export const MESSAGES = {
 export const PLACEHOLDERS = {
   EMAIL: WORDS_CONTACT_AUTH.EMAIL_PLACEHOLDER,
   PASSWORD: WORDS_CONTACT_AUTH.PASSWORD_PLACEHOLDER,
-  SELECT: WORDS_COMMON.SELECT,
+  SELECT: WORDS_MESSAGE.SELECT,
 };

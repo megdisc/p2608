@@ -1,6 +1,5 @@
 /**
  * 第一階層：抽象定義（Global / Primitive Tokens）
- * ドメインや概念ごとに語彙（単語・フレーズ）を抽象化して定義します。
  */
 
 // 汎用・共通の定数群
@@ -141,7 +140,6 @@ export const WORDS_MESSAGE = {
 
 /**
  * 第二階層：具象定義（Semantic / Component Tokens）
- * コンテキスト（どこで使われるか）に基づいた別名を定義します。
  */
 
 export const SYSTEM_NAME = WORDS_SYSTEM.SYSTEM_NAME;

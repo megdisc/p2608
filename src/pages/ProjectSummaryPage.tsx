@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useState, useEffect, useMemo } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION } from '../constants';
 import { useAlert } from '../contexts/AlertContext';
 import { supabase } from '../lib';
 import { getCurrentISOString, formatJST } from '../utils';
@@ -38,7 +38,7 @@ export function ProjectSummaryPage() {
           supabase.from('projects').select(`
             id, name,
             project_tasks (
-              id, name, is_deleted, assignee_type,
+              id, name, is_deleted,
               project_task_assignees (
                 id, member_id, client_id, staff_id
               )
@@ -98,16 +98,6 @@ export function ProjectSummaryPage() {
             const assignees = t.project_task_assignees || [];
             const progressRate = latestProgressMap.get(t.id) || 0;
             
-            let aType = t.assignee_type;
-            if (aType === 'inhouse') {
-              if (assignees.some((a: any) => a.staff_id)) aType = 'staff';
-              else aType = 'member';
-            }
-            const displayAssigneeType = 
-              aType === 'member' ? '利用者' : 
-              aType === 'staff' ? '職員' : 
-              aType === 'outsource' ? '外注' : '';
-            
             if (assignees.length === 0) {
               tempRows.push({
                 projectId: p.id,
@@ -115,19 +105,23 @@ export function ProjectSummaryPage() {
                 taskId: t.id,
                 taskName: t.name,
                 progressRate,
-                assigneeType: displayAssigneeType,
+                assigneeType: '',
                 assigneeId: 'unassigned',
                 assigneeName: '未割り当て'
               });
             } else {
               for (const a of assignees) {
                 let assigneeName = '不明';
+                let displayAssigneeType = '';
                 if (a.member_id) {
                   assigneeName = memberMap.get(a.member_id) || '不明';
+                  displayAssigneeType = WORDS_PERSON.ROLE_MEMBER;
                 } else if (a.client_id) {
                   assigneeName = clientMap.get(a.client_id) || '不明';
+                  displayAssigneeType = WORDS_ORG_LOCATION.OUTSOURCE;
                 } else if (a.staff_id) {
                   assigneeName = staffMap.get(a.staff_id) || '不明';
+                  displayAssigneeType = WORDS_PERSON.ROLE_STAFF;
                 }
 
                 tempRows.push({
@@ -220,7 +214,7 @@ export function ProjectSummaryPage() {
       key: 'progressRate', 
       header: TABLE_COLUMNS.PROGRESS_RATE, 
       className: 'quantity',
-      render: (item) => item.isFirstInTask && item.taskName ? `${item.progressRate}%` : '',
+      render: (item) => item.isFirstInTask && item.taskName ? item.progressRate : '',
       style: (item) => ({
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
@@ -228,10 +222,8 @@ export function ProjectSummaryPage() {
     { 
       key: 'assigneeType', 
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
-      render: (item) => item.isFirstInTask ? item.assigneeType : '',
-      style: (item) => ({
-        borderBottom: item.isLastInTask ? undefined : 'none'
-      })
+      render: (item) => item.assigneeType,
+      // 担当者区分は毎行表示なので通常のボーダー
     },
     { 
       key: 'assigneeName', 

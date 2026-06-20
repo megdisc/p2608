@@ -52,6 +52,7 @@ export const WORDS_COMMON = {
   CANCEL: '取消',
   CLOSE: '閉じる',
   YOMIGANA: 'よみがな',
+  UNIT: '単位',
 };
 
 // 人に関する定数群
@@ -59,9 +60,11 @@ export const WORDS_PERSON = {
   NAME: '氏名',
   ROLE: 'ロール',
   PERSON_IN_CHARGE: '記録者',
-  CUSTOMER: '顧客',
   ASSIGNEE: '担当者',
   ASSIGNEE_TYPE: '担当者区分',
+  ROLE_ADMIN: 'システム管理者',
+  ROLE_STAFF: '職員',
+  ROLE_MEMBER: '利用者',
 };
 
 // 連絡先・認証に関する定数群
@@ -80,6 +83,8 @@ export const WORDS_CONTACT_AUTH = {
 export const WORDS_ORG_LOCATION = {
   SUPPLIER: '仕入先',
   CLIENT: '取引先',
+  CUSTOMER: '顧客',
+  OUTSOURCE: '外注先',
   LOCATION: '保管場所',
   STANDARD_LOCATION: '標準保管場所',
 };
@@ -99,6 +104,8 @@ export const WORDS_INVENTORY = {
   STANDARD_PURCHASE_QTY: '標準仕入数量',
   BOOK_INVENTORY: '帳簿在庫',
   ACTUAL_INVENTORY: '実在庫',
+  TRANSACTION_IN: '受入',
+  TRANSACTION_OUT: '払出',
 };
 
 // 案件・作業に関する定数群
@@ -220,7 +227,7 @@ export const TABLE_COLUMNS = {
   PROJECT_NAME: WORDS_PROJECT.PROJECT, // 案件に統合
   START_DATE: WORDS_TIME.START_DATE,
   END_DATE: WORDS_TIME.END_DATE,
-  CUSTOMER: WORDS_PERSON.CUSTOMER,
+  CUSTOMER: WORDS_ORG_LOCATION.CUSTOMER,
   TASK: WORDS_PROJECT.TASK,
   REQUIRED_SKILLS: WORDS_PROJECT.REQUIRED_SKILLS,
   ASSIGNEE: WORDS_PERSON.ASSIGNEE,
@@ -283,3 +290,20 @@ export const PLACEHOLDERS = {
   PASSWORD: WORDS_CONTACT_AUTH.PASSWORD_PLACEHOLDER,
   SELECT: WORDS_MESSAGE.SELECT,
 };
+
+export const TRANSACTION_TYPE_OPTIONS = [
+  { label: '', value: '' },
+  { label: WORDS_INVENTORY.TRANSACTION_IN, value: WORDS_INVENTORY.TRANSACTION_IN },
+  { label: WORDS_INVENTORY.TRANSACTION_OUT, value: WORDS_INVENTORY.TRANSACTION_OUT }
+];
+
+export const STAFF_ROLE_OPTIONS = [
+  { label: '', value: '' },
+  { label: WORDS_PERSON.ROLE_ADMIN, value: WORDS_PERSON.ROLE_ADMIN },
+  { label: WORDS_PERSON.ROLE_STAFF, value: WORDS_PERSON.ROLE_STAFF }
+];
+
+export const MEMBER_ROLE_OPTIONS = [
+  { label: '', value: '' },
+  { label: WORDS_PERSON.ROLE_MEMBER, value: WORDS_PERSON.ROLE_MEMBER }
+];

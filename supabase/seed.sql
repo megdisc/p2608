@@ -110,38 +110,38 @@ INSERT INTO skills (id, name, yomigana, description) VALUES ('f0624c11-e56b-4267
 
 -- Projects
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'ほんしゃおふぃすねっとわーくこうちく', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-12-31');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'inhouse');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '基本・詳細設計', 'outsource');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '基本・詳細設計');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
 INSERT INTO project_task_assignees (task_id, client_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '構築・テスト', 'inhouse');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '構築・テスト');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'ししゃさーばーりぷれいす', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '2026-04-01', '2026-08-20');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'outsource');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '8172c05b-207d-4ca4-82e5-c8e51328accc');
 INSERT INTO project_task_assignees (task_id, client_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '0ff5f11e-b752-4b06-aaab-86984a67eec7');
 
 -- Additional Projects with Staff and Members
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', '新規Webサービス開発支援', 'しんきうぇぶさーびすかいはつしえん', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2025-10-01', '2026-09-30');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'UI/UXデザイン', 'inhouse');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'UI/UXデザイン');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', '676fa8f0-b4d8-4035-ae3f-de391ece3a63');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', '38eb7141-55bd-43d0-a6a5-7d028233eb17');
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'de2d336b-254d-4af7-8e49-5acbda340e67');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'フロントエンド実装', 'inhouse');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'フロントエンド実装');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '676fa8f0-b4d8-4035-ae3f-de391ece3a63');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '38eb7141-55bd-43d0-a6a5-7d028233eb17');
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', '社内基幹システム移行', 'しゃないきかんしすてむいこう', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-11-30');
-INSERT INTO project_tasks (id, project_id, name, assignee_type) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'データ移行計画', 'inhouse');
+INSERT INTO project_tasks (id, project_id, name)  VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'データ移行計画');
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'e98c7634-1eb3-4e42-b062-841f39c043e0');

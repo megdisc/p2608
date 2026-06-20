@@ -74,7 +74,7 @@ export function ProgressRecordPage() {
           supabase.from('projects').select(`
             id, name, start_date, end_date,
             project_tasks (
-              id, name, assignee_type, is_deleted,
+              id, name, is_deleted,
               project_task_assignees ( member_id, staff_id, client_id )
             )
           `).eq('is_deleted', false)

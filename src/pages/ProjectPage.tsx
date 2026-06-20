@@ -1,6 +1,6 @@
 import { DataPage, MultiSelectDropdown, Button, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION } from '../constants';
 import { supabase } from '../lib';
 import type { ProjectItem, MemberItem, ClientItem, SkillItem, StaffItem } from '../types';
 import { useAlert } from '../contexts';
@@ -25,7 +25,7 @@ export function ProjectPage() {
         supabase.from('projects').select(`
           id, name, yomigana, client_id, start_date, end_date,
           project_tasks (
-            id, name, assignee_type, is_deleted,
+            id, name, is_deleted,
             project_task_skills ( skill_id, skills(name) ),
             project_task_assignees ( member_id, client_id, staff_id )
           )
@@ -174,13 +174,13 @@ export function ProjectPage() {
           const [type, id] = prefixedId.split('_');
           if (type === 'member') {
             const name = dbMembers.find(u => u.id === id)?.name;
-            return name ? `${name} (利用者)` : null;
+            return name ? `${name} (${WORDS_PERSON.ROLE_MEMBER})` : null;
           } else if (type === 'staff') {
             const name = dbStaffs.find(s => s.id === id)?.name;
-            return name ? `${name} (職員)` : null;
+            return name ? `${name} (${WORDS_PERSON.ROLE_STAFF})` : null;
           } else if (type === 'outsource') {
             const name = dbClients.find(c => c.id === id)?.name;
-            return name ? `${name} (外注先)` : null;
+            return name ? `${name} (${WORDS_ORG_LOCATION.OUTSOURCE})` : null;
           }
           return null;
         }).filter(Boolean) as string[];
@@ -198,9 +198,9 @@ export function ProjectPage() {
       customEditRender: (value: any, _item: any, onChange: (newValue: any) => void) => {
         const currentIds = value || [];
         const options = [
-          ...dbMembers.map(u => ({ value: `member_${u.id}`, label: `${u.name} (利用者)` })),
-          ...dbStaffs.map(s => ({ value: `staff_${s.id}`, label: `${s.name} (職員)` })),
-          ...dbClients.map(c => ({ value: `outsource_${c.id}`, label: `${c.name} (外注先)` }))
+          ...dbMembers.map(u => ({ value: `member_${u.id}`, label: `${u.name} (${WORDS_PERSON.ROLE_MEMBER})` })),
+          ...dbStaffs.map(s => ({ value: `staff_${s.id}`, label: `${s.name} (${WORDS_PERSON.ROLE_STAFF})` })),
+          ...dbClients.map(c => ({ value: `outsource_${c.id}`, label: `${c.name} (${WORDS_ORG_LOCATION.OUTSOURCE})` }))
         ];
         
         return (
@@ -256,8 +256,7 @@ export function ProjectPage() {
           const taskData = {
             id: t.id,
             project_id: p.id,
-            name: t.task,
-            assignee_type: null
+            name: t.task
           };
 
           const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);

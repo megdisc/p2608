@@ -67,6 +67,7 @@ export function ProjectPage() {
                 if (pta.member_id) res.push(`member_${pta.member_id}`);
                 if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
+                alert(MESSAGES.FEATURE_NOT_IMPLEMENTED);
                 return res;
               })
             };

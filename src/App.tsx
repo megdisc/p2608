@@ -22,6 +22,7 @@ import {
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { MESSAGES } from './constants';
 
 function AppContent() {
   const { isAuthenticated, activeSystem } = useAuth();
@@ -74,7 +75,7 @@ function AppContent() {
             <ProjectSummaryPage />
           ) : (
             <div style={{ padding: '32px' }}>
-              <p style={{ color: 'var(--color-text-muted)' }}>選択されたページは現在開発中です。</p>
+              <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
             </div>
           )}
         </ProjectAppLayout>

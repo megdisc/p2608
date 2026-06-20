@@ -232,7 +232,7 @@ export function ProgressRecordPage() {
             });
           } else {
             assignees.push({
-              id: `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
+              id: `${PAGE_NAMES.PROGRESS_RECORD}（${currentMonth}）-${prefixedId}-${t.id}`,
               userId: prefixedId,
               workTime,
               contributionRatio: 0,

@@ -757,7 +757,7 @@ export function DataTable<T extends { id: string }>({
                 onClick={() => {
                   if (singleMonth && onSingleMonthChange) {
                     const [y, m] = singleMonth.split('-');
-                    let date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                    const date = new Date(parseInt(y), parseInt(m) - 1, 1);
                     date.setMonth(date.getMonth() - 1);
                     const newY = date.getFullYear();
                     const newM = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -783,7 +783,7 @@ export function DataTable<T extends { id: string }>({
                 onClick={() => {
                   if (singleMonth && onSingleMonthChange) {
                     const [y, m] = singleMonth.split('-');
-                    let date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                    const date = new Date(parseInt(y), parseInt(m) - 1, 1);
                     date.setMonth(date.getMonth() + 1);
                     const newY = date.getFullYear();
                     const newM = (date.getMonth() + 1).toString().padStart(2, '0');

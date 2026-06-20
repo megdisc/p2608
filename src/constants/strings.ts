@@ -27,7 +27,7 @@ export const PAGE_NAMES = {
   LOCATION: '保管場所設定',
   SUPPLIER: '仕入先設定',
   STAFF: '職員設定',
-  
+
   // 案件管理
   PROJECT_INFO: '案件情報',
   PROJECT_USER: '利用者設定',
@@ -90,19 +90,20 @@ export const TABLE_COLUMNS = {
   REQUIRED_SKILLS: '必要スキル',
   ASSIGNEE: '担当者',
   SKILL_NAME: 'スキル名',
-  
+
   // 日次作業記録
   USER_NAME: '担当者',
   WORK_CONTENT: '作業内容',
   WORK_TIME: '作業時間',
   NOTES: '備考',
-  
+
   // 進捗記録
   PREV_MONTH_PROGRESS: '月初進捗率 (%)',
   CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',
   CURRENT_MONTH_WORK_TIME: '今月作業時間',
   CONTRIBUTION_RATIO: '貢献比率',
-  PROGRESS_RATE: '進捗率',
+  PROGRESS_RATE: '進捗率 (%)',
+  ASSIGNEE_TYPE: '要員区分',
 };
 
 export const LOGIN_LABELS = {
@@ -120,6 +121,7 @@ export const BUTTON_LABELS = {
   CANCEL: '取消',
   DELETE: '削除',
   EDIT: '編集',
+  CLOSE: '閉じる',
 };
 
 export const MESSAGES = {
@@ -140,9 +142,24 @@ export const MESSAGES = {
   EMPTY_PROGRESS_RECORD: '進捗記録がありません',
   DELETE_CONFIRM: '本当に削除しますか？',
   RESTRICTED_EDIT: '最新棚卸以前のデータは編集不可です',
+  PAGE_UNDER_CONSTRUCTION: '選択されたページは現在開発中です。',
+  LOGOUT_CONFIRM_PROJECT: '案件管理システムからログアウト',
+  LOGOUT_CONFIRM_INVENTORY: '在庫管理システムからログアウト',
+  SUCCESS_TITLE: '成功',
+  ERROR_TITLE: 'エラー',
+  EMPTY_DATA: 'データがありません',
+  NO_OPTIONS: '選択肢がありません',
+  FEATURE_NOT_IMPLEMENTED: '編集機能は未実装です',
+  STAFF_SHORTAGE: '要員追加: ',
+  STAFF_SURPLUS: '余剰あり: ',
+  STAFF_OPTIMAL: '適正配置',
+  DUMMY_LOGIC_NOTICE: '※ダミーの集計ロジックです',
+  FETCH_ERROR: 'データの取得に失敗しました',
+  LOADING: 'Loading...',
 };
 
 export const PLACEHOLDERS = {
   EMAIL: 'user@example.com',
   PASSWORD: '••••••••',
+  SELECT: '選択してください',
 };

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { PLACEHOLDERS } from '../../constants';
 
 export type Option = {
   value: string;
@@ -13,7 +14,7 @@ type MultiSelectDropdownProps = {
   placeholder?: string;
 };
 
-export function MultiSelectDropdown({ options, value, onChange, placeholder = '選択してください' }: MultiSelectDropdownProps) {
+export function MultiSelectDropdown({ options, value, onChange, placeholder = PLACEHOLDERS.SELECT }: MultiSelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);

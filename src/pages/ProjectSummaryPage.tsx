@@ -1,6 +1,7 @@
 import { DataPage, type Column } from '../components';
 import { useState, useEffect, useMemo } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { useAlert } from '../contexts/AlertContext';
 import { supabase } from '../lib';
 import { getCurrentISOString, formatJST } from '../utils';
 
@@ -21,6 +22,7 @@ export function ProjectSummaryPage() {
   const [data, setData] = useState<SummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [targetDate] = useState(() => getCurrentISOString());
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchData() {
@@ -189,6 +191,7 @@ export function ProjectSummaryPage() {
         setData(flatRows);
       } catch (err) {
         console.error('Error fetching project summary:', err);
+        showAlert(MESSAGES.FETCH_ERROR, 'error');
       } finally {
         setLoading(false);
       }
@@ -238,7 +241,7 @@ export function ProjectSummaryPage() {
     }
   ], []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   const formattedDate = formatJST(targetDate);
 

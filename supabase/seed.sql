@@ -5,8 +5,8 @@ INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, e
 
 -- Staffs
 INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '相澤 翔太', 'あいざわ しょうた', 'staff-001@example.com', 'システム管理者');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上 結衣', 'いのうえ ゆい', 'staff-002@example.com', 'スタッフ');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田 拓海', 'うえだ たくみ', 'staff-003@example.com', 'スタッフ');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上 結衣', 'いのうえ ゆい', 'staff-002@example.com', '職員');
+INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田 拓海', 'うえだ たくみ', 'staff-003@example.com', '職員');
 
 -- Categories
 INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'こなるい', '強力粉、薄力粉、ライ麦粉など');

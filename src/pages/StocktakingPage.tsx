@@ -1,12 +1,10 @@
+import { DataPage, DateTimeDisplay, type Column } from '../components';
 import { useState, useEffect, useMemo } from 'react';
-import { DataPage } from '../components/page';
-import { DateTimeDisplay } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import type { Column } from '../components/ui';
 import type { StocktakingItem } from '../types';
-import { supabase } from '../lib/supabase';
-import { useAlert } from '../contexts/AlertContext';
-import { parseLocalInputAsUTC, formatJSTForInput } from '../utils/date';
+import { supabase } from '../lib';
+import { useAlert } from '../contexts';
+import { parseLocalInputAsUTC, formatJSTForInput } from '../utils';
 
 export function StocktakingPage() {
   const [items, setItems] = useState<StocktakingItem[]>([]);

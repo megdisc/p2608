@@ -1,9 +1,8 @@
+import { DataPage, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { DataPage } from '../components/page';
-import type { Column } from '../components/ui';
 import type { StaffItem } from '../types';
-import { supabase } from '../lib/supabase';
-import { useAlert } from '../contexts/AlertContext';
+import { supabase } from '../lib';
+import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
 
 export function StaffPage() {

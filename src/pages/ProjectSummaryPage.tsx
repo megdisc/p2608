@@ -1,9 +1,8 @@
+import { DataPage, type Column } from '../components';
 import { useState, useEffect, useMemo } from 'react';
-import { DataPage } from '../components/page';
-import type { Column } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES } from '../constants';
-import { supabase } from '../lib/supabase';
-import { getCurrentISOString, formatJST } from '../utils/date';
+import { supabase } from '../lib';
+import { getCurrentISOString, formatJST } from '../utils';
 
 type SummaryRow = {
   id: string;

@@ -1,12 +1,10 @@
+import { DataPage, DateTimeDisplay, type Column } from '../components';
 import { useState, useEffect, useMemo } from 'react';
-import { DataPage } from '../components/page';
-import { DateTimeDisplay } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, TRANSACTION_TYPE_OPTIONS } from '../constants';
-import type { Column } from '../components/ui';
 import type { TransactionItem } from '../types';
-import { supabase } from '../lib/supabase';
-import { useAlert } from '../contexts/AlertContext';
-import { parseLocalInputAsUTC, formatJSTForInput } from '../utils/date';
+import { supabase } from '../lib';
+import { useAlert } from '../contexts';
+import { parseLocalInputAsUTC, formatJSTForInput } from '../utils';
 
 export function TransactionPage() {
   const [items, setItems] = useState<TransactionItem[]>([]);

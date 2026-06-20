@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
 import type { SystemType } from '../types';
 
 type User = {
@@ -31,33 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   
   const [user, setUser] = useState<User>(null);
 
-  useEffect(() => {
-    async function fetchDummyUser() {
-      if (isAuthenticated) {
-        try {
-          const { data, error } = await supabase
-            .from('staffs')
-            .select('id, email, name, role')
-            .eq('name', '佐藤健')
-            .single();
 
-          if (data && !error) {
-            setUser({
-              id: data.id,
-              email: data.email,
-              name: data.name,
-              role: data.role
-            });
-          }
-        } catch (error) {
-          console.error('Failed to fetch dummy user:', error);
-        }
-      } else {
-        setUser(null);
-      }
-    }
-    fetchDummyUser();
-  }, [isAuthenticated]);
 
   const login = async (_email?: string, _password?: string, system?: SystemType) => {
     // 将来的にはここで supabase.auth.signInWithPassword などを呼び出す

@@ -1,7 +1,7 @@
+import { AppLayout, ProjectAppLayout } from './components';
 import { useState, useEffect, useRef } from 'react';
 import './index.css';
 import type { Tab } from './types';
-import { AppLayout, ProjectAppLayout } from './components/layout';
 import { 
   InventoryPage, 
   TransactionPage, 

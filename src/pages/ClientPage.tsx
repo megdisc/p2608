@@ -1,10 +1,9 @@
+import { DataPage, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { DataPage } from '../components/page';
-import type { Column } from '../components/ui';
 import type { ClientItem } from '../types';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 
 export function ClientPage() {
   const [items, setItems] = useState<ClientItem[]>([]);

@@ -1,11 +1,9 @@
+import { DataPage, MultiSelectDropdown, Button, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { DataPage } from '../components/page';
-import type { Column } from '../components/ui';
-import { MultiSelectDropdown, Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 import type { ProjectItem, MemberItem, ClientItem, SkillItem, StaffItem } from '../types';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert } from '../contexts';
 
 export function ProjectPage() {
   const [items, setItems] = useState<ProjectItem[]>([]);

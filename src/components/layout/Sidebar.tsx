@@ -1,5 +1,5 @@
 import type { Tab } from '../../types';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts';
 import { SYSTEM_NAME_INVENTORY, SYSTEM_ID, MENU_CATEGORIES, MENU_SUBCATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type SidebarProps = {

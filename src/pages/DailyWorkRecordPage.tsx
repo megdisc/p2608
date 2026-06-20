@@ -1,12 +1,10 @@
+import { DataPage, Button, type Column } from '../components';
 import { useState, useMemo, useEffect } from 'react';
-import { DataPage } from '../components/page';
-import type { Column } from '../components/ui';
-import { Button } from '../components/ui';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 import type { MemberItem, ProjectItem } from '../types';
-import { useAlert } from '../contexts/AlertContext';
-import { getCurrentJSTDateOnly } from '../utils/date';
+import { useAlert } from '../contexts';
+import { getCurrentJSTDateOnly } from '../utils';
 
 type DailyRecord = {
   id: string;

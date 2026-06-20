@@ -5,7 +5,7 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
-import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils/date';
+import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils';
 
 const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
   const [isEditing, setIsEditing] = useState(false);

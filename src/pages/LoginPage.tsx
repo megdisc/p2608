@@ -1,6 +1,6 @@
+import { Button, Input } from '../components';
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { Button, Input } from '../components/ui';
+import { useAuth } from '../contexts';
 import { SYSTEM_NAME, SYSTEM_ID, LOGIN_LABELS, BUTTON_LABELS, PLACEHOLDERS } from '../constants';
 import type { SystemType } from '../types';
 

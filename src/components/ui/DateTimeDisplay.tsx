@@ -1,4 +1,4 @@
-import { formatJST } from '../../utils/date';
+import { formatJST } from '../../utils';
 
 export type DateTimeDisplayProps = {
   value: string;

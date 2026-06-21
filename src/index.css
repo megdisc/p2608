@@ -19,8 +19,8 @@
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-green-600: #2f8f4f;
-  --palette-red-600: #df3f3f;
+  --palette-blue-500: #3f3fdf;
+  --palette-red-500: #df3f3f;
 
   /* --- タイポグラフィ --- */
   --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;
@@ -83,8 +83,8 @@
   --color-border: var(--palette-gray-300);
 
   /* --- ステータス --- */
-  --color-success: var(--palette-green-600);
-  --color-error: var(--palette-red-600);
+  --color-success: var(--palette-blue-500);
+  --color-error: var(--palette-red-500);
 
   /* --- オーバーレイ --- */
   --color-overlay: var(--palette-black-alpha-50);

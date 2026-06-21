@@ -10,17 +10,17 @@
 
   /* --- 色 (パレット) --- */
   --palette-white: #ffffff;
-  --palette-gray-100: #f2f2f2;
-  --palette-gray-300: #e6e6e6;
-  --palette-gray-500: #999999;
-  --palette-gray-700: #333333;
-  --palette-gray-900: #1a1a1a;
+  --palette-gray-100: #efefef;
+  --palette-gray-300: #cfcfcf;
+  --palette-gray-500: #9f9f9f;
+  --palette-gray-700: #3f3f3f;
+  --palette-gray-900: #1f1f1f;
 
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-green-600: #268c40;
-  --palette-red-600: #d93333;
+  --palette-green-600: #2f8f4f;
+  --palette-red-600: #df3f3f;
 
   /* --- タイポグラフィ --- */
   --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;

@@ -6,10 +6,12 @@ import { supabase } from '../lib';
 
 type SummaryRow = {
   id: string;
+  assigneeId: string;
   assigneeType: string;
   assigneeTypeSortKey: number;
   assigneeName: string;
   assigneeYomigana: string;
+  projectId: string;
   projectName: string;
   projectYomigana: string;
   projectType: string;
@@ -134,7 +136,7 @@ export function AssigneeSummaryPage() {
                 tempRows.push({
                   assigneeType: displayAssigneeType,
                   assigneeTypeSortKey,
-                  assigneeId: a.id || `${a.member_id || a.staff_id || a.client_id}`,
+                  assigneeId: `${displayAssigneeType}_${a.member_id || a.staff_id || a.client_id || 'unassigned'}`,
                   assigneeName,
                   assigneeYomigana,
                   projectId: p.id,
@@ -185,10 +187,12 @@ export function AssigneeSummaryPage() {
 
           flatRows.push({
             id: `${r.assigneeId}_${r.projectId}_${r.taskId}`,
+            assigneeId: r.assigneeId,
             assigneeType: r.assigneeType,
             assigneeTypeSortKey: r.assigneeTypeSortKey,
             assigneeName: r.assigneeName,
             assigneeYomigana: r.assigneeYomigana,
+            projectId: r.projectId,
             projectName: r.projectName,
             projectYomigana: r.projectYomigana,
             projectType: r.projectType,
@@ -220,7 +224,8 @@ export function AssigneeSummaryPage() {
     {
       key: 'assigneeType',
       header: TABLE_COLUMNS.ASSIGNEE_TYPE,
-      sortable: false,
+      sortable: true,
+      sortKey: 'assigneeTypeSortKey',
       render: (item) => {
         if (!item.isFirstInAssignee) return '';
         return item.assigneeType;
@@ -232,7 +237,8 @@ export function AssigneeSummaryPage() {
     { 
       key: 'assigneeName', 
       header: TABLE_COLUMNS.ASSIGNEE,
-      sortable: false,
+      sortable: true,
+      sortKey: 'assigneeYomigana',
       render: (item) => {
         if (!item.isFirstInAssignee) return '';
         return item.assigneeName;
@@ -275,7 +281,7 @@ export function AssigneeSummaryPage() {
       key: 'progressRate', 
       header: TABLE_COLUMNS.PROGRESS_RATE,
       sortable: false,
-      render: (item) => `${item.progressRate}%`,
+      render: (item) => item.progressRate,
       style: { textAlign: 'right' }
     }
   ], []);

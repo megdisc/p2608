@@ -24,7 +24,8 @@
   --palette-yellow-500: #fdfddf;
 
   /* --- フォント --- */
-  --font-family-sans: "Inter", "Helvetica Neue", Arial, "Yu Gothic Medium", "Yu Gothic", sans-serif;
+  --font-family-sans: "Inter", "Helvetica Neue", Arial, "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", "Yu Gothic", "Meiryo", sans-serif;
+  --font-family-sans: "BIZ UDPGothic";
   --font-family-mono: monospace;
 
   /* フォントサイズ */

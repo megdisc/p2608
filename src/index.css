@@ -813,16 +813,19 @@ input[type="number"] {
   gap: var(--space-5);
 }
 
-.form-group {
+.form-group,
+.login-form-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
 }
 
-.form-group label {
+.form-group label,
+.login-form-group label {
   font-size: var(--text-body);
   font-weight: var(--weight-heading);
   color: var(--color-text-muted);
+  text-align: left;
 }
 
 .login-input {

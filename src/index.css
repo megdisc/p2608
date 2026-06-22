@@ -122,12 +122,18 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "palt" 1;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-feature-settings: inherit;
 }
 
 .app-layout {

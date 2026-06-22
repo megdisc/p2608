@@ -11,7 +11,18 @@ function parseToDate(input: string | Date | null | undefined): Date {
   
   // If it doesn't contain a timezone indicator, treat it as JST (local input)
   if (!str.includes('Z') && !str.includes('+') && !str.match(/-\d{2}:\d{2}$/)) {
-    str += '+09:00';
+    const isMonthOnly = str.length === 7;
+    const isDateOnly = str.length <= 10 && !isMonthOnly;
+    
+    if (isMonthOnly) {
+      str += '-01T00:00:00+09:00';
+    } else if (isDateOnly) {
+      str += 'T00:00:00+09:00';
+    } else if (str.length === 16) {
+      str += ':00+09:00';
+    } else {
+      str += '+09:00';
+    }
   }
   
   return new Date(str);
@@ -54,6 +65,39 @@ export function formatJST(input: string | Date | null | undefined): string {
   
   const { year, month, day, hour, minute } = getJSTParts(date);
   return `${year}年${month}月${day}日 ${hour}:${minute}`;
+}
+
+/**
+ * Returns a JST string for UI display: "YYYY年MM月DD日"
+ */
+export function formatDateJP(input: string | Date | null | undefined): string {
+  const date = parseToDate(input);
+  if (isNaN(date.getTime())) return typeof input === 'string' ? input : '';
+  
+  const { year, month, day } = getJSTParts(date);
+  return `${year}年${month}月${day}日`;
+}
+
+/**
+ * Returns a JST string for UI display: "YYYY年MM月"
+ */
+export function formatMonthJP(input: string | Date | null | undefined): string {
+  const date = parseToDate(input);
+  if (isNaN(date.getTime())) return typeof input === 'string' ? input : '';
+  
+  const { year, month } = getJSTParts(date);
+  return `${year}年${month}月`;
+}
+
+/**
+ * Returns a JST string for UI display: "YYYY年"
+ */
+export function formatYearJP(input: string | Date | null | undefined): string {
+  const date = parseToDate(input);
+  if (isNaN(date.getTime())) return typeof input === 'string' ? input : '';
+  
+  const { year } = getJSTParts(date);
+  return `${year}年`;
 }
 
 /**

@@ -9,18 +9,18 @@
      ========================================================================== */
 
   /* --- 色 (パレット) --- */
-  --palette-white: #ffffff;
+  --palette-white: #fdfdfd;
   --palette-gray-100: #efefef;
   --palette-gray-300: #cfcfcf;
   --palette-gray-500: #9f9f9f;
   --palette-gray-700: #3f3f3f;
   --palette-gray-900: #1f1f1f;
 
-  --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
-  --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
-
   --palette-blue-500: #3f3fdf;
   --palette-red-500: #df3f3f;
+
+  --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
+  --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
   /* --- タイポグラフィ --- */
   --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;
@@ -35,7 +35,7 @@
   --font-size-xl: 20px;
   --font-size-2xl: 24px;
 
-  /* フォントの太さ */
+  /* 文字の太さ */
   --font-weight-regular: normal;
   --font-weight-medium: 500;
   --font-weight-semibold: bold;
@@ -472,6 +472,18 @@ input[type="datetime-local"].inline-input::-webkit-calendar-picker-indicator:hov
 input[type="date"].inline-input::-webkit-calendar-picker-indicator:hover,
 input[type="time"].inline-input::-webkit-calendar-picker-indicator:hover {
   opacity: 0.7;
+}
+
+/* Hide spin buttons for number inputs to maintain right-alignment cleanly */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield; /* Standard */
 }
 
 /* Table Toolbar (Filter & Pagination) */

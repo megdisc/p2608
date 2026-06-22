@@ -78,8 +78,8 @@ export function MasterPage() {
       options: locationOptions 
     },
     { key: 'supplier', header: TABLE_COLUMNS.SUPPLIER, editable: true, inputType: 'select', options: supplierOptions },
-    { key: 'standardPrice', header: TABLE_COLUMNS.STANDARD_PRICE, className: 'quantity', editable: true, inputType: 'number', render: (item) => item.standardPrice.toLocaleString() },
-    { key: 'standardPurchaseQty', header: TABLE_COLUMNS.STANDARD_PURCHASE_QTY, className: 'quantity', editable: true, inputType: 'number' },
+    { key: 'standardPrice', header: TABLE_COLUMNS.STANDARD_PRICE, editable: true, inputType: 'number' },
+    { key: 'standardPurchaseQty', header: TABLE_COLUMNS.STANDARD_PURCHASE_QTY, editable: true, inputType: 'number' },
   ];
 
   const handleBatchSave = async (drafts: MasterItem[], deletedIds: string[]) => {

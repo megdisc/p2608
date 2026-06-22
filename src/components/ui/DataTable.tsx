@@ -7,62 +7,10 @@ import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
 import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils';
 
-const DateFilterInput = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleClick = () => {
-    setIsEditing(true);
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-        try {
-          if ('showPicker' in inputRef.current) {
-            (inputRef.current as any).showPicker();
-          }
-        } catch (e) {
-          // Ignore
-        }
-      }
-    }, 10);
-  };
-
-  const formattedDate = `${value.split('-')[0]}年${value.split('-')[1]}月${value.split('-')[2]}日`;
-
-  if (isEditing) {
-    return (
-      <input
-        ref={inputRef}
-        type="date"
-        value={value}
-        onChange={(e) => {
-          if (e.target.value) {
-            onChange(e.target.value);
-          }
-        }}
-        onBlur={() => setIsEditing(false)}
-        className="date-filter-pill"
-        style={{ width: '160px' }}
-      />
-    );
-  }
-
-  return (
-    <div 
-      className="date-filter-pill" 
-      onClick={handleClick}
-      style={{ width: '160px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-    >
-      <span>{formattedDate}</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'static' }}>
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-        <line x1="16" y1="2" x2="16" y2="6"></line>
-        <line x1="8" y1="2" x2="8" y2="6"></line>
-        <line x1="3" y1="10" x2="21" y2="10"></line>
-      </svg>
-    </div>
-  );
-};
+import { DateInput } from './DateInput';
+import { MonthInput } from './MonthInput';
+import { NumberInput } from './NumberInput';
+import { NumberDisplay } from './NumberDisplay';
 
 export type Column<T> = {
   key: string;
@@ -444,11 +392,31 @@ export function DataTable<T extends { id: string }>({
         );
       }
 
+      if (col.inputType === 'date') {
+        return (
+          <DateInput 
+            value={value as string}
+            onChange={(newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId)}
+          />
+        );
+      }
+
+      if (col.inputType === 'number') {
+        return (
+          <NumberInput 
+            value={value}
+            onChange={(e) => {
+              let newVal: string | number = e.target.value;
+              if (newVal === '') newVal = '';
+              else newVal = Number(newVal);
+              handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId);
+            }}
+          />
+        );
+      }
+
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue: string | number = e.target.value;
-        if (col.inputType === 'number') {
-          newValue = newValue === '' ? '' : Number(newValue);
-        }
         handleCellChange(item.id, col.key, newValue, col, isSubItem, parentId, isSubSubItem, subParentId);
       };
 
@@ -461,7 +429,18 @@ export function DataTable<T extends { id: string }>({
       );
     }
     
-    return col.render ? col.render(item) : item[col.key];
+    // Default render for non-editable state
+    if (col.render) return col.render(item);
+    
+    if (col.inputType === 'date' && item[col.key]) {
+      return <DateInput value={item[col.key]} onChange={() => {}} />;
+    }
+    
+    if (col.inputType === 'number') {
+      return <NumberDisplay value={item[col.key]} />;
+    }
+
+    return item[col.key];
   };
 
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
@@ -703,14 +682,18 @@ export function DataTable<T extends { id: string }>({
         <div className="filter-controls">
           {showDateFilter ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DateFilterInput 
+              <DateInput 
                 value={startDate} 
                 onChange={(val) => setStartDate(val)} 
+                className="date-filter-pill"
+                style={{ width: '160px' }}
               />
               <span>～</span>
-              <DateFilterInput 
+              <DateInput 
                 value={endDate} 
                 onChange={(val) => setEndDate(val)} 
+                className="date-filter-pill"
+                style={{ width: '160px' }}
               />
             </div>
           ) : showSingleDateFilter ? (
@@ -725,9 +708,11 @@ export function DataTable<T extends { id: string }>({
               >
                 ＜
               </Button>
-              <DateFilterInput 
+              <DateInput 
                 value={singleDate} 
                 onChange={(val) => setSingleDate(val)} 
+                className="date-filter-pill"
+                style={{ width: '160px' }}
               />
               <Button 
                 style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -767,12 +752,11 @@ export function DataTable<T extends { id: string }>({
               >
                 ＜
               </Button>
-              <input 
-                type="month"
+              <MonthInput 
                 value={singleMonth || ''}
-                onChange={(e) => {
-                  if (e.target.value && onSingleMonthChange) {
-                    onSingleMonthChange(e.target.value);
+                onChange={(val) => {
+                  if (val && onSingleMonthChange) {
+                    onSingleMonthChange(val);
                   }
                 }}
                 className="date-filter-pill"

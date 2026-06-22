@@ -23,11 +23,11 @@ export function MasterPage() {
           { data: locationsData },
         ] = await Promise.all([
           supabase.from('items').select(`
-            *,
+            id, name, yomigana, standard_price, standard_purchase_qty,
             category:categories(name, yomigana),
             location:locations(name),
             supplier:suppliers(name)
-          `).eq('is_deleted', false),
+          `).eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('categories').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('suppliers').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('locations').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -130,11 +130,11 @@ export function MasterPage() {
 
       // Reload
       const { data: itemsData, error: reloadError } = await supabase.from('items').select(`
-        *,
+        id, name, yomigana, standard_price, standard_purchase_qty,
         category:categories(name, yomigana),
         location:locations(name),
         supplier:suppliers(name)
-      `).eq('is_deleted', false);
+      `).eq('is_deleted', false).order('yomigana', { ascending: true });
       
       if (reloadError) throw reloadError;
       
@@ -184,7 +184,7 @@ export function MasterPage() {
       data={items} 
       columns={columns} 
       emptyMessage={MESSAGES.EMPTY_MASTER} 
-      initialSort={{ key: 'category', direction: 'asc' }}
+      initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

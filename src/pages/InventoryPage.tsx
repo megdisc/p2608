@@ -107,6 +107,7 @@ export function InventoryPage() {
       data={pivotItems} 
       columns={columns} 
       emptyMessage={MESSAGES.EMPTY_INVENTORY} 
+      initialSort={{ key: 'name', direction: 'asc' }} 
       footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-caption)' }}>集計日時：{formattedDate}</span>}
     />
   );

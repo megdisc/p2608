@@ -16,7 +16,8 @@ export function ClientPage() {
       const { data, error } = await supabase
         .from('clients')
         .select('*')
-        .eq('is_deleted', false);
+        .eq('is_deleted', false)
+        .order('yomigana', { ascending: true });
       
       if (error) throw error;
       

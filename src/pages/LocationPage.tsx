@@ -13,7 +13,7 @@ export function LocationPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data, error } = await supabase.from('locations').select('*').eq('is_deleted', false);
+        const { data, error } = await supabase.from('locations').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
         if (error) throw error;
         if (data) setItems(data);
       } catch (error) {
@@ -62,7 +62,7 @@ export function LocationPage() {
         if (error) throw error;
       }
 
-      const { data, error: reloadError } = await supabase.from('locations').select('*').eq('is_deleted', false);
+      const { data, error: reloadError } = await supabase.from('locations').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
       if (reloadError) throw reloadError;
       if (data) setItems(data);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');

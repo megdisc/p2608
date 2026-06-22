@@ -44,14 +44,14 @@ export function DailyWorkRecordPage() {
       try {
         setLoading(true);
         const [membersRes, projectsRes] = await Promise.all([
-          supabase.from('members').select('*').eq('is_deleted', false),
+          supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('projects').select(`
             id, name, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id )
             )
-          `).eq('is_deleted', false)
+          `).eq('is_deleted', false).order('yomigana', { ascending: true }),
         ]);
 
         if (membersRes.error) throw membersRes.error;

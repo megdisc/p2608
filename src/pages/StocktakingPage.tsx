@@ -27,9 +27,9 @@ export function StocktakingPage() {
         ] = await Promise.all([
           supabase.from('stocktakings').select(`
             *,
-            item:items(name, category:categories(name)),
+            item:items(name, yomigana, category:categories(name)),
             location:locations(name),
-            staff:staffs(name)
+            staff:staffs(name, yomigana)
           `),
           supabase.from('categories').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('locations').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -44,11 +44,13 @@ export function StocktakingPage() {
             itemId: st.item_id,
             category: st.item?.category?.name || 'Unknown',
             itemName: st.item?.name || 'Unknown',
+            itemYomigana: st.item?.yomigana || '',
             systemQty: st.system_qty,
             actualQty: st.actual_qty,
             difference: st.difference,
             location: st.location?.name || 'Unknown',
             personInCharge: st.staff?.name || 'Unknown',
+            personInChargeYomigana: st.staff?.yomigana || '',
           }));
           setItems(mapped);
         }
@@ -178,6 +180,7 @@ export function StocktakingPage() {
     { 
       key: 'itemName', 
       header: '品目', 
+      sortKey: 'itemYomigana',
       editable: true, 
       inputType: 'select', 
       options: (item) => {
@@ -235,7 +238,7 @@ export function StocktakingPage() {
         );
       }
     },
-    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, editable: true, inputType: 'select', options: staffOptions },
+    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, sortKey: 'personInChargeYomigana', editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = async (drafts: StocktakingItem[], deletedIds: string[]) => {
@@ -295,9 +298,9 @@ export function StocktakingPage() {
       // Reload
       const { data: stData, error: reloadError } = await supabase.from('stocktakings').select(`
         *,
-        item:items(name, category:categories(name)),
+        item:items(name, yomigana, category:categories(name)),
         location:locations(name),
-        staff:staffs(name)
+        staff:staffs(name, yomigana)
       `);
       if (reloadError) throw reloadError;
 
@@ -308,11 +311,13 @@ export function StocktakingPage() {
           itemId: st.item_id,
           category: st.item?.category?.name || 'Unknown',
           itemName: st.item?.name || 'Unknown',
+          itemYomigana: st.item?.yomigana || '',
           systemQty: st.system_qty,
           actualQty: st.actual_qty,
           difference: st.difference,
           location: st.location?.name || 'Unknown',
           personInCharge: st.staff?.name || 'Unknown',
+          personInChargeYomigana: st.staff?.yomigana || '',
         }));
         setItems(mapped);
       }

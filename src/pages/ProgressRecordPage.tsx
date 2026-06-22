@@ -62,16 +62,16 @@ export function ProgressRecordPage() {
       try {
         setLoading(true);
         const [membersRes, staffsRes, clientsRes, projectsRes] = await Promise.all([
-          supabase.from('members').select('*').eq('is_deleted', false),
-          supabase.from('staffs').select('*').eq('is_deleted', false),
-          supabase.from('clients').select('*').eq('is_deleted', false),
+          supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('projects').select(`
             id, name, project_type, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id, staff_id, client_id )
             )
-          `).eq('is_deleted', false)
+          `).eq('is_deleted', false).order('yomigana', { ascending: true }),
         ]);
 
         if (membersRes.error) throw membersRes.error;

@@ -47,10 +47,12 @@ export function TransactionPage() {
             itemId: tx.item_id,
             category: tx.item?.category?.name || 'Unknown',
             itemName: tx.item?.name || 'Unknown',
+            itemYomigana: tx.item?.yomigana || '',
             type: tx.type,
             quantity: tx.quantity,
             location: tx.location?.name || 'Unknown',
             personInCharge: tx.staff?.name || 'Unknown',
+            personInChargeYomigana: tx.staff?.yomigana || '',
           }));
           setItems(mapped);
         }
@@ -151,6 +153,7 @@ export function TransactionPage() {
     { 
       key: 'itemName', 
       header: TABLE_COLUMNS.ITEM, 
+      sortKey: 'itemYomigana',
       editable: true, 
       inputType: 'select', 
       options: (item) => {
@@ -175,7 +178,7 @@ export function TransactionPage() {
     { key: 'location', header: TABLE_COLUMNS.LOCATION, editable: true, inputType: 'select', options: locationOptions },
     { key: 'type', header: TABLE_COLUMNS.TYPE, editable: true, inputType: 'select', options: TRANSACTION_TYPE_OPTIONS },
     { key: 'quantity', header: TABLE_COLUMNS.QUANTITY, editable: true, inputType: 'number' },
-    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, editable: true, inputType: 'select', options: staffOptions },
+    { key: 'personInCharge', header: TABLE_COLUMNS.PERSON_IN_CHARGE, sortKey: 'personInChargeYomigana', editable: true, inputType: 'select', options: staffOptions },
   ];
 
   const handleBatchSave = async (drafts: TransactionItem[], deletedIds: string[]) => {
@@ -246,10 +249,12 @@ export function TransactionPage() {
           itemId: tx.item_id,
           category: tx.item?.category?.name || 'Unknown',
           itemName: tx.item?.name || 'Unknown',
+          itemYomigana: tx.item?.yomigana || '',
           type: tx.type,
           quantity: tx.quantity,
           location: tx.location?.name || 'Unknown',
           personInCharge: tx.staff?.name || 'Unknown',
+          personInChargeYomigana: tx.staff?.yomigana || '',
         }));
         setItems(mapped);
       }

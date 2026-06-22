@@ -44,10 +44,10 @@ export function ProjectSummaryPage() {
                 id, member_id, client_id, staff_id
               )
             )
-          `).eq('is_deleted', false),
-          supabase.from('members').select('id, name').eq('is_deleted', false),
-          supabase.from('clients').select('id, name').eq('is_deleted', false),
-          supabase.from('staffs').select('id, name').eq('is_deleted', false),
+          `).eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('members').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('clients').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('staffs').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('monthly_task_progress').select('task_id, current_progress, year_month')
         ]);
 

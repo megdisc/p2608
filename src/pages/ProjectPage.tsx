@@ -18,10 +18,10 @@ export function ProjectPage() {
     try {
       setLoading(true);
       const [membersRes, clientsRes, skillsRes, staffsRes, projectsRes] = await Promise.all([
-        supabase.from('members').select('*').eq('is_deleted', false),
-        supabase.from('clients').select('*').eq('is_deleted', false),
-        supabase.from('skills').select('*').eq('is_deleted', false),
-        supabase.from('staffs').select('*').eq('is_deleted', false),
+        supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
@@ -88,7 +88,7 @@ export function ProjectPage() {
   }, []);
 
   const columns: Column<ProjectItem>[] = [
-    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
+    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
     { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { 
@@ -350,6 +350,7 @@ export function ProjectPage() {
       onAddRow={handleAdd}
       subItemsKey="tasks"
       onAddSubRow={handleAddSubRow}
+      initialSort={{ key: 'name', direction: 'asc' }}
     />
   );
 }

@@ -13,7 +13,7 @@ export function SupplierPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const { data, error } = await supabase.from('suppliers').select('*').eq('is_deleted', false);
+        const { data, error } = await supabase.from('suppliers').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
         if (error) throw error;
         if (data) {
           const mapped = data.map((d: any) => ({
@@ -74,7 +74,7 @@ export function SupplierPage() {
         if (error) throw error;
       }
 
-      const { data, error: reloadError } = await supabase.from('suppliers').select('*').eq('is_deleted', false);
+      const { data, error: reloadError } = await supabase.from('suppliers').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
       if (reloadError) throw reloadError;
       if (data) {
         const mapped = data.map((d: any) => ({

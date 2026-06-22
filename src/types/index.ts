@@ -134,6 +134,6 @@ export type DailyWorkRecordItem = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary';
 
 export type SystemType = 'inventory' | 'project';

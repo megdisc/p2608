@@ -18,7 +18,8 @@ import {
   ClientPage,
   DailyWorkRecordPage,
   ProgressRecordPage,
-  ProjectSummaryPage
+  ProjectSummaryPage,
+  AssigneeSummaryPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -73,6 +74,8 @@ function AppContent() {
             <StaffPage />
           ) : activeTab === 'projectSummary' ? (
             <ProjectSummaryPage />
+          ) : activeTab === 'assigneeSummary' ? (
+            <AssigneeSummaryPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

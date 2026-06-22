@@ -25,7 +25,7 @@ export function ProjectPage() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, is_deleted,
+            id, name, yomigana, is_deleted,
             project_task_skills ( skill_id, skills(name) ),
             project_task_assignees ( member_id, client_id, staff_id )
           )
@@ -56,10 +56,10 @@ export function ProjectPage() {
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => {
             const assignees = pt.project_task_assignees || [];
-
             return {
               id: pt.id,
               task: pt.name,
+              taskYomigana: pt.yomigana || '',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: pts.skill_id,
                 skill: pts.skills?.name
@@ -89,9 +89,9 @@ export function ProjectPage() {
   }, []);
 
   const columns: Column<ProjectItem>[] = [
+    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
-    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { 
       key: 'customerId', 
       header: TABLE_COLUMNS.CUSTOMER, 
@@ -118,6 +118,14 @@ export function ProjectPage() {
           ＋ タスク追加
         </Button>
       )
+    },
+    { 
+      key: 'taskYomigana', 
+      header: TABLE_COLUMNS.YOMIGANA, 
+      editable: true, 
+      inputType: 'text', 
+      rowType: 'sub',
+      sortable: false
     },
     { 
       key: 'requiredSkills', 
@@ -263,7 +271,8 @@ export function ProjectPage() {
           const taskData = {
             id: t.id,
             project_id: p.id,
-            name: t.task
+            name: t.task,
+            yomigana: t.taskYomigana
           };
 
           const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);

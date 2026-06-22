@@ -219,6 +219,19 @@ export function ProjectSummaryPage() {
   }, []);
 
   const columns: Column<SummaryRow>[] = useMemo(() => [
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortKey: 'projectTypeSortKey',
+      sortable: true,
+      render: (item) => {
+        if (!item.isFirstInProject) return '';
+        return item.projectType === 'ongoing' ? '継続' : '単発';
+      },
+      style: (item) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
     { 
       key: 'projectName', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
@@ -232,19 +245,6 @@ export function ProjectSummaryPage() {
           return `${item.projectName}（${date.getFullYear()}年${month}月分）`;
         }
         return item.projectName;
-      },
-      style: (item) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
-    {
-      key: 'projectType',
-      header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortKey: 'projectTypeSortKey',
-      sortable: true,
-      render: (item) => {
-        if (!item.isFirstInProject) return '';
-        return item.projectType === 'ongoing' ? '継続' : '単発';
       },
       style: (item) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'

@@ -225,6 +225,20 @@ export function DailyWorkRecordPage() {
         borderBottom: item.isLastInUser ? undefined : 'none'
       })
     },
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortable: false,
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        return project.projectType === 'ongoing' ? '継続' : '単発';
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
@@ -243,20 +257,6 @@ export function DailyWorkRecordPage() {
           return `${project.name}（${date.getFullYear()}年${month}月分）`;
         }
         return project.name;
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
-    {
-      key: 'projectType',
-      header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortable: false,
-      render: (item: any) => {
-        if (!item.isFirstInProject) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        if (!project) return '';
-        return project.projectType === 'ongoing' ? '継続' : '単発';
       },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'

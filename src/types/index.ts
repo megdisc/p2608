@@ -91,6 +91,7 @@ export type TaskSkill = {
 export type ProjectTask = {
   id: string;
   task: string;
+  taskYomigana?: string;
   requiredSkills: TaskSkill[];
   assigneeIds?: string[];
 };

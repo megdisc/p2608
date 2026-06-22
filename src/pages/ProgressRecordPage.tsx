@@ -309,6 +309,21 @@ export function ProgressRecordPage() {
   }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, workTimeSummary]);
 
   const columns: Column<any>[] = [
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortKey: 'projectTypeSortKey',
+      sortable: true,
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        return project.projectType === 'ongoing' ? '継続' : '単発';
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
@@ -325,21 +340,6 @@ export function ProgressRecordPage() {
           return `${project.name}（${year}年${month}月分）`;
         }
         return project.name;
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
-    {
-      key: 'projectType',
-      header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortKey: 'projectTypeSortKey',
-      sortable: true,
-      render: (item: any) => {
-        if (!item.isFirstInProject) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        if (!project) return '';
-        return project.projectType === 'ongoing' ? '継続' : '単発';
       },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'

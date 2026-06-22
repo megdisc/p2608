@@ -116,7 +116,7 @@ export const WORDS_PROJECT = {
   REQUIRED_SKILLS: '必要スキル',
   PREV_MONTH_PROGRESS: '月初進捗率 (%)',
   CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',
-  CONTRIBUTION_RATIO: 'インセンティブ配分比',
+  CONTRIBUTION_RATIO: '報酬配分比',
   PROGRESS_RATE: '進捗率 (%)',
 };
 

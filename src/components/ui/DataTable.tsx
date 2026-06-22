@@ -582,7 +582,12 @@ export function DataTable<T extends { id: string }>({
                       }
                       return (
                         <td key={col.key || idx} className={col.className} style={customStyle}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '8px',
+                            justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : 'flex-start'
+                          }}>
                             {renderCellContent(col, item, false)}
                           </div>
                         </td>

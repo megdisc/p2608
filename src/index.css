@@ -36,7 +36,7 @@
   --font-size-2xl: 24px;
 
   /* 文字の太さ */
-  --font-weight-regular: normal;
+  --font-weight-regular: 500;
   --font-weight-medium: 500;
   --font-weight-semibold: bold;
 
@@ -105,6 +105,10 @@
   --font-sans: var(--font-family-sans);
   --font-mono: var(--font-family-mono);
 }
+
+/* ==========================================================================
+     第三階層：Component Tokens（コンポーネント・要素への具体的割り当て）
+     ========================================================================== */
 
 body {
   margin: 0;
@@ -368,6 +372,7 @@ th.sticky-right {
 .quantity {
   font-variant-numeric: tabular-nums;
   font-weight: var(--weight-strong);
+  text-align: right;
 }
 
 .empty-message {
@@ -482,8 +487,10 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
-  appearance: textfield; /* Standard */
+  -moz-appearance: textfield;
+  /* Firefox */
+  appearance: textfield;
+  /* Standard */
 }
 
 /* Table Toolbar (Filter & Pagination) */

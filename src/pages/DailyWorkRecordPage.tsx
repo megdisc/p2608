@@ -1,4 +1,4 @@
-import { DataPage, Button, type Column } from '../components';
+import { DataPage, type Column } from '../components';
 import { useState, useMemo, useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib';
@@ -14,20 +14,19 @@ type DailyRecord = {
   work_time: number;
 };
 
-type DisplaySubRow = {
-  id: string;
-  projectId: string;
-  taskId: string;
-  workTime: number;
-  isSaved: boolean;
-};
-
-type DisplayUserRow = {
+type FlatRecord = {
   id: string;
   userId: string;
   userName: string;
   date: string;
-  records: DisplaySubRow[];
+  projectId: string;
+  taskId: string;
+  workTime: number;
+  isSaved: boolean;
+  isFirstInUser?: boolean;
+  isFirstInProject?: boolean;
+  isLastInUser?: boolean;
+  isLastInProject?: boolean;
 };
 
 export function DailyWorkRecordPage() {
@@ -116,11 +115,11 @@ export function DailyWorkRecordPage() {
     if (dbMembers.length === 0) return [];
     
     const activeProjects = dbProjects.filter(p => p.startDate <= currentDate && currentDate <= p.endDate);
-    const rows: DisplayUserRow[] = [];
+    const flatRows: FlatRecord[] = [];
 
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
-      const taskMap = new Map<string, DisplaySubRow>();
+      const taskMap = new Map<string, FlatRecord>();
 
       // 1. 保存済みの実績をセット
       for (const r of userRecords) {
@@ -134,6 +133,9 @@ export function DailyWorkRecordPage() {
         
         taskMap.set(r.task_id, {
           id: r.id,
+          userId: member.id,
+          userName: member.name,
+          date: currentDate,
           projectId,
           taskId: r.task_id,
           workTime: Number(r.work_time),
@@ -147,6 +149,9 @@ export function DailyWorkRecordPage() {
           if (t.assigneeIds?.includes(member.id) && !taskMap.has(t.id)) {
             taskMap.set(t.id, {
               id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
+              userId: member.id,
+              userName: member.name,
+              date: currentDate,
               projectId: p.id,
               taskId: t.id,
               workTime: 0,
@@ -156,53 +161,71 @@ export function DailyWorkRecordPage() {
         }
       }
 
-      // 手動で追加された行や担当から外れたが実績がある行などをリスト化
-      const subRows = Array.from(taskMap.values());
-
-      rows.push({
-        id: member.id,
-        userId: member.id,
-        userName: member.name,
-        date: currentDate,
-        records: subRows
-      });
+      flatRows.push(...Array.from(taskMap.values()));
     }
 
-    return rows;
+    flatRows.sort((a, b) => {
+      if (a.userName !== b.userName) return a.userName.localeCompare(b.userName);
+      const pA = dbProjects.find(p => p.id === a.projectId)?.name || '';
+      const pB = dbProjects.find(p => p.id === b.projectId)?.name || '';
+      if (pA !== pB) return pA.localeCompare(pB);
+      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.task || '';
+      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.task || '';
+      return tA.localeCompare(tB);
+    });
+
+    let prevUserId = '';
+    let prevProjectId = '';
+
+    const finalRows = flatRows.map((r, i) => {
+      const isFirstInUser = r.userId !== prevUserId;
+      const isFirstInProject = isFirstInUser || r.projectId !== prevProjectId;
+
+      let isLastInUser = true;
+      let isLastInProject = true;
+
+      if (i < flatRows.length - 1) {
+        const next = flatRows[i + 1];
+        if (next.userId === r.userId) isLastInUser = false;
+        if (next.projectId === r.projectId) isLastInProject = false;
+      }
+
+      prevUserId = r.userId;
+      prevProjectId = r.projectId;
+
+      return { ...r, isFirstInUser, isFirstInProject, isLastInUser, isLastInProject };
+    });
+
+    return finalRows;
   }, [currentDate, dbMembers, dbProjects, records]);
 
   const columns: Column<any>[] = [
     { 
       key: 'userId', 
-      header: TABLE_COLUMNS.USER_NAME, 
+      header: TABLE_COLUMNS.NAME, 
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
-      render: (item: any) => dbMembers.find(u => u.id === item.userId)?.name || '',
-      rowType: 'main'
+      render: (item: any) => item.isFirstInUser ? (dbMembers.find(u => u.id === item.userId)?.name || '') : '',
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none'
+      })
     },
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      editable: true, 
+      editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
-      render: (item: any) => dbProjects.find(p => p.id === item.projectId)?.name || '',
-      rowType: 'sub',
-      mainRender: (_item: any, addSubRow?: () => void) => (
-        <Button 
-          onClick={addSubRow}
-          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
-        >
-          ＋ 案件追加
-        </Button>
-      ),
-      onCellChange: () => ({ taskId: '' })
+      render: (item: any) => item.isFirstInProject ? (dbProjects.find(p => p.id === item.projectId)?.name || '') : '',
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
     },
     { 
       key: 'taskId', 
       header: TABLE_COLUMNS.TASK, 
-      editable: true, 
+      editable: false, 
       inputType: 'select',
       options: (item: any) => {
         const project = dbProjects.find(p => p.id === item.projectId);
@@ -213,47 +236,41 @@ export function DailyWorkRecordPage() {
         const project = dbProjects.find(p => p.id === item.projectId);
         const task = project?.tasks.find(t => t.id === item.taskId);
         return task?.task || '';
-      },
-      rowType: 'sub'
+      }
     },
     { 
       key: 'workTime', 
       header: TABLE_COLUMNS.WORK_TIME, 
       editable: true,
       inputType: 'number',
-      rowType: 'sub',
       style: { width: '120px' }
     },
   ];
 
-  const handleBatchSave = async (drafts: DisplayUserRow[], deletedIds: string[]) => {
+  const handleBatchSave = async (drafts: FlatRecord[], deletedIds: string[]) => {
     try {
       setLoading(true);
       
       const upserts: any[] = [];
       const deletes: string[] = [];
 
-      for (const userRow of drafts) {
-        if (deletedIds.includes(userRow.id)) continue;
+      for (const r of drafts) {
+        if (deletedIds.includes(r.id)) {
+          if (r.isSaved) deletes.push(r.id);
+          continue;
+        }
 
-        for (const r of userRow.records) {
-          if (deletedIds.includes(r.id)) {
-            if (r.isSaved) deletes.push(r.id);
-            continue;
-          }
-
-          if (r.projectId && r.taskId && r.workTime > 0) {
-            upserts.push({
-              ...(r.isSaved ? { id: r.id } : {}),
-              date: currentDate,
-              member_id: userRow.userId,
-              task_id: r.taskId,
-              work_time: r.workTime
-            });
-          } else if (r.isSaved && r.workTime === 0) {
-             // 0時間に更新された場合は削除する（作業していないのと同じ）
-             deletes.push(r.id);
-          }
+        if (r.projectId && r.taskId && r.workTime > 0) {
+          upserts.push({
+            ...(r.isSaved ? { id: r.id } : {}),
+            date: currentDate,
+            member_id: r.userId,
+            task_id: r.taskId,
+            work_time: r.workTime
+          });
+        } else if (r.isSaved && r.workTime === 0) {
+           // 0時間に更新された場合は削除する（作業していないのと同じ）
+           deletes.push(r.id);
         }
       }
 
@@ -277,26 +294,6 @@ export function DailyWorkRecordPage() {
     }
   };
 
-  const handleAddSubRow = (_parentId: string) => {
-    return {
-      id: `TEMP-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`,
-      projectId: '',
-      taskId: '',
-      workTime: 0,
-      isSaved: false
-    };
-  };
-
-  const handleAddRow = () => {
-    return {
-      id: `TEMP-MAIN-${Date.now()}`,
-      userId: '',
-      userName: '',
-      date: currentDate,
-      records: []
-    };
-  };
-
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -309,10 +306,7 @@ export function DailyWorkRecordPage() {
       showSingleDateFilter={true}
       singleDate={currentDate}
       onSingleDateChange={setCurrentDate}
-      subItemsKey="records"
-      onAddRow={handleAddRow}
-      onAddSubRow={handleAddSubRow}
-      disableAddButton={true}
+      hideDeleteColumn={true}
     />
   );
 }

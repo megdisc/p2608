@@ -50,7 +50,7 @@ export function ProjectPage() {
         projectType: p.project_type || 'one-off',
         customerId: p.client_id || '',
         startDate: p.start_date,
-        endDate: p.end_date,
+        endDate: p.end_date || '',
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => {
@@ -248,7 +248,7 @@ export function ProjectPage() {
           project_type: p.projectType || 'one-off',
           client_id: p.customerId || null,
           start_date: p.startDate,
-          end_date: p.endDate
+          end_date: p.endDate || null
         };
 
         // Upsert project
@@ -324,7 +324,7 @@ export function ProjectPage() {
       projectType: 'one-off',
       customerId: '',
       startDate: new Date().toISOString().split('T')[0],
-      endDate: new Date().toISOString().split('T')[0],
+      endDate: '',
       tasks: [],
     } as ProjectItem;
   };

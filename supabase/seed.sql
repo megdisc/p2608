@@ -188,3 +188,9 @@ INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contri
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 50);
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 100);
+
+-- Continuous Project
+INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'ぱんのはんばい・かふぇうんえい', NULL, '2026-06-01', NULL, 'ongoing');
+INSERT INTO project_tasks (id, project_id, name) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務');
+INSERT INTO project_tasks (id, project_id, name) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務');
+

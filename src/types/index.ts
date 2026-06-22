@@ -102,7 +102,7 @@ export type ProjectItem = {
   projectType: 'one-off' | 'ongoing';
   customerId?: string;
   startDate: string;
-  endDate: string;
+  endDate: string | null;
   tasks: ProjectTask[];
 };
 

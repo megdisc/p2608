@@ -116,7 +116,7 @@ export function DailyWorkRecordPage() {
   const displayData = useMemo(() => {
     if (dbMembers.length === 0) return [];
     
-    const activeProjects = dbProjects.filter(p => p.startDate <= currentDate && currentDate <= p.endDate);
+    const activeProjects = dbProjects.filter(p => p.startDate <= currentDate && (!p.endDate || currentDate <= p.endDate));
     const flatRows: FlatRecord[] = [];
 
     for (const member of dbMembers) {

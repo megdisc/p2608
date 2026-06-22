@@ -50,7 +50,7 @@ export function DailyWorkRecordPage() {
           supabase.from('projects').select(`
             id, name, yomigana, project_type, start_date, end_date,
             project_tasks (
-              id, name, is_deleted,
+              id, name, yomigana, is_deleted,
               project_task_assignees ( member_id )
             )
           `).eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -73,6 +73,7 @@ export function DailyWorkRecordPage() {
             .map((pt: any) => ({
               id: pt.id,
               task: pt.name,
+              taskYomigana: pt.yomigana || '',
               assigneeIds: (pt.project_task_assignees || [])
                 .map((pta: any) => pta.member_id)
                 .filter(Boolean)
@@ -176,14 +177,24 @@ export function DailyWorkRecordPage() {
     }
 
     flatRows.sort((a, b) => {
+      // 1. User Yomigana
       const mA = dbMembers.find(m => m.id === a.userId)?.yomigana || '';
       const mB = dbMembers.find(m => m.id === b.userId)?.yomigana || '';
       if (mA !== mB) return mA.localeCompare(mB);
+
+      // 2. Project Type (0 = ongoing, 1 = one-off)
+      const pTypeA = a.projectType === 'ongoing' ? '0' : '1';
+      const pTypeB = b.projectType === 'ongoing' ? '0' : '1';
+      if (pTypeA !== pTypeB) return pTypeA.localeCompare(pTypeB);
+
+      // 3. Project Yomigana
       const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
       const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
       if (pA !== pB) return pA.localeCompare(pB);
-      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.task || '';
-      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.task || '';
+
+      // 4. Task Yomigana
+      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.taskYomigana || '';
+      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.taskYomigana || '';
       return tA.localeCompare(tB);
     });
 

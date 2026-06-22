@@ -41,7 +41,7 @@ export function ProjectSummaryPage() {
           supabase.from('projects').select(`
             id, name, yomigana, project_type,
             project_tasks (
-              id, name, is_deleted,
+              id, name, yomigana, is_deleted,
               project_task_assignees (
                 id, member_id, client_id, staff_id
               )
@@ -92,6 +92,7 @@ export function ProjectSummaryPage() {
               projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
               taskId: 'no_task',
               taskName: '',
+              taskYomigana: '',
               progressRate: 0,
               assigneeType: '',
               assigneeId: 'no_assignee',
@@ -114,6 +115,7 @@ export function ProjectSummaryPage() {
                 projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
                 taskId: t.id,
                 taskName: t.name,
+                taskYomigana: t.yomigana || '',
                 progressRate,
                 assigneeType: '',
                 assigneeId: 'unassigned',
@@ -150,6 +152,7 @@ export function ProjectSummaryPage() {
                   projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
                   taskId: t.id,
                   taskName: t.name,
+                  taskYomigana: t.yomigana || '',
                   progressRate,
                   assigneeType: displayAssigneeType,
                   assigneeId: a.id || `${a.member_id || a.client_id || a.staff_id}`,
@@ -164,7 +167,7 @@ export function ProjectSummaryPage() {
         // ソート: プロジェクトよみがな -> タスク名 -> 担当者よみがな
         tempRows.sort((a, b) => {
           if (a.projectYomigana !== b.projectYomigana) return a.projectYomigana.localeCompare(b.projectYomigana);
-          if (a.taskName !== b.taskName) return a.taskName.localeCompare(b.taskName);
+          if (a.taskYomigana !== b.taskYomigana) return a.taskYomigana.localeCompare(b.taskYomigana);
           return a.assigneeYomigana.localeCompare(b.assigneeYomigana);
         });
 

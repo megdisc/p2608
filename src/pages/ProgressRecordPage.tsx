@@ -28,6 +28,7 @@ type FlatRecord = {
   projectId: string;
   projectYomigana: string;
   projectType: string;
+  projectTypeSortKey: string;
   yearMonth: string;
   taskId: string;
   prevProgress: number | string;
@@ -236,6 +237,7 @@ export function ProgressRecordPage() {
             projectId: project.id,
             projectYomigana: project.yomigana || '',
             projectType: project.projectType || 'one-off',
+            projectTypeSortKey: (project.projectType || 'one-off') === 'ongoing' ? '0' : '1',
             yearMonth: currentMonth,
             taskId: t.id,
             prevProgress: taskPrevProgress,
@@ -255,6 +257,7 @@ export function ProgressRecordPage() {
              projectId: project.id,
              projectYomigana: project.yomigana || '',
              projectType: project.projectType || 'one-off',
+             projectTypeSortKey: (project.projectType || 'one-off') === 'ongoing' ? '0' : '1',
              yearMonth: currentMonth,
              taskId: t.id,
              prevProgress: taskPrevProgress,
@@ -330,7 +333,8 @@ export function ProgressRecordPage() {
     {
       key: 'projectType',
       header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortable: false,
+      sortKey: 'projectTypeSortKey',
+      sortable: true,
       render: (item: any) => {
         if (!item.isFirstInProject) return '';
         const project = dbProjects.find(p => p.id === item.projectId);

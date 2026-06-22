@@ -10,6 +10,7 @@ type SummaryRow = {
   projectName: string;
   projectYomigana: string;
   projectType: string;
+  projectTypeSortKey: string;
   taskName: string;
   progressRate: number;
   assigneeType: string;
@@ -88,6 +89,7 @@ export function ProjectSummaryPage() {
               projectName: p.name,
               projectYomigana: p.yomigana || '',
               projectType: p.project_type || 'one-off',
+              projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
               taskId: 'no_task',
               taskName: '',
               progressRate: 0,
@@ -109,6 +111,7 @@ export function ProjectSummaryPage() {
                 projectName: p.name,
                 projectYomigana: p.yomigana || '',
                 projectType: p.project_type || 'one-off',
+                projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
                 taskId: t.id,
                 taskName: t.name,
                 progressRate,
@@ -144,6 +147,7 @@ export function ProjectSummaryPage() {
                   projectName: p.name,
                   projectYomigana: p.yomigana || '',
                   projectType: p.project_type || 'one-off',
+                  projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
                   taskId: t.id,
                   taskName: t.name,
                   progressRate,
@@ -188,6 +192,7 @@ export function ProjectSummaryPage() {
             projectName: r.projectName,
             projectYomigana: r.projectYomigana,
             projectType: r.projectType,
+            projectTypeSortKey: r.projectTypeSortKey,
             taskName: r.taskName,
             progressRate: r.progressRate,
             assigneeType: r.assigneeType,
@@ -235,7 +240,8 @@ export function ProjectSummaryPage() {
     {
       key: 'projectType',
       header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortable: false,
+      sortKey: 'projectTypeSortKey',
+      sortable: true,
       render: (item) => {
         if (!item.isFirstInProject) return '';
         return item.projectType === 'ongoing' ? '継続' : '単発';

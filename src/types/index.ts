@@ -100,6 +100,7 @@ export type ProjectItem = {
   name: string;
   yomigana: string;
   projectType: 'one-off' | 'ongoing';
+  projectTypeSortKey?: string;
   customerId?: string;
   startDate: string;
   endDate: string | null;

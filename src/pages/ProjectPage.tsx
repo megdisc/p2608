@@ -48,6 +48,7 @@ export function ProjectPage() {
         name: p.name,
         yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
+        projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
         customerId: p.client_id || '',
         startDate: p.start_date,
         endDate: p.end_date || '',
@@ -90,7 +91,7 @@ export function ProjectPage() {
   const columns: Column<ProjectItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
-    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
+    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { 
       key: 'customerId', 
       header: TABLE_COLUMNS.CUSTOMER, 

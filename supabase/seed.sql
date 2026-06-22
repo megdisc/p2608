@@ -88,6 +88,8 @@ INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference,
 -- Members
 INSERT INTO members (id, name, yomigana, role, notes) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', '週3日利用');
 INSERT INTO members (id, name, yomigana, role, notes) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', '配慮事項あり');
+INSERT INTO members (id, name, yomigana, role, notes) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', '週5日利用');
+INSERT INTO members (id, name, yomigana, role, notes) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', '初心者');
 
 -- Clients
 INSERT INTO clients (id, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
@@ -124,6 +126,9 @@ INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('8daa6b8b-dd
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
+INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
+INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
+INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'ししゃさーばーりぷれいす', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '2026-04-01', '2026-08-20');
 INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'さーばーこうちく');
 INSERT INTO project_task_skills (task_id, skill_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');

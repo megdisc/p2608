@@ -34,7 +34,7 @@ export const WORDS_SYSTEM = {
   SKILL_SETTING: 'スキル設定',
   DAILY_WORK_RECORD: '作業記録',
   PROGRESS_RECORD: '進捗記録',
-  PROJECT_SUMMARY: '案件集計',
+  PROJECT_SUMMARY: '案件状況集計',
   ASSIGNEE_SUMMARY: '担当状況集計',
 };
 

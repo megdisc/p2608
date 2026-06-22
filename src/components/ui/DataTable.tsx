@@ -517,7 +517,7 @@ export function DataTable<T extends { id: string }>({
                           const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
                           return (
                             <td key={col.key || idx} className={col.className} style={customStyle}>
-                              {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, undefined, true, subItem.id) : null}
+                              {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id) : null}
                             </td>
                           );
                         })}

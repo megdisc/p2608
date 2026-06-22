@@ -513,8 +513,16 @@ export function DataTable<T extends { id: string }>({
                               borderBottomStyle = 'none';
                             }
                           }
+                          
+                          const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                          
                           const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
-                          const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
+                          const customStyle = {
+                            ...baseStyle,
+                            ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
+                            ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                          };
+                          
                           return (
                             <td key={col.key || idx} className={col.className} style={customStyle}>
                               {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id) : null}
@@ -563,8 +571,15 @@ export function DataTable<T extends { id: string }>({
                       if (isMainCol && subItems.length > 0) {
                         borderBottomStyle = 'none';
                       }
+                      
+                      const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                      
                       const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
-                      const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
+                      const customStyle = {
+                        ...baseStyle,
+                        ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
+                        ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                      };
 
                       if (col.rowType === 'sub') {
                         return (
@@ -625,15 +640,22 @@ export function DataTable<T extends { id: string }>({
                           {columns.map((col, idx) => {
                             const isMainCol = col.rowType === 'main' || !col.rowType;
                             let borderBottomStyle: string | undefined;
+                            const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                             if (isMainCol) {
                               const isLastSubItem = subItem === subItems[subItems.length - 1];
-                              const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                               if (!isLastSubItem || subSubItems.length > 0) {
                                 borderBottomStyle = 'none';
                               }
                             }
+                            
+                            const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                            
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
-                            const customStyle = borderBottomStyle ? { ...baseStyle, borderBottom: borderBottomStyle } : baseStyle;
+                            const customStyle = {
+                              ...baseStyle,
+                              ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
+                              ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                            };
 
                             if (col.rowType === 'sub-sub') {
                               return (

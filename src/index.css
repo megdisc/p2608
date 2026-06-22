@@ -16,11 +16,12 @@
   --palette-gray-700: #3f3f3f;
   --palette-gray-900: #1f1f1f;
 
-  --palette-blue-500: #3f3fdf;
-  --palette-red-500: #df3f3f;
-
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
+
+  --palette-blue-500: #3f3fdf;
+  --palette-red-500: #df3f3f;
+  --palette-yellow-500: #fdfddf;
 
   /* --- タイポグラフィ --- */
   --font-family-sans: "Yu Gothic Medium", "Yu Gothic", sans-serif;
@@ -73,6 +74,8 @@
   --color-bg-subtle: var(--palette-gray-100);
   --color-bg-inverse: var(--palette-gray-900);
   --color-bg-inverse-hover: var(--palette-gray-700);
+  --color-bg-input-highlight: var(--palette-yellow-500);
+  --color-bg-checked: var(--palette-gray-500);
 
   /* --- テキスト --- */
   --color-text-main: var(--palette-gray-700);
@@ -81,6 +84,7 @@
 
   /* --- ボーダー --- */
   --color-border: var(--palette-gray-300);
+  --color-border-focus: var(--palette-gray-500);
 
   /* --- ステータス --- */
   --color-success: var(--palette-blue-500);
@@ -431,8 +435,8 @@ th.sticky-right {
 }
 
 .custom-checkbox:checked {
-  background-color: var(--palette-gray-500);
-  border-color: var(--palette-gray-500);
+  background-color: var(--color-bg-checked);
+  border-color: var(--color-bg-checked);
 }
 
 .custom-checkbox:checked::after {
@@ -528,7 +532,7 @@ input[type="number"] {
 }
 
 .filter-input:focus {
-  border-color: var(--palette-gray-500);
+  border-color: var(--color-border-focus);
 }
 
 .icon-btn {
@@ -623,7 +627,7 @@ input[type="number"] {
 }
 
 .date-filter-pill:focus {
-  border-color: var(--palette-gray-500);
+  border-color: var(--color-border-focus);
 }
 
 .action-bar {
@@ -789,7 +793,7 @@ input[type="number"] {
 }
 
 .login-input:focus {
-  border-color: var(--palette-gray-500) !important;
+  border-color: var(--color-border-focus) !important;
   outline: none !important;
   background-color: var(--color-bg-main) !important;
 }

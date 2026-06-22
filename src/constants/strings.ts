@@ -53,6 +53,10 @@ export const WORDS_COMMON = {
   CLOSE: '閉じる',
   YOMIGANA: 'よみがな',
   UNIT: '単位',
+  YES: 'はい',
+  YES_VALUE: 'yes',
+  NO: 'いいえ',
+  NO_VALUE: 'no',
 };
 
 // 人に関する定数群
@@ -112,6 +116,10 @@ export const WORDS_INVENTORY = {
 export const WORDS_PROJECT = {
   PROJECT: '案件',
   PROJECT_TYPE: '案件区分',
+  PROJECT_TYPE_ONE_OFF: '単発',
+  PROJECT_TYPE_ONE_OFF_VALUE: 'one-off',
+  PROJECT_TYPE_ONGOING: '継続',
+  PROJECT_TYPE_ONGOING_VALUE: 'ongoing',
   TASK: 'タスク',
   SKILL: 'スキル',
   REQUIRED_SKILLS: '必要スキル',
@@ -301,12 +309,12 @@ export const TRANSACTION_TYPE_OPTIONS = [
 
 export const OPTIONS = {
   PROJECT_TYPE_OPTIONS: [
-    { label: '単発', value: 'one-off' },
-    { label: '継続', value: 'ongoing' }
+    { label: WORDS_PROJECT.PROJECT_TYPE_ONE_OFF, value: WORDS_PROJECT.PROJECT_TYPE_ONE_OFF_VALUE },
+    { label: WORDS_PROJECT.PROJECT_TYPE_ONGOING, value: WORDS_PROJECT.PROJECT_TYPE_ONGOING_VALUE }
   ],
   YES_NO: [
-    { label: 'はい', value: 'yes' },
-    { label: 'いいえ', value: 'no' }
+    { label: WORDS_COMMON.YES, value: WORDS_COMMON.YES_VALUE },
+    { label: WORDS_COMMON.NO, value: WORDS_COMMON.NO_VALUE }
   ]
 };
 

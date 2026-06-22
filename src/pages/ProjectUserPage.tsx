@@ -28,7 +28,7 @@ export function ProjectUserPage() {
   const columns: Column<MemberItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
-    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'select', options: MEMBER_ROLE_OPTIONS },
+    { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'radio', options: MEMBER_ROLE_OPTIONS },
     { key: 'email', header: TABLE_COLUMNS.EMAIL, editable: true, inputType: 'email' },
     { key: 'password', header: TABLE_COLUMNS.PASSWORD, editable: true, inputType: 'password' },
   ];

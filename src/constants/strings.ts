@@ -322,12 +322,10 @@ export const OPTIONS = {
 };
 
 export const STAFF_ROLE_OPTIONS = [
-  { label: '', value: '' },
   { label: WORDS_PERSON.ROLE_ADMIN, value: WORDS_PERSON.ROLE_ADMIN },
   { label: WORDS_PERSON.ROLE_STAFF, value: WORDS_PERSON.ROLE_STAFF }
 ];
 
 export const MEMBER_ROLE_OPTIONS = [
-  { label: '', value: '' },
   { label: WORDS_PERSON.ROLE_MEMBER, value: WORDS_PERSON.ROLE_MEMBER }
 ];

@@ -48,7 +48,7 @@ export function DailyWorkRecordPage() {
         const [membersRes, projectsRes] = await Promise.all([
           supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('projects').select(`
-            id, name, yomigana, start_date, end_date,
+            id, name, yomigana, project_type, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id )
@@ -239,7 +239,8 @@ export function DailyWorkRecordPage() {
         if (!project) return '';
         if (project.projectType === 'ongoing') {
           const date = new Date(currentDate);
-          return `${project.name}（${date.getFullYear()}年${date.getMonth() + 1}月分）`;
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          return `${project.name}（${date.getFullYear()}年${month}月分）`;
         }
         return project.name;
       },

@@ -223,7 +223,8 @@ export function ProjectSummaryPage() {
         if (item.projectType === 'ongoing') {
           // get year and month from targetDate
           const date = new Date(targetDate);
-          return `${item.projectName}（${date.getFullYear()}年${date.getMonth() + 1}月分）`;
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          return `${item.projectName}（${date.getFullYear()}年${month}月分）`;
         }
         return item.projectName;
       },

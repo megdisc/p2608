@@ -319,7 +319,7 @@ export function ProgressRecordPage() {
         if (!project) return '';
         if (project.projectType === 'ongoing') {
           const [year, month] = currentMonth.split('-');
-          return `${project.name}（${year}年${parseInt(month, 10)}月分）`;
+          return `${project.name}（${year}年${month}月分）`;
         }
         return project.name;
       },

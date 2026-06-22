@@ -62,12 +62,13 @@ export type StaffItem = {
   role: string;
 };
 
-export type MemberItem = {
+export interface MemberItem {
   id: string;
   name: string;
-  yomigana: string;
+  yomigana?: string;
   role: string;
-  notes?: string;
+  email?: string;
+  password?: string;
 };
 
 export type StocktakingItem = {

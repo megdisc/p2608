@@ -76,6 +76,15 @@ export function ProjectPage() {
           })
       }));
 
+      formattedProjects.sort((a, b) => {
+        const keyA = a.projectTypeSortKey || '';
+        const keyB = b.projectTypeSortKey || '';
+        if (keyA !== keyB) {
+          return keyA.localeCompare(keyB);
+        }
+        return (a.yomigana || '').localeCompare(b.yomigana || '');
+      });
+
       setItems(formattedProjects);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -361,7 +370,6 @@ export function ProjectPage() {
       onAddRow={handleAdd}
       subItemsKey="tasks"
       onAddSubRow={handleAddSubRow}
-      initialSort={{ key: 'name', direction: 'asc' }}
     />
   );
 }

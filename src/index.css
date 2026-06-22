@@ -450,6 +450,35 @@ th.sticky-right {
   margin-top: -2px;
 }
 
+.custom-radio {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background-color: var(--color-bg-main);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  vertical-align: middle;
+  transition: all 0.2s;
+}
+
+.custom-radio:checked {
+  border-color: var(--color-bg-checked);
+}
+
+.custom-radio:checked::after {
+  content: '';
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-bg-checked);
+}
+
 .inline-input:hover {
   background-color: var(--color-bg-subtle);
 }

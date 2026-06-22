@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Button } from './Button';
 import { Input } from './Input';
 import { Select } from './Select';
+import { RadioButton } from './RadioButton';
 import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
 import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils';
@@ -391,16 +392,14 @@ export function DataTable<T extends { id: string }>({
         return (
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             {currentOptions.map(opt => (
-              <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  name={`${item.id}-${col.key}`}
-                  value={opt.value}
-                  checked={value === opt.value}
-                  onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
-                />
-                {opt.label}
-              </label>
+              <RadioButton
+                key={opt.value}
+                label={opt.label}
+                name={`${item.id}-${col.key}`}
+                value={opt.value}
+                checked={value === opt.value}
+                onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
+              />
             ))}
           </div>
         );

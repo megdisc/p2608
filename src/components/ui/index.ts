@@ -13,3 +13,4 @@ export * from './MonthInput';
 export * from './NumberDisplay';
 export * from './NumberInput';
 export * from './MultiSelectDropdown';
+export * from './RadioButton';

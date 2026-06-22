@@ -206,12 +206,13 @@ export function ProgressRecordPage() {
         const taskRecord = projectTaskRecords.find(r => r.task_id === t.id);
         const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
         
-        const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : 0;
-        let taskPrevProgress: string | number = prevTaskRecord ? Number(prevTaskRecord.current_progress) : '-';
+        let taskPrevProgress: number = prevTaskRecord ? Number(prevTaskRecord.current_progress) : 0;
         
         if (project.projectType === 'ongoing') {
           taskPrevProgress = 0;
         }
+
+        const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : taskPrevProgress;
         
         let hasAssignees = false;
 

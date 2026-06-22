@@ -205,6 +205,7 @@ export function ProjectSummaryPage() {
     { 
       key: 'taskName', 
       header: TABLE_COLUMNS.TASK, 
+      sortable: false,
       render: (item) => item.isFirstInTask ? item.taskName : '',
       style: (item) => ({
         borderBottom: item.isLastInTask ? undefined : 'none'
@@ -213,6 +214,7 @@ export function ProjectSummaryPage() {
     { 
       key: 'progressRate', 
       header: TABLE_COLUMNS.PROGRESS_RATE, 
+      sortable: false,
       className: 'quantity',
       render: (item) => item.isFirstInTask && item.taskName ? item.progressRate : '',
       style: (item) => ({
@@ -222,12 +224,14 @@ export function ProjectSummaryPage() {
     { 
       key: 'assigneeType', 
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
+      sortable: false,
       render: (item) => item.assigneeType,
       // 担当者区分は毎行表示なので通常のボーダー
     },
     { 
       key: 'assigneeName', 
       header: TABLE_COLUMNS.ASSIGNEE,
+      sortable: false,
       render: (item) => item.assigneeName,
       // 担当者は毎行表示なので通常のボーダー
     }

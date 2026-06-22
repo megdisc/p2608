@@ -214,6 +214,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
+      sortable: false,
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
@@ -225,6 +226,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'taskId', 
       header: TABLE_COLUMNS.TASK, 
+      sortable: false,
       editable: false, 
       inputType: 'select',
       options: (item: any) => {
@@ -241,6 +243,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'workTime', 
       header: TABLE_COLUMNS.WORK_TIME, 
+      sortable: false,
       editable: true,
       inputType: 'number',
       style: { width: '120px' }

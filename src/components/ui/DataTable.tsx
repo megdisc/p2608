@@ -16,6 +16,7 @@ export type Column<T> = {
   key: string;
   header: string;
   sortKey?: string;
+  sortable?: boolean;
   render?: (item: T) => React.ReactNode;
   mainRender?: (item: T, addSubRow?: () => void) => React.ReactNode;
   rowType?: 'main' | 'sub' | 'sub-sub';
@@ -467,21 +468,26 @@ export function DataTable<T extends { id: string }>({
         <table className="inventory-table" ref={tableRef} style={tableStyle}>
           <thead>
             <tr>
-              {columns.map((col, idx) => (
-                <th 
-                  key={col.key || idx}
-                  onClick={() => handleSort(col.key)}
-                  style={{ cursor: 'pointer', userSelect: 'none' }}
-                  title={`${col.header}でソート`}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    {col.header}
-                    <span style={{ fontSize: 'var(--text-caption)', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
-                      {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
-                    </span>
-                  </div>
-                </th>
-              ))}
+              {columns.map((col, idx) => {
+                const isSortable = col.sortable !== false;
+                return (
+                  <th 
+                    key={col.key || idx}
+                    onClick={() => isSortable && handleSort(col.key)}
+                    style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none' }}
+                    title={isSortable ? `${col.header}でソート` : undefined}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      {col.header}
+                      {isSortable && (
+                        <span style={{ fontSize: 'var(--text-caption)', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                          {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
+                        </span>
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
               {showDeleteCol && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
               {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
             </tr>

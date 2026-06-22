@@ -296,6 +296,7 @@ export function ProgressRecordPage() {
     { 
       key: 'taskId', 
       header: TABLE_COLUMNS.TASK, 
+      sortable: false,
       editable: false, 
       inputType: 'select',
       options: (_item: any) => {
@@ -314,6 +315,7 @@ export function ProgressRecordPage() {
     { 
       key: 'prevProgress', 
       header: TABLE_COLUMNS.PREV_MONTH_PROGRESS, 
+      sortable: false,
       editable: false,
       render: (item: any) => item.isFirstInTask && item.taskId ? item.prevProgress : '',
       style: (item: any) => ({
@@ -325,6 +327,7 @@ export function ProgressRecordPage() {
     { 
       key: 'currentProgress', 
       header: TABLE_COLUMNS.CURRENT_MONTH_PROGRESS, 
+      sortable: false,
       editable: (item: any) => item.isFirstInTask,
       inputType: 'number',
       render: (item: any) => item.isFirstInTask ? item.currentProgress : '',
@@ -336,6 +339,7 @@ export function ProgressRecordPage() {
     { 
       key: 'assigneeType', 
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
+      sortable: false,
       editable: false, 
       render: (item: any) => {
         if (!item.userId) return '';
@@ -349,6 +353,7 @@ export function ProgressRecordPage() {
     { 
       key: 'userId', 
       header: TABLE_COLUMNS.ASSIGNEE, 
+      sortable: false,
       editable: false, 
       inputType: 'select',
       options: [
@@ -369,12 +374,14 @@ export function ProgressRecordPage() {
     { 
       key: 'workTime', 
       header: TABLE_COLUMNS.CURRENT_MONTH_WORK_TIME, 
+      sortable: false,
       editable: false,
       style: { width: '120px', textAlign: 'right' }
     },
     { 
       key: 'contributionRatio', 
       header: TABLE_COLUMNS.CONTRIBUTION_RATIO, 
+      sortable: false,
       editable: true,
       inputType: 'number',
       style: { width: '120px' }

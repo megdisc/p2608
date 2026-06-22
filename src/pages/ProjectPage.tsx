@@ -106,6 +106,7 @@ export function ProjectPage() {
       editable: true, 
       inputType: 'text', 
       rowType: 'sub',
+      sortable: false,
       mainRender: (_item, addSubRow) => (
         <Button 
           onClick={addSubRow}
@@ -121,6 +122,7 @@ export function ProjectPage() {
       editable: true, 
       inputType: 'text', 
       rowType: 'sub',
+      sortable: false,
       style: { minWidth: '200px' },
       render: (item: any) => {
         const skills = item.requiredSkills || [];
@@ -165,6 +167,7 @@ export function ProjectPage() {
       editable: true,
       inputType: 'text',
       rowType: 'sub',
+      sortable: false,
       style: { minWidth: '280px' },
       render: (item: any) => {
         const ids = item.assigneeIds || [];

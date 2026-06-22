@@ -91,6 +91,7 @@ export const WORDS_ORG_LOCATION = {
   OUTSOURCE: '外注先',
   LOCATION: '保管場所',
   STANDARD_LOCATION: '標準保管場所',
+  CLIENT_INTERNAL_BUSINESS: '無し（自主事業）',
 };
 
 // 時間・記録に関する定数群

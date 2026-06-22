@@ -96,8 +96,8 @@ export function ProjectPage() {
       header: TABLE_COLUMNS.CUSTOMER, 
       editable: true, 
       inputType: 'select', 
-      options: [{ label: '未選択', value: '' }, ...dbClients.map(c => ({ label: c.name, value: c.id }))],
-      render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || '',
+      options: [{ label: WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS, value: '' }, ...dbClients.map(c => ({ label: c.name, value: c.id }))],
+      render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS,
       rowType: 'main' 
     },
     { key: 'startDate', header: TABLE_COLUMNS.START_DATE, editable: true, inputType: 'date', rowType: 'main' },

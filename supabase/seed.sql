@@ -107,6 +107,8 @@ INSERT INTO skills (id, name, yomigana, description) VALUES ('740001dd-4b33-4d53
 INSERT INTO skills (id, name, yomigana, description) VALUES ('baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'Python', 'ぱいそん', 'Pythonによるバックエンド開発・データ処理');
 INSERT INTO skills (id, name, yomigana, description) VALUES ('074ce5ed-005a-4a3d-8681-a9eed17c4986', 'セキュリティ監査', 'せきゅりてぃかんさ', '情報セキュリティの監査・評価');
 INSERT INTO skills (id, name, yomigana, description) VALUES ('f0624c11-e56b-4267-a730-75dd6980b578', 'ペネトレーションテスト', 'ぺねとれーしょんてすと', 'システムへの侵入テスト');
+INSERT INTO skills (id, name, yomigana, description) VALUES ('128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '製パン技術', 'せいぱんぎじゅつ', 'パンの製造および関連技術');
+INSERT INTO skills (id, name, yomigana, description) VALUES ('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '接客・販売', 'せっきゃく・はんばい', '店舗での接客、販売業務全般');
 
 -- Projects
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'ほんしゃおふぃすねっとわーくこうちく', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-12-31');
@@ -189,8 +191,24 @@ INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contri
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 100);
 
--- Continuous Project
+-- Continuous Project (Internal Business)
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'ぱんのはんばい・かふぇうんえい', NULL, '2026-06-01', NULL, 'ongoing');
 INSERT INTO project_tasks (id, project_id, name) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務');
-INSERT INTO project_tasks (id, project_id, name) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務');
+INSERT INTO project_task_skills (task_id, skill_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3');
+INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
+INSERT INTO project_task_assignees (task_id, member_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 
+INSERT INTO project_tasks (id, project_id, name) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務');
+INSERT INTO project_task_skills (task_id, skill_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d');
+INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'de2d336b-254d-4af7-8e49-5acbda340e67');
+INSERT INTO project_task_assignees (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
+
+-- One-off Project (Internal Business)
+INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', '社内業務マニュアル作成', 'しゃないぎょうむまにゅあるさくせい', NULL, '2026-07-01', '2026-08-31', 'one-off');
+INSERT INTO project_tasks (id, project_id, name) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'b2f5d91c-1234-4567-89ab-cdef01234567', 'マニュアル作成');
+INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '5ff5e55e-186f-43ce-84d2-aa751d8341b5');
+
+-- Continuous Project (With Client)
+INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', '基幹システム保守運用', 'きかんしすてむほしゅうんよう', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-05-01', NULL, 'ongoing');
+INSERT INTO project_tasks (id, project_id, name) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', 'c1234567-89ab-cdef-0123-456789abcdef', '保守運用業務');
+INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');

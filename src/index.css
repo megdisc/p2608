@@ -23,11 +23,11 @@
   --palette-red-500: #df3f3f;
   --palette-yellow-500: #fdfddf;
 
-  /* --- タイポグラフィ --- */
+  /* --- フォント --- */
   --font-family-sans: "Inter", "Helvetica Neue", Arial, "Yu Gothic Medium", "Yu Gothic", sans-serif;
   --font-family-mono: monospace;
 
-  /* 文字サイズ */
+  /* フォントサイズ */
   --font-size-2xs: 8px;
   --font-size-xs: 10px;
   --font-size-sm: 12px;
@@ -36,7 +36,7 @@
   --font-size-xl: 20px;
   --font-size-2xl: 24px;
 
-  /* 文字の太さ */
+  /* フォントの太さ */
   --font-weight-regular: 500;
   --font-weight-medium: 500;
   --font-weight-semibold: bold;
@@ -125,6 +125,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "palt" 1;
   font-variant-numeric: tabular-nums;
+  text-align: justify;
+  text-justify: inter-ideograph;
+  line-break: strict;
+  overflow-wrap: break-word;
 }
 
 *,
@@ -133,7 +137,10 @@ body {
   box-sizing: border-box;
 }
 
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
   font-feature-settings: inherit;
 }

@@ -18,9 +18,11 @@ type FlatRecord = {
   id: string;
   userId: string;
   userName: string;
+  userYomigana: string;
   date: string;
   projectId: string;
-  projectType?: string;
+  projectYomigana: string;
+  projectType: string;
   taskId: string;
   workTime: number;
   isSaved: boolean;
@@ -46,7 +48,7 @@ export function DailyWorkRecordPage() {
         const [membersRes, projectsRes] = await Promise.all([
           supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('projects').select(`
-            id, name, start_date, end_date,
+            id, name, yomigana, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id )
@@ -62,6 +64,7 @@ export function DailyWorkRecordPage() {
         const formattedProjects = (projectsRes.data || []).map((p: any) => ({
           id: p.id,
           name: p.name,
+          yomigana: p.yomigana || '',
           projectType: p.project_type || 'one-off',
           startDate: p.start_date,
           endDate: p.end_date,
@@ -137,8 +140,10 @@ export function DailyWorkRecordPage() {
           id: r.id,
           userId: member.id,
           userName: member.name,
+          userYomigana: member.yomigana || '',
           date: currentDate,
           projectId,
+          projectYomigana: dbProjects.find(p => p.id === projectId)?.yomigana || '',
           projectType: dbProjects.find(p => p.id === projectId)?.projectType || 'one-off',
           taskId: r.task_id,
           workTime: Number(r.work_time),
@@ -154,8 +159,10 @@ export function DailyWorkRecordPage() {
               id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
               userId: member.id,
               userName: member.name,
+              userYomigana: member.yomigana || '',
               date: currentDate,
               projectId: p.id,
+              projectYomigana: p.yomigana || '',
               projectType: p.projectType || 'one-off',
               taskId: t.id,
               workTime: 0,
@@ -169,9 +176,11 @@ export function DailyWorkRecordPage() {
     }
 
     flatRows.sort((a, b) => {
-      if (a.userName !== b.userName) return a.userName.localeCompare(b.userName);
-      const pA = dbProjects.find(p => p.id === a.projectId)?.name || '';
-      const pB = dbProjects.find(p => p.id === b.projectId)?.name || '';
+      const mA = dbMembers.find(m => m.id === a.userId)?.yomigana || '';
+      const mB = dbMembers.find(m => m.id === b.userId)?.yomigana || '';
+      if (mA !== mB) return mA.localeCompare(mB);
+      const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
+      const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
       if (pA !== pB) return pA.localeCompare(pB);
       const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.task || '';
       const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.task || '';
@@ -207,6 +216,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'userId', 
       header: TABLE_COLUMNS.NAME, 
+      sortKey: 'userYomigana',
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
@@ -218,6 +228,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
+      sortKey: 'projectYomigana',
       sortable: false,
       editable: false, 
       inputType: 'select',

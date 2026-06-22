@@ -8,6 +8,7 @@ import { getCurrentISOString, formatJST } from '../utils';
 type SummaryRow = {
   id: string;
   projectName: string;
+  projectYomigana: string;
   projectType: string;
   taskName: string;
   progressRate: number;
@@ -37,7 +38,7 @@ export function ProjectSummaryPage() {
           progressRes
         ] = await Promise.all([
           supabase.from('projects').select(`
-            id, name, project_type,
+            id, name, yomigana, project_type,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees (
@@ -45,9 +46,9 @@ export function ProjectSummaryPage() {
               )
             )
           `).eq('is_deleted', false).order('yomigana', { ascending: true }),
-          supabase.from('members').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
-          supabase.from('clients').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
-          supabase.from('staffs').select('id, name').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('members').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+          supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('monthly_task_progress').select('task_id, current_progress, year_month')
         ]);
 
@@ -64,9 +65,9 @@ export function ProjectSummaryPage() {
         const records = progressRes.data || [];
 
         // Map作成
-        const memberMap = new Map(members.map(m => [m.id, m.name]));
-        const clientMap = new Map(clients.map(c => [c.id, c.name]));
-        const staffMap = new Map(staffs.map(s => [s.id, s.name]));
+        const memberMap = new Map(members.map(m => [m.id, { name: m.name, yomigana: m.yomigana }]));
+        const clientMap = new Map(clients.map(c => [c.id, { name: c.name, yomigana: c.yomigana }]));
+        const staffMap = new Map(staffs.map(s => [s.id, { name: s.name, yomigana: s.yomigana }]));
 
         // task_id ごとに最新の進捗率を取得
         const latestProgressMap = new Map<string, number>();
@@ -85,13 +86,15 @@ export function ProjectSummaryPage() {
             tempRows.push({
               projectId: p.id,
               projectName: p.name,
+              projectYomigana: p.yomigana || '',
               projectType: p.project_type || 'one-off',
               taskId: 'no_task',
               taskName: '',
               progressRate: 0,
               assigneeType: '',
               assigneeId: 'no_assignee',
-              assigneeName: ''
+              assigneeName: '',
+              assigneeYomigana: ''
             });
             continue;
           }
@@ -104,50 +107,61 @@ export function ProjectSummaryPage() {
               tempRows.push({
                 projectId: p.id,
                 projectName: p.name,
+                projectYomigana: p.yomigana || '',
                 projectType: p.project_type || 'one-off',
                 taskId: t.id,
                 taskName: t.name,
                 progressRate,
                 assigneeType: '',
                 assigneeId: 'unassigned',
-                assigneeName: '未割り当て'
+                assigneeName: '未割り当て',
+                assigneeYomigana: ''
               });
             } else {
               for (const a of assignees) {
                 let assigneeName = '不明';
+                let assigneeYomigana = '';
                 let displayAssigneeType = '';
                 if (a.member_id) {
-                  assigneeName = memberMap.get(a.member_id) || '不明';
+                  const m = memberMap.get(a.member_id);
+                  assigneeName = m?.name || '不明';
+                  assigneeYomigana = m?.yomigana || '';
                   displayAssigneeType = WORDS_PERSON.ROLE_MEMBER;
                 } else if (a.client_id) {
-                  assigneeName = clientMap.get(a.client_id) || '不明';
+                  const c = clientMap.get(a.client_id);
+                  assigneeName = c?.name || '不明';
+                  assigneeYomigana = c?.yomigana || '';
                   displayAssigneeType = WORDS_ORG_LOCATION.OUTSOURCE;
                 } else if (a.staff_id) {
-                  assigneeName = staffMap.get(a.staff_id) || '不明';
+                  const s = staffMap.get(a.staff_id);
+                  assigneeName = s?.name || '不明';
+                  assigneeYomigana = s?.yomigana || '';
                   displayAssigneeType = WORDS_PERSON.ROLE_STAFF;
                 }
 
                 tempRows.push({
                   projectId: p.id,
                   projectName: p.name,
+                  projectYomigana: p.yomigana || '',
                   projectType: p.project_type || 'one-off',
                   taskId: t.id,
                   taskName: t.name,
                   progressRate,
                   assigneeType: displayAssigneeType,
                   assigneeId: a.id || `${a.member_id || a.client_id || a.staff_id}`,
-                  assigneeName
+                  assigneeName,
+                  assigneeYomigana
                 });
               }
             }
           }
         }
 
-        // ソート: プロジェクト名 -> タスク名 -> 担当者名
+        // ソート: プロジェクトよみがな -> タスク名 -> 担当者よみがな
         tempRows.sort((a, b) => {
-          if (a.projectName !== b.projectName) return a.projectName.localeCompare(b.projectName);
+          if (a.projectYomigana !== b.projectYomigana) return a.projectYomigana.localeCompare(b.projectYomigana);
           if (a.taskName !== b.taskName) return a.taskName.localeCompare(b.taskName);
-          return a.assigneeName.localeCompare(b.assigneeName);
+          return a.assigneeYomigana.localeCompare(b.assigneeYomigana);
         });
 
         // フラグ付け
@@ -172,6 +186,7 @@ export function ProjectSummaryPage() {
           flatRows.push({
             id: `${r.projectId}_${r.taskId}_${r.assigneeId}`,
             projectName: r.projectName,
+            projectYomigana: r.projectYomigana,
             projectType: r.projectType,
             taskName: r.taskName,
             progressRate: r.progressRate,
@@ -202,6 +217,7 @@ export function ProjectSummaryPage() {
     { 
       key: 'projectName', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
+      sortKey: 'projectYomigana',
       render: (item) => {
         if (!item.isFirstInProject) return '';
         if (item.projectType === 'ongoing') {

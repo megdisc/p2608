@@ -26,12 +26,14 @@ type MonthlyContributionRecord = {
 type FlatRecord = {
   id: string;
   projectId: string;
-  projectType?: string;
+  projectYomigana: string;
+  projectType: string;
   yearMonth: string;
   taskId: string;
-  prevProgress: string | number;
+  prevProgress: number | string;
   currentProgress: number;
   userId: string;
+  userYomigana: string;
   workTime: number | string;
   contributionRatio: number;
   isSaved: boolean;
@@ -66,7 +68,7 @@ export function ProgressRecordPage() {
           supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
           supabase.from('projects').select(`
-            id, name, project_type, start_date, end_date,
+            id, name, yomigana, project_type, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id, staff_id, client_id )
@@ -86,6 +88,7 @@ export function ProgressRecordPage() {
         const formattedProjects = (projectsRes.data || []).map((p: any) => ({
           id: p.id,
           name: p.name,
+          yomigana: p.yomigana || '',
           projectType: p.project_type || 'one-off',
           startDate: p.start_date,
           endDate: p.end_date,
@@ -210,6 +213,14 @@ export function ProgressRecordPage() {
         
         let hasAssignees = false;
 
+        const getUserIdYomigana = (userId: string) => {
+          const [type, id] = userId.split('_');
+          if (type === 'member') return dbMembers.find(m => m.id === id)?.yomigana || '';
+          if (type === 'staff') return dbStaffs.find(s => s.id === id)?.yomigana || '';
+          if (type === 'outsource') return dbClients.find(c => c.id === id)?.yomigana || '';
+          return '';
+        };
+
         for (const prefixedId of membersToProcess) {
           hasAssignees = true;
           const [type, id] = prefixedId.split('_');
@@ -223,12 +234,14 @@ export function ProgressRecordPage() {
           flatRows.push({
             id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
             projectId: project.id,
+            projectYomigana: project.yomigana || '',
             projectType: project.projectType || 'one-off',
             yearMonth: currentMonth,
             taskId: t.id,
             prevProgress: taskPrevProgress,
             currentProgress: taskCurrentProgress,
             userId: prefixedId,
+            userYomigana: getUserIdYomigana(prefixedId),
             workTime,
             contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
             isSaved: !!savedMemberRecord
@@ -240,12 +253,14 @@ export function ProgressRecordPage() {
            flatRows.push({
              id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
              projectId: project.id,
+             projectYomigana: project.yomigana || '',
              projectType: project.projectType || 'one-off',
              yearMonth: currentMonth,
              taskId: t.id,
              prevProgress: taskPrevProgress,
              currentProgress: taskCurrentProgress,
              userId: '',
+             userYomigana: '',
              workTime: '-',
              contributionRatio: 0,
              isSaved: !!taskRecord
@@ -255,13 +270,14 @@ export function ProgressRecordPage() {
     }
 
     flatRows.sort((a, b) => {
-      const pA = dbProjects.find(p => p.id === a.projectId)?.name || '';
-      const pB = dbProjects.find(p => p.id === b.projectId)?.name || '';
+      const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
+      const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
       if (pA !== pB) return pA.localeCompare(pB);
       const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.task || '';
       const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.task || '';
       if (tA !== tB) return tA.localeCompare(tB);
-      return a.userId.localeCompare(b.userId);
+      
+      return a.userYomigana.localeCompare(b.userYomigana);
     });
 
     let prevProjectId = '';
@@ -293,6 +309,7 @@ export function ProgressRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
+      sortKey: 'projectYomigana',
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
@@ -384,6 +401,7 @@ export function ProgressRecordPage() {
     { 
       key: 'userId', 
       header: TABLE_COLUMNS.ASSIGNEE, 
+      sortKey: 'userYomigana',
       sortable: false,
       editable: false, 
       inputType: 'select',

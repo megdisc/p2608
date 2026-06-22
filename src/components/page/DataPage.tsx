@@ -27,6 +27,7 @@ type DataPageProps<T> = {
   subSubItemsKey?: string;
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
   disableAddButton?: boolean;
+  highlightInputColumns?: boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -54,7 +55,8 @@ export function DataPage<T extends { id: string }>({
   onAddSubRow,
   subSubItemsKey,
   onAddSubSubRow,
-  disableAddButton
+  disableAddButton,
+  highlightInputColumns
 }: DataPageProps<T>) {
   return (
     <>
@@ -86,6 +88,7 @@ export function DataPage<T extends { id: string }>({
         subSubItemsKey={subSubItemsKey}
         onAddSubSubRow={onAddSubSubRow}
         disableAddButton={disableAddButton}
+        highlightInputColumns={highlightInputColumns}
       />
     </>
   );

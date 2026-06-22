@@ -54,6 +54,7 @@ type DataTableProps<T> = {
   singleMonth?: string;
   onSingleMonthChange?: (month: string) => void;
   disableAddButton?: boolean;
+  highlightInputColumns?: boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -79,7 +80,8 @@ export function DataTable<T extends { id: string }>({
   showMonthFilter,
   singleMonth,
   onSingleMonthChange,
-  disableAddButton
+  disableAddButton,
+  highlightInputColumns
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -514,7 +516,7 @@ export function DataTable<T extends { id: string }>({
                             }
                           }
                           
-                          const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                          const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                           
                           const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
                           const customStyle = {
@@ -572,7 +574,7 @@ export function DataTable<T extends { id: string }>({
                         borderBottomStyle = 'none';
                       }
                       
-                      const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                      const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                       
                       const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
                       const customStyle = {
@@ -648,7 +650,7 @@ export function DataTable<T extends { id: string }>({
                               }
                             }
                             
-                            const isInputColumn = !!onBatchSave && col.inputType && col.editable !== false;
+                            const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
                             const customStyle = {

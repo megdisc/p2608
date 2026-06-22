@@ -307,6 +307,7 @@ export function DailyWorkRecordPage() {
       singleDate={currentDate}
       onSingleDateChange={setCurrentDate}
       hideDeleteColumn={true}
+      highlightInputColumns={true}
     />
   );
 }

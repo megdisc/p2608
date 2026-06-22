@@ -348,7 +348,7 @@ export function ProgressRecordPage() {
     },
     { 
       key: 'userId', 
-      header: TABLE_COLUMNS.NAME, 
+      header: TABLE_COLUMNS.ASSIGNEE, 
       editable: false, 
       inputType: 'select',
       options: [

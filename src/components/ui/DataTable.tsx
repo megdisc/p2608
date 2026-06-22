@@ -23,7 +23,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties | ((item: T) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
-  inputType?: 'text' | 'number' | 'select' | 'date' | 'datetime-local' | 'email' | 'password';
+  inputType?: 'text' | 'number' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
   customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;
@@ -383,6 +383,26 @@ export function DataTable<T extends { id: string }>({
             options={currentOptions}
             onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
           />
+        );
+      }
+      
+      if (col.inputType === 'radio') {
+        const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options || [];
+        return (
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {currentOptions.map(opt => (
+              <label key={opt.value} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                <input
+                  type="radio"
+                  name={`${item.id}-${col.key}`}
+                  value={opt.value}
+                  checked={value === opt.value}
+                  onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
+                />
+                {opt.label}
+              </label>
+            ))}
+          </div>
         );
       }
       

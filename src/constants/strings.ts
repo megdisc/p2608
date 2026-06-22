@@ -111,6 +111,7 @@ export const WORDS_INVENTORY = {
 // 案件・作業に関する定数群
 export const WORDS_PROJECT = {
   PROJECT: '案件',
+  PROJECT_TYPE: '案件区分',
   TASK: 'タスク',
   SKILL: 'スキル',
   REQUIRED_SKILLS: '必要スキル',
@@ -225,6 +226,7 @@ export const TABLE_COLUMNS = {
 
   // 案件情報
   PROJECT_NAME: WORDS_PROJECT.PROJECT, // 案件に統合
+  PROJECT_TYPE: WORDS_PROJECT.PROJECT_TYPE,
   START_DATE: WORDS_TIME.START_DATE,
   END_DATE: WORDS_TIME.END_DATE,
   CUSTOMER: WORDS_ORG_LOCATION.CUSTOMER,
@@ -296,6 +298,17 @@ export const TRANSACTION_TYPE_OPTIONS = [
   { label: WORDS_INVENTORY.TRANSACTION_IN, value: WORDS_INVENTORY.TRANSACTION_IN },
   { label: WORDS_INVENTORY.TRANSACTION_OUT, value: WORDS_INVENTORY.TRANSACTION_OUT }
 ];
+
+export const OPTIONS = {
+  PROJECT_TYPE_OPTIONS: [
+    { label: '単発', value: 'one-off' },
+    { label: '継続', value: 'ongoing' }
+  ],
+  YES_NO: [
+    { label: 'はい', value: 'yes' },
+    { label: 'いいえ', value: 'no' }
+  ]
+};
 
 export const STAFF_ROLE_OPTIONS = [
   { label: '', value: '' },

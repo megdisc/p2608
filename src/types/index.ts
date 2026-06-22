@@ -99,6 +99,7 @@ export type ProjectItem = {
   id: string;
   name: string;
   yomigana: string;
+  projectType: 'one-off' | 'ongoing';
   customerId?: string;
   startDate: string;
   endDate: string;

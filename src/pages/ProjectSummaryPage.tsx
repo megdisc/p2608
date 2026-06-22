@@ -8,6 +8,7 @@ import { getCurrentISOString, formatJST } from '../utils';
 type SummaryRow = {
   id: string;
   projectName: string;
+  projectType: string;
   taskName: string;
   progressRate: number;
   assigneeType: string;
@@ -36,7 +37,7 @@ export function ProjectSummaryPage() {
           progressRes
         ] = await Promise.all([
           supabase.from('projects').select(`
-            id, name,
+            id, name, project_type,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees (
@@ -84,6 +85,7 @@ export function ProjectSummaryPage() {
             tempRows.push({
               projectId: p.id,
               projectName: p.name,
+              projectType: p.project_type || 'one-off',
               taskId: 'no_task',
               taskName: '',
               progressRate: 0,
@@ -102,6 +104,7 @@ export function ProjectSummaryPage() {
               tempRows.push({
                 projectId: p.id,
                 projectName: p.name,
+                projectType: p.project_type || 'one-off',
                 taskId: t.id,
                 taskName: t.name,
                 progressRate,
@@ -127,6 +130,7 @@ export function ProjectSummaryPage() {
                 tempRows.push({
                   projectId: p.id,
                   projectName: p.name,
+                  projectType: p.project_type || 'one-off',
                   taskId: t.id,
                   taskName: t.name,
                   progressRate,
@@ -168,6 +172,7 @@ export function ProjectSummaryPage() {
           flatRows.push({
             id: `${r.projectId}_${r.taskId}_${r.assigneeId}`,
             projectName: r.projectName,
+            projectType: r.projectType,
             taskName: r.taskName,
             progressRate: r.progressRate,
             assigneeType: r.assigneeType,
@@ -197,13 +202,33 @@ export function ProjectSummaryPage() {
     { 
       key: 'projectName', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      render: (item) => item.isFirstInProject ? item.projectName : '',
+      render: (item) => {
+        if (!item.isFirstInProject) return '';
+        if (item.projectType === 'ongoing') {
+          // get year and month from targetDate
+          const date = new Date(targetDate);
+          return `${item.projectName}（${date.getFullYear()}年${date.getMonth() + 1}月分）`;
+        }
+        return item.projectName;
+      },
+      style: (item) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortable: false,
+      render: (item) => {
+        if (!item.isFirstInProject) return '';
+        return item.projectType === 'ongoing' ? '継続' : '単発';
+      },
       style: (item) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
     { 
-      key: 'taskName', 
+      key: 'taskName',  
       header: TABLE_COLUMNS.TASK, 
       sortable: false,
       render: (item) => item.isFirstInTask ? item.taskName : '',

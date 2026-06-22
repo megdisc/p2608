@@ -26,6 +26,7 @@ type MonthlyContributionRecord = {
 type FlatRecord = {
   id: string;
   projectId: string;
+  projectType?: string;
   yearMonth: string;
   taskId: string;
   prevProgress: string | number;
@@ -65,7 +66,7 @@ export function ProgressRecordPage() {
           supabase.from('staffs').select('*').eq('is_deleted', false),
           supabase.from('clients').select('*').eq('is_deleted', false),
           supabase.from('projects').select(`
-            id, name, start_date, end_date,
+            id, name, project_type, start_date, end_date,
             project_tasks (
               id, name, is_deleted,
               project_task_assignees ( member_id, staff_id, client_id )
@@ -85,6 +86,7 @@ export function ProgressRecordPage() {
         const formattedProjects = (projectsRes.data || []).map((p: any) => ({
           id: p.id,
           name: p.name,
+          projectType: p.project_type || 'one-off',
           startDate: p.start_date,
           endDate: p.end_date,
           tasks: (p.project_tasks || [])
@@ -200,7 +202,11 @@ export function ProgressRecordPage() {
         const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
         
         const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : 0;
-        const taskPrevProgress = prevTaskRecord ? Number(prevTaskRecord.current_progress) : '-';
+        let taskPrevProgress: string | number = prevTaskRecord ? Number(prevTaskRecord.current_progress) : '-';
+        
+        if (project.projectType === 'ongoing') {
+          taskPrevProgress = 0;
+        }
         
         let hasAssignees = false;
 
@@ -217,6 +223,7 @@ export function ProgressRecordPage() {
           flatRows.push({
             id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
             projectId: project.id,
+            projectType: project.projectType || 'one-off',
             yearMonth: currentMonth,
             taskId: t.id,
             prevProgress: taskPrevProgress,
@@ -233,6 +240,7 @@ export function ProgressRecordPage() {
            flatRows.push({
              id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
              projectId: project.id,
+             projectType: project.projectType || 'one-off',
              yearMonth: currentMonth,
              taskId: t.id,
              prevProgress: taskPrevProgress,
@@ -288,13 +296,36 @@ export function ProgressRecordPage() {
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
-      render: (item: any) => item.isFirstInProject ? (dbProjects.find(p => p.id === item.projectId)?.name || '') : '',
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        if (project.projectType === 'ongoing') {
+          const [year, month] = currentMonth.split('-');
+          return `${project.name}（${year}年${parseInt(month, 10)}月分）`;
+        }
+        return project.name;
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortable: false,
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        return project.projectType === 'ongoing' ? '継続' : '単発';
+      },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
     { 
-      key: 'taskId', 
+      key: 'taskId',  
       header: TABLE_COLUMNS.TASK, 
       sortable: false,
       editable: false, 

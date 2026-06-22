@@ -1,6 +1,6 @@
 import { DataPage, MultiSelectDropdown, Button, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
 import { supabase } from '../lib';
 import type { ProjectItem, MemberItem, ClientItem, SkillItem, StaffItem } from '../types';
 import { useAlert } from '../contexts';
@@ -23,7 +23,7 @@ export function ProjectPage() {
         supabase.from('skills').select('*').eq('is_deleted', false),
         supabase.from('staffs').select('*').eq('is_deleted', false),
         supabase.from('projects').select(`
-          id, name, yomigana, client_id, start_date, end_date,
+          id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
             id, name, is_deleted,
             project_task_skills ( skill_id, skills(name) ),
@@ -47,6 +47,7 @@ export function ProjectPage() {
         id: p.id,
         name: p.name,
         yomigana: p.yomigana || '',
+        projectType: p.project_type || 'one-off',
         customerId: p.client_id || '',
         startDate: p.start_date,
         endDate: p.end_date,
@@ -89,6 +90,7 @@ export function ProjectPage() {
   const columns: Column<ProjectItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
+    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { 
       key: 'customerId', 
       header: TABLE_COLUMNS.CUSTOMER, 
@@ -243,6 +245,7 @@ export function ProjectPage() {
           id: p.id,
           name: p.name,
           yomigana: p.yomigana,
+          project_type: p.projectType || 'one-off',
           client_id: p.customerId || null,
           start_date: p.startDate,
           end_date: p.endDate
@@ -318,6 +321,7 @@ export function ProjectPage() {
       id: generateId(),
       name: '',
       yomigana: '',
+      projectType: 'one-off',
       customerId: '',
       startDate: new Date().toISOString().split('T')[0],
       endDate: new Date().toISOString().split('T')[0],

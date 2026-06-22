@@ -20,6 +20,7 @@ type FlatRecord = {
   userName: string;
   date: string;
   projectId: string;
+  projectType?: string;
   taskId: string;
   workTime: number;
   isSaved: boolean;
@@ -61,6 +62,7 @@ export function DailyWorkRecordPage() {
         const formattedProjects = (projectsRes.data || []).map((p: any) => ({
           id: p.id,
           name: p.name,
+          projectType: p.project_type || 'one-off',
           startDate: p.start_date,
           endDate: p.end_date,
           tasks: (p.project_tasks || [])
@@ -137,6 +139,7 @@ export function DailyWorkRecordPage() {
           userName: member.name,
           date: currentDate,
           projectId,
+          projectType: dbProjects.find(p => p.id === projectId)?.projectType || 'one-off',
           taskId: r.task_id,
           workTime: Number(r.work_time),
           isSaved: true
@@ -153,6 +156,7 @@ export function DailyWorkRecordPage() {
               userName: member.name,
               date: currentDate,
               projectId: p.id,
+              projectType: p.projectType || 'one-off',
               taskId: t.id,
               workTime: 0,
               isSaved: false
@@ -218,13 +222,36 @@ export function DailyWorkRecordPage() {
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
-      render: (item: any) => item.isFirstInProject ? (dbProjects.find(p => p.id === item.projectId)?.name || '') : '',
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        if (project.projectType === 'ongoing') {
+          const date = new Date(currentDate);
+          return `${project.name}（${date.getFullYear()}年${date.getMonth() + 1}月分）`;
+        }
+        return project.name;
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortable: false,
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        if (!project) return '';
+        return project.projectType === 'ongoing' ? '継続' : '単発';
+      },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
     { 
-      key: 'taskId', 
+      key: 'taskId',  
       header: TABLE_COLUMNS.TASK, 
       sortable: false,
       editable: false, 

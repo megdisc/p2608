@@ -54,6 +54,7 @@ export function ProjectPage() {
         endDate: p.end_date || '',
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
+          .sort((a: any, b: any) => (a.yomigana || '').localeCompare(b.yomigana || ''))
           .map((pt: any) => {
             const assignees = pt.project_task_assignees || [];
             return {

@@ -164,10 +164,21 @@ export function ProjectSummaryPage() {
           }
         }
 
-        // ソート: プロジェクトよみがな -> タスク名 -> 担当者よみがな
+        // ソート: プロジェクトよみがな -> タスク名 -> 担当者区分 -> 担当者よみがな
         tempRows.sort((a, b) => {
           if (a.projectYomigana !== b.projectYomigana) return a.projectYomigana.localeCompare(b.projectYomigana);
           if (a.taskYomigana !== b.taskYomigana) return a.taskYomigana.localeCompare(b.taskYomigana);
+          
+          const getAssigneeTypePriority = (type: string) => {
+            if (type === WORDS_PERSON.ROLE_MEMBER) return 1;
+            if (type === WORDS_PERSON.ROLE_STAFF) return 2;
+            if (type === WORDS_ORG_LOCATION.OUTSOURCE) return 3;
+            return 4;
+          };
+          const aTypePrio = getAssigneeTypePriority(a.assigneeType);
+          const bTypePrio = getAssigneeTypePriority(b.assigneeType);
+          if (aTypePrio !== bTypePrio) return aTypePrio - bTypePrio;
+
           return a.assigneeYomigana.localeCompare(b.assigneeYomigana);
         });
 

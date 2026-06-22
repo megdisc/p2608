@@ -282,6 +282,17 @@ export function ProgressRecordPage() {
       const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.taskYomigana || '';
       if (tA !== tB) return tA.localeCompare(tB);
       
+      const getTypePrio = (userId: string) => {
+        if (userId.startsWith('member_')) return 1;
+        if (userId.startsWith('staff_')) return 2;
+        if (userId.startsWith('outsource_')) return 3;
+        return 4;
+      };
+
+      const aPrio = getTypePrio(a.userId);
+      const bPrio = getTypePrio(b.userId);
+      if (aPrio !== bPrio) return aPrio - bPrio;
+
       return a.userYomigana.localeCompare(b.userYomigana);
     });
 

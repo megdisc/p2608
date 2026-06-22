@@ -403,7 +403,7 @@ export function ProgressRecordPage() {
                 staff_id: type === 'staff' ? id : null,
                 client_id: type === 'outsource' ? id : null,
                 task_id: t.taskId,
-                contribution_ratio: r.contributionRatio || 0
+                contribution_ratio: Number(r.contributionRatio) || 0
               });
             }
           }

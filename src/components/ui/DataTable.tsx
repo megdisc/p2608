@@ -406,10 +406,7 @@ export function DataTable<T extends { id: string }>({
           <NumberInput 
             value={value}
             onChange={(e) => {
-              let newVal: string | number = e.target.value;
-              if (newVal === '') newVal = '';
-              else newVal = Number(newVal);
-              handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId);
+              handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId);
             }}
           />
         );

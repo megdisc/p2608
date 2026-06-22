@@ -14,6 +14,7 @@ export function NumberInput({ className = '', style, ...props }: NumberInputProp
         fontVariantNumeric: 'tabular-nums',
         ...style 
       }}
+      step="any"
       {...props}
     />
   );

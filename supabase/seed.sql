@@ -223,5 +223,12 @@ INSERT INTO project_tasks (id, project_id, name, yomigana) VALUES ('a1234567-89a
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 
 -- Project Budgets
-INSERT INTO project_budgets (project_id, revenue_subject, revenue_amount, expense_subject, expense_amount, reserve_subject, reserve_amount, surplus_subject, surplus_amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'システム開発売上', 2000000, '人件費・インセンティブ', 500000, 'システム保守積立', 100000, '営業利益', 1400000);
-INSERT INTO project_budgets (project_id, revenue_subject, revenue_amount, expense_subject, expense_amount, reserve_subject, reserve_amount, surplus_subject, surplus_amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築費', 1000000, '人件費・インセンティブ', 300000, '機材積立', 50000, '営業利益', 650000);
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 2000000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 500000);
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 100000);
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'surplus', '余剰', 1400000);
+
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 1000000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費・外注加工費', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
+INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'surplus', '余剰', 650000);

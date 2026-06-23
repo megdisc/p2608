@@ -137,6 +137,14 @@ export const WORDS_PROJECT = {
   SURPLUS: '余剰',
   SUBJECT: '科目',
   AMOUNT: '金額',
+  TOTAL: '合計',
+  SUBJECT_REVENUE_SALES: '売上',
+  SUBJECT_REVENUE_OTHER: 'その他収益',
+  SUBJECT_EXPENSE_LABOR: '労務費・外注加工費',
+  SUBJECT_EXPENSE_OTHER: 'その他費用',
+  SUBJECT_RESERVE_WAGE: '工賃変動積立金',
+  SUBJECT_RESERVE_EQUIPMENT: '設備等修繕維持積立金',
+  SUBJECT_SURPLUS: '余剰',
 };
 
 // メッセージに関する定数群

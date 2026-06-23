@@ -132,9 +132,24 @@ export type DailyWorkRecordItem = {
   workTime: number;
 };
 
-export type ProjectBudget = {
+export type BudgetCategory = 'revenue' | 'expense' | 'reserve' | 'surplus';
+
+export type ProjectBudgetItem = {
   id: string;
   projectId: string;
+  category: BudgetCategory;
+  subject: string;
+  taskId?: string;
+  amount: number;
+};
+
+// UI usage: Represents a single row in the spreadsheet-like UI grid
+export type ProjectBudgetGridRow = {
+  id: string; // pseudo-id for rendering
+  projectId: string;
+  projectName?: string;
+  projectType?: 'one-off' | 'ongoing';
+  isTotalRow?: boolean;
   revenueSubject?: string;
   revenueAmount?: number;
   expenseSubject?: string;
@@ -143,8 +158,12 @@ export type ProjectBudget = {
   reserveAmount?: number;
   surplusSubject?: string;
   surplusAmount?: number;
-  // UI usage: to display project name
-  projectName?: string;
+  // Metadata for saving back
+  revenueItemId?: string;
+  expenseItemId?: string;
+  expenseTaskId?: string;
+  reserveItemId?: string;
+  surplusItemId?: string;
 };
 
 export type Tab = 

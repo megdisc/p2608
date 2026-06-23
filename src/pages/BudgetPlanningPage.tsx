@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react';
-import { DataPage } from '../components/page/DataPage';
-import type { Column } from '../components/ui';
-import type { ProjectBudget, ProjectItem } from '../types';
-import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, PLACEHOLDERS } from '../constants';
+import { Button, CurrencyInput } from '../components/ui';
+import type { ProjectItem, BudgetCategory } from '../types';
+import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib/supabase';
 
+type DetailItem = {
+  id?: string;
+  subject: string;
+  taskId?: string;
+  amount: number;
+};
+
+type ProjectDraft = {
+  project: ProjectItem;
+  revenues: DetailItem[];
+  expenses: DetailItem[];
+  reserves: DetailItem[];
+  surpluses: DetailItem[];
+};
+
 export function BudgetPlanningPage() {
-  const [data, setData] = useState<ProjectBudget[]>([]);
-  const [projects, setProjects] = useState<ProjectItem[]>([]);
+  const [drafts, setDrafts] = useState<ProjectDraft[]>([]);
+  const [originalDrafts, setOriginalDrafts] = useState<ProjectDraft[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,42 +30,88 @@ export function BudgetPlanningPage() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
+      
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
-        .select('id, name')
-        .order('name');
+        .select(`
+          id, name, yomigana, project_type,
+          project_tasks(id, name, yomigana, is_deleted)
+        `)
+        .eq('is_deleted', false)
+        .order('yomigana');
         
       if (projectsError) throw projectsError;
-      setProjects((projectsData as unknown as ProjectItem[]) || []);
 
       const { data: budgetsData, error: budgetsError } = await supabase
-        .from('project_budgets')
+        .from('project_budget_items')
         .select('*');
 
       if (budgetsError) throw budgetsError;
 
-      const formattedData: ProjectBudget[] = (budgetsData || []).map(b => ({
-        id: b.id,
-        projectId: b.project_id,
-        revenueSubject: b.revenue_subject || 'システム開発売上',
-        revenueAmount: b.revenue_amount,
-        expenseSubject: b.expense_subject || '人件費・インセンティブ',
-        expenseAmount: b.expense_amount,
-        reserveSubject: b.reserve_subject || 'システム保守積立',
-        reserveAmount: b.reserve_amount,
-        surplusSubject: b.surplus_subject || '営業利益',
-        surplusAmount: b.surplus_amount,
-      }));
-      
-      // Assign project names
-      formattedData.forEach(b => {
-        const p = projectsData?.find((proj: any) => proj.id === b.projectId);
-        if (p) {
-          b.projectName = p.name;
-        }
+      const items = (budgetsData as any[]) || [];
+
+      const initialDrafts: ProjectDraft[] = (projectsData as any[]).map(p => {
+        const pItems = items.filter(b => b.project_id === p.id);
+        
+        // Build revenues
+        const revSubjects = [WORDS_PROJECT.SUBJECT_REVENUE_SALES, WORDS_PROJECT.SUBJECT_REVENUE_OTHER];
+        const revenues = revSubjects.map(subj => {
+          const dbItem = pItems.find(b => b.category === 'revenue' && b.subject === subj);
+          return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
+        });
+
+        // Build expenses
+        const activeTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
+        const expSubjects = activeTasks.map((t: any) => ({ 
+          subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR}（${t.name}）`, 
+          taskId: t.id 
+        }));
+        expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
+        
+        const expenses = expSubjects.map(es => {
+          let dbItem;
+          if (es.taskId) {
+            dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId);
+          } else {
+            dbItem = pItems.find(b => b.category === 'expense' && b.subject === es.subject && !b.task_id);
+          }
+          return { id: dbItem?.id, subject: es.subject, taskId: es.taskId, amount: dbItem?.amount || 0 };
+        });
+
+        // Build reserves
+        const resSubjects = [WORDS_PROJECT.SUBJECT_RESERVE_WAGE, WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT];
+        const reserves = resSubjects.map(subj => {
+          const dbItem = pItems.find(b => b.category === 'reserve' && b.subject === subj);
+          return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
+        });
+
+        // Build surpluses
+        const surSubjects = [WORDS_PROJECT.SUBJECT_SURPLUS];
+        const surpluses = surSubjects.map(subj => {
+          const dbItem = pItems.find(b => b.category === 'surplus' && b.subject === subj);
+          return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
+        });
+
+        return {
+          project: {
+            id: p.id,
+            name: p.name,
+            yomigana: p.yomigana,
+            projectType: p.project_type,
+            startDate: '',
+            endDate: null,
+            tasks: []
+          },
+          revenues,
+          expenses,
+          reserves,
+          surpluses
+        };
       });
 
-      setData(formattedData);
+      setDrafts(initialDrafts);
+      setOriginalDrafts(JSON.parse(JSON.stringify(initialDrafts)));
     } catch (error) {
       console.error('Error fetching budget data:', error);
       alert(MESSAGES.FETCH_ERROR);
@@ -60,39 +120,39 @@ export function BudgetPlanningPage() {
     }
   };
 
-  const handleBatchSave = async (drafts: ProjectBudget[], deletedIds: string[]) => {
+  const handleBatchSave = async () => {
     try {
-      // Delete removed rows
-      for (const id of deletedIds) {
-        const { error } = await supabase.from('project_budgets').delete().eq('id', id);
-        if (error) throw error;
-      }
+      setLoading(true);
+      const upserts: any[] = [];
 
-      // Upsert drafts
       for (const draft of drafts) {
-        if (!draft.projectId) continue;
-        const payload = {
-          project_id: draft.projectId,
-          revenue_subject: draft.revenueSubject,
-          revenue_amount: draft.revenueAmount,
-          expense_subject: draft.expenseSubject,
-          expense_amount: draft.expenseAmount,
-          reserve_subject: draft.reserveSubject,
-          reserve_amount: draft.reserveAmount,
-          surplus_subject: draft.surplusSubject,
-          surplus_amount: draft.surplusAmount,
+        const processCategory = (items: DetailItem[], category: BudgetCategory) => {
+          for (const item of items) {
+            upserts.push({
+              id: item.id || undefined,
+              project_id: draft.project.id,
+              category,
+              subject: item.subject,
+              task_id: item.taskId || null,
+              amount: Number(item.amount) || 0
+            });
+          }
         };
 
-        if (draft.id && !draft.id.startsWith('new-')) {
-          const { error } = await supabase
-            .from('project_budgets')
-            .update(payload)
-            .eq('id', draft.id);
+        processCategory(draft.revenues, 'revenue');
+        processCategory(draft.expenses, 'expense');
+        processCategory(draft.reserves, 'reserve');
+        processCategory(draft.surpluses, 'surplus');
+      }
+
+      // Upsert
+      for (const payload of upserts) {
+        if (payload.id) {
+          const { error } = await supabase.from('project_budget_items').update({ amount: payload.amount }).eq('id', payload.id);
           if (error) throw error;
         } else {
-          const { error } = await supabase
-            .from('project_budgets')
-            .insert(payload);
+          const { id, ...insertPayload } = payload;
+          const { error } = await supabase.from('project_budget_items').insert(insertPayload);
           if (error) throw error;
         }
       }
@@ -102,110 +162,160 @@ export function BudgetPlanningPage() {
     } catch (error) {
       console.error('Error saving budget data:', error);
       alert(MESSAGES.SAVE_ERROR);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAddRow = (): ProjectBudget => {
-    return {
-      id: `new-${Date.now()}`,
-      projectId: '',
-      revenueSubject: 'システム開発売上',
-      revenueAmount: 0,
-      expenseSubject: '人件費・インセンティブ',
-      expenseAmount: 0,
-      reserveSubject: 'システム保守積立',
-      reserveAmount: 0,
-      surplusSubject: '営業利益',
-      surplusAmount: 0,
-    };
+  const handleChange = (pIndex: number, category: keyof ProjectDraft, itemIndex: number, newAmount: string | number) => {
+    setDrafts(prev => {
+      const next = [...prev];
+      const draft = { ...next[pIndex] };
+      const items = [...(draft[category] as DetailItem[])];
+      items[itemIndex] = { ...items[itemIndex], amount: Number(newAmount) || 0 };
+      (draft as any)[category] = items;
+      next[pIndex] = draft;
+      return next;
+    });
   };
 
-  const columns: Column<ProjectBudget>[] = [
-    {
-      key: 'projectId',
-      header: TABLE_COLUMNS.PROJECT_NAME,
-      editable: (item) => item.id.startsWith('new-'), // Only editable for new rows
-      inputType: 'select',
-      options: [
-        { label: PLACEHOLDERS.SELECT, value: '' },
-        ...projects.map(p => ({ label: p.name, value: p.id }))
-      ],
-      render: (item) => item.projectName || '',
-      style: { minWidth: '200px' }
-    },
-    // Revenue
-    {
-      key: 'revenueSubject',
-      header: `${TABLE_COLUMNS.REVENUE} - ${TABLE_COLUMNS.SUBJECT}`,
-      editable: false,
-      render: (item) => item.revenueSubject,
-      style: { backgroundColor: 'var(--color-bg-subtle)' }
-    },
-    {
-      key: 'revenueAmount',
-      header: `${TABLE_COLUMNS.REVENUE} - ${TABLE_COLUMNS.AMOUNT}`,
-      editable: true,
-      inputType: 'currency',
-      style: { textAlign: 'right' }
-    },
-    // Expense
-    {
-      key: 'expenseSubject',
-      header: `${TABLE_COLUMNS.EXPENSE} - ${TABLE_COLUMNS.SUBJECT}`,
-      editable: false,
-      render: (item) => item.expenseSubject,
-      style: { backgroundColor: 'var(--color-bg-subtle)' }
-    },
-    {
-      key: 'expenseAmount',
-      header: `${TABLE_COLUMNS.EXPENSE} - ${TABLE_COLUMNS.AMOUNT}`,
-      editable: true,
-      inputType: 'currency',
-      style: { textAlign: 'right' }
-    },
-    // Reserve
-    {
-      key: 'reserveSubject',
-      header: `${TABLE_COLUMNS.RESERVE} - ${TABLE_COLUMNS.SUBJECT}`,
-      editable: false,
-      render: (item) => item.reserveSubject,
-      style: { backgroundColor: 'var(--color-bg-subtle)' }
-    },
-    {
-      key: 'reserveAmount',
-      header: `${TABLE_COLUMNS.RESERVE} - ${TABLE_COLUMNS.AMOUNT}`,
-      editable: true,
-      inputType: 'currency',
-      style: { textAlign: 'right' }
-    },
-    // Surplus
-    {
-      key: 'surplusSubject',
-      header: `${TABLE_COLUMNS.SURPLUS} - ${TABLE_COLUMNS.SUBJECT}`,
-      editable: false,
-      render: (item) => item.surplusSubject,
-      style: { backgroundColor: 'var(--color-bg-subtle)' }
-    },
-    {
-      key: 'surplusAmount',
-      header: `${TABLE_COLUMNS.SURPLUS} - ${TABLE_COLUMNS.AMOUNT}`,
-      editable: true,
-      inputType: 'currency',
-      style: { textAlign: 'right' }
-    }
-  ];
+  const isModified = JSON.stringify(drafts) !== JSON.stringify(originalDrafts);
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
-    <DataPage 
-      title={PAGE_NAMES.BUDGET_PLANNING}
-      data={data}
-      columns={columns}
-      emptyMessage={MESSAGES.EMPTY_BUDGET}
-      onBatchSave={handleBatchSave}
-      onAddRow={handleAddRow}
-      highlightInputColumns
-    />
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+        <h2 style={{ margin: 0 }}>{PAGE_NAMES.BUDGET_PLANNING}</h2>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button variant="secondary" onClick={() => setDrafts(JSON.parse(JSON.stringify(originalDrafts)))} disabled={!isModified}>
+            {BUTTON_LABELS.CANCEL || '取消'}
+          </Button>
+          <Button onClick={handleBatchSave} disabled={!isModified}>
+            {BUTTON_LABELS.SAVE || '確定'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="table-container">
+        <table className="inventory-table">
+          <thead>
+            <tr>
+              <th rowSpan={2} style={{ width: '80px' }}>{TABLE_COLUMNS.PROJECT_TYPE}</th>
+              <th rowSpan={2} style={{ width: '150px' }}>{TABLE_COLUMNS.PROJECT_NAME}</th>
+              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.REVENUE}</th>
+              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.EXPENSE}</th>
+              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.RESERVE}</th>
+              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.SURPLUS}</th>
+            </tr>
+            <tr>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {drafts.length === 0 ? (
+              <tr>
+                <td colSpan={10} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
+              </tr>
+            ) : (
+              drafts.map((draft, pIndex) => {
+                const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length, draft.surpluses.length);
+                const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+                
+                const rows = [];
+                
+                // Row 1: Total
+                rows.push(
+                  <tr key={`${draft.project.id}-total`}>
+                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', borderBottom: '2px solid var(--color-border)' }}>
+                      {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
+                    </td>
+                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', borderBottom: '2px solid var(--color-border)' }}>
+                      {draft.project.name}
+                    </td>
+                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      ¥{sum(draft.revenues).toLocaleString()}
+                    </td>
+                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      ¥{sum(draft.expenses).toLocaleString()}
+                    </td>
+                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      ¥{sum(draft.reserves).toLocaleString()}
+                    </td>
+                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      ¥{sum(draft.surpluses).toLocaleString()}
+                    </td>
+                  </tr>
+                );
+
+                // Row 2 to N: Details
+                for (let i = 0; i < maxRows; i++) {
+                  const rev = draft.revenues[i];
+                  const exp = draft.expenses[i];
+                  const res = draft.reserves[i];
+                  const sur = draft.surpluses[i];
+                  const isLast = i === maxRows - 1;
+                  const borderBottom = isLast ? '2px solid var(--color-border)' : undefined;
+
+                  rows.push(
+                    <tr key={`${draft.project.id}-detail-${i}`}>
+                      <td style={{ borderBottom }}>{rev?.subject || ''}</td>
+                      <td style={{ borderBottom, backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        {rev ? (
+                          <CurrencyInput 
+                            value={rev.amount} 
+                            onChange={(val) => handleChange(pIndex, 'revenues', i, val)} 
+                          />
+                        ) : null}
+                      </td>
+                      <td style={{ borderBottom }}>{exp?.subject || ''}</td>
+                      <td style={{ borderBottom, backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        {exp ? (
+                          <CurrencyInput 
+                            value={exp.amount} 
+                            onChange={(val) => handleChange(pIndex, 'expenses', i, val)} 
+                          />
+                        ) : null}
+                      </td>
+                      <td style={{ borderBottom }}>{res?.subject || ''}</td>
+                      <td style={{ borderBottom, backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        {res ? (
+                          <CurrencyInput 
+                            value={res.amount} 
+                            onChange={(val) => handleChange(pIndex, 'reserves', i, val)} 
+                          />
+                        ) : null}
+                      </td>
+                      <td style={{ borderBottom }}>{sur?.subject || ''}</td>
+                      <td style={{ borderBottom, backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        {sur ? (
+                          <CurrencyInput 
+                            value={sur.amount} 
+                            onChange={(val) => handleChange(pIndex, 'surpluses', i, val)} 
+                          />
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return rows;
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }

@@ -23,6 +23,7 @@ export function BudgetPlanningPage() {
   const [drafts, setDrafts] = useState<ProjectDraft[]>([]);
   const [originalDrafts, setOriginalDrafts] = useState<ProjectDraft[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -181,6 +182,31 @@ export function BudgetPlanningPage() {
 
   const isModified = JSON.stringify(drafts) !== JSON.stringify(originalDrafts);
 
+  const handleSort = (key: string) => {
+    setSortConfig(current => {
+      if (current && current.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  const sortedDrafts = [...drafts].sort((a, b) => {
+    if (!sortConfig) return 0;
+    let aVal = '';
+    let bVal = '';
+    if (sortConfig.key === 'projectType') {
+      aVal = a.project.projectType === 'ongoing' ? '継続' : '単発';
+      bVal = b.project.projectType === 'ongoing' ? '継続' : '単発';
+    } else if (sortConfig.key === 'name') {
+      aVal = a.project.yomigana || a.project.name || '';
+      bVal = b.project.yomigana || b.project.name || '';
+    }
+    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
@@ -201,31 +227,46 @@ export function BudgetPlanningPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th rowSpan={2} style={{ width: '80px' }}>{TABLE_COLUMNS.PROJECT_TYPE}</th>
-              <th rowSpan={2} style={{ width: '150px' }}>{TABLE_COLUMNS.PROJECT_NAME}</th>
-              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.REVENUE}</th>
-              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.EXPENSE}</th>
-              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.RESERVE}</th>
-              <th colSpan={2} style={{ textAlign: 'center' }}>{TABLE_COLUMNS.SURPLUS}</th>
+              <th rowSpan={2} style={{ width: '80px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {TABLE_COLUMNS.PROJECT_TYPE}
+                  {sortConfig?.key === 'projectType' && (
+                    <span style={{ fontSize: 'var(--text-caption)' }}>{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>
+                  )}
+                </div>
+              </th>
+              <th rowSpan={2} style={{ width: '150px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {TABLE_COLUMNS.PROJECT_NAME}
+                  {sortConfig?.key === 'name' && (
+                    <span style={{ fontSize: 'var(--text-caption)' }}>{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>
+                  )}
+                </div>
+              </th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.REVENUE}</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.EXPENSE}</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.RESERVE}</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.SURPLUS}</th>
             </tr>
             <tr>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
             </tr>
           </thead>
           <tbody>
-            {drafts.length === 0 ? (
+            {sortedDrafts.length === 0 ? (
               <tr>
                 <td colSpan={10} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
             ) : (
-              drafts.map((draft, pIndex) => {
+              sortedDrafts.map((draft) => {
+                const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
                 const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length, draft.surpluses.length);
                 const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
                 
@@ -275,7 +316,7 @@ export function BudgetPlanningPage() {
                         {rev ? (
                           <CurrencyInput 
                             value={rev.amount} 
-                            onChange={(val) => handleChange(pIndex, 'revenues', i, val)} 
+                            onChange={(val) => handleChange(draftIndex, 'revenues', i, val)} 
                           />
                         ) : null}
                       </td>
@@ -284,7 +325,7 @@ export function BudgetPlanningPage() {
                         {exp ? (
                           <CurrencyInput 
                             value={exp.amount} 
-                            onChange={(val) => handleChange(pIndex, 'expenses', i, val)} 
+                            onChange={(val) => handleChange(draftIndex, 'expenses', i, val)} 
                           />
                         ) : null}
                       </td>
@@ -293,7 +334,7 @@ export function BudgetPlanningPage() {
                         {res ? (
                           <CurrencyInput 
                             value={res.amount} 
-                            onChange={(val) => handleChange(pIndex, 'reserves', i, val)} 
+                            onChange={(val) => handleChange(draftIndex, 'reserves', i, val)} 
                           />
                         ) : null}
                       </td>
@@ -302,7 +343,7 @@ export function BudgetPlanningPage() {
                         {sur ? (
                           <CurrencyInput 
                             value={sur.amount} 
-                            onChange={(val) => handleChange(pIndex, 'surpluses', i, val)} 
+                            onChange={(val) => handleChange(draftIndex, 'surpluses', i, val)} 
                           />
                         ) : null}
                       </td>

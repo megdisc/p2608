@@ -12,6 +12,7 @@ import { DateInput } from './DateInput';
 import { MonthInput } from './MonthInput';
 import { NumberInput } from './NumberInput';
 import { NumberDisplay } from './NumberDisplay';
+import { CurrencyInput } from './CurrencyInput';
 
 export type Column<T> = {
   key: string;
@@ -24,7 +25,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties | ((item: T) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
-  inputType?: 'text' | 'number' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password';
+  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
   customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;
@@ -346,7 +347,7 @@ export function DataTable<T extends { id: string }>({
               });
           }
           columns.forEach(col => {
-            if (col.inputType === 'number' && (newItem as any)[col.key] === '') {
+            if ((col.inputType === 'number' || col.inputType === 'currency') && (newItem as any)[col.key] === '') {
               (newItem as any)[col.key] = 0;
             }
           });
@@ -434,6 +435,17 @@ export function DataTable<T extends { id: string }>({
         );
       }
 
+      if (col.inputType === 'currency') {
+        return (
+          <CurrencyInput 
+            value={value}
+            onChange={(newVal) => {
+              handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId);
+            }}
+          />
+        );
+      }
+
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let newValue: string | number = e.target.value;
         handleCellChange(item.id, col.key, newValue, col, isSubItem, parentId, isSubSubItem, subParentId);
@@ -457,6 +469,12 @@ export function DataTable<T extends { id: string }>({
     
     if (col.inputType === 'number') {
       return <NumberDisplay value={item[col.key]} />;
+    }
+
+    if (col.inputType === 'currency') {
+      const val = item[col.key];
+      if (val === null || val === undefined || val === '') return null;
+      return <span style={{ fontVariantNumeric: 'tabular-nums' }}>¥{Number(val).toLocaleString()}</span>;
     }
 
     return item[col.key];

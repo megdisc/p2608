@@ -142,7 +142,7 @@ export function ProjectPage() {
       key: 'incentiveBudget',
       header: TABLE_COLUMNS.INCENTIVE_BUDGET,
       editable: true,
-      inputType: 'number',
+      inputType: 'currency',
       rowType: 'sub',
       sortable: false,
     },

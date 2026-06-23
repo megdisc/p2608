@@ -12,5 +12,6 @@ export * from './DateInput';
 export * from './MonthInput';
 export * from './NumberDisplay';
 export * from './NumberInput';
+export * from './CurrencyInput';
 export * from './MultiSelectDropdown';
 export * from './RadioButton';

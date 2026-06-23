@@ -94,6 +94,7 @@ export type ProjectTask = {
   task: string;
   taskYomigana?: string;
   requiredSkills: TaskSkill[];
+  incentiveBudget?: number | null;
   assigneeIds?: string[];
 };
 

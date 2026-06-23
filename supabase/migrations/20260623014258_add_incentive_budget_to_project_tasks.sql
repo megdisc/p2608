@@ -1,0 +1,1 @@
+ALTER TABLE project_tasks ADD COLUMN incentive_budget INTEGER;

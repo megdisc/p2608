@@ -23,8 +23,7 @@ CREATE TRIGGER update_project_budgets_updated_at
 ALTER TABLE project_budgets ENABLE ROW LEVEL SECURITY;
 
 -- Policies
-CREATE POLICY "Enable all operations for authenticated users" ON project_budgets
+CREATE POLICY "Enable all operations for all users" ON project_budgets
   FOR ALL
-  TO authenticated
   USING (true)
   WITH CHECK (true);

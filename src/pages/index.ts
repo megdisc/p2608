@@ -15,3 +15,4 @@ export * from './DailyWorkRecordPage';
 export * from './ProgressRecordPage';
 export * from './ProjectSummaryPage';
 export * from './AssigneeSummaryPage';
+export * from './BudgetPlanningPage';

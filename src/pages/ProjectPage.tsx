@@ -25,7 +25,7 @@ export function ProjectPage() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, incentive_budget, is_deleted,
+            id, name, yomigana, is_deleted,
             project_task_skills ( skill_id, skills(name) ),
             project_task_assignees ( member_id, client_id, staff_id )
           )
@@ -61,7 +61,6 @@ export function ProjectPage() {
               id: pt.id,
               task: pt.name,
               taskYomigana: pt.yomigana || '',
-              incentiveBudget: pt.incentive_budget,
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: pts.skill_id,
                 skill: pts.skills?.name
@@ -137,14 +136,6 @@ export function ProjectPage() {
       inputType: 'text', 
       rowType: 'sub',
       sortable: false
-    },
-    {
-      key: 'incentiveBudget',
-      header: TABLE_COLUMNS.INCENTIVE_BUDGET,
-      editable: true,
-      inputType: 'currency',
-      rowType: 'sub',
-      sortable: false,
     },
     { 
       key: 'requiredSkills', 
@@ -291,8 +282,7 @@ export function ProjectPage() {
             id: t.id,
             project_id: p.id,
             name: t.task,
-            yomigana: t.taskYomigana,
-            incentive_budget: t.incentiveBudget !== undefined && t.incentiveBudget !== null && String(t.incentiveBudget) !== '' ? Number(t.incentiveBudget) : null
+            yomigana: t.taskYomigana
           };
 
           const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);
@@ -363,7 +353,6 @@ export function ProjectPage() {
     return {
       id: generateId(),
       task: '',
-      incentiveBudget: null,
       requiredSkills: [],
       assigneeIds: [],
     };

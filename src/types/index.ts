@@ -94,7 +94,6 @@ export type ProjectTask = {
   task: string;
   taskYomigana?: string;
   requiredSkills: TaskSkill[];
-  incentiveBudget?: number | null;
   assigneeIds?: string[];
 };
 
@@ -133,9 +132,24 @@ export type DailyWorkRecordItem = {
   workTime: number;
 };
 
+export type ProjectBudget = {
+  id: string;
+  projectId: string;
+  revenueSubject?: string;
+  revenueAmount?: number;
+  expenseSubject?: string;
+  expenseAmount?: number;
+  reserveSubject?: string;
+  reserveAmount?: number;
+  surplusSubject?: string;
+  surplusAmount?: number;
+  // UI usage: to display project name
+  projectName?: string;
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning';
 
 export type SystemType = 'inventory' | 'project';

@@ -43,6 +43,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
           </div>
           <button 
+            className={`nav-button ${activeTab === 'budgetPlanning' ? 'active' : ''}`}
+            onClick={() => setActiveTab('budgetPlanning')}
+          >
+            {PAGE_NAMES.BUDGET_PLANNING}
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'dailyWorkRecord' ? 'active' : ''}`}
             onClick={() => setActiveTab('dailyWorkRecord')}
           >

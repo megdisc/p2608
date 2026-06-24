@@ -213,14 +213,6 @@ export function BudgetPlanningPage() {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
         <h2 style={{ margin: 0 }}>{PAGE_NAMES.BUDGET_PLANNING}</h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Button variant="secondary" onClick={() => setDrafts(JSON.parse(JSON.stringify(originalDrafts)))} disabled={!isModified}>
-            {BUTTON_LABELS.CANCEL || '取消'}
-          </Button>
-          <Button onClick={handleBatchSave} disabled={!isModified}>
-            {BUTTON_LABELS.SAVE || '確定'}
-          </Button>
-        </div>
       </div>
 
       <div className="table-container">
@@ -353,6 +345,19 @@ export function BudgetPlanningPage() {
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="action-bar">
+        <div className="filter-controls"></div>
+        <div className="action-buttons">
+          <Button variant="secondary" onClick={() => setDrafts(JSON.parse(JSON.stringify(originalDrafts)))} disabled={!isModified}>
+            {BUTTON_LABELS.CANCEL || '取消'}
+          </Button>
+          <Button variant="primary" onClick={handleBatchSave} disabled={!isModified}>
+            {BUTTON_LABELS.SAVE || '確定'}
+          </Button>
+        </div>
+        <div className="pagination-controls"></div>
       </div>
     </>
   );

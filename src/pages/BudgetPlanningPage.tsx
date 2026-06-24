@@ -26,6 +26,7 @@ export function BudgetPlanningPage() {
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
+  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -269,77 +270,122 @@ export function BudgetPlanningPage() {
                 
                 const rows = [];
                 
-                // Row 1: Total
-                rows.push(
-                  <tr key={`${draft.project.id}-total`}>
-                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
-                      {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
-                    </td>
-                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
-                      {draft.project.name}
-                    </td>
-                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      ¥{sum(draft.revenues).toLocaleString()}
-                    </td>
-                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      ¥{sum(draft.expenses).toLocaleString()}
-                    </td>
-                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      ¥{sum(draft.reserves).toLocaleString()}
-                    </td>
-                    <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                    <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      ¥{sum(draft.surpluses).toLocaleString()}
-                    </td>
-                  </tr>
-                );
-
-                // Row 2 to N: Details
-                for (let i = 0; i < maxRows; i++) {
-                  const rev = draft.revenues[i];
-                  const exp = draft.expenses[i];
-                  const res = draft.reserves[i];
-                  const sur = draft.surpluses[i];
+                if (maxRows === 0) {
                   rows.push(
-                    <tr key={`${draft.project.id}-detail-${i}`}>
-                      <td>{rev?.subject || ''}</td>
-                      <td style={{ backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
-                        {rev ? (
-                          <CurrencyInput 
-                            value={rev.amount} 
-                            onChange={(val) => handleChange(draftIndex, 'revenues', i, val)} 
-                          />
-                        ) : null}
+                    <tr 
+                      key={`${draft.project.id}-total`}
+                      onMouseEnter={() => setHoveredProjectId(draft.project.id)}
+                      onMouseLeave={() => setHoveredProjectId(null)}
+                    >
+                      <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                        {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
                       </td>
-                      <td>{exp?.subject || ''}</td>
-                      <td style={{ backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
-                        {exp ? (
-                          <CurrencyInput 
-                            value={exp.amount} 
-                            onChange={(val) => handleChange(draftIndex, 'expenses', i, val)} 
-                          />
-                        ) : null}
+                      <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                        {draft.project.name}
                       </td>
-                      <td>{res?.subject || ''}</td>
-                      <td style={{ backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
-                        {res ? (
-                          <CurrencyInput 
-                            value={res.amount} 
-                            onChange={(val) => handleChange(draftIndex, 'reserves', i, val)} 
-                          />
-                        ) : null}
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.revenues).toLocaleString()}
                       </td>
-                      <td>{sur?.subject || ''}</td>
-                      <td style={{ backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
-                        {sur ? (
-                          <CurrencyInput 
-                            value={sur.amount} 
-                            onChange={(val) => handleChange(draftIndex, 'surpluses', i, val)} 
-                          />
-                        ) : null}
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.expenses).toLocaleString()}
+                      </td>
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.reserves).toLocaleString()}
+                      </td>
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.surpluses).toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                } else {
+                  // Details
+                  for (let i = 0; i < maxRows; i++) {
+                    const rev = draft.revenues[i];
+                    const exp = draft.expenses[i];
+                    const res = draft.reserves[i];
+                    const sur = draft.surpluses[i];
+                    rows.push(
+                      <tr 
+                        key={`${draft.project.id}-detail-${i}`}
+                        onMouseEnter={() => setHoveredProjectId(draft.project.id)}
+                        onMouseLeave={() => setHoveredProjectId(null)}
+                      >
+                        {i === 0 && (
+                          <>
+                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                              {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
+                            </td>
+                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                              {draft.project.name}
+                            </td>
+                          </>
+                        )}
+                        <td>{rev?.subject || ''}</td>
+                        <td style={{ backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
+                          {rev ? (
+                            <CurrencyInput 
+                              value={rev.amount} 
+                              onChange={(val) => handleChange(draftIndex, 'revenues', i, val)} 
+                            />
+                          ) : null}
+                        </td>
+                        <td>{exp?.subject || ''}</td>
+                        <td style={{ backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
+                          {exp ? (
+                            <CurrencyInput 
+                              value={exp.amount} 
+                              onChange={(val) => handleChange(draftIndex, 'expenses', i, val)} 
+                            />
+                          ) : null}
+                        </td>
+                        <td>{res?.subject || ''}</td>
+                        <td style={{ backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
+                          {res ? (
+                            <CurrencyInput 
+                              value={res.amount} 
+                              onChange={(val) => handleChange(draftIndex, 'reserves', i, val)} 
+                            />
+                          ) : null}
+                        </td>
+                        <td>{sur?.subject || ''}</td>
+                        <td style={{ backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
+                          {sur ? (
+                            <CurrencyInput 
+                              value={sur.amount} 
+                              onChange={(val) => handleChange(draftIndex, 'surpluses', i, val)} 
+                            />
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  // Total
+                  rows.push(
+                    <tr 
+                      key={`${draft.project.id}-total`}
+                      onMouseEnter={() => setHoveredProjectId(draft.project.id)}
+                      onMouseLeave={() => setHoveredProjectId(null)}
+                    >
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.revenues).toLocaleString()}
+                      </td>
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.expenses).toLocaleString()}
+                      </td>
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.reserves).toLocaleString()}
+                      </td>
+                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        ¥{sum(draft.surpluses).toLocaleString()}
                       </td>
                     </tr>
                   );

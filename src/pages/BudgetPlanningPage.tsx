@@ -23,7 +23,7 @@ export function BudgetPlanningPage() {
   const [drafts, setDrafts] = useState<ProjectDraft[]>([]);
   const [originalDrafts, setOriginalDrafts] = useState<ProjectDraft[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
 
   useEffect(() => {
     fetchData();
@@ -196,8 +196,8 @@ export function BudgetPlanningPage() {
     let aVal = '';
     let bVal = '';
     if (sortConfig.key === 'projectType') {
-      aVal = a.project.projectType === 'ongoing' ? '継続' : '単発';
-      bVal = b.project.projectType === 'ongoing' ? '継続' : '単発';
+      aVal = a.project.projectType === 'ongoing' ? '0' : '1';
+      bVal = b.project.projectType === 'ongoing' ? '0' : '1';
     } else if (sortConfig.key === 'name') {
       aVal = a.project.yomigana || a.project.name || '';
       bVal = b.project.yomigana || b.project.name || '';
@@ -230,17 +230,17 @@ export function BudgetPlanningPage() {
               <th rowSpan={2} style={{ width: '80px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_TYPE}
-                  {sortConfig?.key === 'projectType' && (
-                    <span style={{ fontSize: 'var(--text-caption)' }}>{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>
-                  )}
+                  <span style={{ fontSize: 'var(--text-caption)', color: sortConfig?.key === 'projectType' ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                    {sortConfig?.key === 'projectType' && sortConfig.direction === 'desc' ? '▼' : '▲'}
+                  </span>
                 </div>
               </th>
               <th rowSpan={2} style={{ width: '150px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_NAME}
-                  {sortConfig?.key === 'name' && (
-                    <span style={{ fontSize: 'var(--text-caption)' }}>{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>
-                  )}
+                  <span style={{ fontSize: 'var(--text-caption)', color: sortConfig?.key === 'name' ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
+                    {sortConfig?.key === 'name' && sortConfig.direction === 'desc' ? '▼' : '▲'}
+                  </span>
                 </div>
               </th>
               <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.REVENUE}</th>

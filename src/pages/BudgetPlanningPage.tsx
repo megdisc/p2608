@@ -247,12 +247,13 @@ export function BudgetPlanningPage() {
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
             </tr>
           </thead>
-          <tbody>
-            {paginatedDrafts.length === 0 ? (
+          {paginatedDrafts.length === 0 ? (
+            <tbody>
               <tr>
                 <td colSpan={10} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
-            ) : (
+            </tbody>
+          ) : (
               paginatedDrafts.map((draft) => {
                 const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
                 const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length);
@@ -295,17 +296,11 @@ export function BudgetPlanningPage() {
                         WebkitTextStroke: '0.5px currentColor', 
                         textAlign: 'right', 
                         fontVariantNumeric: 'tabular-nums', 
-                        paddingRight: '8px',
-                        backgroundColor: totalSurplus !== 0 ? 'var(--palette-red-300)' : undefined,
-                        transition: 'background-color 0.2s'
+                        paddingRight: '8px'
                       }}>
-                        {totalSurplus !== 0 ? (
-                          <Tooltip text="余剰金が0円ではありません。金額を調整してください。">
-                            <strong>¥{totalSurplus.toLocaleString()}</strong>
-                          </Tooltip>
-                        ) : (
-                          <strong>¥{totalSurplus.toLocaleString()}</strong>
-                        )}
+                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
+                          ¥{totalSurplus.toLocaleString()}
+                        </strong>
                       </td>
                     </tr>
                   );
@@ -332,7 +327,7 @@ export function BudgetPlanningPage() {
                           </>
                         )}
                         <td>{rev?.subject || ''}</td>
-                        <td style={{ backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        <td style={{ backgroundColor: rev ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
                           {rev ? (
                             <CurrencyInput
                               value={rev.amount}
@@ -341,7 +336,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{exp?.subject || ''}</td>
-                        <td style={{ backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        <td style={{ backgroundColor: exp ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
                           {exp ? (
                             <CurrencyInput
                               value={exp.amount}
@@ -350,7 +345,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{res?.subject || ''}</td>
-                        <td style={{ backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
+                        <td style={{ backgroundColor: res ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
                           {res ? (
                             <CurrencyInput
                               value={res.amount}
@@ -389,26 +384,26 @@ export function BudgetPlanningPage() {
                         WebkitTextStroke: '0.5px currentColor', 
                         textAlign: 'right', 
                         fontVariantNumeric: 'tabular-nums', 
-                        paddingRight: '8px',
-                        backgroundColor: totalSurplus !== 0 ? 'var(--palette-red-300)' : undefined,
-                        transition: 'background-color 0.2s'
+                        paddingRight: '8px'
                       }}>
-                        {totalSurplus !== 0 ? (
-                          <Tooltip text="余剰金が0円ではありません。金額を調整してください。">
-                            <strong>¥{totalSurplus.toLocaleString()}</strong>
-                          </Tooltip>
-                        ) : (
-                          <strong>¥{totalSurplus.toLocaleString()}</strong>
-                        )}
+                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
+                          ¥{totalSurplus.toLocaleString()}
+                        </strong>
                       </td>
                     </tr>
                   );
                 }
 
-                return rows;
+                if (totalSurplus !== 0) {
+                  return (
+                    <Tooltip as="tbody" key={draft.project.id} text="余剰が¥0になるように、金額を調整してください。">
+                      {rows}
+                    </Tooltip>
+                  );
+                }
+                return <tbody key={draft.project.id} style={{ display: 'contents' }}>{rows}</tbody>;
               })
-            )}
-          </tbody>
+          )}
         </table>
       </div>
 

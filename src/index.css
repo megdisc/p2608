@@ -19,9 +19,14 @@
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-blue-500: #3f3fdf;
-  --palette-red-500: #df3f3f;
-  --palette-yellow-500: #fdfddf;
+  --palette-blue-300: #dfdfff;
+  --palette-blue-700: #3f3fdf;
+  --palette-bluegreen-300: #dfffff;
+  --palette-bluegreen-700: #1f8f8f;
+  --palette-red-300: #ffdfdf;
+  --palette-red-700: #df3f3f;
+  --palette-yellow-300: #fdfddf;
+  --palette-yellow-700: #8f8f1f;
 
   /* --- フォント --- */
   --font-family-sans: "Inter", "Helvetica Neue", Arial, "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", "Yu Gothic", "Meiryo", sans-serif;
@@ -75,7 +80,7 @@
   --color-bg-subtle: var(--palette-gray-100);
   --color-bg-inverse: var(--palette-gray-900);
   --color-bg-inverse-hover: var(--palette-gray-700);
-  --color-bg-input-highlight: var(--palette-yellow-500);
+  --color-bg-input-highlight: var(--palette-yellow-300);
   --color-bg-checked: var(--palette-gray-500);
 
   /* --- テキスト --- */
@@ -88,8 +93,8 @@
   --color-border-focus: var(--palette-gray-500);
 
   /* --- ステータス --- */
-  --color-success: var(--palette-blue-500);
-  --color-error: var(--palette-red-500);
+  --color-success: var(--palette-bluegreen-700);
+  --color-error: var(--palette-red-700);
 
   /* --- オーバーレイ --- */
   --color-overlay: var(--palette-black-alpha-50);

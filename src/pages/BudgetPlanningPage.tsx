@@ -287,21 +287,21 @@ export function BudgetPlanningPage() {
                       <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
                         {draft.project.name}
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumRevenues.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumRevenues.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumExpenses.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumExpenses.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumReserves.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumReserves.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                        ¥{totalSurplus.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
+                        <strong>¥{totalSurplus.toLocaleString()}</strong>
                       </td>
                     </tr>
                   );
@@ -367,21 +367,21 @@ export function BudgetPlanningPage() {
                       onMouseEnter={() => setHoveredProjectId(draft.project.id)}
                       onMouseLeave={() => setHoveredProjectId(null)}
                     >
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumRevenues.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumRevenues.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumExpenses.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumExpenses.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sumReserves.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                        <strong>¥{sumReserves.toLocaleString()}</strong>
                       </td>
-                      <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                        ¥{totalSurplus.toLocaleString()}
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
+                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
+                        <strong>¥{totalSurplus.toLocaleString()}</strong>
                       </td>
                     </tr>
                   );

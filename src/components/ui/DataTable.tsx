@@ -525,8 +525,8 @@ export function DataTable<T extends { id: string }>({
                   </th>
                 );
               })}
-              {showDeleteCol && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
-              {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', textAlign: 'center', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
+              {showDeleteCol && <th className="sticky-right" style={{ width: '40px', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
+              {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
             </tr>
           </thead>
           <tbody>

@@ -250,13 +250,13 @@ export function BudgetPlanningPage() {
             </tr>
             <tr>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', textAlign: 'right', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
             </tr>
           </thead>
           <tbody>
@@ -275,10 +275,10 @@ export function BudgetPlanningPage() {
                 // Row 1: Total
                 rows.push(
                   <tr key={`${draft.project.id}-total`}>
-                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', borderBottom: '2px solid var(--color-border)' }}>
+                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
                       {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
                     </td>
-                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', borderBottom: '2px solid var(--color-border)' }}>
+                    <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
                       {draft.project.name}
                     </td>
                     <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
@@ -306,13 +306,10 @@ export function BudgetPlanningPage() {
                   const exp = draft.expenses[i];
                   const res = draft.reserves[i];
                   const sur = draft.surpluses[i];
-                  const isLast = i === maxRows - 1;
-                  const borderBottom = isLast ? '2px solid var(--color-border)' : undefined;
-
                   rows.push(
                     <tr key={`${draft.project.id}-detail-${i}`}>
-                      <td style={{ borderBottom }}>{rev?.subject || ''}</td>
-                      <td style={{ borderBottom, backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
+                      <td>{rev?.subject || ''}</td>
+                      <td style={{ backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
                         {rev ? (
                           <CurrencyInput 
                             value={rev.amount} 
@@ -320,8 +317,8 @@ export function BudgetPlanningPage() {
                           />
                         ) : null}
                       </td>
-                      <td style={{ borderBottom }}>{exp?.subject || ''}</td>
-                      <td style={{ borderBottom, backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
+                      <td>{exp?.subject || ''}</td>
+                      <td style={{ backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
                         {exp ? (
                           <CurrencyInput 
                             value={exp.amount} 
@@ -329,8 +326,8 @@ export function BudgetPlanningPage() {
                           />
                         ) : null}
                       </td>
-                      <td style={{ borderBottom }}>{res?.subject || ''}</td>
-                      <td style={{ borderBottom, backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
+                      <td>{res?.subject || ''}</td>
+                      <td style={{ backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
                         {res ? (
                           <CurrencyInput 
                             value={res.amount} 
@@ -338,8 +335,8 @@ export function BudgetPlanningPage() {
                           />
                         ) : null}
                       </td>
-                      <td style={{ borderBottom }}>{sur?.subject || ''}</td>
-                      <td style={{ borderBottom, backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
+                      <td>{sur?.subject || ''}</td>
+                      <td style={{ backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
                         {sur ? (
                           <CurrencyInput 
                             value={sur.amount} 

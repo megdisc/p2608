@@ -15,3 +15,4 @@ export * from './NumberInput';
 export * from './CurrencyInput';
 export * from './MultiSelectDropdown';
 export * from './RadioButton';
+export * from './Pagination';

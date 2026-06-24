@@ -10,6 +10,7 @@ import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '..
 
 import { DateInput } from './DateInput';
 import { MonthInput } from './MonthInput';
+import { Pagination } from './Pagination';
 import { NumberInput } from './NumberInput';
 import { NumberDisplay } from './NumberDisplay';
 import { CurrencyInput } from './CurrencyInput';
@@ -884,38 +885,11 @@ export function DataTable<T extends { id: string }>({
           <div className="action-buttons"></div>
         )}
 
-        <div className="pagination-controls" style={{ gap: '8px' }}>
-          <div className="pagination-buttons" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            >
-              ＜
-            </Button>
-            
-            <select 
-              className="page-select-pill"
-              value={currentPage}
-              onChange={(e) => setCurrentPage(Number(e.target.value))}
-              disabled={totalPages <= 1}
-            >
-              {Array.from({ length: Math.max(1, totalPages) }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-
-            <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              disabled={currentPage === Math.max(1, totalPages) || totalPages === 0}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            >
-              ＞
-            </Button>
-          </div>
-        </div>
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
 
       {tooltip.visible && createPortal(

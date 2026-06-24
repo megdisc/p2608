@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput } from '../components/ui';
+import { Button, CurrencyInput, Pagination } from '../components/ui';
 import type { ProjectItem, BudgetCategory } from '../types';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib/supabase';
@@ -24,6 +24,8 @@ export function BudgetPlanningPage() {
   const [originalDrafts, setOriginalDrafts] = useState<ProjectDraft[]>([]);
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
 
   useEffect(() => {
     fetchData();
@@ -207,6 +209,9 @@ export function BudgetPlanningPage() {
     return 0;
   });
 
+  const totalPages = Math.ceil(sortedDrafts.length / pageSize);
+  const paginatedDrafts = sortedDrafts.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
@@ -252,12 +257,12 @@ export function BudgetPlanningPage() {
             </tr>
           </thead>
           <tbody>
-            {sortedDrafts.length === 0 ? (
+            {paginatedDrafts.length === 0 ? (
               <tr>
                 <td colSpan={10} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
             ) : (
-              sortedDrafts.map((draft) => {
+              paginatedDrafts.map((draft) => {
                 const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
                 const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length, draft.surpluses.length);
                 const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
@@ -357,7 +362,11 @@ export function BudgetPlanningPage() {
             {BUTTON_LABELS.SAVE || '確定'}
           </Button>
         </div>
-        <div className="pagination-controls"></div>
+        <Pagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </>
   );

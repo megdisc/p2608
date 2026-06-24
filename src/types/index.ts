@@ -132,7 +132,7 @@ export type DailyWorkRecordItem = {
   workTime: number;
 };
 
-export type BudgetCategory = 'revenue' | 'expense' | 'reserve' | 'surplus';
+export type BudgetCategory = 'revenue' | 'expense' | 'reserve';
 
 export type ProjectBudgetItem = {
   id: string;
@@ -156,14 +156,11 @@ export type ProjectBudgetGridRow = {
   expenseAmount?: number;
   reserveSubject?: string;
   reserveAmount?: number;
-  surplusSubject?: string;
-  surplusAmount?: number;
   // Metadata for saving back
   revenueItemId?: string;
   expenseItemId?: string;
   expenseTaskId?: string;
   reserveItemId?: string;
-  surplusItemId?: string;
 };
 
 export type Tab = 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination } from '../components/ui';
+import { Button, CurrencyInput, Pagination, Tooltip } from '../components/ui';
 import type { ProjectItem, BudgetCategory } from '../types';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib/supabase';
@@ -16,7 +16,6 @@ type ProjectDraft = {
   revenues: DetailItem[];
   expenses: DetailItem[];
   reserves: DetailItem[];
-  surpluses: DetailItem[];
 };
 
 export function BudgetPlanningPage() {
@@ -90,13 +89,6 @@ export function BudgetPlanningPage() {
           return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
         });
 
-        // Build surpluses
-        const surSubjects = [WORDS_PROJECT.SUBJECT_SURPLUS];
-        const surpluses = surSubjects.map(subj => {
-          const dbItem = pItems.find(b => b.category === 'surplus' && b.subject === subj);
-          return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
-        });
-
         return {
           project: {
             id: p.id,
@@ -109,8 +101,7 @@ export function BudgetPlanningPage() {
           },
           revenues,
           expenses,
-          reserves,
-          surpluses
+          reserves
         };
       });
 
@@ -146,7 +137,6 @@ export function BudgetPlanningPage() {
         processCategory(draft.revenues, 'revenue');
         processCategory(draft.expenses, 'expense');
         processCategory(draft.reserves, 'reserve');
-        processCategory(draft.surpluses, 'surplus');
       }
 
       // Upsert
@@ -300,8 +290,22 @@ export function BudgetPlanningPage() {
                         <strong>¥{sumReserves.toLocaleString()}</strong>
                       </td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                        <strong>¥{totalSurplus.toLocaleString()}</strong>
+                      <td style={{ 
+                        fontWeight: 'bold', 
+                        WebkitTextStroke: '0.5px currentColor', 
+                        textAlign: 'right', 
+                        fontVariantNumeric: 'tabular-nums', 
+                        paddingRight: '8px',
+                        backgroundColor: totalSurplus !== 0 ? 'var(--palette-red-300)' : undefined,
+                        transition: 'background-color 0.2s'
+                      }}>
+                        {totalSurplus !== 0 ? (
+                          <Tooltip text="余剰金が0円ではありません。金額を調整してください。">
+                            <strong>¥{totalSurplus.toLocaleString()}</strong>
+                          </Tooltip>
+                        ) : (
+                          <strong>¥{totalSurplus.toLocaleString()}</strong>
+                        )}
                       </td>
                     </tr>
                   );
@@ -380,8 +384,22 @@ export function BudgetPlanningPage() {
                         <strong>¥{sumReserves.toLocaleString()}</strong>
                       </td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                        <strong>¥{totalSurplus.toLocaleString()}</strong>
+                      <td style={{ 
+                        fontWeight: 'bold', 
+                        WebkitTextStroke: '0.5px currentColor', 
+                        textAlign: 'right', 
+                        fontVariantNumeric: 'tabular-nums', 
+                        paddingRight: '8px',
+                        backgroundColor: totalSurplus !== 0 ? 'var(--palette-red-300)' : undefined,
+                        transition: 'background-color 0.2s'
+                      }}>
+                        {totalSurplus !== 0 ? (
+                          <Tooltip text="余剰金が0円ではありません。金額を調整してください。">
+                            <strong>¥{totalSurplus.toLocaleString()}</strong>
+                          </Tooltip>
+                        ) : (
+                          <strong>¥{totalSurplus.toLocaleString()}</strong>
+                        )}
                       </td>
                     </tr>
                   );

@@ -35,7 +35,7 @@ export function BudgetPlanningPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
         .select(`
@@ -44,7 +44,7 @@ export function BudgetPlanningPage() {
         `)
         .eq('is_deleted', false)
         .order('yomigana');
-        
+
       if (projectsError) throw projectsError;
 
       const { data: budgetsData, error: budgetsError } = await supabase
@@ -57,7 +57,7 @@ export function BudgetPlanningPage() {
 
       const initialDrafts: ProjectDraft[] = (projectsData as any[]).map(p => {
         const pItems = items.filter(b => b.project_id === p.id);
-        
+
         // Build revenues
         const revSubjects = [WORDS_PROJECT.SUBJECT_REVENUE_SALES, WORDS_PROJECT.SUBJECT_REVENUE_OTHER];
         const revenues = revSubjects.map(subj => {
@@ -67,12 +67,12 @@ export function BudgetPlanningPage() {
 
         // Build expenses
         const activeTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
-        const expSubjects = activeTasks.map((t: any) => ({ 
-          subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR}（${t.name}）`, 
-          taskId: t.id 
+        const expSubjects = activeTasks.map((t: any) => ({
+          subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR}（${t.name}）`,
+          taskId: t.id
         }));
         expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
-        
+
         const expenses = expSubjects.map(es => {
           let dbItem;
           if (es.taskId) {
@@ -241,10 +241,10 @@ export function BudgetPlanningPage() {
                   </span>
                 </div>
               </th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.REVENUE}</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.EXPENSE}</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.RESERVE}</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.SURPLUS}</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>収益　A</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>費用　B</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>積立金　C</th>
+              <th colSpan={2} style={{ textAlign: 'left' }}>余剰　A-（B+C）</th>
             </tr>
             <tr>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
@@ -265,14 +265,18 @@ export function BudgetPlanningPage() {
             ) : (
               paginatedDrafts.map((draft) => {
                 const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
-                const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length, draft.surpluses.length);
+                const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length);
                 const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
-                
+                const sumRevenues = sum(draft.revenues);
+                const sumExpenses = sum(draft.expenses);
+                const sumReserves = sum(draft.reserves);
+                const totalSurplus = sumRevenues - (sumExpenses + sumReserves);
+
                 const rows = [];
-                
+
                 if (maxRows === 0) {
                   rows.push(
-                    <tr 
+                    <tr
                       key={`${draft.project.id}-total`}
                       onMouseEnter={() => setHoveredProjectId(draft.project.id)}
                       onMouseLeave={() => setHoveredProjectId(null)}
@@ -285,19 +289,19 @@ export function BudgetPlanningPage() {
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.revenues).toLocaleString()}
+                        ¥{sumRevenues.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.expenses).toLocaleString()}
+                        ¥{sumExpenses.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.reserves).toLocaleString()}
+                        ¥{sumReserves.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.surpluses).toLocaleString()}
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
+                        ¥{totalSurplus.toLocaleString()}
                       </td>
                     </tr>
                   );
@@ -307,9 +311,8 @@ export function BudgetPlanningPage() {
                     const rev = draft.revenues[i];
                     const exp = draft.expenses[i];
                     const res = draft.reserves[i];
-                    const sur = draft.surpluses[i];
                     rows.push(
-                      <tr 
+                      <tr
                         key={`${draft.project.id}-detail-${i}`}
                         onMouseEnter={() => setHoveredProjectId(draft.project.id)}
                         onMouseLeave={() => setHoveredProjectId(null)}
@@ -327,65 +330,58 @@ export function BudgetPlanningPage() {
                         <td>{rev?.subject || ''}</td>
                         <td style={{ backgroundColor: rev ? 'var(--color-bg-input-highlight)' : undefined }}>
                           {rev ? (
-                            <CurrencyInput 
-                              value={rev.amount} 
-                              onChange={(val) => handleChange(draftIndex, 'revenues', i, val)} 
+                            <CurrencyInput
+                              value={rev.amount}
+                              onChange={(val) => handleChange(draftIndex, 'revenues', i, val)}
                             />
                           ) : null}
                         </td>
                         <td>{exp?.subject || ''}</td>
                         <td style={{ backgroundColor: exp ? 'var(--color-bg-input-highlight)' : undefined }}>
                           {exp ? (
-                            <CurrencyInput 
-                              value={exp.amount} 
-                              onChange={(val) => handleChange(draftIndex, 'expenses', i, val)} 
+                            <CurrencyInput
+                              value={exp.amount}
+                              onChange={(val) => handleChange(draftIndex, 'expenses', i, val)}
                             />
                           ) : null}
                         </td>
                         <td>{res?.subject || ''}</td>
                         <td style={{ backgroundColor: res ? 'var(--color-bg-input-highlight)' : undefined }}>
                           {res ? (
-                            <CurrencyInput 
-                              value={res.amount} 
-                              onChange={(val) => handleChange(draftIndex, 'reserves', i, val)} 
+                            <CurrencyInput
+                              value={res.amount}
+                              onChange={(val) => handleChange(draftIndex, 'reserves', i, val)}
                             />
                           ) : null}
                         </td>
-                        <td>{sur?.subject || ''}</td>
-                        <td style={{ backgroundColor: sur ? 'var(--color-bg-input-highlight)' : undefined }}>
-                          {sur ? (
-                            <CurrencyInput 
-                              value={sur.amount} 
-                              onChange={(val) => handleChange(draftIndex, 'surpluses', i, val)} 
-                            />
-                          ) : null}
-                        </td>
+                        <td></td>
+                        <td></td>
                       </tr>
                     );
                   }
 
                   // Total
                   rows.push(
-                    <tr 
+                    <tr
                       key={`${draft.project.id}-total`}
                       onMouseEnter={() => setHoveredProjectId(draft.project.id)}
                       onMouseLeave={() => setHoveredProjectId(null)}
                     >
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.revenues).toLocaleString()}
+                        ¥{sumRevenues.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.expenses).toLocaleString()}
+                        ¥{sumExpenses.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
                       <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.reserves).toLocaleString()}
+                        ¥{sumReserves.toLocaleString()}
                       </td>
                       <td style={{ fontWeight: 'bold' }}>{WORDS_PROJECT.TOTAL}</td>
-                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        ¥{sum(draft.surpluses).toLocaleString()}
+                      <td style={{ fontWeight: 'bold', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
+                        ¥{totalSurplus.toLocaleString()}
                       </td>
                     </tr>
                   );
@@ -408,7 +404,7 @@ export function BudgetPlanningPage() {
             {BUTTON_LABELS.SAVE || '確定'}
           </Button>
         </div>
-        <Pagination 
+        <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}

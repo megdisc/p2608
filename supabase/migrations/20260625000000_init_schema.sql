@@ -13,6 +13,11 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 
+
+-- ==========================================
+-- 1. 初期設定・拡張機能 (Config & Extensions)
+-- ==========================================
+
 CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
 
 
@@ -52,6 +57,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
+
+-- ==========================================
+-- 2. カスタム型 (Custom Types)
+-- ==========================================
+
 CREATE TYPE "public"."budget_category" AS ENUM (
     'revenue',
     'expense',
@@ -70,6 +80,11 @@ CREATE TYPE "public"."transaction_type" AS ENUM (
 
 ALTER TYPE "public"."transaction_type" OWNER TO "postgres";
 
+
+
+-- ==========================================
+-- 3. 関数・RPC (Functions)
+-- ==========================================
 
 CREATE OR REPLACE FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) RETURNS numeric
     LANGUAGE "plpgsql" SECURITY DEFINER
@@ -354,6 +369,14 @@ SET default_tablespace = '';
 SET default_table_access_method = "heap";
 
 
+
+-- ==========================================
+-- 4. テーブル定義 (Tables)
+-- ==========================================
+
+-- ------------------------------------------
+-- テーブル: categories (カテゴリ)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."categories" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "code" character varying NOT NULL,
@@ -369,6 +392,9 @@ CREATE TABLE IF NOT EXISTS "public"."categories" (
 ALTER TABLE "public"."categories" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: clients (顧客)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."clients" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" character varying NOT NULL,
@@ -384,6 +410,9 @@ CREATE TABLE IF NOT EXISTS "public"."clients" (
 ALTER TABLE "public"."clients" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: daily_work_records (日次作業記録)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "date" "date" NOT NULL,
@@ -399,6 +428,9 @@ CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
 ALTER TABLE "public"."daily_work_records" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: items (品目・在庫品)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."items" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "code" character varying NOT NULL,
@@ -419,6 +451,9 @@ CREATE TABLE IF NOT EXISTS "public"."items" (
 ALTER TABLE "public"."items" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: locations (保管場所)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."locations" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "code" character varying NOT NULL,
@@ -434,6 +469,9 @@ CREATE TABLE IF NOT EXISTS "public"."locations" (
 ALTER TABLE "public"."locations" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: members (利用者)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."members" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" character varying NOT NULL,
@@ -449,6 +487,9 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
 ALTER TABLE "public"."members" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: monthly_member_contributions (月次利用者貢献度)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."monthly_member_contributions" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "year_month" character varying(7) NOT NULL,
@@ -467,6 +508,9 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_member_contributions" (
 ALTER TABLE "public"."monthly_member_contributions" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: monthly_task_progress (月次タスク進捗)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "year_month" character varying(7) NOT NULL,
@@ -481,6 +525,9 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
 ALTER TABLE "public"."monthly_task_progress" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: project_budget_items (案件予算項目)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."project_budget_items" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "project_id" "uuid",
@@ -496,6 +543,9 @@ CREATE TABLE IF NOT EXISTS "public"."project_budget_items" (
 ALTER TABLE "public"."project_budget_items" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: project_task_assignees (タスク担当者)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."project_task_assignees" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "task_id" "uuid" NOT NULL,
@@ -509,6 +559,9 @@ CREATE TABLE IF NOT EXISTS "public"."project_task_assignees" (
 ALTER TABLE "public"."project_task_assignees" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: project_task_skills (タスク要求スキル)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."project_task_skills" (
     "task_id" "uuid" NOT NULL,
     "skill_id" "uuid" NOT NULL
@@ -518,6 +571,9 @@ CREATE TABLE IF NOT EXISTS "public"."project_task_skills" (
 ALTER TABLE "public"."project_task_skills" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: project_tasks (案件タスク)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "project_id" "uuid" NOT NULL,
@@ -532,6 +588,9 @@ CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
 ALTER TABLE "public"."project_tasks" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: projects (案件)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" character varying NOT NULL,
@@ -549,6 +608,9 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
 ALTER TABLE "public"."projects" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: skills (スキル)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."skills" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "name" character varying NOT NULL,
@@ -563,6 +625,9 @@ CREATE TABLE IF NOT EXISTS "public"."skills" (
 ALTER TABLE "public"."skills" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: staffs (職員)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "id" "uuid" NOT NULL,
     "name" character varying NOT NULL,
@@ -578,6 +643,9 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
 ALTER TABLE "public"."staffs" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: stocktakings (棚卸記録)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."stocktakings" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "date" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -594,6 +662,9 @@ CREATE TABLE IF NOT EXISTS "public"."stocktakings" (
 ALTER TABLE "public"."stocktakings" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: suppliers (仕入先)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."suppliers" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "code" character varying NOT NULL,
@@ -610,6 +681,9 @@ CREATE TABLE IF NOT EXISTS "public"."suppliers" (
 ALTER TABLE "public"."suppliers" OWNER TO "postgres";
 
 
+-- ------------------------------------------
+-- テーブル: transactions (入出庫履歴)
+-- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."transactions" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "date" timestamp with time zone DEFAULT "now"() NOT NULL,
@@ -624,6 +698,11 @@ CREATE TABLE IF NOT EXISTS "public"."transactions" (
 
 ALTER TABLE "public"."transactions" OWNER TO "postgres";
 
+
+
+-- ==========================================
+-- 5. ビュー定義 (Views)
+-- ==========================================
 
 CREATE OR REPLACE VIEW "public"."v_current_inventory" AS
  WITH "item_locations" AS (
@@ -682,6 +761,11 @@ ALTER TABLE ONLY "public"."categories"
 
 
 ALTER TABLE ONLY "public"."categories"
+
+-- ==========================================
+-- 6. 主キー・制約 (Primary Keys & Constraints)
+-- ==========================================
+
     ADD CONSTRAINT "categories_pkey" PRIMARY KEY ("id");
 
 
@@ -873,6 +957,11 @@ CREATE OR REPLACE TRIGGER "update_suppliers_updated_at" BEFORE UPDATE ON "public
 
 
 ALTER TABLE ONLY "public"."daily_work_records"
+
+-- ==========================================
+-- 7. 外部キー制約 (Foreign Keys)
+-- ==========================================
+
     ADD CONSTRAINT "daily_work_records_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE CASCADE;
 
 
@@ -1007,6 +1096,11 @@ ALTER TABLE ONLY "public"."transactions"
 
 
 
+
+-- ==========================================
+-- 8. RLSポリシー (Row Level Security)
+-- ==========================================
+
 CREATE POLICY "Enable all operations for all users" ON "public"."project_budget_items" USING (true) WITH CHECK (true);
 
 
@@ -1021,6 +1115,11 @@ ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
 
+
+
+-- ==========================================
+-- 9. 権限付与 (Grants)
+-- ==========================================
 
 GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
@@ -1425,4 +1524,9 @@ ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TAB
 -- Dumped schema changes for auth and storage
 --
 
+SET search_path = public, extensions;
+
+-- ==========================================
+-- 10. 検索パスの修正 (Search Path Fix)
+-- ==========================================
 SET search_path = public, extensions;

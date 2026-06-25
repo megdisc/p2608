@@ -1,5 +1,22 @@
+-- ==========================================
+-- マイグレーションファイル構成 (Table of Contents)
+-- ==========================================
+-- 0. PostgreSQL 動作環境の初期化 (環境依存エラーを防ぐ安全設定)
+-- 1. 初期設定・拡張機能 (Config & Extensions)
+-- 2. カスタム型 (Custom Types)
+-- 3. 関数・RPC (Functions)
+-- 4. テーブル定義 (Tables)
+-- 5. ビュー定義 (Views)
+-- 6. 主キー・制約 (Primary Keys & Constraints)
+-- 7. 外部キー制約 (Foreign Keys)
+-- 8. RLSポリシー (Row Level Security)
+-- 9. 権限付与 (Grants)
+-- 10. 検索パスの修正 (Search Path Fix)
+-- ==========================================
 
-
+-- ==========================================
+-- 0. PostgreSQL 動作環境の初期化 (環境依存エラーを防ぐ安全設定)
+-- ==========================================
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -11,8 +28,6 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
-
 
 -- ==========================================
 -- 1. 初期設定・拡張機能 (Config & Extensions)

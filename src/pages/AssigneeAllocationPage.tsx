@@ -2,11 +2,27 @@ import { DataPage, MultiSelectDropdown, type Column } from '../components';
 import { useState, useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
 import { supabase } from '../lib';
-import type { ProjectItem, MemberItem, ClientItem, StaffItem } from '../types';
+import type { MemberItem, ClientItem, StaffItem } from '../types';
 import { useAlert } from '../contexts';
 
+type AllocationRow = {
+  id: string; // task id
+  projectId: string;
+  projectType: string;
+  projectTypeSortKey: string;
+  projectName: string;
+  projectYomigana: string;
+  task: string;
+  taskYomigana: string;
+  assigneeIds: string[];
+  isFirstInProject?: boolean;
+  isLastInProject?: boolean;
+  isFirstInTask?: boolean;
+  isLastInTask?: boolean;
+};
+
 export function AssigneeAllocationPage() {
-  const [items, setItems] = useState<ProjectItem[]>([]);
+  const [items, setItems] = useState<AllocationRow[]>([]);
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
@@ -38,25 +54,23 @@ export function AssigneeAllocationPage() {
       setDbClients(clientsRes.data || []);
       setDbStaffs(staffsRes.data || []);
 
-      const formattedProjects: ProjectItem[] = (projectsRes.data || []).map((p: any) => ({
-        id: p.id,
-        name: p.name,
-        yomigana: p.yomigana || '',
-        projectType: p.project_type || 'one-off',
-        projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
-        customerId: p.client_id || '',
-        startDate: p.start_date,
-        endDate: p.end_date || '',
-        tasks: (p.project_tasks || [])
+      const formattedTasks: AllocationRow[] = [];
+      
+      (projectsRes.data || []).forEach((p: any) => {
+        const projectTypeSortKey = (p.project_type || 'one-off') === 'ongoing' ? '0' : '1';
+        (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
-          .sort((a: any, b: any) => (a.yomigana || '').localeCompare(b.yomigana || ''))
-          .map((pt: any) => {
+          .forEach((pt: any) => {
             const assignees = pt.project_task_assignees || [];
-            return {
+            formattedTasks.push({
               id: pt.id,
+              projectId: p.id,
+              projectType: p.project_type || 'one-off',
+              projectTypeSortKey,
+              projectName: p.name,
+              projectYomigana: p.yomigana || '',
               task: pt.name,
               taskYomigana: pt.yomigana || '',
-              requiredSkills: [],
               assigneeIds: assignees.flatMap((pta: any) => {
                 const res = [];
                 if (pta.member_id) res.push(`member_${pta.member_id}`);
@@ -64,20 +78,47 @@ export function AssigneeAllocationPage() {
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
                 return res;
               })
-            };
-          })
-      }));
+            });
+          });
+      });
 
-      formattedProjects.sort((a, b) => {
-        const keyA = a.projectTypeSortKey || '';
-        const keyB = b.projectTypeSortKey || '';
+      formattedTasks.sort((a, b) => {
+        const keyA = a.projectTypeSortKey;
+        const keyB = b.projectTypeSortKey;
         if (keyA !== keyB) {
           return keyA.localeCompare(keyB);
         }
-        return (a.yomigana || '').localeCompare(b.yomigana || '');
+        const projA = a.projectYomigana;
+        const projB = b.projectYomigana;
+        if (projA !== projB) {
+          return projA.localeCompare(projB);
+        }
+        return a.taskYomigana.localeCompare(b.taskYomigana);
       });
 
-      setItems(formattedProjects);
+      let prevProjectId = '';
+      let prevTaskId = '';
+
+      const finalTasks = formattedTasks.map((r, i) => {
+        const isFirstInProject = r.projectId !== prevProjectId;
+        const isFirstInTask = r.id !== prevTaskId;
+
+        let isLastInProject = true;
+        let isLastInTask = true;
+
+        if (i < formattedTasks.length - 1) {
+          const next = formattedTasks[i + 1];
+          if (next.projectId === r.projectId) isLastInProject = false;
+          if (next.id === r.id) isLastInTask = false;
+        }
+
+        prevProjectId = r.projectId;
+        prevTaskId = r.id;
+
+        return { ...r, isFirstInProject, isLastInProject, isFirstInTask, isLastInTask };
+      });
+
+      setItems(finalTasks);
     } catch (error) {
       console.error('Error fetching data:', error);
       showAlert('データ取得に失敗しました', 'error');
@@ -90,32 +131,54 @@ export function AssigneeAllocationPage() {
     fetchAllData();
   }, []);
 
-  const columns: Column<ProjectItem>[] = [
-    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: false, inputType: 'text', render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
-    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, sortKey: 'yomigana', editable: false, inputType: 'text', rowType: 'main' },
-    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: false, inputType: 'text', rowType: 'main' },
+  const columns: Column<AllocationRow>[] = [
     { 
-      key: 'customerId', 
-      header: TABLE_COLUMNS.CUSTOMER, 
+      key: 'projectType', 
+      header: TABLE_COLUMNS.PROJECT_TYPE, 
+      sortKey: 'projectTypeSortKey', 
       editable: false, 
       inputType: 'text', 
-      render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS,
-      rowType: 'main' 
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        return OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '';
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    { 
+      key: 'projectName', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
+      sortKey: 'projectYomigana', 
+      editable: false, 
+      inputType: 'text',
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        return item.projectName;
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
     },
     { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
       editable: false, 
       inputType: 'text', 
-      rowType: 'sub',
-      sortable: false
+      sortable: false,
+      render: (item: any) => {
+        if (!item.isFirstInTask) return '';
+        return item.task;
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
     },
     {
       key: 'assigneeIds',
       header: TABLE_COLUMNS.ASSIGNEE,
       editable: true,
       inputType: 'text',
-      rowType: 'sub',
       sortable: false,
       style: { minWidth: '280px' },
       render: (item: any) => {
@@ -167,25 +230,23 @@ export function AssigneeAllocationPage() {
     },
   ];
 
-  const handleBatchSave = async (drafts: ProjectItem[], _deletedIds: string[]) => {
+  const handleBatchSave = async (drafts: AllocationRow[], _deletedIds: string[]) => {
     try {
       setLoading(true);
 
-      for (const p of drafts) {
-        for (const t of p.tasks) {
-          await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
-          if (t.assigneeIds && t.assigneeIds.length > 0) {
-            const assigneeInserts = t.assigneeIds.map(prefixedId => {
-              const [type, id] = prefixedId.split('_');
-              return {
-                task_id: t.id,
-                member_id: type === 'member' ? id : null,
-                staff_id: type === 'staff' ? id : null,
-                client_id: type === 'outsource' ? id : null,
-              };
-            });
-            await supabase.from('project_task_assignees').insert(assigneeInserts);
-          }
+      for (const t of drafts) {
+        await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
+        if (t.assigneeIds && t.assigneeIds.length > 0) {
+          const assigneeInserts = t.assigneeIds.map(prefixedId => {
+            const [type, id] = prefixedId.split('_');
+            return {
+              task_id: t.id,
+              member_id: type === 'member' ? id : null,
+              staff_id: type === 'staff' ? id : null,
+              client_id: type === 'outsource' ? id : null,
+            };
+          });
+          await supabase.from('project_task_assignees').insert(assigneeInserts);
         }
       }
 
@@ -208,9 +269,9 @@ export function AssigneeAllocationPage() {
       columns={columns}
       emptyMessage="案件データがありません"
       onBatchSave={handleBatchSave}
-      subItemsKey="tasks"
       disableAddButton={true}
       hideDeleteColumn={true}
+      highlightInputColumns={true}
     />
   );
 }

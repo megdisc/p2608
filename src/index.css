@@ -438,6 +438,7 @@ th.sticky-right {
   transition: background-color 0.2s;
   box-sizing: border-box;
   border: none;
+  white-space: nowrap;
 }
 
 .custom-checkbox {
@@ -675,6 +676,7 @@ input[type="number"] {
   outline: none;
   cursor: pointer;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .date-filter-pill:focus {

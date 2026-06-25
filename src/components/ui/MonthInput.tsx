@@ -51,7 +51,7 @@ export function MonthInput({ value, onChange, className = '', style }: MonthInpu
     <div 
       className={finalClass} 
       onClick={handleContainerClick}
-      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', paddingRight: '4px', ...style }}
+      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', paddingRight: '4px', whiteSpace: 'nowrap', ...style }}
     >
       <MonthDisplay value={value} />
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#cccccc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '12px' }}>

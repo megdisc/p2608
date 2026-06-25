@@ -755,14 +755,14 @@ export function DataTable<T extends { id: string }>({
                 value={startDate} 
                 onChange={(val) => setStartDate(val)} 
                 className="date-filter-pill"
-                style={{ width: '160px' }}
+                style={{ width: 'auto', minWidth: '160px' }}
               />
               <span>～</span>
               <DateInput 
                 value={endDate} 
                 onChange={(val) => setEndDate(val)} 
                 className="date-filter-pill"
-                style={{ width: '160px' }}
+                style={{ width: 'auto', minWidth: '160px' }}
               />
             </div>
           ) : showSingleDateFilter ? (
@@ -781,7 +781,7 @@ export function DataTable<T extends { id: string }>({
                 value={singleDate} 
                 onChange={(val) => setSingleDate(val)} 
                 className="date-filter-pill"
-                style={{ width: '160px' }}
+                style={{ width: 'auto', minWidth: '160px' }}
               />
               <Button 
                 style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -829,7 +829,7 @@ export function DataTable<T extends { id: string }>({
                   }
                 }}
                 className="date-filter-pill"
-                style={{ width: '160px' }}
+                style={{ width: 'auto', minWidth: '140px' }}
               />
               <Button 
                 style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}

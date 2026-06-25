@@ -1,6 +1,6 @@
-import { DataPage, MultiSelectDropdown, type Column } from '../components';
 import { useState, useEffect } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
+import { Button, Pagination, MultiSelectDropdown, SortIcon } from '../components';
+import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib';
 import type { MemberItem, ClientItem, StaffItem } from '../types';
 import { useAlert } from '../contexts';
@@ -14,7 +14,9 @@ type AllocationRow = {
   projectYomigana: string;
   task: string;
   taskYomigana: string;
-  assigneeIds: string[];
+  memberIds: string[];
+  staffIds: string[];
+  clientIds: string[];
   isFirstInProject?: boolean;
   isLastInProject?: boolean;
   isFirstInTask?: boolean;
@@ -22,11 +24,16 @@ type AllocationRow = {
 };
 
 export function AssigneeAllocationPage() {
-  const [items, setItems] = useState<AllocationRow[]>([]);
+  const [drafts, setDrafts] = useState<AllocationRow[]>([]);
+  const [originalDrafts, setOriginalDrafts] = useState<AllocationRow[]>([]);
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 50;
+  
   const { showAlert } = useAlert();
 
   const fetchAllData = async () => {
@@ -71,54 +78,15 @@ export function AssigneeAllocationPage() {
               projectYomigana: p.yomigana || '',
               task: pt.name,
               taskYomigana: pt.yomigana || '',
-              assigneeIds: assignees.flatMap((pta: any) => {
-                const res = [];
-                if (pta.member_id) res.push(`member_${pta.member_id}`);
-                if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
-                if (pta.client_id) res.push(`outsource_${pta.client_id}`);
-                return res;
-              })
+              memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
+              staffIds: assignees.filter((a: any) => a.staff_id).map((a: any) => a.staff_id),
+              clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
             });
           });
       });
 
-      formattedTasks.sort((a, b) => {
-        const keyA = a.projectTypeSortKey;
-        const keyB = b.projectTypeSortKey;
-        if (keyA !== keyB) {
-          return keyA.localeCompare(keyB);
-        }
-        const projA = a.projectYomigana;
-        const projB = b.projectYomigana;
-        if (projA !== projB) {
-          return projA.localeCompare(projB);
-        }
-        return a.taskYomigana.localeCompare(b.taskYomigana);
-      });
-
-      let prevProjectId = '';
-      let prevTaskId = '';
-
-      const finalTasks = formattedTasks.map((r, i) => {
-        const isFirstInProject = r.projectId !== prevProjectId;
-        const isFirstInTask = r.id !== prevTaskId;
-
-        let isLastInProject = true;
-        let isLastInTask = true;
-
-        if (i < formattedTasks.length - 1) {
-          const next = formattedTasks[i + 1];
-          if (next.projectId === r.projectId) isLastInProject = false;
-          if (next.id === r.id) isLastInTask = false;
-        }
-
-        prevProjectId = r.projectId;
-        prevTaskId = r.id;
-
-        return { ...r, isFirstInProject, isLastInProject, isFirstInTask, isLastInTask };
-      });
-
-      setItems(finalTasks);
+      setDrafts(formattedTasks);
+      setOriginalDrafts(JSON.parse(JSON.stringify(formattedTasks)));
     } catch (error) {
       console.error('Error fetching data:', error);
       showAlert('データ取得に失敗しました', 'error');
@@ -131,121 +99,19 @@ export function AssigneeAllocationPage() {
     fetchAllData();
   }, []);
 
-  const columns: Column<AllocationRow>[] = [
-    { 
-      key: 'projectType', 
-      header: TABLE_COLUMNS.PROJECT_TYPE, 
-      sortKey: 'projectTypeSortKey', 
-      editable: false, 
-      inputType: 'text', 
-      render: (item: any) => {
-        if (!item.isFirstInProject) return '';
-        return OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '';
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
-    { 
-      key: 'projectName', 
-      header: TABLE_COLUMNS.PROJECT_NAME, 
-      sortKey: 'projectYomigana', 
-      editable: false, 
-      inputType: 'text',
-      render: (item: any) => {
-        if (!item.isFirstInProject) return '';
-        return item.projectName;
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
-    { 
-      key: 'task', 
-      header: TABLE_COLUMNS.TASK, 
-      editable: false, 
-      inputType: 'text', 
-      sortable: false,
-      render: (item: any) => {
-        if (!item.isFirstInTask) return '';
-        return item.task;
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInTask ? undefined : 'none'
-      })
-    },
-    {
-      key: 'assigneeIds',
-      header: TABLE_COLUMNS.ASSIGNEE,
-      editable: true,
-      inputType: 'text',
-      sortable: false,
-      style: { minWidth: '280px' },
-      render: (item: any) => {
-        const ids = item.assigneeIds || [];
-        if (ids.length === 0) return '';
-        
-        const labels: string[] = ids.map((prefixedId: string) => {
-          const [type, id] = prefixedId.split('_');
-          if (type === 'member') {
-            const name = dbMembers.find(u => u.id === id)?.name;
-            return name ? `${name} (${WORDS_PERSON.ROLE_MEMBER})` : null;
-          } else if (type === 'staff') {
-            const name = dbStaffs.find(s => s.id === id)?.name;
-            return name ? `${name} (${WORDS_PERSON.ROLE_STAFF})` : null;
-          } else if (type === 'outsource') {
-            const name = dbClients.find(c => c.id === id)?.name;
-            return name ? `${name} (${WORDS_ORG_LOCATION.OUTSOURCE})` : null;
-          }
-          return null;
-        }).filter(Boolean) as string[];
-        
-        return (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            {labels.map((label: string, idx: number) => (
-              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: 'var(--text-caption)' }}>
-                {label}
-              </span>
-            ))}
-          </div>
-        );
-      },
-      customEditRender: (value: any, _item: any, onChange: (newValue: any) => void) => {
-        const currentIds = value || [];
-        const options = [
-          ...dbMembers.map(u => ({ value: `member_${u.id}`, label: `${u.name} (${WORDS_PERSON.ROLE_MEMBER})` })),
-          ...dbStaffs.map(s => ({ value: `staff_${s.id}`, label: `${s.name} (${WORDS_PERSON.ROLE_STAFF})` })),
-          ...dbClients.map(c => ({ value: `outsource_${c.id}`, label: `${c.name} (${WORDS_ORG_LOCATION.OUTSOURCE})` }))
-        ];
-        
-        return (
-          <MultiSelectDropdown 
-            options={options}
-            value={currentIds}
-            onChange={onChange}
-            placeholder="担当者を選択"
-          />
-        );
-      }
-    },
-  ];
-
-  const handleBatchSave = async (drafts: AllocationRow[], _deletedIds: string[]) => {
+  const handleBatchSave = async () => {
     try {
       setLoading(true);
 
       for (const t of drafts) {
         await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
-        if (t.assigneeIds && t.assigneeIds.length > 0) {
-          const assigneeInserts = t.assigneeIds.map(prefixedId => {
-            const [type, id] = prefixedId.split('_');
-            return {
-              task_id: t.id,
-              member_id: type === 'member' ? id : null,
-              staff_id: type === 'staff' ? id : null,
-              client_id: type === 'outsource' ? id : null,
-            };
-          });
+        
+        const assigneeInserts: any[] = [];
+        t.memberIds.forEach(id => assigneeInserts.push({ task_id: t.id, member_id: id }));
+        t.staffIds.forEach(id => assigneeInserts.push({ task_id: t.id, staff_id: id }));
+        t.clientIds.forEach(id => assigneeInserts.push({ task_id: t.id, client_id: id }));
+        
+        if (assigneeInserts.length > 0) {
           await supabase.from('project_task_assignees').insert(assigneeInserts);
         }
       }
@@ -260,18 +126,175 @@ export function AssigneeAllocationPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  const handleChange = (id: string, field: 'memberIds' | 'staffIds' | 'clientIds', newIds: string[]) => {
+    setDrafts(prev => prev.map(d => d.id === id ? { ...d, [field]: newIds } : d));
+  };
+
+  const isModified = JSON.stringify(drafts) !== JSON.stringify(originalDrafts);
+
+  const handleSort = (key: string) => {
+    setSortConfig(current => {
+      if (current && current.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
+
+  // Compute sorted drafts on the fly
+  const displayDrafts = [...drafts].sort((a, b) => {
+    if (sortConfig) {
+      let aVal = '';
+      let bVal = '';
+      if (sortConfig.key === 'projectType') {
+        aVal = a.projectTypeSortKey;
+        bVal = b.projectTypeSortKey;
+      } else if (sortConfig.key === 'name') {
+        aVal = a.projectYomigana;
+        bVal = b.projectYomigana;
+      }
+      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    
+    // Default fallback sorting
+    const keyA = a.projectTypeSortKey;
+    const keyB = b.projectTypeSortKey;
+    if (keyA !== keyB) return keyA.localeCompare(keyB);
+    const projA = a.projectYomigana;
+    const projB = b.projectYomigana;
+    if (projA !== projB) return projA.localeCompare(projB);
+    return a.taskYomigana.localeCompare(b.taskYomigana);
+  });
+
+  // Re-apply grouping flags dynamically
+  let prevProjectId = '';
+  let prevTaskId = '';
+  
+  const finalDrafts = displayDrafts.map((r, i) => {
+    const isFirstInProject = r.projectId !== prevProjectId;
+    const isFirstInTask = r.id !== prevTaskId;
+
+    let isLastInProject = true;
+    let isLastInTask = true;
+
+    if (i < displayDrafts.length - 1) {
+      const next = displayDrafts[i + 1];
+      if (next.projectId === r.projectId) isLastInProject = false;
+      if (next.id === r.id) isLastInTask = false;
+    }
+
+    prevProjectId = r.projectId;
+    prevTaskId = r.id;
+
+    return { ...r, isFirstInProject, isLastInProject, isFirstInTask, isLastInTask };
+  });
+
+  const totalPages = Math.ceil(finalDrafts.length / pageSize);
+  const paginatedDrafts = finalDrafts.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((r, i) => {
+    if (i === 0) {
+      return { ...r, isFirstInProject: true, isFirstInTask: true };
+    }
+    return r;
+  });
+
+  if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
-    <DataPage 
-      title={PAGE_NAMES.ASSIGNEE_ALLOCATION}
-      data={items}
-      columns={columns}
-      emptyMessage="案件データがありません"
-      onBatchSave={handleBatchSave}
-      disableAddButton={true}
-      hideDeleteColumn={true}
-      highlightInputColumns={true}
-    />
+    <>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+        <h2 style={{ margin: 0 }}>{PAGE_NAMES.ASSIGNEE_ALLOCATION}</h2>
+      </div>
+
+      <div className="table-container">
+        <table className="inventory-table">
+          <thead>
+            <tr>
+              <th rowSpan={2} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {TABLE_COLUMNS.PROJECT_TYPE}
+                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
+                </div>
+              </th>
+              <th rowSpan={2} style={{ width: '200px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {TABLE_COLUMNS.PROJECT_NAME}
+                  <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
+                </div>
+              </th>
+              <th rowSpan={2} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
+              <th colSpan={3} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
+            </tr>
+            <tr>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_MEMBER}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_STAFF}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_ORG_LOCATION.OUTSOURCE}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedDrafts.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="empty-message">案件データがありません</td>
+              </tr>
+            ) : (
+              paginatedDrafts.map((item) => (
+                <tr key={item.id}>
+                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
+                    {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
+                  </td>
+                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
+                    {item.isFirstInProject ? item.projectName : ''}
+                  </td>
+                  <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
+                    {item.isFirstInTask ? item.task : ''}
+                  </td>
+                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                    <MultiSelectDropdown 
+                      options={dbMembers.map(u => ({ value: u.id, label: u.name }))}
+                      value={item.memberIds}
+                      onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
+                      placeholder="選択"
+                    />
+                  </td>
+                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                    <MultiSelectDropdown 
+                      options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
+                      value={item.staffIds}
+                      onChange={(newVal) => handleChange(item.id, 'staffIds', newVal)}
+                      placeholder="選択"
+                    />
+                  </td>
+                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                    <MultiSelectDropdown 
+                      options={dbClients.map(c => ({ value: c.id, label: c.name }))}
+                      value={item.clientIds}
+                      onChange={(newVal) => handleChange(item.id, 'clientIds', newVal)}
+                      placeholder="選択"
+                    />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="action-bar">
+        <div className="filter-controls"></div>
+        <div className="action-buttons">
+          <Button variant="secondary" onClick={() => setDrafts(JSON.parse(JSON.stringify(originalDrafts)))} disabled={!isModified}>
+            {BUTTON_LABELS.CANCEL || '取消'}
+          </Button>
+          <Button variant="primary" onClick={handleBatchSave} disabled={!isModified}>
+            {BUTTON_LABELS.SAVE || '確定'}
+          </Button>
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+    </>
   );
 }

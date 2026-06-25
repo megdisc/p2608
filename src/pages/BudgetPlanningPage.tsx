@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination, Tooltip } from '../components/ui';
+import { Button, CurrencyInput, Pagination, Tooltip, SortIcon } from '../components/ui';
 import type { ProjectItem, BudgetCategory } from '../types';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib/supabase';
@@ -218,17 +218,13 @@ export function BudgetPlanningPage() {
               <th rowSpan={2} style={{ width: '80px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_TYPE}
-                  <span style={{ fontSize: 'var(--text-caption)', color: sortConfig?.key === 'projectType' ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
-                    {sortConfig?.key === 'projectType' && sortConfig.direction === 'desc' ? '▼' : '▲'}
-                  </span>
+                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
               <th rowSpan={2} style={{ width: '150px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_NAME}
-                  <span style={{ fontSize: 'var(--text-caption)', color: sortConfig?.key === 'name' ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
-                    {sortConfig?.key === 'name' && sortConfig.direction === 'desc' ? '▼' : '▲'}
-                  </span>
+                  <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
               <th colSpan={2} style={{ textAlign: 'left' }}>収益　A</th>

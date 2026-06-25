@@ -14,6 +14,7 @@ import { Pagination } from './Pagination';
 import { NumberInput } from './NumberInput';
 import { NumberDisplay } from './NumberDisplay';
 import { CurrencyInput } from './CurrencyInput';
+import { SortIcon } from './SortIcon';
 
 export type Column<T> = {
   key: string;
@@ -518,9 +519,7 @@ export function DataTable<T extends { id: string }>({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       {col.header}
                       {isSortable && (
-                        <span style={{ fontSize: 'var(--text-caption)', color: sortConfig.key === col.key ? 'inherit' : 'var(--color-border)', transition: 'color 0.2s' }}>
-                          {sortConfig.key === col.key && sortConfig.direction === 'desc' ? '▼' : '▲'}
-                        </span>
+                        <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
                       )}
                     </div>
                   </th>

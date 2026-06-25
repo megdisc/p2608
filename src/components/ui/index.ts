@@ -17,3 +17,4 @@ export * from './MultiSelectDropdown';
 export * from './RadioButton';
 export * from './Pagination';
 export * from './Tooltip';
+export * from './SortIcon';

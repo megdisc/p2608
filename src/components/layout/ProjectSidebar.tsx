@@ -49,6 +49,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.BUDGET_PLANNING}
           </button>
           <button 
+            className={`nav-button ${activeTab === 'assigneeAllocation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('assigneeAllocation')}
+          >
+            {PAGE_NAMES.ASSIGNEE_ALLOCATION}
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'dailyWorkRecord' ? 'active' : ''}`}
             onClick={() => setActiveTab('dailyWorkRecord')}
           >

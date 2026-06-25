@@ -20,7 +20,8 @@ import {
   ProgressRecordPage,
   ProjectSummaryPage,
   AssigneeSummaryPage,
-  BudgetPlanningPage
+  BudgetPlanningPage,
+  AssigneeAllocationPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -79,6 +80,8 @@ function AppContent() {
             <AssigneeSummaryPage />
           ) : activeTab === 'budgetPlanning' ? (
             <BudgetPlanningPage />
+          ) : activeTab === 'assigneeAllocation' ? (
+            <AssigneeAllocationPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

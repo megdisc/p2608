@@ -166,6 +166,6 @@ export type ProjectBudgetGridRow = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation';
 
 export type SystemType = 'inventory' | 'project';

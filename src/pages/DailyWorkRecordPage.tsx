@@ -210,8 +210,12 @@ export function DailyWorkRecordPage() {
 
       if (i < flatRows.length - 1) {
         const next = flatRows[i + 1];
-        if (next.userId === r.userId) isLastInUser = false;
-        if (next.projectId === r.projectId) isLastInProject = false;
+        if (next.userId === r.userId) {
+          isLastInUser = false;
+          if (next.projectId === r.projectId) {
+            isLastInProject = false;
+          }
+        }
       }
 
       prevUserId = r.userId;

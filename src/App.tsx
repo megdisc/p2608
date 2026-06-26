@@ -20,6 +20,7 @@ import {
   ProgressRecordPage,
   ProjectSummaryPage,
   AssigneeSummaryPage,
+  WageSummaryPage,
   BudgetPlanningPage,
   AssigneeAllocationPage
 } from './pages';
@@ -78,6 +79,8 @@ function AppContent() {
             <ProjectSummaryPage />
           ) : activeTab === 'assigneeSummary' ? (
             <AssigneeSummaryPage />
+          ) : activeTab === 'wageSummary' ? (
+            <WageSummaryPage />
           ) : activeTab === 'budgetPlanning' ? (
             <BudgetPlanningPage />
           ) : activeTab === 'assigneeAllocation' ? (

@@ -35,6 +35,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.ASSIGNEE_SUMMARY}
           </button>
+          <button 
+            className={`nav-button ${activeTab === 'wageSummary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('wageSummary')}
+          >
+            {PAGE_NAMES.WAGE_SUMMARY}
+          </button>
         </div>
 
         <div className="nav-section">

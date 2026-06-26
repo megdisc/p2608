@@ -17,3 +17,4 @@ export * from './ProjectSummaryPage';
 export * from './AssigneeSummaryPage';
 export * from './BudgetPlanningPage';
 export * from './AssigneeAllocationPage';
+export * from './WageSummaryPage';

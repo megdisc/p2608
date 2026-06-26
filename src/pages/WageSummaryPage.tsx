@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { MonthInput, Pagination, MultiRowHeader, type HeaderCell } from '../components/ui';
+import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
 import { PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
 import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
@@ -163,15 +163,15 @@ export function WageSummaryPage() {
       { label: '氏名', rowSpan: 2, width: '200px', sortKey: 'name' },
       { label: '工賃　A', colSpan: 3 },
       { label: '控除　B', colSpan: 3 },
-      { label: '支給額　A-B', rowSpan: 2, width: '150px', align: 'right' }
+      { label: '支給額　A-B', rowSpan: 2, width: '150px' }
     ],
     [
-      { label: '基本工賃', align: 'right', width: '120px' },
-      { label: 'インセンティブ', align: 'right', width: '120px' },
-      { label: '合計', align: 'right', width: '120px' },
-      { label: '項目A', align: 'right', width: '120px' },
-      { label: '項目B', align: 'right', width: '120px' },
-      { label: '合計', align: 'right', width: '120px' },
+      { label: '基本工賃', width: '120px' },
+      { label: 'インセンティブ', width: '120px' },
+      { label: '合計', width: '120px' },
+      { label: '項目A', width: '120px' },
+      { label: '項目B', width: '120px' },
+      { label: '合計', width: '120px' },
     ]
   ];
 
@@ -225,7 +225,48 @@ export function WageSummaryPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <MonthInput value={currentMonth} onChange={setCurrentMonth} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                const [y, m] = currentMonth.split('-');
+                const date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                date.setMonth(date.getMonth() - 1);
+                const newY = date.getFullYear();
+                const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                setCurrentMonth(`${newY}-${newM}`);
+              }}
+            >
+              ＜
+            </Button>
+            <MonthInput 
+              value={currentMonth}
+              onChange={setCurrentMonth}
+              className="date-filter-pill"
+              style={{ width: 'auto', minWidth: '140px' }}
+            />
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                const [y, m] = currentMonth.split('-');
+                const date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                date.setMonth(date.getMonth() + 1);
+                const newY = date.getFullYear();
+                const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                setCurrentMonth(`${newY}-${newM}`);
+              }}
+            >
+              ＞
+            </Button>
+            <Button 
+              variant="secondary"
+              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              onClick={() => setCurrentMonth(getCurrentJSTMonth())}
+              disabled={currentMonth === getCurrentJSTMonth()}
+            >
+              今月
+            </Button>
+          </div>
         </div>
         <Pagination
           currentPage={currentPage}

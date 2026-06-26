@@ -215,14 +215,14 @@ export function BudgetPlanningPage() {
       { label: '余剰　A-（B+C）', colSpan: 2 },
     ],
     [
-      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
-      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
-      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
-      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
-      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
-      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
-      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
-      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
+      { label: TABLE_COLUMNS.SUBJECT },
+      { label: TABLE_COLUMNS.AMOUNT },
+      { label: TABLE_COLUMNS.SUBJECT },
+      { label: TABLE_COLUMNS.AMOUNT },
+      { label: TABLE_COLUMNS.SUBJECT },
+      { label: TABLE_COLUMNS.AMOUNT },
+      { label: TABLE_COLUMNS.SUBJECT },
+      { label: TABLE_COLUMNS.AMOUNT },
     ]
   ];
 

@@ -22,8 +22,8 @@ export function MultiRowHeader({ rows, sortConfig, onSort }: MultiRowHeaderProps
         <tr key={rowIndex}>
           {row.map((cell, cellIndex) => {
             const isSortable = !!cell.sortKey;
-            // 1行目は左寄せ (Requirement: テーブルヘッダーが複数行ある場合でも、1行目は左寄せとせよ)
-            const defaultAlign = rowIndex === 0 ? 'left' : 'center';
+            // Requirement: テーブルヘッダーは、すべての項目を左寄せ表示せよ。
+            const defaultAlign = 'left';
             const textAlign = cell.align || defaultAlign;
 
             return (

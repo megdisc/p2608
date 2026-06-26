@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { MonthInput, Pagination } from '../components/ui';
+import { MonthInput, Pagination, MultiRowHeader, type HeaderCell } from '../components/ui';
 import { PAGE_NAMES, MESSAGES } from '../constants';
 import { supabase } from '../lib/supabase';
 import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
@@ -23,7 +23,17 @@ export function WageSummaryPage() {
   const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'name', direction: 'asc' });
   const { showAlert } = useAlert();
+
+  const handleSort = (key: string) => {
+    setSortConfig(current => {
+      if (current && current.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { key, direction: 'asc' };
+    });
+  };
 
   useEffect(() => {
     fetchData(currentMonth);
@@ -129,10 +139,41 @@ export function WageSummaryPage() {
     }
   };
 
-  const totalPages = Math.ceil(data.length / pageSize);
+  const sortedData = useMemo(() => {
+    if (!sortConfig) return data;
+    return [...data].sort((a: any, b: any) => {
+      const aVal = a[sortConfig.key];
+      const bVal = b[sortConfig.key];
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      }
+      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortConfig]);
+
+  const totalPages = Math.ceil(sortedData.length / pageSize);
   const paginatedRows = useMemo(() => {
-    return data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  }, [data, currentPage, pageSize]);
+    return sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  }, [sortedData, currentPage, pageSize]);
+
+  const headerRows: HeaderCell[][] = [
+    [
+      { label: '氏名', rowSpan: 2, width: '200px', sortKey: 'name' },
+      { label: '工賃　A', colSpan: 3 },
+      { label: '控除　B', colSpan: 3 },
+      { label: '支給額　A-B', rowSpan: 2, width: '150px', align: 'right' }
+    ],
+    [
+      { label: '基本工賃', align: 'right', width: '120px' },
+      { label: 'インセンティブ', align: 'right', width: '120px' },
+      { label: '合計', align: 'right', width: '120px' },
+      { label: '項目A', align: 'right', width: '120px' },
+      { label: '項目B', align: 'right', width: '120px' },
+      { label: '合計', align: 'right', width: '120px' },
+    ]
+  ];
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
@@ -144,22 +185,7 @@ export function WageSummaryPage() {
 
       <div className="table-container">
         <table className="inventory-table">
-          <thead>
-            <tr>
-              <th rowSpan={2} style={{ width: '200px' }}>氏名</th>
-              <th colSpan={3} style={{ textAlign: 'center' }}>工賃　A</th>
-              <th colSpan={3} style={{ textAlign: 'center' }}>控除　B</th>
-              <th rowSpan={2} style={{ width: '150px', textAlign: 'right' }}>支給額　A-B</th>
-            </tr>
-            <tr>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>基本工賃</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>インセンティブ</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>合計</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>項目A</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>項目B</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', textAlign: 'right', width: '120px' }}>合計</th>
-            </tr>
-          </thead>
+          <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           <tbody>
             {paginatedRows.length === 0 ? (
               <tr>

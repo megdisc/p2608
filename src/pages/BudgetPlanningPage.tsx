@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination, Tooltip, SortIcon } from '../components/ui';
+import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, type HeaderCell } from '../components/ui';
 import type { ProjectItem, BudgetCategory } from '../types';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 import { supabase } from '../lib/supabase';
@@ -205,6 +205,27 @@ export function BudgetPlanningPage() {
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
+  const headerRows: HeaderCell[][] = [
+    [
+      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
+      { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'name' },
+      { label: '収益　A', colSpan: 2 },
+      { label: '費用　B', colSpan: 2 },
+      { label: '積立金　C', colSpan: 2 },
+      { label: '余剰　A-（B+C）', colSpan: 2 },
+    ],
+    [
+      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
+      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
+      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
+      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
+      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
+      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
+      { label: TABLE_COLUMNS.SUBJECT, align: 'left' },
+      { label: TABLE_COLUMNS.AMOUNT, align: 'right' },
+    ]
+  ];
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
@@ -213,36 +234,7 @@ export function BudgetPlanningPage() {
 
       <div className="table-container">
         <table className="inventory-table">
-          <thead>
-            <tr>
-              <th rowSpan={2} style={{ width: '80px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {TABLE_COLUMNS.PROJECT_TYPE}
-                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
-                </div>
-              </th>
-              <th rowSpan={2} style={{ width: '150px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {TABLE_COLUMNS.PROJECT_NAME}
-                  <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
-                </div>
-              </th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>収益　A</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>費用　B</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>積立金　C</th>
-              <th colSpan={2} style={{ textAlign: 'left' }}>余剰　A-（B+C）</th>
-            </tr>
-            <tr>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.SUBJECT}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px' }}>{TABLE_COLUMNS.AMOUNT}</th>
-            </tr>
-          </thead>
+          <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           {paginatedDrafts.length === 0 ? (
             <tbody>
               <tr>

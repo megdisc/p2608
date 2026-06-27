@@ -1,47 +1,19 @@
 import { DataPage, type Column } from '../components';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { supabase } from '../lib';
-import { getCurrentISOString, formatJST } from '../utils';
-
-type PivotInventoryItem = {
-  id: string;
-  category: string;
-  name: string;
-  totalQuantity: number;
-  [locationName: string]: string | number;
-};
+import { formatJST } from '../utils';
+import { useInventory, type PivotInventoryItem } from '../hooks';
 
 export function InventoryPage() {
-  const [inventories, setInventories] = useState<any[]>([]);
-  const [locations, setLocations] = useState<{name: string}[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [targetDate] = useState(() => getCurrentISOString());
+  const { inventories, locations, loading, targetDate, fetchInventory } = useInventory();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [
-          { data: invData },
-          { data: locData }
-        ] = await Promise.all([
-          supabase.rpc('get_inventory_summary', { p_target_date: targetDate }),
-          supabase.from('locations').select('name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
-        ]);
-
-        if (invData) setInventories(invData);
-        if (locData) setLocations(locData);
-      } catch (error) {
-        console.error('Error fetching inventory:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [targetDate]);
+    fetchInventory().catch((error) => {
+      console.error('Error fetching inventory:', error);
+    });
+  }, [fetchInventory]);
 
   const { pivotItems, columns } = useMemo(() => {
-    // Collect all location names for dynamic columns
     const locationNames = locations.map((loc) => loc.name);
     
     const grouped = new Map<string, PivotInventoryItem>();
@@ -68,7 +40,6 @@ export function InventoryPage() {
       const group = grouped.get(itemName)!;
       group.totalQuantity += qty;
       
-      // If the location matches, add to its specific count
       if (typeof group[locationName] === 'number') {
         (group[locationName] as number) += qty;
       }

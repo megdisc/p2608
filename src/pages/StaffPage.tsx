@@ -1,33 +1,19 @@
 import { DataPage, type Column } from '../components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { StaffItem } from '../types';
-import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
+import { useStaffs } from '../hooks';
 
 export function StaffPage() {
-  const [items, setItems] = useState<StaffItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading, fetchStaffs, batchSaveStaffs } = useStaffs();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data, error } = await supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-        if (error) throw error;
-        if (data) setItems(data);
-      } catch (error) {
-        console.error('Error fetching staffs:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-
-
-
+    fetchStaffs().catch(() => {
+      showAlert('データ取得に失敗しました', 'error');
+    });
+  }, [fetchStaffs, showAlert]);
 
   const columns: Column<StaffItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
@@ -39,60 +25,10 @@ export function StaffPage() {
 
   const handleBatchSave = async (drafts: StaffItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-
-      // Handle deletes
-      if (deletedIds.length > 0) {
-        const { error } = await supabase.from('staffs').update({ is_deleted: true }).in('id', deletedIds);
-        if (error) throw error;
-      }
-
-      // Handle upserts
-      for (const item of drafts) {
-        if (!deletedIds.includes(item.id)) {
-          const cleanName = item.name.replace(/[\s　]+/g, '');
-          if (item.id.startsWith('STF-')) {
-            // New user: call RPC
-            const { error } = await supabase.rpc('create_staff_user', {
-              email: item.email || '',
-              password: item.password || '',
-              name: cleanName,
-              yomigana: item.yomigana || '',
-              role: item.role
-            });
-            if (error) throw error;
-          } else {
-            // Existing user: update staffs table
-            const { error: staffError } = await supabase.from('staffs').update({
-              name: cleanName,
-              yomigana: item.yomigana || '',
-              email: item.email,
-              role: item.role
-            }).eq('id', item.id);
-            if (staffError) throw staffError;
-
-            // If password is provided, update password via RPC
-            if (item.password) {
-              const { error: passError } = await supabase.rpc('update_staff_password', {
-                user_id: item.id,
-                new_password: item.password
-              });
-              if (passError) throw passError;
-            }
-          }
-        }
-      }
-
-      // Reload
-      const { data, error: reloadError } = await supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-      if (reloadError) throw reloadError;
-      if (data) setItems(data);
+      await batchSaveStaffs(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      console.error(err);
       showAlert(MESSAGES.SAVE_ERROR, 'error');
-    } finally {
-      setLoading(false);
     }
   };
 

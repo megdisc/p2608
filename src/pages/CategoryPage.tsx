@@ -1,29 +1,19 @@
 import { DataPage, type Column } from '../components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { CategoryItem } from '../types';
-import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { useCategories } from '../hooks';
 
 export function CategoryPage() {
-  const [items, setItems] = useState<CategoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading, fetchCategories, batchSaveCategories } = useCategories();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data, error } = await supabase.from('categories').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-        if (error) throw error;
-        if (data) setItems(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+    fetchCategories().catch(() => {
+      showAlert('データ取得に失敗しました', 'error');
+    });
+  }, [fetchCategories, showAlert]);
 
   const columns: Column<CategoryItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.CATEGORY_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
@@ -33,44 +23,10 @@ export function CategoryPage() {
 
   const handleBatchSave = async (drafts: CategoryItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-      if (deletedIds.length > 0) {
-        const { error } = await supabase.from('categories').update({ is_deleted: true }).in('id', deletedIds);
-        if (error) throw error;
-      }
-
-      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('CAT-'));
-      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('CAT-'));
-
-      for (const item of existingItems) {
-        const { error } = await supabase.from('categories').update({
-          name: item.name,
-          yomigana: item.yomigana || '',
-          description: item.description
-        }).eq('id', item.id);
-        if (error) throw error;
-      }
-
-      if (newItems.length > 0) {
-        const inserts = newItems.map(item => ({
-          code: `CAT-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
-          name: item.name,
-          yomigana: item.yomigana || '',
-          description: item.description
-        }));
-        const { error } = await supabase.from('categories').insert(inserts);
-        if (error) throw error;
-      }
-
-      const { data, error: reloadError } = await supabase.from('categories').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-      if (reloadError) throw reloadError;
-      if (data) setItems(data);
+      await batchSaveCategories(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      console.error(err);
       showAlert(MESSAGES.SAVE_ERROR, 'error');
-    } finally {
-      setLoading(false);
     }
   };
 

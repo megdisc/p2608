@@ -1,44 +1,19 @@
 import { DataPage, type Column } from '../components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { SkillItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { supabase } from '../lib';
+import { useSkills } from '../hooks';
 
 export function SkillPage() {
-  const [items, setItems] = useState<SkillItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading, fetchSkills, batchSaveSkills } = useSkills();
   const { showAlert } = useAlert();
 
-  const fetchSkills = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('skills')
-        .select('*')
-        .eq('is_deleted', false)
-        .order('yomigana', { ascending: true });
-      
-      if (error) throw error;
-      
-      const formatted = (data || []).map(d => ({
-        id: d.id,
-        name: d.name,
-        yomigana: d.yomigana || '',
-        description: d.description || ''
-      }));
-      setItems(formatted);
-    } catch (error) {
-      console.error(error);
-      showAlert('データ取得に失敗しました', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchSkills();
-  }, []);
+    fetchSkills().catch(() => {
+      showAlert('データ取得に失敗しました', 'error');
+    });
+  }, [fetchSkills, showAlert]);
 
   const columns: Column<SkillItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.SKILL_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
@@ -48,32 +23,10 @@ export function SkillPage() {
 
   const handleBatchSave = async (drafts: SkillItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-      
-      if (deletedIds.length > 0) {
-        await supabase.from('skills').update({ is_deleted: true }).in('id', deletedIds);
-      }
-
-      const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
-        id: item.id.startsWith('SKL-') ? undefined : item.id,
-        name: item.name,
-        yomigana: item.yomigana,
-        description: item.description
-      }));
-
-      if (upserts.length > 0) {
-        const { error } = await supabase.from('skills').upsert(upserts);
-        if (error) throw error;
-      }
-
+      await batchSaveSkills(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
-      await fetchSkills();
     } catch (err) {
-      console.error(err);
       showAlert(MESSAGES.SAVE_ERROR, 'error');
-    } finally {
-      setLoading(false);
     }
   };
 

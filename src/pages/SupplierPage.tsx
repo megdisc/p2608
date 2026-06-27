@@ -1,38 +1,19 @@
 import { DataPage, type Column } from '../components';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import type { SupplierItem } from '../types';
-import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { useSuppliers } from '../hooks';
 
 export function SupplierPage() {
-  const [items, setItems] = useState<SupplierItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, loading, fetchSuppliers, batchSaveSuppliers } = useSuppliers();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const { data, error } = await supabase.from('suppliers').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-        if (error) throw error;
-        if (data) {
-          const mapped = data.map((d: any) => ({
-            id: d.id,
-            name: d.name,
-            yomigana: d.yomigana,
-            contactPerson: d.contact_person,
-            phone: d.phone
-          }));
-          setItems(mapped);
-        }
-      } catch (error) {
-        console.error('Error fetching suppliers:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+    fetchSuppliers().catch(() => {
+      showAlert('データ取得に失敗しました', 'error');
+    });
+  }, [fetchSuppliers, showAlert]);
 
   const columns: Column<SupplierItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.SUPPLIER_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
@@ -43,55 +24,10 @@ export function SupplierPage() {
 
   const handleBatchSave = async (drafts: SupplierItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-      if (deletedIds.length > 0) {
-        const { error } = await supabase.from('suppliers').update({ is_deleted: true }).in('id', deletedIds);
-        if (error) throw error;
-      }
-
-      const newItems = drafts.filter(item => !deletedIds.includes(item.id) && item.id.startsWith('SUP-'));
-      const existingItems = drafts.filter(item => !deletedIds.includes(item.id) && !item.id.startsWith('SUP-'));
-
-      for (const item of existingItems) {
-        const { error } = await supabase.from('suppliers').update({
-          name: item.name,
-          yomigana: item.yomigana || '',
-          contact_person: item.contactPerson.replace(/[\s　]+/g, ''),
-          phone: String(item.phone).replace(/-/g, '')
-        }).eq('id', item.id);
-        if (error) throw error;
-      }
-
-      if (newItems.length > 0) {
-        const inserts = newItems.map(item => ({
-          code: `SUP-${Date.now().toString(36)}-${Math.floor(Math.random() * 1000)}`,
-          name: item.name,
-          yomigana: item.yomigana || '',
-          contact_person: item.contactPerson.replace(/[\s　]+/g, ''),
-          phone: String(item.phone).replace(/-/g, '')
-        }));
-        const { error } = await supabase.from('suppliers').insert(inserts);
-        if (error) throw error;
-      }
-
-      const { data, error: reloadError } = await supabase.from('suppliers').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-      if (reloadError) throw reloadError;
-      if (data) {
-        const mapped = data.map((d: any) => ({
-          id: d.id,
-          name: d.name,
-          yomigana: d.yomigana,
-          contactPerson: d.contact_person,
-          phone: d.phone
-        }));
-        setItems(mapped);
-      }
+      await batchSaveSuppliers(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      console.error(err);
       showAlert(MESSAGES.SAVE_ERROR, 'error');
-    } finally {
-      setLoading(false);
     }
   };
 

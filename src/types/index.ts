@@ -116,6 +116,12 @@ export type SkillItem = {
   description: string;
 };
 
+export type BaseWageItem = {
+  id: string;
+  wage: number;
+  description: string;
+};
+
 export type ClientItem = {
   id: string;
   name: string;
@@ -166,6 +172,6 @@ export type ProjectBudgetGridRow = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'baseWage' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
 
 export type SystemType = 'inventory' | 'project';

@@ -18,3 +18,4 @@ export * from './AssigneeSummaryPage';
 export * from './BudgetPlanningPage';
 export * from './AssigneeAllocationPage';
 export * from './WageSummaryPage';
+export * from './BaseWagePage';

@@ -39,7 +39,7 @@ export type ProgressFlatRecord = {
   isFirstInTask?: boolean;
   isLastInProject?: boolean;
   isLastInTask?: boolean;
-  isCompleted?: boolean;
+  isCanceled?: boolean;
   deductionAmount?: number;
 };
 
@@ -69,7 +69,7 @@ export function useProgressRecords() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted, is_completed,
+            id, name, yomigana, is_deleted, is_canceled,
             project_task_assignees ( member_id, staff_id, client_id )
           )
         `).eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -108,7 +108,7 @@ export function useProgressRecords() {
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
                 return res;
               }),
-            isCompleted: pt.is_completed || false,
+            isCanceled: pt.is_canceled || false,
             laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.subject?.includes('労務費・外注加工費'))?.amount || 0
           }))
       }));
@@ -243,7 +243,7 @@ export function useProgressRecords() {
             contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
             deductionAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
             isSaved: !!savedMemberRecord,
-            isCompleted: t.isCompleted
+            isCanceled: t.isCanceled
           });
         }
 
@@ -264,7 +264,7 @@ export function useProgressRecords() {
              contributionRatio: 0,
              deductionAmount: 0,
              isSaved: !!taskRecord,
-             isCompleted: t.isCompleted
+             isCanceled: t.isCanceled
            });
         }
       }
@@ -337,10 +337,10 @@ export function useProgressRecords() {
             task_id: r.taskId,
             current_progress: r.currentProgress || 0
           });
-          if (r.isCompleted !== undefined) {
+          if (r.isCanceled !== undefined) {
             projectTaskUpdates.push({
               id: r.taskId,
-              is_completed: r.isCompleted
+              is_canceled: r.isCanceled
             });
           }
         }
@@ -381,7 +381,7 @@ export function useProgressRecords() {
       if (projectTaskUpdates.length > 0) {
         const uniqueProjectTasks = Array.from(new Map(projectTaskUpdates.map(t => [t.id, t])).values());
         for (const t of uniqueProjectTasks) {
-          promises.push(supabase.from('project_tasks').update({ is_completed: t.is_completed }).eq('id', t.id));
+          promises.push(supabase.from('project_tasks').update({ is_canceled: t.is_canceled }).eq('id', t.id));
         }
       }
 

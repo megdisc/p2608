@@ -107,20 +107,20 @@ export function ProgressRecordPage() {
       header: TABLE_COLUMNS.CURRENT_MONTH_PROGRESS, 
       sortable: false,
       editable: (item: any) => item.isFirstInTask,
-      inputType: 'number',
+      inputType: 'radio',
+      options: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => ({ label: String(v), value: String(v) })),
       render: (item: any) => item.isFirstInTask ? item.currentProgress : '',
       style: (item: any) => ({
-        width: '120px',
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
     },
     {
-      key: 'isCompleted',
-      header: TABLE_COLUMNS.IS_COMPLETED,
+      key: 'isCanceled',
+      header: TABLE_COLUMNS.IS_CANCELED,
       sortable: false,
       editable: (item: any) => item.isFirstInTask,
       inputType: 'checkbox',
-      render: (item: any) => item.isFirstInTask ? (item.isCompleted ? '✓' : '') : '',
+      render: (item: any) => item.isFirstInTask ? (item.isCanceled ? '✓' : '') : '',
       style: (item: any) => ({
         width: '80px',
         textAlign: 'center',

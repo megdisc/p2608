@@ -21,7 +21,7 @@ export type Column<T> = {
   header: string;
   sortKey?: string;
   sortable?: boolean;
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T, draftData: T[]) => React.ReactNode;
   mainRender?: (item: T, addSubRow?: () => void) => React.ReactNode;
   rowType?: 'main' | 'sub' | 'sub-sub';
   className?: string;
@@ -476,7 +476,7 @@ export function DataTable<T extends { id: string }>({
     }
     
     // Default render for non-editable state
-    if (col.render) return col.render(item);
+    if (col.render) return col.render(item, draftData);
     
     if (col.inputType === 'date' && item[col.key]) {
       return <DateInput value={item[col.key]} onChange={() => {}} />;

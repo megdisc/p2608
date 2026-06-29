@@ -97,6 +97,7 @@ export type ProjectTask = {
   requiredSkills: TaskSkill[];
   assigneeIds?: string[];
   isCompleted?: boolean;
+  laborBudget?: number;
 };
 
 export type ProjectItem = {

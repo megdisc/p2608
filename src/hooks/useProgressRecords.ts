@@ -40,6 +40,7 @@ export type ProgressFlatRecord = {
   isLastInProject?: boolean;
   isLastInTask?: boolean;
   isCompleted?: boolean;
+  deductionAmount?: number;
 };
 
 export function useProgressRecords() {
@@ -60,10 +61,11 @@ export function useProgressRecords() {
   const fetchMasters = useCallback(async () => {
     try {
       setLoading(true);
-      const [membersRes, staffsRes, clientsRes, projectsRes] = await Promise.all([
+      const [membersRes, staffsRes, clientsRes, budgetsRes, projectsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
           id, name, yomigana, project_type, start_date, end_date,
           project_tasks (
@@ -76,11 +78,14 @@ export function useProgressRecords() {
       if (membersRes.error) throw membersRes.error;
       if (staffsRes.error) throw staffsRes.error;
       if (clientsRes.error) throw clientsRes.error;
+      if (budgetsRes.error) throw budgetsRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
       setDbMembers(membersRes.data || []);
       setDbStaffs(staffsRes.data || []);
       setDbClients(clientsRes.data || []);
+      
+      const budgetItems = budgetsRes.data || [];
       
       const formattedProjects = (projectsRes.data || []).map((p: any) => ({
         id: p.id,
@@ -103,7 +108,8 @@ export function useProgressRecords() {
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
                 return res;
               }),
-            isCompleted: pt.is_completed || false
+            isCompleted: pt.is_completed || false,
+            laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.subject?.includes('労務費・外注加工費'))?.amount || 0
           }))
       }));
       setDbProjects(formattedProjects as ProjectItem[]);
@@ -235,6 +241,7 @@ export function useProgressRecords() {
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
             contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
+            deductionAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
             isSaved: !!savedMemberRecord,
             isCompleted: t.isCompleted
           });
@@ -255,6 +262,7 @@ export function useProgressRecords() {
              userYomigana: '',
              workTime: '-',
              contributionRatio: 0,
+             deductionAmount: 0,
              isSaved: !!taskRecord,
              isCompleted: t.isCompleted
            });
@@ -346,7 +354,8 @@ export function useProgressRecords() {
             staff_id: type === 'staff' ? id : null,
             client_id: type === 'outsource' ? id : null,
             task_id: r.taskId,
-            contribution_ratio: Number(r.contributionRatio) || 0
+            contribution_ratio: Number(r.contributionRatio) || 0,
+            deduction_amount: Number(r.deductionAmount) || 0
           });
         }
       }

@@ -7,7 +7,7 @@ export interface RadioButtonProps extends React.InputHTMLAttributes<HTMLInputEle
 export const RadioButton = React.forwardRef<HTMLInputElement, RadioButtonProps>(
   ({ label, className = '', ...props }, ref) => {
     return (
-      <label className={`inline-flex items-center gap-2 cursor-pointer ${className}`}>
+      <label className={`radio-wrapper ${className}`}>
         <input
           type="radio"
           ref={ref}

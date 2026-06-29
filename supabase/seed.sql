@@ -12,6 +12,10 @@ INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca
 INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上結衣', 'いのうえゆい', 'staff-002@example.com', '職員');
 INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田拓海', 'うえだたくみ', 'staff-003@example.com', '職員');
 
+-- Base Wages
+INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000001', 100, '新人レベル');
+INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000002', 250, '中堅レベル');
+INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000003', 500, 'ベテランレベル');
 -- Categories
 INSERT INTO categories (id, code, name, yomigana, description) VALUES ('fca14a0d-8f82-4203-a761-e712fd6bbf95', 'CAT-001', '粉類', 'こなるい', '強力粉、薄力粉、ライ麦粉など');
 INSERT INTO categories (id, code, name, yomigana, description) VALUES ('3e32eddf-b3d1-495a-9f0e-00e6ed06e7bb', 'CAT-002', '酵母・膨張剤', 'こうぼ・ぼうちょうざい', 'イースト、ベーキングパウダーなど');
@@ -90,10 +94,10 @@ INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference,
 INSERT INTO stocktakings (id, date, item_id, system_qty, actual_qty, difference, staff_id, location_id) VALUES ('4be7e9b5-d0b9-45d5-8d53-878c16455fc4', '2026-05-31 19:00', 'ea8e1145-9aa7-422d-bd46-bfb76f2024e7', 17, 38, 21, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'b5ee50db-97a6-4a16-ba0d-982cef68a39d');
 
 -- Members
-INSERT INTO members (id, name, yomigana, role, email) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com');
-INSERT INTO members (id, name, yomigana, role, email) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com');
-INSERT INTO members (id, name, yomigana, role, email) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com');
-INSERT INTO members (id, name, yomigana, role, email) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com');
+INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com', 'a1b2c3d4-0000-0000-0000-000000000001');
+INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com', 'a1b2c3d4-0000-0000-0000-000000000003');
 
 -- Clients
 INSERT INTO clients (id, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
@@ -231,7 +235,3 @@ INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES 
 INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費・外注加工費', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
 
--- Base Wages
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000001', 100, '新人レベル');
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000002', 250, '中堅レベル');
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000003', 500, 'ベテランレベル');

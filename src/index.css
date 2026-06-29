@@ -490,7 +490,7 @@ th.sticky-right {
 }
 
 .custom-radio:checked {
-  border-color: var(--color-bg-checked);
+  border-color: var(--palette-gray-700);
 }
 
 .custom-radio:checked::after {
@@ -499,7 +499,14 @@ th.sticky-right {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: var(--color-bg-checked);
+  background-color: var(--palette-gray-700);
+}
+
+.radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .inline-input:hover {

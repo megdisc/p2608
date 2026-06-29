@@ -78,6 +78,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.PROGRESS_RECORD}
           </button>
+          <button 
+            className={`nav-button ${activeTab === 'rewardAllocation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('rewardAllocation')}
+          >
+            {PAGE_NAMES.REWARD_ALLOCATION}
+          </button>
         </div>
 
         <div className="nav-section">

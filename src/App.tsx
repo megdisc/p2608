@@ -18,6 +18,7 @@ import {
   ClientPage,
   DailyWorkRecordPage,
   ProgressRecordPage,
+  RewardAllocationPage,
   ProjectSummaryPage,
   AssigneeSummaryPage,
   WageSummaryPage,
@@ -77,6 +78,8 @@ function AppContent() {
             <ProjectPage />
           ) : activeTab === 'staff' ? (
             <StaffPage />
+          ) : activeTab === 'rewardAllocation' ? (
+            <RewardAllocationPage />
           ) : activeTab === 'projectSummary' ? (
             <ProjectSummaryPage />
           ) : activeTab === 'assigneeSummary' ? (

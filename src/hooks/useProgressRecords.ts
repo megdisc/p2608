@@ -23,14 +23,18 @@ export type MonthlyContributionRecord = {
 export type ProgressFlatRecord = {
   id: string;
   projectId: string;
+  projectName: string;
   projectYomigana: string;
   projectType: string;
   projectTypeSortKey: string;
   yearMonth: string;
   taskId: string;
+  taskName: string;
   prevProgress: number | string;
   currentProgress: number;
   userId: string;
+  userName: string;
+  assigneeType: string;
   userYomigana: string;
   workTime: number | string;
   contributionRatio: number;
@@ -215,6 +219,22 @@ export function useProgressRecords() {
           return '';
         };
 
+        const getUserName = (userId: string) => {
+          const [type, id] = userId.split('_');
+          if (type === 'member') return dbMembers.find(m => m.id === id)?.name || '';
+          if (type === 'staff') return dbStaffs.find(s => s.id === id)?.name || '';
+          if (type === 'outsource') return dbClients.find(c => c.id === id)?.name || '';
+          return '';
+        };
+
+        const getAssigneeType = (userId: string) => {
+          const [type] = userId.split('_');
+          if (type === 'member') return '利用者';
+          if (type === 'staff') return '職員';
+          if (type === 'outsource') return '外注先';
+          return '';
+        };
+
         for (const prefixedId of membersToProcess) {
           hasAssignees = true;
           const [type, id] = prefixedId.split('_');
@@ -228,14 +248,18 @@ export function useProgressRecords() {
           flatRows.push({
             id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
             projectId: project.id,
+            projectName: project.name,
             projectYomigana: project.yomigana || '',
             projectType: project.projectType || 'one-off',
             projectTypeSortKey: (project.projectType || 'one-off') === 'ongoing' ? '0' : '1',
             yearMonth: currentMonth,
             taskId: t.id,
+            taskName: t.task,
             prevProgress: taskPrevProgress,
             currentProgress: taskCurrentProgress,
             userId: prefixedId,
+            userName: getUserName(prefixedId),
+            assigneeType: getAssigneeType(prefixedId),
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
             contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
@@ -249,14 +273,18 @@ export function useProgressRecords() {
            flatRows.push({
              id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
              projectId: project.id,
+             projectName: project.name,
              projectYomigana: project.yomigana || '',
              projectType: project.projectType || 'one-off',
              projectTypeSortKey: (project.projectType || 'one-off') === 'ongoing' ? '0' : '1',
              yearMonth: currentMonth,
              taskId: t.id,
+             taskName: t.task,
              prevProgress: taskPrevProgress,
              currentProgress: taskCurrentProgress,
              userId: '',
+             userName: '',
+             assigneeType: '',
              userYomigana: '',
              workTime: '-',
              contributionRatio: 0,

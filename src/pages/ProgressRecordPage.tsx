@@ -1,19 +1,16 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, WORDS_PROJECT } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
 
 export function ProgressRecordPage() {
   const { 
-    dbMembers, 
-    dbStaffs, 
-    dbClients, 
+    displayData,
     dbProjects, 
     loading, 
     currentMonth, 
     setCurrentMonth, 
-    displayData, 
     fetchMasters, 
     fetchRecords, 
     batchSaveProgressRecords 
@@ -110,14 +107,27 @@ export function ProgressRecordPage() {
         const taskOptions = dbProjects.flatMap(p => p.tasks).map(t => ({ label: t.task, value: t.id }));
         return [{ label: '選択してください', value: '' }, ...taskOptions];
       },
-      render: (item: any) => {
-        if (!item.isFirstInTask) return '';
-        const task = dbProjects.flatMap(p => p.tasks).find(t => t.id === item.taskId);
-        return task?.task || '';
-      },
+      render: (item: any) => item.isFirstInTask ? item.taskName : '',
       style: (item: any) => ({
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
+    },
+    {
+      key: 'estimatedReward',
+      header: '報酬見込額',
+      sortable: false,
+      editable: false,
+      style: (item: any) => ({
+        textAlign: 'right',
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      }),
+      render: (item: any) => {
+        if (!item.isFirstInTask) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        const task = project?.tasks.find(t => t.id === item.taskId);
+        const budget = task?.laborBudget || 0;
+        return `¥${budget.toLocaleString()}`;
+      }
     },
     { 
       key: 'prevProgress', 
@@ -162,36 +172,15 @@ export function ProgressRecordPage() {
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
       sortable: false,
       editable: false, 
-      render: (item: any) => {
-        if (!item.userId) return '';
-        const [type] = item.userId.split('_');
-        if (type === 'member') return WORDS_PERSON.ROLE_MEMBER;
-        if (type === 'staff') return WORDS_PERSON.ROLE_STAFF;
-        if (type === 'outsource') return WORDS_ORG_LOCATION.OUTSOURCE;
-        return '';
-      }
+      render: (item: any) => item.assigneeType
     },
     { 
-      key: 'userId', 
+      key: 'userName', 
       header: TABLE_COLUMNS.ASSIGNEE, 
       sortKey: 'userYomigana',
       sortable: false,
       editable: false, 
-      inputType: 'select',
-      options: [
-        { label: '選択してください', value: '' },
-        ...dbMembers.map(u => ({ label: u.name, value: `member_${u.id}` })),
-        ...dbStaffs.map(s => ({ label: s.name, value: `staff_${s.id}` })),
-        ...dbClients.map(c => ({ label: c.name, value: `outsource_${c.id}` }))
-      ],
-      render: (item: any) => {
-        if (!item.userId) return '';
-        const [type, id] = item.userId.split('_');
-        if (type === 'member') return dbMembers.find(u => u.id === id)?.name || '';
-        if (type === 'staff') return dbStaffs.find(s => s.id === id)?.name || '';
-        if (type === 'outsource') return dbClients.find(c => c.id === id)?.name || '';
-        return '';
-      }
+      render: (item: any) => item.userName
     },
     { 
       key: 'workTime', 
@@ -199,74 +188,7 @@ export function ProgressRecordPage() {
       sortable: false,
       editable: false,
       style: { width: '120px', textAlign: 'right' }
-    },
-    { 
-      key: 'contributionRatio', 
-      header: TABLE_COLUMNS.CONTRIBUTION_RATIO, 
-      sortable: false,
-      editable: true,
-      inputType: 'number',
-      style: { width: '120px' }
-    },
-    { 
-      key: 'rewardAllocationAmount',
-      header: TABLE_COLUMNS.REWARD_ALLOCATION_AMOUNT,
-      sortable: false,
-      editable: false,
-      style: { width: '120px', textAlign: 'right' },
-      render: (item: any, drafts: any[]) => {
-        if (!item.userId) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        const task = project?.tasks.find(t => t.id === item.taskId);
-        const budget = task?.laborBudget || 0;
-        
-        if (budget === 0) return '¥0';
-
-        const taskRows = drafts.filter(r => r.taskId === item.taskId && r.userId);
-        const totalRatio = taskRows.reduce((sum, r) => sum + (Number(r.contributionRatio) || 0), 0);
-        
-        if (totalRatio === 0) return '¥0';
-
-        const ratio = Number(item.contributionRatio) || 0;
-        const amount = Math.floor(budget * (ratio / totalRatio));
-        return `¥${amount.toLocaleString()}`;
-      }
-    },
-    {
-      key: 'deductionAmount',
-      header: TABLE_COLUMNS.DEDUCTION_AMOUNT,
-      sortable: false,
-      editable: true,
-      inputType: 'currency',
-      style: { width: '120px' }
-    },
-    {
-      key: 'rewardUnitPrice',
-      header: TABLE_COLUMNS.REWARD_UNIT_PRICE,
-      sortable: false,
-      editable: false,
-      style: { width: '120px', textAlign: 'right' },
-      render: (item: any, drafts: any[]) => {
-        if (!item.userId) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        const task = project?.tasks.find(t => t.id === item.taskId);
-        const budget = task?.laborBudget || 0;
-
-        let allocationAmount = 0;
-        if (budget > 0) {
-          const taskRows = drafts.filter(r => r.taskId === item.taskId && r.userId);
-          const totalRatio = taskRows.reduce((sum, r) => sum + (Number(r.contributionRatio) || 0), 0);
-          if (totalRatio > 0) {
-            const ratio = Number(item.contributionRatio) || 0;
-            allocationAmount = Math.floor(budget * (ratio / totalRatio));
-          }
-        }
-
-        const deduction = Number(item.deductionAmount) || 0;
-        const unitPrice = allocationAmount - deduction;
-        return `¥${unitPrice.toLocaleString()}`;
-      }
-    },
+    }
   ];
 
   const handleBatchSave = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {

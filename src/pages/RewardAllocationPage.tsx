@@ -1,5 +1,5 @@
 import { DataPage, type Column } from '../components';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
@@ -21,6 +21,40 @@ export function RewardAllocationPage() {
   useEffect(() => {
     fetchMasters().then(() => fetchRecords(currentMonth)).catch(console.error);
   }, [currentMonth, fetchRecords, fetchMasters]);
+
+  const filteredRecords = useMemo(() => {
+    const projectGroups = new Map<string, ProgressFlatRecord[]>();
+    for (const r of records) {
+      if (!projectGroups.has(r.projectId)) {
+        projectGroups.set(r.projectId, []);
+      }
+      projectGroups.get(r.projectId)!.push(r);
+    }
+
+    const completedProjectIds = new Set<string>();
+
+    for (const [projectId, projectRecords] of projectGroups.entries()) {
+      const taskMap = new Map<string, ProgressFlatRecord>();
+      for (const r of projectRecords) {
+        if (!taskMap.has(r.taskId)) {
+          taskMap.set(r.taskId, r);
+        }
+      }
+
+      const activeTasks = Array.from(taskMap.values()).filter(t => !t.isCanceled);
+
+      if (activeTasks.length > 0) {
+        const allCurrent100 = activeTasks.every(t => Number(t.currentProgress) === 100);
+        const atLeastOnePrevNot100 = activeTasks.some(t => Number(t.prevProgress) < 100);
+
+        if (allCurrent100 && atLeastOnePrevNot100) {
+          completedProjectIds.add(projectId);
+        }
+      }
+    }
+
+    return records.filter(r => completedProjectIds.has(r.projectId));
+  }, [records]);
 
   const columns: Column<ProgressFlatRecord>[] = [
     { 
@@ -161,7 +195,7 @@ export function RewardAllocationPage() {
     <DataPage
       title={PAGE_NAMES.REWARD_ALLOCATION}
       columns={columns}
-      data={records}
+      data={filteredRecords}
       onBatchSave={handleBatchSave}
       emptyMessage={MESSAGES.EMPTY_PROGRESS_RECORD}
       showMonthFilter={true}

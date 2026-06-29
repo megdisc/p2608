@@ -41,7 +41,7 @@ export function useWageSummary() {
         workRes
       ] = await Promise.all([
         supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('projects').select('id, project_type, project_tasks(id, name, is_deleted)').eq('is_deleted', false),
+        supabase.from('projects').select('id, project_type, project_tasks(id, name, is_deleted, is_canceled)').eq('is_deleted', false),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
@@ -65,7 +65,15 @@ export function useWageSummary() {
       const cMems = cMemRes.data || [];
 
       const rows: WageRow[] = members.map((member: any) => {
-        let incentive = 0;
+        const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
+        const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
+        
+        let basicWage = null;
+        if (member.base_wages && typeof member.base_wages.wage === 'number') {
+          basicWage = Math.floor(member.base_wages.wage * totalWorkTime);
+        }
+
+        let sumRewardUnitPrice = 0;
         const memberContribs = cMems.filter((r: any) => r.member_id === member.id);
 
         for (const contrib of memberContribs) {
@@ -74,33 +82,41 @@ export function useWageSummary() {
           const project = projects.find((p: any) => (p.project_tasks || []).some((t: any) => t.id === contrib.task_id));
           if (!project) continue;
 
-          const taskBudgets = budgets.filter((b: any) => b.task_id === contrib.task_id);
-          const budgetAmount = taskBudgets.reduce((sum: number, b: any) => sum + (Number(b.amount) || 0), 0);
-
-          const cTask = cTasks.find((r: any) => r.task_id === contrib.task_id);
-          const pTask = pTasks.find((r: any) => r.task_id === contrib.task_id);
-
-          let prevProg = pTask ? Number(pTask.current_progress) : 0;
-          if (project.project_type === 'ongoing') {
-            prevProg = 0;
-          }
-          const currProg = cTask ? Number(cTask.current_progress) : prevProg;
+          // Check if project is "Completed"
+          const projectTasks = project.project_tasks || [];
+          const activeTasks = projectTasks.filter((t: any) => !t.is_deleted && !t.is_canceled);
           
-          const diff = currProg - prevProg;
-          if (diff > 0) {
-            incentive += budgetAmount * (diff / 100) * (Number(contrib.contribution_ratio) / 100);
+          if (activeTasks.length === 0) continue;
+          
+          const allCompleted = activeTasks.every((t: any) => {
+            const cTask = cTasks.find((r: any) => r.task_id === t.id);
+            const prog = cTask ? Number(cTask.current_progress) : 0;
+            return prog === 100;
+          });
+
+          if (!allCompleted) continue;
+
+          // Calculate 報酬単価 (Reward Unit Price) for this task
+          const taskBudgets = budgets.filter((b: any) => b.task_id === contrib.task_id);
+          const taskLaborBudget = taskBudgets.reduce((sum: number, b: any) => sum + (Number(b.amount) || 0), 0);
+
+          const allTaskContribs = cMems.filter((r: any) => r.task_id === contrib.task_id);
+          const totalRatio = allTaskContribs.reduce((sum: number, r: any) => sum + (Number(r.contribution_ratio) || 0), 0);
+          
+          let alloc = 0;
+          if (totalRatio > 0) {
+            const ratio = Number(contrib.contribution_ratio) || 0;
+            alloc = Math.floor(taskLaborBudget * (ratio / totalRatio));
           }
+
+          const ded = Number(contrib.deduction_amount) || 0;
+          const unitPrice = alloc - ded;
+
+          sumRewardUnitPrice += unitPrice;
         }
 
-        const safeIncentive = Math.floor(incentive);
-        
-        const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
-        const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
-        
-        let basicWage = null;
-        if (member.base_wages && typeof member.base_wages.wage === 'number') {
-          basicWage = Math.floor(member.base_wages.wage * totalWorkTime);
-        }
+        const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
+        const safeIncentive = Math.floor(Math.max(0, calculatedIncentive));
 
         const dedA = null;
         const dedB = null;

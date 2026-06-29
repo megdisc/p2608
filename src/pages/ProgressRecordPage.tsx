@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
 
@@ -68,6 +68,35 @@ export function ProgressRecordPage() {
         return project.name;
       },
       style: (item: any) => ({
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    {
+      key: 'projectStatus',
+      header: TABLE_COLUMNS.PROJECT_STATUS,
+      sortable: false,
+      editable: false,
+      render: (item: any, drafts: any[]) => {
+        if (!item.isFirstInProject) return '';
+        
+        const projectTasks = drafts.filter(d => d.projectId === item.projectId && d.isFirstInTask);
+        if (projectTasks.length === 0) return WORDS_PROJECT.STATUS_NOT_STARTED;
+
+        const allCanceled = projectTasks.every(t => t.isCanceled);
+        if (allCanceled) return WORDS_PROJECT.STATUS_CANCELED;
+
+        const activeTasks = projectTasks.filter(t => !t.isCanceled);
+        const allCompleted = activeTasks.every(t => Number(t.currentProgress) === 100);
+        if (allCompleted) return WORDS_PROJECT.STATUS_COMPLETED;
+
+        const allNotStarted = activeTasks.every(t => Number(t.currentProgress) === 0 || !t.currentProgress);
+        if (allNotStarted) return WORDS_PROJECT.STATUS_NOT_STARTED;
+
+        return WORDS_PROJECT.STATUS_IN_PROGRESS;
+      },
+      style: (item: any) => ({
+        width: '100px',
+        textAlign: 'center',
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },

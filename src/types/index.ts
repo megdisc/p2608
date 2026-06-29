@@ -69,6 +69,7 @@ export interface MemberItem {
   role: string;
   email?: string;
   password?: string;
+  baseWageId?: string;
 };
 
 export type StocktakingItem = {
@@ -172,6 +173,6 @@ export type ProjectBudgetGridRow = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'baseWage' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
+  | 'project' | 'projectUser' | 'client' | 'skill' | 'baseWage' | 'baseWageAssignment' | 'dailyWorkRecord' | 'progressRecord' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
 
 export type SystemType = 'inventory' | 'project';

@@ -23,7 +23,8 @@ import {
   WageSummaryPage,
   BudgetPlanningPage,
   AssigneeAllocationPage,
-  BaseWagePage
+  BaseWagePage,
+  BaseWageAssignmentPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -88,6 +89,8 @@ function AppContent() {
             <AssigneeAllocationPage />
           ) : activeTab === 'baseWage' ? (
             <BaseWagePage />
+          ) : activeTab === 'baseWageAssignment' ? (
+            <BaseWageAssignmentPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

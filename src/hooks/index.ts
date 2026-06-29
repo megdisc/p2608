@@ -17,3 +17,4 @@ export * from './useStocktakings';
 export * from './useTransactions';
 export * from './useWageSummary';
 export * from './useBaseWages';
+export * from './useBaseWageAssignments';

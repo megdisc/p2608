@@ -400,7 +400,7 @@ export function DataTable<T extends { id: string }>({
                 label={opt.label}
                 name={`${item.id}-${col.key}`}
                 value={opt.value}
-                checked={value === opt.value}
+                checked={String(value) === String(opt.value)}
                 onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
               />
             ))}

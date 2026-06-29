@@ -156,7 +156,7 @@ INSERT INTO project_task_skills (task_id, skill_id) VALUES ('b6ed11d0-6084-48d5-
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', '社内基幹システム移行', 'しゃないきかんしすてむいこう', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-11-30');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'データ移行計画', 'でーたいこうけいかく');
+INSERT INTO project_tasks (id, project_id, name, yomigana, is_canceled)  VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'データ移行計画', 'でーたいこうけいかく', true);
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
@@ -188,7 +188,7 @@ INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 100);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 80);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70);
+INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 100);
 
 -- Additional Member Contributions
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);

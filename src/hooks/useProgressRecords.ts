@@ -199,13 +199,11 @@ export function useProgressRecords() {
         const taskRecord = projectTaskRecords.find(r => r.task_id === t.id);
         const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
         
-        let taskPrevProgress: number = prevTaskRecord ? Number(prevTaskRecord.current_progress) : 0;
+        let taskPrevProgressRaw = prevTaskRecord ? Number(prevTaskRecord.current_progress) : 0;
+        let taskPrevProgress = Math.min(100, Math.max(0, Math.round(taskPrevProgressRaw / 10) * 10));
         
-        if (project.projectType === 'ongoing') {
-          taskPrevProgress = 0;
-        }
-
-        const taskCurrentProgress = taskRecord ? Number(taskRecord.current_progress) : taskPrevProgress;
+        let taskCurrentProgressRaw = taskRecord ? Number(taskRecord.current_progress) : taskPrevProgressRaw;
+        let taskCurrentProgress = Math.min(100, Math.max(0, Math.round(taskCurrentProgressRaw / 10) * 10));
         
         let hasAssignees = false;
 

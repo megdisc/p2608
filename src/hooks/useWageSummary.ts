@@ -27,20 +27,26 @@ export function useWageSummary() {
       setLoading(true);
       const prevMonthStr = getPreviousMonth(monthStr);
 
+      const nextMonthDate = new Date(monthStr + '-01');
+      nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+      const nextMonthStr = `${nextMonthDate.getFullYear()}-${(nextMonthDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
       const [
         membersRes,
         projectsRes,
         budgetsRes,
         cTaskRes,
         pTaskRes,
-        cMemRes
+        cMemRes,
+        workRes
       ] = await Promise.all([
-        supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, project_type, project_tasks(id, name, is_deleted)').eq('is_deleted', false),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
-        supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr)
+        supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
+        supabase.from('daily_work_records').select('member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -49,6 +55,7 @@ export function useWageSummary() {
       if (cTaskRes.error) throw cTaskRes.error;
       if (pTaskRes.error) throw pTaskRes.error;
       if (cMemRes.error) throw cMemRes.error;
+      if (workRes.error) throw workRes.error;
 
       const members = membersRes.data || [];
       const projects = projectsRes.data || [];
@@ -86,11 +93,19 @@ export function useWageSummary() {
         }
 
         const safeIncentive = Math.floor(incentive);
-        const basicWage = null;
+        
+        const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
+        const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
+        
+        let basicWage = null;
+        if (member.base_wages && typeof member.base_wages.wage === 'number') {
+          basicWage = Math.floor(member.base_wages.wage * totalWorkTime);
+        }
+
         const dedA = null;
         const dedB = null;
 
-        const wageTotal = safeIncentive;
+        const wageTotal = (basicWage || 0) + safeIncentive;
         const dedTotal = 0;
         const payment = wageTotal - dedTotal;
 

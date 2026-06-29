@@ -7,7 +7,7 @@ export const WORDS_SYSTEM = {
   SYSTEM_ID: 'p2608',
   SYSTEM_NAME: '統合管理システム',
   SYSTEM_NAME_INVENTORY: '在庫管理システム',
-  SYSTEM_NAME_PROJECT: '案件管理システム',
+  SYSTEM_NAME_PROJECT: '工賃管理システム',
 
   // モジュール名
   AGGREGATION: '集計系',
@@ -83,7 +83,7 @@ export const WORDS_CONTACT_AUTH = {
   PASSWORD_PLACEHOLDER: '••••••••',
   PHONE: '電話番号',
   LOGIN_INVENTORY: '在庫管理システムへログイン',
-  LOGIN_PROJECT: '案件管理システムへログイン',
+  LOGIN_PROJECT: '工賃管理システムへログイン',
   LOGOUT: 'ログアウト',
 };
 

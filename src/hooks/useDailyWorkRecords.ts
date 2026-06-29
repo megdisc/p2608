@@ -155,6 +155,29 @@ export function useDailyWorkRecords() {
         }
       }
 
+      const OTHER_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
+      const OTHER_TASK_ID = '00000000-0000-0000-0000-000000000002';
+      
+      if (!taskMap.has(OTHER_TASK_ID)) {
+        taskMap.set(OTHER_TASK_ID, {
+          id: `UNSAVED-${currentDate}-${member.id}-${OTHER_TASK_ID}`,
+          userId: member.id,
+          userName: member.name,
+          userYomigana: member.yomigana || '',
+          date: currentDate,
+          projectId: OTHER_PROJECT_ID,
+          projectYomigana: 'んんん',
+          projectType: 'その他',
+          taskId: OTHER_TASK_ID,
+          workTime: 0,
+          isSaved: false
+        });
+      } else {
+        const otherTask = taskMap.get(OTHER_TASK_ID)!;
+        otherTask.projectType = 'その他';
+        otherTask.projectYomigana = 'んんん';
+      }
+
       flatRows.push(...Array.from(taskMap.values()));
     }
 
@@ -163,9 +186,10 @@ export function useDailyWorkRecords() {
       const mB = dbMembers.find(m => m.id === b.userId)?.yomigana || '';
       if (mA !== mB) return mA.localeCompare(mB);
 
-      const pTypeA = a.projectType === 'ongoing' ? '0' : '1';
-      const pTypeB = b.projectType === 'ongoing' ? '0' : '1';
-      if (pTypeA !== pTypeB) return pTypeA.localeCompare(pTypeB);
+      const getPTypeOrder = (p: string) => p === 'ongoing' ? 0 : p === 'その他' ? 2 : 1;
+      const pOrderA = getPTypeOrder(a.projectType);
+      const pOrderB = getPTypeOrder(b.projectType);
+      if (pOrderA !== pOrderB) return pOrderA - pOrderB;
 
       const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
       const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';

@@ -104,7 +104,7 @@ export type ProjectItem = {
   id: string;
   name: string;
   yomigana: string;
-  projectType: 'one-off' | 'ongoing';
+  projectType: 'one-off' | 'ongoing' | 'その他';
   projectTypeSortKey?: string;
   customerId?: string;
   startDate: string;

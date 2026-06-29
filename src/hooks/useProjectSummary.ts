@@ -42,7 +42,7 @@ export function useProjectSummary() {
               id, member_id, client_id, staff_id
             )
           )
-        `).eq('is_deleted', false).order('yomigana', { ascending: true }),
+        `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001').order('yomigana', { ascending: true }),
         supabase.from('members').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),

@@ -20,7 +20,7 @@ export function useProjects() {
             id, name, yomigana, is_deleted,
             project_task_skills ( skill_id, skills(name) )
           )
-        `).eq('is_deleted', false)
+        `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
       ]);
 
       if (clientsRes.error) throw clientsRes.error;

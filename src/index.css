@@ -81,7 +81,7 @@
   --color-bg-inverse: var(--palette-gray-900);
   --color-bg-inverse-hover: var(--palette-gray-700);
   --color-bg-input-highlight: var(--palette-yellow-300);
-  --color-bg-checked: var(--palette-gray-500);
+  --color-bg-checked: var(--palette-gray-700);
 
   /* --- テキスト --- */
   --color-text-main: var(--palette-gray-700);

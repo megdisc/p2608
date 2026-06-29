@@ -452,11 +452,11 @@ export function DataTable<T extends { id: string }>({
         return (
           <input
             type="checkbox"
+            className="custom-checkbox"
             checked={Boolean(value)}
             onChange={(e) => {
               handleCellChange(item.id, col.key, e.target.checked, col, isSubItem, parentId, isSubSubItem, subParentId);
             }}
-            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
           />
         );
       }

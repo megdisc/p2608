@@ -102,8 +102,8 @@ export const WORDS_ORG_LOCATION = {
 export const WORDS_TIME = {
   START_DATE: '開始日',
   END_DATE: '終了日',
-  WORK_TIME: '作業時間',
-  CURRENT_MONTH_WORK_TIME: '今月作業時間',
+  WORK_TIME: '作業時間 (h)',
+  CURRENT_MONTH_WORK_TIME: '今月作業時間 (h)',
 };
 
 // 在庫・品目に関する定数群

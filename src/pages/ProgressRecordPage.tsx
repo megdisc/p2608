@@ -114,6 +114,20 @@ export function ProgressRecordPage() {
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
     },
+    {
+      key: 'isCompleted',
+      header: TABLE_COLUMNS.IS_COMPLETED,
+      sortable: false,
+      editable: (item: any) => item.isFirstInTask,
+      inputType: 'checkbox',
+      render: (item: any) => item.isFirstInTask ? (item.isCompleted ? '✓' : '') : '',
+      style: (item: any) => ({
+        width: '80px',
+        textAlign: 'center',
+        backgroundColor: 'var(--palette-yellow-100)',
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
+    },
     { 
       key: 'assigneeType', 
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 

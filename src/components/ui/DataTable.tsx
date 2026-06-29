@@ -27,7 +27,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties | ((item: T) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
-  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password';
+  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password' | 'checkbox';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
   customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;
@@ -444,6 +444,19 @@ export function DataTable<T extends { id: string }>({
             onChange={(newVal) => {
               handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId);
             }}
+          />
+        );
+      }
+
+      if (col.inputType === 'checkbox') {
+        return (
+          <input
+            type="checkbox"
+            checked={Boolean(value)}
+            onChange={(e) => {
+              handleCellChange(item.id, col.key, e.target.checked, col, isSubItem, parentId, isSubSubItem, subParentId);
+            }}
+            style={{ width: '16px', height: '16px', cursor: 'pointer' }}
           />
         );
       }

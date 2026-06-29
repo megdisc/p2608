@@ -39,6 +39,7 @@ export type ProgressFlatRecord = {
   isFirstInTask?: boolean;
   isLastInProject?: boolean;
   isLastInTask?: boolean;
+  isCompleted?: boolean;
 };
 
 export function useProgressRecords() {
@@ -66,7 +67,7 @@ export function useProgressRecords() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted,
+            id, name, yomigana, is_deleted, is_completed,
             project_task_assignees ( member_id, staff_id, client_id )
           )
         `).eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -101,7 +102,8 @@ export function useProgressRecords() {
                 if (pta.staff_id) res.push(`staff_${pta.staff_id}`);
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
                 return res;
-              })
+              }),
+            isCompleted: pt.is_completed || false
           }))
       }));
       setDbProjects(formattedProjects as ProjectItem[]);
@@ -233,7 +235,8 @@ export function useProgressRecords() {
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
             contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
-            isSaved: !!savedMemberRecord
+            isSaved: !!savedMemberRecord,
+            isCompleted: t.isCompleted
           });
         }
 
@@ -252,7 +255,8 @@ export function useProgressRecords() {
              userYomigana: '',
              workTime: '-',
              contributionRatio: 0,
-             isSaved: !!taskRecord
+             isSaved: !!taskRecord,
+             isCompleted: t.isCompleted
            });
         }
       }
@@ -314,6 +318,7 @@ export function useProgressRecords() {
       const taskDeletes: string[] = [];
       const memberUpserts: any[] = [];
       const memberDeletes: string[] = [];
+      const projectTaskUpdates: any[] = [];
 
       for (const r of drafts) {
         if (deletedIds.includes(r.id)) continue;
@@ -324,6 +329,12 @@ export function useProgressRecords() {
             task_id: r.taskId,
             current_progress: r.currentProgress || 0
           });
+          if (r.isCompleted !== undefined) {
+            projectTaskUpdates.push({
+              id: r.taskId,
+              is_completed: r.isCompleted
+            });
+          }
         }
 
         if (r.userId && r.taskId) {
@@ -358,12 +369,20 @@ export function useProgressRecords() {
         promises.push(supabase.from('monthly_member_contributions').upsert(memberUpserts));
       }
 
+      if (projectTaskUpdates.length > 0) {
+        const uniqueProjectTasks = Array.from(new Map(projectTaskUpdates.map(t => [t.id, t])).values());
+        for (const t of uniqueProjectTasks) {
+          promises.push(supabase.from('project_tasks').update({ is_completed: t.is_completed }).eq('id', t.id));
+        }
+      }
+
       const results = await Promise.all(promises);
       for (const res of results) {
         if (res.error) throw res.error;
       }
 
       await fetchRecords(currentMonth);
+      await fetchMasters();
     } catch (err) {
       console.error(err);
       throw err;

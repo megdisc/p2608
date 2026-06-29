@@ -96,6 +96,7 @@ export type ProjectTask = {
   taskYomigana?: string;
   requiredSkills: TaskSkill[];
   assigneeIds?: string[];
+  isCompleted?: boolean;
 };
 
 export type ProjectItem = {

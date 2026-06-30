@@ -61,7 +61,6 @@ export function useWageSummary() {
       const projects = projectsRes.data || [];
       const budgets = budgetsRes.data || [];
       const cTasks = cTaskRes.data || [];
-      const pTasks = pTaskRes.data || [];
       const cMems = cMemRes.data || [];
 
       const rows: WageRow[] = members.map((member: any) => {

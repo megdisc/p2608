@@ -96,6 +96,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.REWARD_ALLOCATION}
           </button>
+          <button 
+            className={`nav-button ${activeTab === 'financialRecord' ? 'active' : ''}`}
+            onClick={() => setActiveTab('financialRecord')}
+          >
+            {PAGE_NAMES.FINANCIAL_RECORD}
+          </button>
         </div>
 
         <div className="nav-section">

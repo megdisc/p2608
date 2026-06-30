@@ -61,7 +61,7 @@ export function useBudgetPlanning() {
         }));
         expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
 
-        const expenses = expSubjects.map(es => {
+        const expenses = expSubjects.map((es: any) => {
           let dbItem;
           if (es.taskId) {
             dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId);

@@ -13,6 +13,7 @@ export * from './SkillPage';
 export * from './ClientPage';
 export * from './DailyWorkRecordPage';
 export * from './ProgressRecordPage';
+export * from './FinancialRecordPage';
 export * from './ProjectSummaryPage';
 export * from './AssigneeSummaryPage';
 export * from './BudgetPlanningPage';

@@ -18,6 +18,7 @@ export type MonthlyContributionRecord = {
   client_id?: string;
   task_id: string;
   contribution_ratio: number;
+  deduction_amount?: number;
 };
 
 export type ProgressFlatRecord = {

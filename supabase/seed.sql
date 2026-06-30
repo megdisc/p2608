@@ -348,3 +348,8 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: PL/SQL (3.上級)
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Python (1.初級)
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: セキュリティ監査 (2.中級)
+
+-- Financial Records
+INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, recorded_by, is_limited) VALUES
+('2026-06-30', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 500000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-06-30', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', 120000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false);

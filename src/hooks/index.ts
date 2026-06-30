@@ -12,6 +12,7 @@ export * from './useBudgetPlanning';
 export * from './useDailyWorkRecords';
 export * from './useInventory';
 export * from './useProgressRecords';
+export * from './useFinancialRecords';
 export * from './useProjectSummary';
 export * from './useStocktakings';
 export * from './useTransactions';

@@ -141,6 +141,18 @@ export type DailyWorkRecordItem = {
   workTime: number;
 };
 
+export type FinancialRecordItem = {
+  id: string;
+  period: string;
+  projectId: string;
+  type: 'revenue' | 'expense';
+  subject: string;
+  amount: number;
+  recordedDate: string;
+  recordedBy: string;
+  isLimited: boolean;
+};
+
 export type BudgetCategory = 'revenue' | 'expense' | 'reserve';
 
 export type ProjectBudgetItem = {
@@ -195,6 +207,6 @@ export type SkillEvaluationGridRow = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
+  | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'wageSummary';
 
 export type SystemType = 'inventory' | 'project';

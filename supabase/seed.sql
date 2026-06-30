@@ -121,9 +121,9 @@ INSERT INTO skills (id, name, yomigana, description) VALUES ('128b9cc4-7e82-4f3b
 INSERT INTO skills (id, name, yomigana, description) VALUES ('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '接客・販売', 'せっきゃく・はんばい', '店舗での接客、販売業務全般');
 
 -- Skill Levels
-INSERT INTO skill_levels (id, name, description) VALUES ('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '初級', '基本的な作業はできるが、サポートが必要');
-INSERT INTO skill_levels (id, name, description) VALUES ('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '中級', '日常的な作業を自立して行える');
-INSERT INTO skill_levels (id, name, description) VALUES ('9b139db0-a352-4f38-89c0-9dff60a4f66a', '上級', '他者のサポートやトラブルシューティングができる');
+INSERT INTO skill_levels (id, name, description) VALUES ('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '1.初級', '基本的な作業はできるが、サポートが必要');
+INSERT INTO skill_levels (id, name, description) VALUES ('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '2.中級', '日常的な作業を自立して行える');
+INSERT INTO skill_levels (id, name, description) VALUES ('9b139db0-a352-4f38-89c0-9dff60a4f66a', '3.上級', '他者のサポートやトラブルシューティングができる');
 
 
 -- Projects

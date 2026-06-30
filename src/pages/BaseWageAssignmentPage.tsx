@@ -45,7 +45,6 @@ export function BaseWageAssignmentPage() {
       emptyMessage={MESSAGES.EMPTY_BASE_WAGE_ASSIGNMENT}
       onBatchSave={handleBatchSave}
       hideDeleteColumn={true}
-      highlightInputColumns={true}
     />
   );
 }

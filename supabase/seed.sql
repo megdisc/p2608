@@ -125,171 +125,57 @@ INSERT INTO skill_levels (id, name, description) VALUES ('e24bd35c-7833-41c3-ab5
 INSERT INTO skill_levels (id, name, description) VALUES ('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '2.中級', '日常的な作業を自立して行える');
 INSERT INTO skill_levels (id, name, description) VALUES ('9b139db0-a352-4f38-89c0-9dff60a4f66a', '3.上級', '他者のサポートやトラブルシューティングができる');
 
-
--- Projects
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'ほんしゃおふぃすねっとわーくこうちく', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-12-31');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'ようけんていぎ');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '基本・詳細設計', 'きほん・しょうさいせっけい');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
-INSERT INTO project_task_assignees (task_id, client_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '構築・テスト', 'こうちく・てすと');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', '817f8df7-05bc-4610-8a37-9609ff4ae89d');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'ししゃさーばーりぷれいす', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '2026-04-01', '2026-08-20');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'さーばーこうちく');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '8172c05b-207d-4ca4-82e5-c8e51328accc');
-INSERT INTO project_task_assignees (task_id, client_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '0ff5f11e-b752-4b06-aaab-86984a67eec7');
-
--- Additional Projects with Staff and Members
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', '新規Webサービス開発支援', 'しんきうぇぶさーびすかいはつしえん', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2025-10-01', '2026-09-30');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'UI/UXデザイン', 'ゆーあいゆーえっくすでざいん');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', '676fa8f0-b4d8-4035-ae3f-de391ece3a63');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', '38eb7141-55bd-43d0-a6a5-7d028233eb17');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'de2d336b-254d-4af7-8e49-5acbda340e67');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
-INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'フロントエンド実装', 'ふろんとえんどじっそう');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '676fa8f0-b4d8-4035-ae3f-de391ece3a63');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '38eb7141-55bd-43d0-a6a5-7d028233eb17');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2');
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', '社内基幹システム移行', 'しゃないきかんしすてむいこう', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-11-30');
-INSERT INTO project_tasks (id, project_id, name, yomigana, is_canceled)  VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'データ移行計画', 'でーたいこうけいかく', true);
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
-
--- Additional Daily Work Records
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
-
--- Additional Task Progress
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 10);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 20);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 15);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', '8daa6b8b-ddb2-462a-9594-1738f004832f', 30);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 40);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 50);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 100);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 80);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 100);
-
--- Additional Member Contributions
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 1000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 500);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 40);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 60);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70, 2000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 30, 0);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 1000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 500);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 50);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 50);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70, 2000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 30, 0);
-
--- Continuous Project (Internal Business)
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'ぱんのはんばい・かふぇうんえい', NULL, '2026-06-01', NULL, 'ongoing');
-INSERT INTO project_tasks (id, project_id, name, yomigana) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務', 'せいぞうぎょうむ');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
-
-INSERT INTO project_tasks (id, project_id, name, yomigana) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'はんばい・せっきゃくぎょうむ');
-INSERT INTO project_task_skills (task_id, skill_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'de2d336b-254d-4af7-8e49-5acbda340e67');
-INSERT INTO project_task_assignees (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
-
--- One-off Project (Internal Business)
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', '社内業務マニュアル作成', 'しゃないぎょうむまにゅあるさくせい', NULL, '2026-07-01', '2026-08-31', 'one-off');
-INSERT INTO project_tasks (id, project_id, name, yomigana) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'b2f5d91c-1234-4567-89ab-cdef01234567', 'マニュアル作成', 'まにゅあるさくせい');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '5ff5e55e-186f-43ce-84d2-aa751d8341b5');
-
--- Continuous Project (With Client)
-INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', '基幹システム保守運用', 'きかんしすてむほしゅうんよう', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-05-01', NULL, 'ongoing');
-INSERT INTO project_tasks (id, project_id, name, yomigana) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', 'c1234567-89ab-cdef-0123-456789abcdef', '保守運用業務', 'ほしゅうんようぎょうむ');
-INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
-
--- Project Budgets
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 3300000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
-
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 350000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費・外注加工費', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
-
--- 新規サービスLP制作
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '売上', 1000000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
-
--- 社内基幹システム移行
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '売上', 1200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'expense', '労務費・外注加工費', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1200000);
-
--- パンの販売・カフェ運営
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '売上', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費・外注加工費', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費・外注加工費', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
-
--- 社内業務マニュアル作成
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'revenue', '売上', 100000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費・外注加工費', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
-
--- 基幹システム保守運用
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '売上', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費・外注加工費', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
-
--- Add daily work records for 2026-06-29
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1) ON CONFLICT DO NOTHING;
-
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 4) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 1) ON CONFLICT DO NOTHING;
-
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 5) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '00000000-0000-0000-0000-000000000002', 2) ON CONFLICT DO NOTHING;
-
--- Add daily work records for 2026-06-30
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1.5) ON CONFLICT DO NOTHING;
-
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 0.5) ON CONFLICT DO NOTHING;
-
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2) ON CONFLICT DO NOTHING;
+-- Member Skill Evaluations
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: ネットワーク設計 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '817f8df7-05bc-4610-8a37-9609ff4ae89d', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: Cisco (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: Linux (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Windows Server (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: React (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '38eb7141-55bd-43d0-a6a5-7d028233eb17', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: TypeScript (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Figma (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Oracle (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '740001dd-4b33-4d53-8b05-f08d178a408c', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: PL/SQL (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: Python (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '074ce5ed-005a-4a3d-8681-a9eed17c4986', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: セキュリティ監査 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'f0624c11-e56b-4267-a730-75dd6980b578', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: ペネトレーションテスト (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: 製パン技術 (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: 接客・販売 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: ネットワーク設計 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '817f8df7-05bc-4610-8a37-9609ff4ae89d', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: Cisco (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: Linux (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '8172c05b-207d-4ca4-82e5-c8e51328accc', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: Windows Server (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: React (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '38eb7141-55bd-43d0-a6a5-7d028233eb17', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: TypeScript (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: Figma (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: Oracle (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: PL/SQL (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: Python (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: セキュリティ監査 (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'f0624c11-e56b-4267-a730-75dd6980b578', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: ペネトレーションテスト (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: 製パン技術 (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: 接客・販売 (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: ネットワーク設計 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Cisco (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Linux (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Windows Server (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: React (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '38eb7141-55bd-43d0-a6a5-7d028233eb17', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: TypeScript (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Figma (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Oracle (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '740001dd-4b33-4d53-8b05-f08d178a408c', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 佐藤花子: PL/SQL (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Python (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: セキュリティ監査 (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'f0624c11-e56b-4267-a730-75dd6980b578', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: ペネトレーションテスト (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: 製パン技術 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: 接客・販売 (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: ネットワーク設計 (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: Cisco (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Linux (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: Windows Server (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: React (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '38eb7141-55bd-43d0-a6a5-7d028233eb17', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: TypeScript (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Figma (1.初級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: Oracle (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '740001dd-4b33-4d53-8b05-f08d178a408c', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: PL/SQL (2.中級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: Python (3.上級)
+INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '074ce5ed-005a-4a3d-8681-a9eed17c4986', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: セキュリティ監査 (3.上級)

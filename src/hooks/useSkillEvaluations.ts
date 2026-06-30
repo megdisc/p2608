@@ -49,17 +49,20 @@ export function useSkillEvaluations() {
         
         // Populate evaluations for this member
         const memberEvals = evalsData.filter(e => e.member_id === member.id);
-        memberEvals.forEach(e => {
-          if (e.skill_level_id) {
-            evaluations[e.skill_id] = e.skill_level_id;
-          }
-        });
-
-        return {
+        const row: any = {
           id: member.id, // Row ID is Member ID
           memberName: member.name,
           evaluations
         };
+        
+        memberEvals.forEach(e => {
+          if (e.skill_level_id) {
+            evaluations[e.skill_id] = e.skill_level_id;
+            row[e.skill_id] = e.skill_level_id; // Flatten for DataTable access
+          }
+        });
+
+        return row;
       });
 
       setItems(gridRows);

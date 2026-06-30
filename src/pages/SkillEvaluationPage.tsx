@@ -40,25 +40,26 @@ export function SkillEvaluationPage() {
         inputType: 'select',
         options: levelOptions,
         render: (item: SkillEvaluationGridRow) => {
-          const levelId = item.evaluations[skill.id];
+          const levelId = (item as any)[skill.id] || item.evaluations[skill.id];
           const levelName = skillLevels.find(l => l.id === levelId)?.name || '未設定';
           return levelName;
         },
         customEditRender: (_value: any, item: SkillEvaluationGridRow, onChange: (newValue: any) => void) => {
-          const levelId = item.evaluations[skill.id] || '';
+          const levelId = (item as any)[skill.id] || item.evaluations[skill.id] || '';
           return (
             <Select 
               value={levelId} 
               onChange={(e) => {
                 const newEvaluations = { ...item.evaluations, [skill.id]: e.target.value };
-                onChange(newEvaluations);
+                item.evaluations = newEvaluations; // update reference on item directly
+                onChange(e.target.value); // this updates the flattened property via DataTable
               }}
               options={levelOptions}
             />
           );
         },
         onCellChange: (newValue: any, _item: SkillEvaluationGridRow, updateRow) => {
-          updateRow({ evaluations: newValue });
+          updateRow({ [skill.id]: newValue });
         }
       });
     });

@@ -49,6 +49,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
           </div>
           <button 
+            className={`nav-button ${activeTab === 'baseWageAssignment' ? 'active' : ''}`}
+            onClick={() => setActiveTab('baseWageAssignment')}
+          >
+            {PAGE_NAMES.BASE_WAGE_ASSIGNMENT}
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'project' ? 'active' : ''}`}
             onClick={() => setActiveTab('project')}
           >
@@ -65,12 +71,6 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             onClick={() => setActiveTab('assigneeAllocation')}
           >
             {PAGE_NAMES.ASSIGNEE_ALLOCATION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'baseWageAssignment' ? 'active' : ''}`}
-            onClick={() => setActiveTab('baseWageAssignment')}
-          >
-            {PAGE_NAMES.BASE_WAGE_ASSIGNMENT}
           </button>
           <button 
             className={`nav-button ${activeTab === 'dailyWorkRecord' ? 'active' : ''}`}

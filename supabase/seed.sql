@@ -120,6 +120,12 @@ INSERT INTO skills (id, name, yomigana, description) VALUES ('f0624c11-e56b-4267
 INSERT INTO skills (id, name, yomigana, description) VALUES ('128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '製パン技術', 'せいぱんぎじゅつ', 'パンの製造および関連技術');
 INSERT INTO skills (id, name, yomigana, description) VALUES ('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '接客・販売', 'せっきゃく・はんばい', '店舗での接客、販売業務全般');
 
+-- Skill Levels
+INSERT INTO skill_levels (id, name, description) VALUES ('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '初級', '基本的な作業はできるが、サポートが必要');
+INSERT INTO skill_levels (id, name, description) VALUES ('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '中級', '日常的な作業を自立して行える');
+INSERT INTO skill_levels (id, name, description) VALUES ('9b139db0-a352-4f38-89c0-9dff60a4f66a', '上級', '他者のサポートやトラブルシューティングができる');
+
+
 -- Projects
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'ほんしゃおふぃすねっとわーくこうちく', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-12-31');
 INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'ようけんていぎ');

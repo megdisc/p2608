@@ -1,4 +1,4 @@
-import { DataPage, type Column } from '../components';
+import { DataPage, Select, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
 import type { SkillEvaluationGridRow } from '../types';
 import { useAlert } from '../contexts';
@@ -47,18 +47,14 @@ export function SkillEvaluationPage() {
         customEditRender: (_value: any, item: SkillEvaluationGridRow, onChange: (newValue: any) => void) => {
           const levelId = item.evaluations[skill.id] || '';
           return (
-            <select 
+            <Select 
               value={levelId} 
               onChange={(e) => {
                 const newEvaluations = { ...item.evaluations, [skill.id]: e.target.value };
                 onChange(newEvaluations);
               }}
-              className="form-input"
-            >
-              {levelOptions.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
+              options={levelOptions}
+            />
           );
         },
         onCellChange: (newValue: any, _item: SkillEvaluationGridRow, updateRow) => {

@@ -21,3 +21,5 @@ export * from './RewardAllocationPage';
 export * from './WageSummaryPage';
 export * from './BaseWagePage';
 export * from './BaseWageAssignmentPage';
+export * from './SkillLevelPage';
+export * from './SkillEvaluationPage';

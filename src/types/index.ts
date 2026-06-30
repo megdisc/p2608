@@ -172,9 +172,29 @@ export type ProjectBudgetGridRow = {
   reserveItemId?: string;
 };
 
+export type SkillLevelItem = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type SkillEvaluationItem = {
+  id: string;
+  memberId: string;
+  skillId: string;
+  skillLevelId?: string;
+};
+
+// UI usage: cross-tabulation table row for skill evaluations
+export type SkillEvaluationGridRow = {
+  id: string; // memberId serves as row id
+  memberName: string;
+  evaluations: Record<string, string>; // mapping from skillId to skillLevelId
+};
+
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'client' | 'skill' | 'baseWage' | 'baseWageAssignment' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
+  | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'wageSummary';
 
 export type SystemType = 'inventory' | 'project';

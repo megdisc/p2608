@@ -18,3 +18,5 @@ export * from './useTransactions';
 export * from './useWageSummary';
 export * from './useBaseWages';
 export * from './useBaseWageAssignments';
+export * from './useSkillLevels';
+export * from './useSkillEvaluations';

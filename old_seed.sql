@@ -120,12 +120,6 @@ INSERT INTO skills (id, name, yomigana, description) VALUES ('f0624c11-e56b-4267
 INSERT INTO skills (id, name, yomigana, description) VALUES ('128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '製パン技術', 'せいぱんぎじゅつ', 'パンの製造および関連技術');
 INSERT INTO skills (id, name, yomigana, description) VALUES ('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '接客・販売', 'せっきゃく・はんばい', '店舗での接客、販売業務全般');
 
--- Skill Levels
-INSERT INTO skill_levels (id, name, description) VALUES ('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '1.初級', '基本的な作業はできるが、サポートが必要');
-INSERT INTO skill_levels (id, name, description) VALUES ('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '2.中級', '日常的な作業を自立して行える');
-INSERT INTO skill_levels (id, name, description) VALUES ('9b139db0-a352-4f38-89c0-9dff60a4f66a', '3.上級', '他者のサポートやトラブルシューティングができる');
-
-
 -- Projects
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'ほんしゃおふぃすねっとわーくこうちく', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01-01', '2026-12-31');
 INSERT INTO project_tasks (id, project_id, name, yomigana)  VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'ようけんていぎ');
@@ -293,58 +287,3 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5) ON CONFLICT DO NOTHING;
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2) ON CONFLICT DO NOTHING;
-
--- Member Skill Evaluations
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: ネットワーク設計 (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: Cisco (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Linux (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Windows Server (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: React (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '38eb7141-55bd-43d0-a6a5-7d028233eb17', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: TypeScript (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Figma (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: Oracle (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 江口春奈: PL/SQL (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: Python (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: セキュリティ監査 (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'f0624c11-e56b-4267-a730-75dd6980b578', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: ペネトレーションテスト (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: 製パン技術 (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 江口春奈: 接客・販売 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: ネットワーク設計 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '817f8df7-05bc-4610-8a37-9609ff4ae89d', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: Cisco (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: Linux (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: Windows Server (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: React (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '38eb7141-55bd-43d0-a6a5-7d028233eb17', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: TypeScript (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: Figma (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 大西健太: Oracle (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: PL/SQL (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: Python (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: セキュリティ監査 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'f0624c11-e56b-4267-a730-75dd6980b578', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: ペネトレーションテスト (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 大西健太: 製パン技術 (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 大西健太: 接客・販売 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: ネットワーク設計 (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '817f8df7-05bc-4610-8a37-9609ff4ae89d', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Cisco (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Linux (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8172c05b-207d-4ca4-82e5-c8e51328accc', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Windows Server (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: React (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '38eb7141-55bd-43d0-a6a5-7d028233eb17', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: TypeScript (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: Figma (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Oracle (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: PL/SQL (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: Python (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 佐藤花子: セキュリティ監査 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'f0624c11-e56b-4267-a730-75dd6980b578', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 佐藤花子: ペネトレーションテスト (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 佐藤花子: 製パン技術 (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 佐藤花子: 接客・販売 (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: ネットワーク設計 (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: Cisco (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: Linux (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8172c05b-207d-4ca4-82e5-c8e51328accc', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: Windows Server (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '676fa8f0-b4d8-4035-ae3f-de391ece3a63', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: React (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '38eb7141-55bd-43d0-a6a5-7d028233eb17', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: TypeScript (2.中級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '9322b5f6-fbb0-4a6e-a365-b814fbca7d49', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Figma (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Oracle (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '740001dd-4b33-4d53-8b05-f08d178a408c', '9b139db0-a352-4f38-89c0-9dff60a4f66a'); -- 高橋次郎: PL/SQL (3.上級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Python (1.初級)
-INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: セキュリティ監査 (2.中級)

@@ -37,6 +37,12 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
           </div>
           <button 
+            className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
+            onClick={() => setActiveTab('master')}
+          >
+            {PAGE_NAMES.MASTER}
+          </button>
+          <button 
             className={`nav-button ${activeTab === 'transaction' ? 'active' : ''}`}
             onClick={() => setActiveTab('transaction')}
           >
@@ -47,19 +53,6 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
             onClick={() => setActiveTab('stocktaking')}
           >
             {PAGE_NAMES.STOCKTAKING}
-          </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">
-            {MENU_CATEGORIES.INFORMATION}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.INFORMATION}</div>
-          </div>
-          <button 
-            className={`nav-button ${activeTab === 'master' ? 'active' : ''}`}
-            onClick={() => setActiveTab('master')}
-          >
-            {PAGE_NAMES.MASTER}
           </button>
         </div>
 

@@ -138,6 +138,8 @@ export function FinancialRecordPage() {
       emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
       onBatchSave={handleBatchSave}
       onAddRow={handleAddRow}
+      showDateFilter={true}
+      dateFilterKey="period"
     />
   );
 }

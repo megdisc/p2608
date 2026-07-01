@@ -43,6 +43,7 @@ type DataTableProps<T> = {
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
   onAddRow?: (currentData: T[]) => T;
   showDateFilter?: boolean;
+  dateFilterKey?: string;
   showSingleDateFilter?: boolean;
   singleDate?: string;
   onSingleDateChange?: (date: string) => void;
@@ -70,6 +71,7 @@ export function DataTable<T extends { id: string }>({
   onBatchSave,
   onAddRow,
   showDateFilter,
+  dateFilterKey = 'date',
   showSingleDateFilter,
   singleDate: externalSingleDate,
   onSingleDateChange,
@@ -145,14 +147,14 @@ export function DataTable<T extends { id: string }>({
       const effStart = startDate <= endDate ? startDate : endDate;
       const effEnd = startDate <= endDate ? endDate : startDate;
       sourceData = sourceData.filter(item => {
-        const dateVal = (item as any)['date'];
+        const dateVal = (item as any)[dateFilterKey];
         if (!dateVal) return false;
         const dStr = formatJSTDateOnly(dateVal);
         return dStr >= effStart && dStr <= effEnd;
       });
     } else if (showSingleDateFilter) {
       sourceData = sourceData.filter(item => {
-        const dateVal = (item as any)['date'];
+        const dateVal = (item as any)[dateFilterKey];
         if (!dateVal) return false;
         const dStr = formatJSTDateOnly(dateVal);
         return dStr === singleDate;
@@ -184,7 +186,7 @@ export function DataTable<T extends { id: string }>({
     });
 
     return { sortedExistingRows: existingRows, newRows };
-  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, showSingleDateFilter, startDate, endDate, singleDate]);
+  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, dateFilterKey, showSingleDateFilter, startDate, endDate, singleDate]);
 
   const totalItems = sortedExistingRows.length;
   const totalPages = Math.ceil(totalItems / pageSize);

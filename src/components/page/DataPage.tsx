@@ -12,6 +12,7 @@ type DataPageProps<T> = {
   headerRight?: React.ReactNode;
   footerLeft?: React.ReactNode;
   showDateFilter?: boolean;
+  dateFilterKey?: string;
   showSingleDateFilter?: boolean;
   singleDate?: string;
   onSingleDateChange?: (date: string) => void;
@@ -41,6 +42,7 @@ export function DataPage<T extends { id: string }>({
   headerRight,
   footerLeft,
   showDateFilter,
+  dateFilterKey,
   showSingleDateFilter,
   singleDate,
   onSingleDateChange,
@@ -72,6 +74,7 @@ export function DataPage<T extends { id: string }>({
         onBatchSave={onBatchSave}
         onAddRow={onAddRow}
         showDateFilter={showDateFilter}
+        dateFilterKey={dateFilterKey}
         showSingleDateFilter={showSingleDateFilter}
         singleDate={singleDate}
         onSingleDateChange={onSingleDateChange}

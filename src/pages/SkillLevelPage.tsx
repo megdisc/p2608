@@ -16,7 +16,11 @@ export function SkillLevelPage() {
   }, [fetchSkillLevels, showAlert]);
 
   const columns: Column<SkillLevelItem>[] = [
-    { key: 'name', header: TABLE_COLUMNS.SKILL_LEVEL, editable: true, inputType: 'text' },
+    { 
+      key: 'levelValue', 
+      header: TABLE_COLUMNS.SKILL_LEVEL,
+    },
+    { key: 'name', header: TABLE_COLUMNS.SKILL_LEVEL_NAME, editable: true, inputType: 'text' },
     { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text' },
   ];
 
@@ -29,9 +33,11 @@ export function SkillLevelPage() {
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = (currentData: SkillLevelItem[] = []) => {
+    const maxLevel = currentData.length > 0 ? Math.max(...currentData.map(i => i.levelValue || 0)) : 0;
     return {
       id: `SKL-L-${Date.now()}`,
+      levelValue: maxLevel + 1,
       name: '',
       description: '',
     } as SkillLevelItem;
@@ -45,7 +51,7 @@ export function SkillLevelPage() {
       data={items}
       columns={columns}
       emptyMessage="スキルレベルが登録されていません。"
-      initialSort={{ key: 'name', direction: 'asc' }}
+      initialSort={{ key: 'levelValue', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
     />

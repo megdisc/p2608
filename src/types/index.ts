@@ -189,6 +189,7 @@ export type ProjectBudgetGridRow = {
 
 export type SkillLevelItem = {
   id: string;
+  levelValue: number;
   name: string;
   description: string;
 };

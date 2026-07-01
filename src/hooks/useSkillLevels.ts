@@ -12,10 +12,15 @@ export function useSkillLevels() {
       const { data, error } = await supabase
         .from('skill_levels')
         .select('*')
-        .order('name');
+        .order('level_value');
       
       if (error) throw error;
-      setItems(data as SkillLevelItem[]);
+      setItems((data || []).map(d => ({
+        id: d.id,
+        levelValue: d.level_value,
+        name: d.name,
+        description: d.description
+      })));
     } finally {
       setLoading(false);
     }
@@ -39,6 +44,7 @@ export function useSkillLevels() {
         const isNew = draft.id.startsWith('SKL-L-') || draft.id.startsWith('temp-');
         return {
           ...(isNew ? {} : { id: draft.id }),
+          level_value: Number(draft.levelValue),
           name: draft.name,
           description: draft.description,
           updated_at: new Date().toISOString()

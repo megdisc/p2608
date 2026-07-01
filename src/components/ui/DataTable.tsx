@@ -41,7 +41,7 @@ type DataTableProps<T> = {
   emptyMessage: string;
   initialSort?: SortConfig;
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
-  onAddRow?: () => T;
+  onAddRow?: (currentData: T[]) => T;
   showDateFilter?: boolean;
   showSingleDateFilter?: boolean;
   singleDate?: string;
@@ -279,7 +279,7 @@ export function DataTable<T extends { id: string }>({
 
   const handleAddClick = () => {
     if (!onAddRow) return;
-    const newRow = onAddRow();
+    const newRow = onAddRow(draftData);
     setDraftData(prev => [...prev, newRow]);
     setNewRowIds(prev => new Set(prev).add(newRow.id));
     setOriginalNewRows(prev => [...prev, newRow]);

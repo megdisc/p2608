@@ -21,6 +21,7 @@ type AllocationRow = {
   isLastInProject?: boolean;
   isFirstInTask?: boolean;
   isLastInTask?: boolean;
+  requiredSkills: { skillId: string, levelValue: number }[];
 };
 
 export function AssigneeAllocationPage() {
@@ -29,6 +30,7 @@ export function AssigneeAllocationPage() {
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
+  const [memberSkillMap, setMemberSkillMap] = useState<Record<string, Record<string, number>>>({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,7 +41,7 @@ export function AssigneeAllocationPage() {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [membersRes, clientsRes, staffsRes, projectsRes] = await Promise.all([
+      const [membersRes, clientsRes, staffsRes, projectsRes, evalsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -47,19 +49,32 @@ export function AssigneeAllocationPage() {
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
             id, name, yomigana, is_deleted,
-            project_task_assignees ( member_id, client_id, staff_id )
+            project_task_assignees ( member_id, client_id, staff_id ),
+            project_task_skills ( skill_id, skill_levels ( level_value ) )
           )
-        `).eq('is_deleted', false)
+        `).eq('is_deleted', false),
+        supabase.from('member_skill_evaluations').select(`
+          member_id, skill_id, skill_levels(level_value)
+        `)
       ]);
 
       if (membersRes.error) throw membersRes.error;
       if (clientsRes.error) throw clientsRes.error;
       if (staffsRes.error) throw staffsRes.error;
       if (projectsRes.error) throw projectsRes.error;
+      if (evalsRes.error) throw evalsRes.error;
 
       setDbMembers(membersRes.data || []);
       setDbClients(clientsRes.data || []);
       setDbStaffs(staffsRes.data || []);
+
+      const evals = evalsRes.data || [];
+      const skillMap: Record<string, Record<string, number>> = {};
+      evals.forEach((e: any) => {
+        if (!skillMap[e.member_id]) skillMap[e.member_id] = {};
+        skillMap[e.member_id][e.skill_id] = e.skill_levels?.level_value || 0;
+      });
+      setMemberSkillMap(skillMap);
 
       const formattedTasks: AllocationRow[] = [];
       
@@ -81,6 +96,10 @@ export function AssigneeAllocationPage() {
               memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
               staffIds: assignees.filter((a: any) => a.staff_id).map((a: any) => a.staff_id),
               clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
+              requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
+                skillId: pts.skill_id,
+                levelValue: pts.skill_levels?.level_value || 0
+              }))
             });
           });
       });
@@ -250,7 +269,16 @@ export function AssigneeAllocationPage() {
                   </td>
                   <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
                     <MultiSelectDropdown 
-                      options={dbMembers.map(u => ({ value: u.id, label: u.name }))}
+                      options={dbMembers.filter(u => {
+                        const reqSkills = item.requiredSkills || [];
+                        if (reqSkills.length === 0) return true;
+                        
+                        const uSkills = memberSkillMap[u.id] || {};
+                        return reqSkills.every(rs => {
+                           const uLevel = uSkills[rs.skillId] || 0;
+                           return uLevel >= rs.levelValue;
+                        });
+                      }).map(u => ({ value: u.id, label: u.name }))}
                       value={item.memberIds}
                       onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
                       placeholder="選択"

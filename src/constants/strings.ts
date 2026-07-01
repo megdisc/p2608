@@ -126,7 +126,7 @@ export const WORDS_PROJECT = {
   PROJECT_TYPE_ONGOING_VALUE: 'ongoing',
   TASK: 'タスク',
   SKILL: 'スキル',
-  REQUIRED_SKILLS: '必要スキル',
+  REQUIRED_SKILLS: 'スキル',
   INCENTIVE_BUDGET: 'インセンティブ予算額',
   CONTRIBUTION_RATIO: '報酬配分比',
   PROGRESS_RATE: '進捗率',

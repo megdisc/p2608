@@ -6,29 +6,33 @@ export function useProjects() {
   const [items, setItems] = useState<ProjectItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
+  const [dbSkillLevels, setDbSkillLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
-      const [clientsRes, skillsRes, projectsRes] = await Promise.all([
+      const [clientsRes, skillsRes, skillLevelsRes, projectsRes] = await Promise.all([
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
             id, name, yomigana, is_deleted,
-            project_task_skills ( skill_id, skills(name) )
+            project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(name) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
       ]);
 
       if (clientsRes.error) throw clientsRes.error;
       if (skillsRes.error) throw skillsRes.error;
+      if (skillLevelsRes.error) throw skillLevelsRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
       setDbClients(clientsRes.data || []);
       setDbSkills(skillsRes.data || []);
+      setDbSkillLevels(skillLevelsRes.data || []);
 
       const formattedProjects: ProjectItem[] = (projectsRes.data || []).map((p: any) => ({
         id: p.id,
@@ -48,8 +52,11 @@ export function useProjects() {
               task: pt.name,
               taskYomigana: pt.yomigana || '',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
-                id: pts.skill_id,
-                skill: pts.skills?.name
+                id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(),
+                skillId: pts.skill_id,
+                skill: pts.skills?.name,
+                levelId: pts.skill_level_id,
+                levelName: pts.skill_levels?.name
               }))
             };
           })
@@ -122,7 +129,8 @@ export function useProjects() {
           if (t.requiredSkills?.length > 0) {
             const skillInserts = t.requiredSkills.map(s => ({
               task_id: t.id,
-              skill_id: s.id
+              skill_id: s.skillId,
+              skill_level_id: s.levelId || null
             })).filter(s => s.skill_id);
             if (skillInserts.length > 0) {
               await supabase.from('project_task_skills').insert(skillInserts);
@@ -144,6 +152,7 @@ export function useProjects() {
     items,
     dbClients,
     dbSkills,
+    dbSkillLevels,
     loading,
     fetchProjects,
     batchSaveProjects

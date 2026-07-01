@@ -1,4 +1,4 @@
-import { DataPage, MultiSelectDropdown, Button, type Column } from '../components';
+import { DataPage, Button, type Column } from '../components';
 import { useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
 import type { ProjectItem } from '../types';
@@ -6,7 +6,7 @@ import { useAlert } from '../contexts';
 import { useProjects } from '../hooks';
 
 export function ProjectPage() {
-  const { items, dbClients, dbSkills, loading, fetchProjects, batchSaveProjects } = useProjects();
+  const { items, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -55,49 +55,25 @@ export function ProjectPage() {
       sortable: false
     },
     { 
-      key: 'requiredSkills', 
+      key: 'skillId', 
       header: TABLE_COLUMNS.REQUIRED_SKILLS, 
       editable: true, 
-      inputType: 'text', 
-      rowType: 'sub',
-      sortable: false,
-      style: { minWidth: '200px' },
-      render: (item: any) => {
-        const skills = item.requiredSkills || [];
-        return (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-            {skills.map((s: any, idx: number) => (
-              <span key={idx} style={{ background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border)', borderRadius: '12px', padding: '2px 8px', fontSize: 'var(--text-caption)' }}>
-                {s.skill}
-              </span>
-            ))}
-          </div>
-        );
-      },
-      customEditRender: (value: any, _item: any, onChange: (newValue: any) => void) => {
-        const currentSkills = value || [];
-        const currentSkillNames = currentSkills.map((s: any) => s.skill);
-        const options = dbSkills.map(s => ({ value: s.name, label: s.name }));
-        
-        const handleChange = (newSkillNames: string[]) => {
-           const newSkills = newSkillNames.map(name => {
-             const existing = currentSkills.find((s: any) => s.skill === name);
-             if (existing) return existing;
-             const dbSkill = dbSkills.find(s => s.name === name);
-             return { id: dbSkill?.id || '', skill: name };
-           });
-           onChange(newSkills);
-        };
-        
-        return (
-          <MultiSelectDropdown 
-            options={options}
-            value={currentSkillNames}
-            onChange={handleChange}
-            placeholder="スキルを選択"
-          />
-        );
-      }
+      inputType: 'select', 
+      options: [{ label: 'スキルを選択', value: '' }, ...dbSkills.map(s => ({ label: s.name, value: s.id }))],
+      rowType: 'sub-sub',
+      render: (item: any) => dbSkills.find(s => s.id === item.skillId)?.name || '',
+      mainRender: (_item, addSubSubRow) => (
+         <Button onClick={addSubSubRow} style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}>＋ スキル追加</Button>
+      )
+    },
+    { 
+      key: 'levelId', 
+      header: 'スキルレベル', 
+      editable: true, 
+      inputType: 'select', 
+      options: [{ label: 'レベルなし', value: '' }, ...dbSkillLevels.map(l => ({ label: l.name, value: l.id }))],
+      rowType: 'sub-sub',
+      render: (item: any) => dbSkillLevels.find(l => l.id === item.levelId)?.name || ''
     },
   ];
 
@@ -140,6 +116,14 @@ export function ProjectPage() {
     };
   };
 
+  const handleAddSubSubRow = (_parentId: string, _subParentId: string) => {
+    return {
+      id: generateId(),
+      skillId: '',
+      levelId: ''
+    };
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -152,6 +136,8 @@ export function ProjectPage() {
       onAddRow={handleAdd}
       subItemsKey="tasks"
       onAddSubRow={handleAddSubRow}
+      subSubItemsKey="requiredSkills"
+      onAddSubSubRow={handleAddSubSubRow}
     />
   );
 }

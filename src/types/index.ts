@@ -87,7 +87,10 @@ export type StocktakingItem = {
 
 export type TaskSkill = {
   id: string;
-  skill: string;
+  skillId: string;
+  skill?: string;
+  levelId?: string;
+  levelName?: string;
 };
 
 export type ProjectTask = {

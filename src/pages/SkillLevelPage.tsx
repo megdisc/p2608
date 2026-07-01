@@ -19,12 +19,14 @@ export function SkillLevelPage() {
     { 
       key: 'levelValue', 
       header: TABLE_COLUMNS.SKILL_LEVEL,
+      sortable: false
     },
-    { key: 'name', header: TABLE_COLUMNS.SKILL_LEVEL_NAME, editable: true, inputType: 'text' },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SKILL_LEVEL_NAME, editable: true, inputType: 'text', sortable: false },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text', sortable: false },
     {
       key: 'reorder',
       header: '順序変更',
+      sortable: false,
       render: (item: SkillLevelItem, draftData: SkillLevelItem[], updateData?: (newData: SkillLevelItem[]) => void) => {
         if (!updateData) return null;
         

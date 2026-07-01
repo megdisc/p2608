@@ -21,7 +21,6 @@ export function SkillLevelPage() {
       header: TABLE_COLUMNS.SKILL_LEVEL,
       sortable: false
     },
-    { key: 'name', header: TABLE_COLUMNS.SKILL_LEVEL_NAME, editable: true, inputType: 'text', sortable: false },
     { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text', sortable: false },
     {
       key: 'reorder',

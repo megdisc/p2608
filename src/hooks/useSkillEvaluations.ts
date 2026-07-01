@@ -24,9 +24,13 @@ export function useSkillEvaluations() {
       const { data: levelsData, error: levelsError } = await supabase
         .from('skill_levels')
         .select('*')
-        .order('name');
+        .order('level_value');
       if (levelsError) throw levelsError;
-      setSkillLevels(levelsData as SkillLevelItem[]);
+      setSkillLevels((levelsData || []).map(l => ({
+        id: l.id,
+        levelValue: l.level_value,
+        description: l.description
+      })));
 
       // Fetch members
       const { data: membersData, error: membersError } = await supabase

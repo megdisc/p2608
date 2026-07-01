@@ -71,9 +71,12 @@ export function ProjectPage() {
       header: 'スキルレベル', 
       editable: true, 
       inputType: 'select', 
-      options: [{ label: 'レベルなし', value: '' }, ...dbSkillLevels.map(l => ({ label: l.name, value: l.id }))],
+      options: [{ label: 'レベルなし', value: '' }, ...dbSkillLevels.map(l => ({ label: String(l.level_value), value: l.id }))],
       rowType: 'sub-sub',
-      render: (item: any) => dbSkillLevels.find(l => l.id === item.levelId)?.name || ''
+      render: (item: any) => {
+        const val = dbSkillLevels.find(l => l.id === item.levelId)?.level_value;
+        return val !== undefined ? String(val) : '';
+      }
     },
   ];
 

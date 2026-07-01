@@ -20,7 +20,7 @@ export function useProjects() {
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
             id, name, yomigana, is_deleted,
-            project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(name) )
+            project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
       ]);
@@ -56,7 +56,7 @@ export function useProjects() {
                 skillId: pts.skill_id,
                 skill: pts.skills?.name,
                 levelId: pts.skill_level_id,
-                levelName: pts.skill_levels?.name
+                levelValue: pts.skill_levels?.level_value
               }))
             };
           })

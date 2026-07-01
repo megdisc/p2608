@@ -1,6 +1,5 @@
 CREATE TABLE public.skill_levels (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    name VARCHAR NOT NULL,
     description TEXT,
     created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT now() NOT NULL

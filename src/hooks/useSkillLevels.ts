@@ -18,7 +18,6 @@ export function useSkillLevels() {
       setItems((data || []).map(d => ({
         id: d.id,
         levelValue: d.level_value,
-        name: d.name,
         description: d.description
       })));
     } finally {
@@ -45,7 +44,6 @@ export function useSkillLevels() {
         return {
           ...(isNew ? {} : { id: draft.id }),
           level_value: Number(draft.levelValue),
-          name: draft.name,
           description: draft.description,
           updated_at: new Date().toISOString()
         };

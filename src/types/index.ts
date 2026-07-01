@@ -90,7 +90,7 @@ export type TaskSkill = {
   skillId: string;
   skill?: string;
   levelId?: string;
-  levelName?: string;
+  levelValue?: number;
 };
 
 export type ProjectTask = {
@@ -190,7 +190,6 @@ export type ProjectBudgetGridRow = {
 export type SkillLevelItem = {
   id: string;
   levelValue: number;
-  name: string;
   description: string;
 };
 

@@ -192,9 +192,10 @@ INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 15);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', '8daa6b8b-ddb2-462a-9594-1738f004832f', 30);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-05', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 40);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 50);
+INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 100);
-INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 80);
+INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 100);
+INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 100);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
 INSERT INTO monthly_task_progress (year_month, task_id, current_progress) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 100);
 

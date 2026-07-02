@@ -210,6 +210,6 @@ export type SkillEvaluationGridRow = {
 export type Tab = 
   | 'inventory' | 'master' | 'location' | 'category' 
   | 'supplier' | 'transaction' | 'stocktaking' | 'staff'
-  | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'wageSummary' | 'wageSummaryAlt';
+  | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'projectSummary' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'wageSummary';
 
 export type SystemType = 'inventory' | 'project';

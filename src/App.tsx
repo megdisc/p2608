@@ -23,7 +23,6 @@ import {
   ProjectSummaryPage,
   AssigneeSummaryPage,
   WageSummaryPage,
-  WageSummaryAltPage,
   BudgetPlanningPage,
   AssigneeAllocationPage,
   BaseWagePage,
@@ -96,8 +95,6 @@ function AppContent() {
             <AssigneeSummaryPage />
           ) : activeTab === 'wageSummary' ? (
             <WageSummaryPage />
-          ) : activeTab === 'wageSummaryAlt' ? (
-            <WageSummaryAltPage />
           ) : activeTab === 'budgetPlanning' ? (
             <BudgetPlanningPage />
           ) : activeTab === 'assigneeAllocation' ? (

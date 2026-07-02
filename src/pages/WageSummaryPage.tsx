@@ -146,7 +146,7 @@ export function WageSummaryPage() {
                               ¥{row.payment.toLocaleString()}
                             </td>
                           ) : (
-                            <td></td>
+                            <td style={{ borderBottom: 'none' }}></td>
                           )}
                         </tr>
                       );

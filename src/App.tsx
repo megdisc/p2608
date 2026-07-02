@@ -28,7 +28,8 @@ import {
   BaseWagePage,
   BaseWageAssignmentPage,
   SkillLevelPage,
-  SkillEvaluationPage
+  SkillEvaluationPage,
+  ScreenCompositionPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -103,6 +104,8 @@ function AppContent() {
             <BaseWagePage />
           ) : activeTab === 'baseWageAssignment' ? (
             <BaseWageAssignmentPage />
+          ) : ['screenProject', 'screenUser', 'screenClient', 'screenFinance', 'screenSkill', 'screenWage'].includes(activeTab) ? (
+            <ScreenCompositionPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

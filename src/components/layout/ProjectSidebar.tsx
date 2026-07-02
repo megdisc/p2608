@@ -146,6 +146,49 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.BASE_WAGE}
           </button>
         </div>
+
+        <div className="nav-section">
+          <div className="nav-category">
+            画面構成
+            <div className="nav-subcategory">検討中</div>
+          </div>
+          <button 
+            className={`nav-button ${activeTab === 'screenProject' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenProject')}
+          >
+            {PAGE_NAMES.SCREEN_PROJECT}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenUser' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenUser')}
+          >
+            {PAGE_NAMES.SCREEN_USER}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenClient' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenClient')}
+          >
+            {PAGE_NAMES.SCREEN_CLIENT}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenFinance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenFinance')}
+          >
+            {PAGE_NAMES.SCREEN_FINANCE}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenSkill' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenSkill')}
+          >
+            {PAGE_NAMES.SCREEN_SKILL}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenWage' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenWage')}
+          >
+            {PAGE_NAMES.SCREEN_WAGE}
+          </button>
+        </div>
       </nav>
 
       <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>

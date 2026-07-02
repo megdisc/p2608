@@ -61,15 +61,31 @@ export function WageSummaryPage() {
               </tr>
             ) : (
               paginatedRows.map(row => {
+                const incentiveRows = row.taskIncentives.length > 0 
+                  ? [
+                      ...row.taskIncentives.map((t, i) => ({ 
+                        subject: 'インセンティブ', 
+                        content: `${t.projectName}：${t.taskName}`, 
+                        amount: t.amount, 
+                        isBold: false,
+                        rowSpan: i === 0 ? row.taskIncentives.length + 2 : undefined,
+                        hideSubject: i > 0
+                      })),
+                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: row.basicWage === null ? null : -row.basicWage, isBold: false, rowSpan: undefined, hideSubject: true },
+                      { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
+                    ]
+                  : [
+                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: row.basicWage === null ? null : -row.basicWage, isBold: false, rowSpan: 2, hideSubject: false },
+                      { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
+                    ];
+
                 const wageItems = [
-                  { subject: '基本工賃', content: `工賃単価¥${row.wageRate?.toLocaleString() ?? 0}*作業時間${row.workTime}h`, amount: row.basicWage, isBold: false },
-                  { subject: '基本工賃合計', content: '', amount: row.basicWage, isBold: true },
-                  ...row.taskIncentives.map(t => ({ subject: 'インセンティブ', content: `${t.projectName}：${t.taskName}`, amount: t.amount, isBold: false })),
-                  { subject: 'インセンティブ差引', content: '', amount: row.basicWage, isBold: false },
-                  { subject: 'インセンティブ合計', content: '', amount: row.incentiveTotal, isBold: true },
-                  { subject: 'その他加算', content: '未設計', amount: 0, isBold: false },
-                  { subject: 'その他加算手当合計', content: '', amount: 0, isBold: true },
-                  { subject: '工賃合計', content: '', amount: row.wageTotal, isBold: true },
+                  { subject: '基本工賃', content: `工賃単価¥${row.wageRate?.toLocaleString() ?? 0}*作業時間${row.workTime}h`, amount: row.basicWage, isBold: false, rowSpan: 2, hideSubject: false },
+                  { subject: '基本工賃', content: '合計', amount: row.basicWage, isBold: true, rowSpan: undefined, hideSubject: true },
+                  ...incentiveRows,
+                  { subject: 'その他加算', content: '未設計', amount: 0, isBold: false, rowSpan: 2, hideSubject: false },
+                  { subject: 'その他加算', content: '合計', amount: 0, isBold: true, rowSpan: undefined, hideSubject: true },
+                  { subject: '工賃合計', content: '', amount: row.wageTotal, isBold: true, rowSpan: undefined, hideSubject: false },
                 ];
                 
                 const maxRows = wageItems.length;
@@ -96,9 +112,14 @@ export function WageSummaryPage() {
                               {row.name}
                             </td>
                           )}
-                          <td style={item.isBold ? { fontWeight: 'bold' } : undefined}>
-                            {item.subject}
-                          </td>
+                          {!item.hideSubject && (
+                            <td 
+                              rowSpan={item.rowSpan}
+                              style={item.isBold ? { fontWeight: 'bold', verticalAlign: 'top' } : { verticalAlign: 'top' }}
+                            >
+                              {item.subject}
+                            </td>
+                          )}
                           <td style={item.isBold ? { fontWeight: 'bold' } : undefined}>
                             {item.content}
                           </td>

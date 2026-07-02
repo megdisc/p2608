@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, MESSAGES } from '../constants';
-import { getCurrentJSTMonth } from '../utils';
-import { useAlert } from '../contexts/AlertContext';
-import { useWageSummary } from '../hooks';
+const fs = require('fs');
+const content = fs.readFileSync('src/pages/WageSummaryPage.tsx', 'utf8');
 
-export function WageSummaryPage() {
-  const {
+const importReact = `import React, { useEffect, useState } from 'react';`;
+
+const hooksAddition = `  const {
     loading,
     currentMonth,
     setCurrentMonth,
@@ -19,15 +16,9 @@ export function WageSummaryPage() {
     paginatedRows,
   } = useWageSummary();
   const { showAlert } = useAlert();
-  const [hoveredMemberId, setHoveredMemberId] = useState<string | null>(null);
+  const [hoveredMemberId, setHoveredMemberId] = useState<string | null>(null);`;
 
-  useEffect(() => {
-    fetchWageSummary(currentMonth).catch(() => {
-      showAlert(MESSAGES.FETCH_ERROR, 'error');
-    });
-  }, [currentMonth, fetchWageSummary, showAlert]);
-
-    const headerRows: HeaderCell[][] = [
+const newHeaderRows = `  const headerRows: HeaderCell[][] = [
     [
       { label: '氏名', rowSpan: 2, width: '200px', sortKey: 'name' },
       { label: '工賃', colSpan: 3 },
@@ -42,19 +33,9 @@ export function WageSummaryPage() {
       { label: '内容' },
       { label: '金額', width: '120px' },
     ]
-  ];
-  if (loading) return <div>{MESSAGES.LOADING}</div>;
+  ];`;
 
-  return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{PAGE_NAMES.WAGE_SUMMARY}</h2>
-      </div>
-
-      <div className="table-container">
-        <table className="inventory-table">
-          <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
-                    <tbody>
+const newBody = `          <tbody>
             {paginatedRows.length === 0 ? (
               <tr>
                 <td colSpan={8} className="empty-message">表示するデータがありません</td>
@@ -62,9 +43,9 @@ export function WageSummaryPage() {
             ) : (
               paginatedRows.map(row => {
                 const wageItems = [
-                  { subject: '基本工賃', content: `工賃単価¥${row.wageRate?.toLocaleString() ?? 0}*作業時間${row.workTime}h`, amount: row.basicWage, isBold: false },
+                  { subject: '基本工賃', content: \`工賃単価¥\${row.wageRate?.toLocaleString() ?? 0}*作業時間\${row.workTime}h\`, amount: row.basicWage, isBold: false },
                   { subject: '基本工賃合計', content: '', amount: row.basicWage, isBold: true },
-                  ...row.taskIncentives.map(t => ({ subject: 'インセンティブ', content: `${t.projectName}：${t.taskName}`, amount: t.amount, isBold: false })),
+                  ...row.taskIncentives.map(t => ({ subject: 'インセンティブ', content: \`\${t.projectName}：\${t.taskName}\`, amount: t.amount, isBold: false })),
                   { subject: 'インセンティブ差引', content: '', amount: row.basicWage, isBold: false },
                   { subject: 'インセンティブ合計', content: '', amount: row.incentiveTotal, isBold: true },
                   { subject: 'その他加算', content: '未設計', amount: 0, isBold: false },
@@ -80,7 +61,7 @@ export function WageSummaryPage() {
                       const isLast = index === maxRows - 1;
                       return (
                         <tr 
-                          key={`${row.id}-item-${index}`}
+                          key={\`\${row.id}-item-\${index}\`}
                           onMouseEnter={() => setHoveredMemberId(isLast ? row.id : null)}
                           onMouseLeave={() => setHoveredMemberId(null)}
                         >
@@ -103,14 +84,14 @@ export function WageSummaryPage() {
                             {item.content}
                           </td>
                           <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', ...(item.isBold ? { fontWeight: 'bold' } : {}) }}>
-                            {item.amount === null ? '-' : `¥${item.amount.toLocaleString()}`}
+                            {item.amount === null ? '-' : \`¥\${item.amount.toLocaleString()}\`}
                           </td>
                           {isLast ? (
                             <>
                               <td style={{ fontWeight: 'bold' }}>控除合計</td>
                               <td></td>
                               <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold' }}>
-                                {row.dedTotal === null ? '-' : `¥${row.dedTotal.toLocaleString()}`}
+                                {row.dedTotal === null ? '-' : \`¥\${row.dedTotal.toLocaleString()}\`}
                               </td>
                             </>
                           ) : (
@@ -134,61 +115,20 @@ export function WageSummaryPage() {
                 );
               })
             )}
-          </tbody>
-        </table>
-      </div>
+          </tbody>`;
 
-      <div className="action-bar">
-        <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              onClick={() => {
-                const [y, m] = currentMonth.split('-');
-                const date = new Date(parseInt(y), parseInt(m) - 1, 1);
-                date.setMonth(date.getMonth() - 1);
-                const newY = date.getFullYear();
-                const newM = (date.getMonth() + 1).toString().padStart(2, '0');
-                setCurrentMonth(`${newY}-${newM}`);
-              }}
-            >
-              ＜
-            </Button>
-            <MonthInput 
-              value={currentMonth}
-              onChange={setCurrentMonth}
-              className="date-filter-pill"
-              style={{ width: 'auto', minWidth: '140px' }}
-            />
-            <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              onClick={() => {
-                const [y, m] = currentMonth.split('-');
-                const date = new Date(parseInt(y), parseInt(m) - 1, 1);
-                date.setMonth(date.getMonth() + 1);
-                const newY = date.getFullYear();
-                const newM = (date.getMonth() + 1).toString().padStart(2, '0');
-                setCurrentMonth(`${newY}-${newM}`);
-              }}
-            >
-              ＞
-            </Button>
-            <Button 
-              variant="secondary"
-              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
-              onClick={() => setCurrentMonth(getCurrentJSTMonth())}
-              disabled={currentMonth === getCurrentJSTMonth()}
-            >
-              今月
-            </Button>
-          </div>
-        </div>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
-    </>
-  );
-}
+let updated = content.replace(
+  /import React, \{ useEffect \} from 'react';/,
+  importReact
+).replace(
+  /  const \{\n    loading,[\s\S]*?const \{ showAlert \} = useAlert\(\);/,
+  hooksAddition
+).replace(
+  /  const headerRows: HeaderCell\[\]\[\] = \[[\s\S]*?\];\n/,
+  newHeaderRows + '\\n'
+).replace(
+  /          <tbody>[\s\S]*?<\/tbody>/,
+  newBody
+);
+
+fs.writeFileSync('src/pages/WageSummaryPage.tsx', updated);

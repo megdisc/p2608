@@ -5,8 +5,11 @@ import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
 export type WageRow = {
   id: string;
   name: string;
-  basicWage: number | null; // null for "-"
-  incentive: number;
+  wageRate: number | null;
+  workTime: number;
+  basicWage: number | null;
+  taskIncentives: { projectName: string; taskName: string; amount: number }[];
+  incentiveTotal: number;
   wageTotal: number;
   dedA: number | null;
   dedB: number | null;
@@ -41,7 +44,7 @@ export function useWageSummary() {
         workRes
       ] = await Promise.all([
         supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('projects').select('id, project_type, project_tasks(id, name, is_deleted, is_canceled)').eq('is_deleted', false),
+        supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled)').eq('is_deleted', false),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
@@ -68,12 +71,15 @@ export function useWageSummary() {
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
         
         let basicWage = null;
+        let wageRate = null;
         if (member.base_wages && typeof member.base_wages.wage === 'number') {
-          basicWage = Math.floor(member.base_wages.wage * totalWorkTime);
+          wageRate = member.base_wages.wage;
+          basicWage = Math.floor(wageRate * totalWorkTime);
         }
 
         let sumRewardUnitPrice = 0;
         const memberContribs = cMems.filter((r: any) => r.member_id === member.id);
+        const taskIncentives: { projectName: string; taskName: string; amount: number }[] = [];
 
         for (const contrib of memberContribs) {
           if (!contrib.task_id || !contrib.contribution_ratio) continue;
@@ -81,7 +87,6 @@ export function useWageSummary() {
           const project = projects.find((p: any) => (p.project_tasks || []).some((t: any) => t.id === contrib.task_id));
           if (!project) continue;
 
-          // Check if project is "Completed"
           const projectTasks = project.project_tasks || [];
           const activeTasks = projectTasks.filter((t: any) => !t.is_deleted && !t.is_canceled);
           
@@ -95,7 +100,6 @@ export function useWageSummary() {
 
           if (!allCompleted) continue;
 
-          // Calculate 報酬単価 (Reward Unit Price) for this task
           const taskBudgets = budgets.filter((b: any) => b.task_id === contrib.task_id);
           const taskLaborBudget = taskBudgets.reduce((sum: number, b: any) => sum + (Number(b.amount) || 0), 0);
 
@@ -112,6 +116,13 @@ export function useWageSummary() {
           const unitPrice = alloc - ded;
 
           sumRewardUnitPrice += unitPrice;
+          
+          const task = activeTasks.find((t: any) => t.id === contrib.task_id);
+          taskIncentives.push({
+            projectName: project.name || '',
+            taskName: task ? task.name : '',
+            amount: unitPrice
+          });
         }
 
         const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
@@ -127,8 +138,11 @@ export function useWageSummary() {
         return {
           id: member.id,
           name: member.name,
+          wageRate,
+          workTime: totalWorkTime,
           basicWage,
-          incentive: safeIncentive,
+          taskIncentives,
+          incentiveTotal: safeIncentive,
           wageTotal,
           dedA,
           dedB,

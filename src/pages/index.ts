@@ -24,3 +24,5 @@ export * from './BaseWagePage';
 export * from './BaseWageAssignmentPage';
 export * from './SkillLevelPage';
 export * from './SkillEvaluationPage';
+
+export * from './WageSummaryAltPage';

@@ -21,3 +21,5 @@ export * from './useBaseWages';
 export * from './useBaseWageAssignments';
 export * from './useSkillLevels';
 export * from './useSkillEvaluations';
+
+export * from './useWageSummaryAlt';

@@ -104,7 +104,7 @@ function AppContent() {
             <BaseWagePage />
           ) : activeTab === 'baseWageAssignment' ? (
             <BaseWageAssignmentPage />
-          ) : ['screenProject', 'screenUser', 'screenClient', 'screenFinance', 'screenSkill', 'screenWage'].includes(activeTab) ? (
+          ) : ['screenProject', 'screenUser', 'screenStaff', 'screenClient', 'screenFinance', 'screenSkill', 'screenWage'].includes(activeTab) ? (
             <ScreenCompositionPage />
           ) : (
             <div style={{ padding: '32px' }}>

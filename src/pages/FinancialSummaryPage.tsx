@@ -77,17 +77,23 @@ export function FinancialSummaryPage() {
                   <td>{row.period}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.revOther.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold' }}>¥{row.revTotal.toLocaleString()}</td>
+                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                    <strong>¥{row.revTotal.toLocaleString()}</strong>
+                  </td>
                   
                   <td style={{ textAlign: 'right' }}>¥{row.expLaborMember.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold' }}>¥{row.expTotal.toLocaleString()}</td>
+                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                    <strong>¥{row.expTotal.toLocaleString()}</strong>
+                  </td>
                   
                   <td style={{ textAlign: 'right' }}>¥{row.resWage.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.resEquipment.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold' }}>¥{row.resTotal.toLocaleString()}</td>
+                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                    <strong>¥{row.resTotal.toLocaleString()}</strong>
+                  </td>
                 </tr>
               ))}
             </tbody>

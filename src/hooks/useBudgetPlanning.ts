@@ -55,16 +55,17 @@ export function useBudgetPlanning() {
         });
 
         const activeTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
-        const expSubjects = activeTasks.map((t: any) => ({
-          subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR}（${t.name}）`,
-          taskId: t.id
-        }));
+        const expSubjects = activeTasks.flatMap((t: any) => [
+          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER}（${t.name}）`, taskId: t.id },
+          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER}（${t.name}）`, taskId: t.id },
+          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE}（${t.name}）`, taskId: t.id }
+        ]);
         expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
 
         const expenses = expSubjects.map((es: any) => {
           let dbItem;
           if (es.taskId) {
-            dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId);
+            dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId && b.subject === es.subject);
           } else {
             dbItem = pItems.find(b => b.category === 'expense' && b.subject === es.subject && !b.task_id);
           }

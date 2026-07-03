@@ -67,7 +67,9 @@ export function FinancialRecordPage() {
         if (item.type === 'expense') {
           return [
             { label: '', value: '' },
-            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR },
+            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER },
+            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
+            { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER }
           ];
         }

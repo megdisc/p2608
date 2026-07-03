@@ -4,13 +4,18 @@ export function ScreenCompositionPage() {
   const rows = [
     {
       screen: PAGE_NAMES.SCREEN_PROJECT,
-      tab: ['案件情報', '予算編成', '担当者割当', '進捗状況', '案件状況集計'],
-      existing: ['案件情報', '予算編成', '担当者割当', '進捗状況', '案件状況集計'],
+      tab: ['案件情報', '予算編成', '担当者割当', '進捗状況', '報酬配分', '案件状況集計'],
+      existing: ['案件情報', '予算編成', '担当者割当', '進捗状況', '報酬配分', '案件状況集計'],
     },
     {
       screen: PAGE_NAMES.SCREEN_USER,
-      tab: ['利用者マスタ', '職員マスタ', '日次作業記録', '担当状況集計'],
-      existing: ['利用者設定', '職員設定', '日次作業記録', '担当状況集計'],
+      tab: ['利用者マスタ', 'スキル評価', '工賃単価割当', '作業記録', '担当状況集計', '工賃・控除集計'],
+      existing: ['利用者設定', 'スキル評価', '工賃単価割当', '作業記録', '担当状況集計', '工賃・控除集計'],
+    },
+    {
+      screen: PAGE_NAMES.SCREEN_STAFF,
+      tab: ['職員マスタ'],
+      existing: ['職員設定'],
     },
     {
       screen: PAGE_NAMES.SCREEN_CLIENT,
@@ -19,18 +24,18 @@ export function ScreenCompositionPage() {
     },
     {
       screen: PAGE_NAMES.SCREEN_FINANCE,
-      tab: ['報酬配分', '収支記録'],
-      existing: ['報酬配分', '収支記録'],
+      tab: ['収支記録'],
+      existing: ['収支記録'],
     },
     {
       screen: PAGE_NAMES.SCREEN_SKILL,
-      tab: ['スキルマスタ', 'スキルレベル設定', 'スキル評価'],
-      existing: ['スキル設定', 'スキルレベル設定', 'スキル評価'],
+      tab: ['スキルマスタ', 'スキルレベルマスタ'],
+      existing: ['スキル設定', 'スキルレベル設定'],
     },
     {
       screen: PAGE_NAMES.SCREEN_WAGE,
-      tab: ['工賃単価設定', '工賃単価割当', '工賃・控除集計'],
-      existing: ['工賃単価設定', '工賃単価割当', '工賃・控除集計'],
+      tab: ['工賃単価マスタ'],
+      existing: ['工賃単価設定'],
     },
   ];
 

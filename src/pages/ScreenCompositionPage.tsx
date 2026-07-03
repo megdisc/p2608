@@ -24,8 +24,8 @@ export function ScreenCompositionPage() {
     },
     {
       screen: PAGE_NAMES.SCREEN_FINANCE,
-      tab: ['収支記録'],
-      existing: ['収支記録'],
+      tab: ['収支集計', '収支記録'],
+      existing: ['収支集計', '収支記録'],
     },
     {
       screen: PAGE_NAMES.SCREEN_SKILL,

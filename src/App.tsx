@@ -29,7 +29,8 @@ import {
   BaseWageAssignmentPage,
   SkillLevelPage,
   SkillEvaluationPage,
-  ScreenCompositionPage
+  ScreenCompositionPage,
+  FinancialSummaryPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -94,6 +95,8 @@ function AppContent() {
             <ProjectSummaryPage />
           ) : activeTab === 'assigneeSummary' ? (
             <AssigneeSummaryPage />
+          ) : activeTab === 'financialSummary' ? (
+            <FinancialSummaryPage />
           ) : activeTab === 'wageSummary' ? (
             <WageSummaryPage />
           ) : activeTab === 'budgetPlanning' ? (

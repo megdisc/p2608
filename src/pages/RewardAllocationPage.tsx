@@ -58,6 +58,22 @@ export function RewardAllocationPage() {
 
   const columns: Column<ProgressFlatRecord>[] = [
     { 
+      key: 'allocationStatus', 
+      header: '配分状態', 
+      sortable: false,
+      editable: false,
+      render: (item: any, drafts: any[]) => {
+        if (!item.isFirstInProject) return '';
+        const projectRecords = drafts.filter(d => d.projectId === item.projectId && d.userId);
+        const isConfirmed = projectRecords.some(r => r.isSaved);
+        return isConfirmed ? '確定済' : '未確定';
+      },
+      style: (item: any) => ({
+        width: '80px',
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
+    { 
       key: 'projectType', 
       header: TABLE_COLUMNS.PROJECT_TYPE, 
       sortable: false,

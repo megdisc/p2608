@@ -374,16 +374,19 @@ export function useProgressRecords() {
 
         if (r.userId && r.taskId) {
           const [type, id] = r.userId.split('_');
-          memberUpserts.push({
-            ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
-            year_month: currentMonth,
-            member_id: type === 'member' ? id : null,
-            staff_id: type === 'staff' ? id : null,
-            client_id: type === 'outsource' ? id : null,
-            task_id: r.taskId,
-            contribution_ratio: Number(r.contributionRatio) || 0,
-            deduction_amount: Number(r.deductionAmount) || 0
-          });
+          
+          if (r.isSaved || Number(r.contributionRatio) > 0 || Number(r.deductionAmount) > 0) {
+            memberUpserts.push({
+              ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
+              year_month: currentMonth,
+              member_id: type === 'member' ? id : null,
+              staff_id: type === 'staff' ? id : null,
+              client_id: type === 'outsource' ? id : null,
+              task_id: r.taskId,
+              contribution_ratio: Number(r.contributionRatio) || 0,
+              deduction_amount: Number(r.deductionAmount) || 0
+            });
+          }
         }
       }
 

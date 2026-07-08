@@ -19,13 +19,13 @@
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-blue-300: #dfdfff;
+  --palette-blue-300: #cfcfff;
   --palette-blue-700: #3f3fdf;
-  --palette-bluegreen-300: #dfffff;
+  --palette-bluegreen-300: #afffff;
   --palette-bluegreen-700: #1f8f8f;
-  --palette-red-300: #ffdfdf;
+  --palette-red-300: #ffcfcf;
   --palette-red-700: #df3f3f;
-  --palette-yellow-300: #fdfddf;
+  --palette-yellow-300: #ffffaf;
   --palette-yellow-700: #8f8f1f;
 
   /* --- フォント --- */

@@ -1,4 +1,25 @@
-import { PAGE_NAMES } from '../constants';
+import React from 'react';
+import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
+
+const AGGREGATION_LABEL = `${MENU_CATEGORIES.AGGREGATION}（${MENU_SUBCATEGORIES.AGGREGATION}）`;
+const RECORDING_LABEL = `${MENU_CATEGORIES.RECORDING}（${MENU_SUBCATEGORIES.RECORDING}）`;
+const SETTINGS_LABEL = `${MENU_CATEGORIES.SETTINGS}（${MENU_SUBCATEGORIES.SETTINGS}）`;
+
+const getCategoryLabel = (pageName: string) => {
+  const aggregations = [PAGE_NAMES.PROJECT_SUMMARY, PAGE_NAMES.ASSIGNEE_SUMMARY, PAGE_NAMES.WAGE_SUMMARY, PAGE_NAMES.FINANCIAL_SUMMARY];
+  const recordings = [PAGE_NAMES.SKILL_EVALUATION, PAGE_NAMES.BASE_WAGE_ASSIGNMENT, PAGE_NAMES.PROJECT_INFO, PAGE_NAMES.BUDGET_PLANNING, PAGE_NAMES.ASSIGNEE_ALLOCATION, PAGE_NAMES.DAILY_WORK_RECORD, PAGE_NAMES.PROGRESS_RECORD, PAGE_NAMES.REWARD_ALLOCATION, PAGE_NAMES.FINANCIAL_RECORD];
+  
+  if (aggregations.includes(pageName)) return AGGREGATION_LABEL;
+  if (recordings.includes(pageName)) return RECORDING_LABEL;
+  return SETTINGS_LABEL;
+};
+
+const getCategoryColor = (label: string) => {
+  if (label === AGGREGATION_LABEL) return '#fff9c4'; // Light yellow
+  if (label === RECORDING_LABEL) return '#e3f2fd'; // Light blue
+  if (label === SETTINGS_LABEL) return '#ffebee'; // Light red
+  return 'transparent';
+};
 
 export function ScreenCompositionPage() {
   const rows = [
@@ -56,22 +77,29 @@ export function ScreenCompositionPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th style={{ width: '200px' }}>画面</th>
-              <th>既存の画面名称</th>
+              <th>画面</th>
+              <th>区分</th>
+              <th>タブ（既存の画面名称）</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => (
-              <tr key={i}>
-                <td style={{ verticalAlign: 'top', fontWeight: 'bold' }}>{row.screen}</td>
-                <td style={{ verticalAlign: 'top' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {row.existing.map((item, idx) => (
-                      <div key={idx}>{item}</div>
-                    ))}
-                  </div>
-                </td>
-              </tr>
+              <React.Fragment key={i}>
+                {row.existing.map((item, idx) => {
+                  const label = getCategoryLabel(item);
+                  return (
+                    <tr key={`${i}-${idx}`}>
+                      {idx === 0 && (
+                        <td rowSpan={row.existing.length} style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
+                          {row.screen}
+                        </td>
+                      )}
+                      <td style={{ backgroundColor: getCategoryColor(label), color: '#333333' }}>{label}</td>
+                      <td>{item}</td>
+                    </tr>
+                  );
+                })}
+              </React.Fragment>
             ))}
           </tbody>
         </table>

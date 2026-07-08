@@ -3,39 +3,46 @@ import { PAGE_NAMES } from '../constants';
 export function ScreenCompositionPage() {
   const rows = [
     {
+      screen: PAGE_NAMES.SCREEN_FINANCE,
+      existing: [PAGE_NAMES.FINANCIAL_RECORD, PAGE_NAMES.FINANCIAL_SUMMARY],
+    },
+    {
       screen: PAGE_NAMES.SCREEN_PROJECT,
-      tab: ['案件情報', '予算編成', '担当者割当', '進捗状況', '報酬配分', '案件状況集計'],
-      existing: ['案件情報', '予算編成', '担当者割当', '進捗状況', '報酬配分', '案件状況集計'],
+      existing: [
+        PAGE_NAMES.PROJECT_INFO,
+        PAGE_NAMES.BUDGET_PLANNING,
+        PAGE_NAMES.ASSIGNEE_ALLOCATION,
+        PAGE_NAMES.PROGRESS_RECORD,
+        PAGE_NAMES.REWARD_ALLOCATION,
+        PAGE_NAMES.PROJECT_SUMMARY,
+      ],
     },
     {
       screen: PAGE_NAMES.SCREEN_USER,
-      tab: ['利用者マスタ', 'スキル評価', '工賃単価割当', '作業記録', '担当状況集計', '工賃・控除集計'],
-      existing: ['利用者設定', 'スキル評価', '工賃単価割当', '作業記録', '担当状況集計', '工賃・控除集計'],
+      existing: [
+        PAGE_NAMES.PROJECT_USER,
+        PAGE_NAMES.SKILL_EVALUATION,
+        PAGE_NAMES.BASE_WAGE_ASSIGNMENT,
+        PAGE_NAMES.DAILY_WORK_RECORD,
+        PAGE_NAMES.ASSIGNEE_SUMMARY,
+        PAGE_NAMES.WAGE_SUMMARY,
+      ],
     },
     {
       screen: PAGE_NAMES.SCREEN_STAFF,
-      tab: ['職員マスタ'],
-      existing: ['職員設定'],
+      existing: [PAGE_NAMES.STAFF],
     },
     {
       screen: PAGE_NAMES.SCREEN_CLIENT,
-      tab: ['取引先マスタ'],
-      existing: ['取引先設定'],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_FINANCE,
-      tab: ['収支集計', '収支記録'],
-      existing: ['収支集計', '収支記録'],
+      existing: [PAGE_NAMES.CLIENT],
     },
     {
       screen: PAGE_NAMES.SCREEN_SKILL,
-      tab: ['スキルマスタ', 'スキルレベルマスタ'],
-      existing: ['スキル設定', 'スキルレベル設定'],
+      existing: [PAGE_NAMES.SKILL, PAGE_NAMES.SKILL_LEVEL],
     },
     {
       screen: PAGE_NAMES.SCREEN_WAGE,
-      tab: ['工賃単価マスタ'],
-      existing: ['工賃単価設定'],
+      existing: [PAGE_NAMES.BASE_WAGE],
     },
   ];
 
@@ -50,7 +57,6 @@ export function ScreenCompositionPage() {
           <thead>
             <tr>
               <th style={{ width: '200px' }}>画面</th>
-              <th>タブ</th>
               <th>既存の画面名称</th>
             </tr>
           </thead>
@@ -58,13 +64,6 @@ export function ScreenCompositionPage() {
             {rows.map((row, i) => (
               <tr key={i}>
                 <td style={{ verticalAlign: 'top', fontWeight: 'bold' }}>{row.screen}</td>
-                <td style={{ verticalAlign: 'top' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {row.tab.map((item, idx) => (
-                      <div key={idx}>{item}</div>
-                    ))}
-                  </div>
-                </td>
                 <td style={{ verticalAlign: 'top' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                     {row.existing.map((item, idx) => (

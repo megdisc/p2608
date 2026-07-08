@@ -241,36 +241,36 @@ INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cd
 
 -- Project Budgets
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 3300000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃）（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃）（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 350000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費・外注加工費', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '外注加工費（サーバー構築）', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
 
 -- 新規サービスLP制作
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '売上', 1000000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃）（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
 -- 社内基幹システム移行
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '売上', 1200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'expense', '労務費・外注加工費', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1200000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'expense', '外注加工費（データ移行計画）', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1200000);
 
 -- パンの販売・カフェ運営
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '売上', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費・外注加工費', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費・外注加工費', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（製造業務）', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（販売・接客業務）', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
 -- 社内業務マニュアル作成
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'revenue', '売上', 100000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費・外注加工費', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費（利用者工賃）（マニュアル作成）', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
 
 -- 基幹システム保守運用
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '売上', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費・外注加工費', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃）（保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
 
 -- Add daily work records for 2026-06-29
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3) ON CONFLICT DO NOTHING;

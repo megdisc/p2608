@@ -155,9 +155,21 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
 
         <div className="nav-section">
           <div className="nav-category">
-            画面構成
-            <div className="nav-subcategory">検討中</div>
+            {MENU_CATEGORIES.SCREEN_COMPOSITION}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SCREEN_COMPOSITION}</div>
           </div>
+          <button 
+            className={`nav-button ${activeTab === 'screenComposition' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenComposition')}
+          >
+            {PAGE_NAMES.SCREEN_COMPOSITION}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'screenFinance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenFinance')}
+          >
+            {PAGE_NAMES.SCREEN_FINANCE}
+          </button>
           <button 
             className={`nav-button ${activeTab === 'screenProject' ? 'active' : ''}`}
             onClick={() => setActiveTab('screenProject')}
@@ -181,12 +193,6 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             onClick={() => setActiveTab('screenClient')}
           >
             {PAGE_NAMES.SCREEN_CLIENT}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'screenFinance' ? 'active' : ''}`}
-            onClick={() => setActiveTab('screenFinance')}
-          >
-            {PAGE_NAMES.SCREEN_FINANCE}
           </button>
           <button 
             className={`nav-button ${activeTab === 'screenSkill' ? 'active' : ''}`}

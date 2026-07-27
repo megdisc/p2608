@@ -1,5 +1,7 @@
 import React from 'react';
-import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
+import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES, getScreenConfigForTab } from '../constants';
+import { useNavigation } from '../contexts';
+import { Tabs } from '../components/ui';
 
 const AGGREGATION_LABEL = `${MENU_CATEGORIES.AGGREGATION}（${MENU_SUBCATEGORIES.AGGREGATION}）`;
 const RECORDING_LABEL = `${MENU_CATEGORIES.RECORDING}（${MENU_SUBCATEGORIES.RECORDING}）`;
@@ -67,10 +69,19 @@ export function ScreenCompositionPage() {
     },
   ];
 
+  const navContext = useNavigation();
+  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const displayTitle = screenConfig ? screenConfig.screenName : '画面構成表';
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>画面構成表</h2>
+        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {screenConfig && (
+            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+          )}
+        </div>
       </div>
 
       <div className="table-container">

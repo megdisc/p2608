@@ -34,6 +34,7 @@ import {
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { NavigationProvider } from './contexts/NavigationContext';
 import { MESSAGES } from './constants';
 
 function AppContent() {
@@ -67,9 +68,10 @@ function AppContent() {
 
   if (activeSystem === 'project') {
     return (
-      <AlertProvider>
-        <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {activeTab === 'projectUser' ? (
+      <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
+        <AlertProvider>
+          <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            {activeTab === 'projectUser' ? (
             <ProjectUserPage />
           ) : activeTab === 'skill' ? (
             <SkillPage />
@@ -114,15 +116,17 @@ function AppContent() {
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
             </div>
           )}
-        </ProjectAppLayout>
-      </AlertProvider>
+          </ProjectAppLayout>
+        </AlertProvider>
+      </NavigationProvider>
     );
   }
 
   return (
-    <AlertProvider>
-      <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-        {activeTab === 'inventory' && <InventoryPage />}
+    <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
+      <AlertProvider>
+        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          {activeTab === 'inventory' && <InventoryPage />}
         {activeTab === 'transaction' && <TransactionPage />}
         {activeTab === 'stocktaking' && <StocktakingPage />}
         {activeTab === 'master' && <MasterPage />}
@@ -130,8 +134,9 @@ function AppContent() {
         {activeTab === 'supplier' && <SupplierPage />}
         {activeTab === 'location' && <LocationPage />}
         {activeTab === 'staff' && <StaffPage />}
-      </AppLayout>
-    </AlertProvider>
+        </AppLayout>
+      </AlertProvider>
+    </NavigationProvider>
   );
 }
 

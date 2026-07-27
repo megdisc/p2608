@@ -19,3 +19,4 @@ export * from './Pagination';
 export * from './Tooltip';
 export * from './SortIcon';
 export * from './MultiRowHeader';
+export * from './Tabs';

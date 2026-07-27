@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, MESSAGES } from '../constants';
+import { MonthInput, Pagination, MultiRowHeader, Button, Tabs, type HeaderCell } from '../components/ui';
+import { PAGE_NAMES, MESSAGES, getScreenConfigForTab } from '../constants';
+import { useNavigation } from '../contexts';
 import { getCurrentJSTMonth } from '../utils';
 import { useAlert } from '../contexts/AlertContext';
 import { useWageSummary } from '../hooks';
@@ -45,10 +46,19 @@ export function WageSummaryPage() {
   ];
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
+  const navContext = useNavigation();
+  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.WAGE_SUMMARY;
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{PAGE_NAMES.WAGE_SUMMARY}</h2>
+        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {screenConfig && (
+            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+          )}
+        </div>
       </div>
 
       <div className="table-container">

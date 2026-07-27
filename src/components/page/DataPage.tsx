@@ -1,5 +1,7 @@
-import { DataTable } from '../ui';
+import { DataTable, Tabs } from '../ui';
 import type { Column } from '../ui';
+import { useNavigation } from '../../contexts';
+import { getScreenConfigForTab } from '../../constants';
 
 type DataPageProps<T> = {
   title: string;
@@ -60,11 +62,20 @@ export function DataPage<T extends { id: string }>({
   disableAddButton,
   highlightInputColumns
 }: DataPageProps<T>) {
+  const navContext = useNavigation();
+  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const displayTitle = screenConfig ? screenConfig.screenName : title;
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{title}</h2>
-        {headerRight && <div>{headerRight}</div>}
+        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {screenConfig && navContext && (
+            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+          )}
+          {headerRight && <div>{headerRight}</div>}
+        </div>
       </div>
       <DataTable 
         data={data} 

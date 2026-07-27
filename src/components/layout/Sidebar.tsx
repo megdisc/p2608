@@ -20,14 +20,32 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
       <nav className="nav-menu">
         <div className="nav-section">
           <div className="nav-category">
-            {MENU_CATEGORIES.AGGREGATION}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
+            {MENU_CATEGORIES.SETTINGS}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SETTINGS}</div>
           </div>
           <button 
-            className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
-            onClick={() => setActiveTab('inventory')}
+            className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
+            onClick={() => setActiveTab('category')}
           >
-            {PAGE_NAMES.INVENTORY}
+            {PAGE_NAMES.CATEGORY}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
+            onClick={() => setActiveTab('location')}
+          >
+            {PAGE_NAMES.LOCATION}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
+            onClick={() => setActiveTab('supplier')}
+          >
+            {PAGE_NAMES.SUPPLIER}
+          </button>
+          <button 
+            className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
+            onClick={() => setActiveTab('staff')}
+          >
+            {PAGE_NAMES.STAFF}
           </button>
         </div>
 
@@ -58,32 +76,14 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
 
         <div className="nav-section">
           <div className="nav-category">
-            {MENU_CATEGORIES.SETTINGS}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SETTINGS}</div>
+            {MENU_CATEGORIES.AGGREGATION}
+            <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
           </div>
           <button 
-            className={`nav-button ${activeTab === 'category' ? 'active' : ''}`}
-            onClick={() => setActiveTab('category')}
+            className={`nav-button ${activeTab === 'inventory' ? 'active' : ''}`}
+            onClick={() => setActiveTab('inventory')}
           >
-            {PAGE_NAMES.CATEGORY}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'location' ? 'active' : ''}`}
-            onClick={() => setActiveTab('location')}
-          >
-            {PAGE_NAMES.LOCATION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'supplier' ? 'active' : ''}`}
-            onClick={() => setActiveTab('supplier')}
-          >
-            {PAGE_NAMES.SUPPLIER}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
-            onClick={() => setActiveTab('staff')}
-          >
-            {PAGE_NAMES.STAFF}
+            {PAGE_NAMES.INVENTORY}
           </button>
         </div>
       </nav>

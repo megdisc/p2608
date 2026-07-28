@@ -93,12 +93,6 @@ export function ScreenCompositionPage() {
     { physicalName: 'monthly_task_progress', logicalName: '月次タスク進捗', description: '月ごとのタスク進捗状況（進捗率など）' },
     { physicalName: 'monthly_member_contributions', logicalName: '月次メンバー貢献度', description: '月ごとのメンバーの貢献度・報酬分配' },
     { physicalName: 'financial_records', logicalName: '財務記録', description: '確定した財務データ（売上・経費等）' },
-    { physicalName: 'items', logicalName: 'アイテム', description: '備品・資材のマスターデータ' },
-    { physicalName: 'categories', logicalName: 'カテゴリ', description: 'アイテムのカテゴリ分類' },
-    { physicalName: 'locations', logicalName: '場所', description: 'アイテムの保管場所' },
-    { physicalName: 'suppliers', logicalName: '仕入先', description: 'アイテムの仕入先情報' },
-    { physicalName: 'transactions', logicalName: '取引（受入・払出）', description: 'アイテムの入出庫記録' },
-    { physicalName: 'stocktakings', logicalName: '棚卸し', description: 'アイテムの棚卸し記録' },
   ];
 
   return (

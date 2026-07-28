@@ -1,1 +1,0 @@
--- Moved daily work records insertion to seed.sql

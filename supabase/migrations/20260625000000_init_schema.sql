@@ -390,6 +390,33 @@ SET default_table_access_method = "heap";
 -- ==========================================
 
 -- ------------------------------------------
+-- テーブル: base_wages (工賃単価)
+-- ------------------------------------------
+CREATE TABLE IF NOT EXISTS "public"."base_wages" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL PRIMARY KEY,
+    "wage" integer NOT NULL,
+    "description" "text",
+    "is_deleted" boolean DEFAULT false NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."base_wages" OWNER TO "postgres";
+
+-- ------------------------------------------
+-- テーブル: skill_levels
+-- ------------------------------------------
+CREATE TABLE IF NOT EXISTS "public"."skill_levels" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL PRIMARY KEY,
+    "description" text,
+    "level_value" integer DEFAULT 1 NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."skill_levels" OWNER TO "postgres";
+
+-- ------------------------------------------
 -- テーブル: categories (カテゴリ)
 -- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."categories" (
@@ -495,7 +522,8 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "is_deleted" boolean DEFAULT false NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "email" character varying
+    "email" character varying,
+    "base_wage_id" "uuid" REFERENCES "public"."base_wages"("id") ON DELETE SET NULL
 );
 
 
@@ -515,6 +543,7 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_member_contributions" (
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "staff_id" "uuid",
     "client_id" "uuid",
+    "deduction_amount" integer DEFAULT 0 NOT NULL,
     CONSTRAINT "check_contribution_assignee_type" CHECK (((("member_id" IS NOT NULL) AND ("staff_id" IS NULL) AND ("client_id" IS NULL)) OR (("member_id" IS NULL) AND ("staff_id" IS NOT NULL) AND ("client_id" IS NULL)) OR (("member_id" IS NULL) AND ("staff_id" IS NULL) AND ("client_id" IS NOT NULL)))),
     CONSTRAINT "monthly_progress_records_contribution_ratio_check" CHECK ((("contribution_ratio" >= (0)::numeric) AND ("contribution_ratio" <= (100)::numeric)))
 );
@@ -579,7 +608,8 @@ ALTER TABLE "public"."project_task_assignees" OWNER TO "postgres";
 -- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."project_task_skills" (
     "task_id" "uuid" NOT NULL,
-    "skill_id" "uuid" NOT NULL
+    "skill_id" "uuid" NOT NULL,
+    "skill_level_id" "uuid" REFERENCES "public"."skill_levels"("id") ON DELETE SET NULL
 );
 
 
@@ -596,7 +626,8 @@ CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "is_deleted" boolean DEFAULT false NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying
+    "yomigana" character varying,
+    "is_canceled" boolean DEFAULT false NOT NULL
 );
 
 
@@ -713,7 +744,39 @@ CREATE TABLE IF NOT EXISTS "public"."transactions" (
 
 ALTER TABLE "public"."transactions" OWNER TO "postgres";
 
+-- ------------------------------------------
+-- テーブル: member_skill_evaluations
+-- ------------------------------------------
+CREATE TABLE IF NOT EXISTS "public"."member_skill_evaluations" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL PRIMARY KEY,
+    "member_id" "uuid" NOT NULL,
+    "skill_id" "uuid" NOT NULL,
+    "skill_level_id" "uuid",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    UNIQUE("member_id", "skill_id")
+);
 
+ALTER TABLE "public"."member_skill_evaluations" OWNER TO "postgres";
+
+-- ------------------------------------------
+-- テーブル: financial_records
+-- ------------------------------------------
+CREATE TABLE IF NOT EXISTS "public"."financial_records" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL PRIMARY KEY,
+    "period" date NOT NULL,
+    "project_id" "uuid",
+    "type" text NOT NULL CHECK ("type" IN ('revenue', 'expense')),
+    "subject" text NOT NULL,
+    "amount" integer DEFAULT 0 NOT NULL,
+    "recorded_date" date NOT NULL,
+    "recorded_by" "uuid",
+    "is_limited" boolean DEFAULT false NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE "public"."financial_records" OWNER TO "postgres";
 
 -- ==========================================
 -- 5. ビュー定義 (Views)
@@ -968,6 +1031,10 @@ CREATE OR REPLACE TRIGGER "update_staffs_updated_at" BEFORE UPDATE ON "public"."
 
 
 CREATE OR REPLACE TRIGGER "update_suppliers_updated_at" BEFORE UPDATE ON "public"."suppliers" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+CREATE OR REPLACE TRIGGER "update_base_wages_updated_at" BEFORE UPDATE ON "public"."base_wages" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+CREATE OR REPLACE TRIGGER "update_skill_levels_updated_at" BEFORE UPDATE ON "public"."skill_levels" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+CREATE OR REPLACE TRIGGER "update_member_skill_evaluations_updated_at" BEFORE UPDATE ON "public"."member_skill_evaluations" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+CREATE OR REPLACE TRIGGER "update_financial_records_updated_at" BEFORE UPDATE ON "public"."financial_records" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
@@ -1108,6 +1175,15 @@ ALTER TABLE ONLY "public"."transactions"
 
 ALTER TABLE ONLY "public"."transactions"
     ADD CONSTRAINT "transactions_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "public"."staffs"("id");
+
+ALTER TABLE ONLY "public"."member_skill_evaluations"
+    ADD CONSTRAINT "member_skill_evaluations_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    ADD CONSTRAINT "member_skill_evaluations_skill_id_fkey" FOREIGN KEY ("skill_id") REFERENCES "public"."skills"("id") ON DELETE CASCADE,
+    ADD CONSTRAINT "member_skill_evaluations_skill_level_id_fkey" FOREIGN KEY ("skill_level_id") REFERENCES "public"."skill_levels"("id") ON DELETE SET NULL;
+
+ALTER TABLE ONLY "public"."financial_records"
+    ADD CONSTRAINT "financial_records_project_id_fkey" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE CASCADE,
+    ADD CONSTRAINT "financial_records_recorded_by_fkey" FOREIGN KEY ("recorded_by") REFERENCES "public"."staffs"("id") ON DELETE SET NULL;
 
 
 
@@ -1545,3 +1621,16 @@ SET search_path = public, extensions;
 -- 10. 検索パスの修正 (Search Path Fix)
 -- ==========================================
 SET search_path = public, extensions;
+
+-- ==========================================
+-- 11. システム予約データ (System Reserved Data)
+-- ==========================================
+-- Create "Other" Project (System reserved)
+INSERT INTO projects (id, name, yomigana, project_type, start_date)
+VALUES ('00000000-0000-0000-0000-000000000001', 'その他', 'んんん', 'その他', '2000-01-01')
+ON CONFLICT (id) DO NOTHING;
+
+-- Create "Other" Task (System reserved)
+INSERT INTO project_tasks (id, project_id, name, yomigana)
+VALUES ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'その他', 'んんん')
+ON CONFLICT (id) DO NOTHING;

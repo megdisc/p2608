@@ -31,6 +31,7 @@ type DataPageProps<T> = {
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
   disableAddButton?: boolean;
   highlightInputColumns?: boolean;
+  hideHeader?: boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -60,7 +61,8 @@ export function DataPage<T extends { id: string }>({
   subSubItemsKey,
   onAddSubSubRow,
   disableAddButton,
-  highlightInputColumns
+  highlightInputColumns,
+  hideHeader
 }: DataPageProps<T>) {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -68,15 +70,17 @@ export function DataPage<T extends { id: string }>({
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {screenConfig && navContext && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
-          )}
-          {headerRight && <div>{headerRight}</div>}
+      {!hideHeader && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
+          <h2 style={{ margin: 0 }}>{displayTitle}</h2>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            {screenConfig && navContext && (
+              <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+            )}
+            {headerRight && <div>{headerRight}</div>}
+          </div>
         </div>
-      </div>
+      )}
       <DataTable 
         data={data} 
         columns={columns} 

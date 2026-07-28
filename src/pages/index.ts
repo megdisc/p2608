@@ -26,3 +26,4 @@ export * from './SkillLevelPage';
 export * from './SkillEvaluationPage';
 export * from './FinancialSummaryPage';
 export * from './ScreenCompositionPage';
+export * from './ScreenFinancePage';

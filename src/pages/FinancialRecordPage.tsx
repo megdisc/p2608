@@ -142,6 +142,7 @@ export function FinancialRecordPage() {
       onAddRow={handleAddRow}
       showDateFilter={true}
       dateFilterKey="period"
+      hideHeader={true}
     />
   );
 }

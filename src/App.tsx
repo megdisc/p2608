@@ -18,7 +18,6 @@ import {
   ClientPage,
   DailyWorkRecordPage,
   ProgressRecordPage,
-  FinancialRecordPage,
   RewardAllocationPage,
   ProjectSummaryPage,
   AssigneeSummaryPage,
@@ -30,7 +29,7 @@ import {
   SkillLevelPage,
   SkillEvaluationPage,
   ScreenCompositionPage,
-  FinancialSummaryPage
+  ScreenFinancePage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -83,8 +82,8 @@ function AppContent() {
             <DailyWorkRecordPage />
           ) : activeTab === 'progressRecord' ? (
             <ProgressRecordPage />
-          ) : activeTab === 'financialRecord' ? (
-            <FinancialRecordPage />
+          ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
+            <ScreenFinancePage />
           ) : activeTab === 'client' ? (
             <ClientPage />
           ) : activeTab === 'project' ? (
@@ -97,8 +96,6 @@ function AppContent() {
             <ProjectSummaryPage />
           ) : activeTab === 'assigneeSummary' ? (
             <AssigneeSummaryPage />
-          ) : activeTab === 'financialSummary' ? (
-            <FinancialSummaryPage />
           ) : activeTab === 'wageSummary' ? (
             <WageSummaryPage />
           ) : activeTab === 'budgetPlanning' ? (

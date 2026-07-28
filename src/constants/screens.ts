@@ -69,8 +69,8 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_COMPOSITION: {
     screenName: PAGE_NAMES.SCREEN_COMPOSITION,
     tabs: [
-      { id: 'screenComposition', label: '画面構成' },
-      { id: 'tableComposition', label: 'テーブル構成' },
+      { id: 'screenComposition', label: PAGE_NAMES.TAB_SCREEN_COMPOSITION },
+      { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },
     ],
   }
 };

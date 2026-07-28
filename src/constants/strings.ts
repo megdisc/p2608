@@ -244,6 +244,8 @@ export const PAGE_NAMES = {
   SCREEN_FINANCE: '収支管理',
   SCREEN_SKILL: 'スキル体系管理',
   SCREEN_WAGE: '工賃体系管理',
+  TAB_SCREEN_COMPOSITION: '画面構成',
+  TAB_TABLE_COMPOSITION: 'テーブル構成',
 };
 
 export const TABLE_COLUMNS = {

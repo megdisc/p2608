@@ -99,12 +99,6 @@ export function FinancialRecordPage() {
       editable: true, 
       inputType: 'select', 
       options: staffOptions
-    },
-    {
-      key: 'isLimited',
-      header: TABLE_COLUMNS.RESTRICTION,
-      editable: true,
-      inputType: 'checkbox'
     }
   ];
 
@@ -143,6 +137,9 @@ export function FinancialRecordPage() {
       showDateFilter={true}
       dateFilterKey="period"
       hideHeader={true}
+      showRestrictionColumn={true}
+      canEditRow={(item) => !item.isLimited}
+      canDeleteRow={(item) => !item.isLimited}
     />
   );
 }

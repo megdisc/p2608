@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
 import type { MemberItem, ProjectItem, StaffItem, ClientItem } from '../types';
-import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
+import { getCurrentJSTMonth, getPreviousMonth, getCurrentJSTDateOnly } from '../utils';
 
 export type MonthlyTaskRecord = {
   id: string;
@@ -419,6 +419,89 @@ export function useProgressRecords() {
       for (const res of results) {
         if (res.error) throw res.error;
       }
+
+      // ------ Financial Records Sync ------
+      try {
+        const [taskRes, memRes] = await Promise.all([
+          supabase.from('monthly_task_progress').select('*').eq('year_month', currentMonth),
+          supabase.from('monthly_member_contributions').select('*').eq('year_month', currentMonth)
+        ]);
+        
+        if (!taskRes.error && !memRes.error) {
+          const currentTasks = taskRes.data || [];
+          const currentMembers = memRes.data || [];
+          
+          const [year, month] = currentMonth.split('-');
+          const periodDate = `${year}-${month}-01`;
+          const recordedDate = getCurrentJSTDateOnly();
+
+          // 1. Delete all existing automated records for this month and these projects
+          const projectIds = dbProjects.map(p => p.id);
+          if (projectIds.length > 0) {
+            await supabase.from('financial_records')
+              .delete()
+              .eq('period', periodDate)
+              .eq('is_limited', true)
+              .in('project_id', projectIds);
+          }
+
+          const financialInserts: any[] = [];
+
+          for (const p of dbProjects) {
+            const activeTasks = p.tasks.filter(t => !t.isCanceled);
+            if (activeTasks.length === 0) continue;
+            
+            const all100 = activeTasks.every(t => {
+              const r = currentTasks.find(ct => ct.task_id === t.id);
+              return r && Number(r.current_progress) === 100;
+            });
+            
+            if (all100) {
+              let expMember = 0;
+              let expStaff = 0;
+              let expOutsource = 0;
+
+              for (const t of activeTasks) {
+                const budget = t.laborBudget || 0;
+                if (budget === 0) continue;
+
+                const taskMems = currentMembers.filter(cm => cm.task_id === t.id);
+                const totalRatio = taskMems.reduce((sum, cm) => sum + (Number(cm.contribution_ratio) || 0), 0);
+                
+                if (totalRatio > 0) {
+                  for (const cm of taskMems) {
+                    const ratio = Number(cm.contribution_ratio) || 0;
+                    const allocation = Math.floor(budget * (ratio / totalRatio));
+                    const deduction = Number(cm.deduction_amount) || 0;
+                    const unitPrice = allocation - deduction; 
+                    
+                    if (cm.member_id) expMember += unitPrice;
+                    else if (cm.staff_id) expStaff += unitPrice;
+                    else if (cm.client_id) expOutsource += unitPrice;
+                  }
+                }
+              }
+              
+              if (expMember > 0) {
+                financialInserts.push({ period: periodDate, project_id: p.id, type: 'expense', subject: '労務費（利用者工賃）', amount: expMember, recorded_date: recordedDate, is_limited: true });
+              }
+              if (expStaff > 0) {
+                financialInserts.push({ period: periodDate, project_id: p.id, type: 'expense', subject: '労務費（その他）', amount: expStaff, recorded_date: recordedDate, is_limited: true });
+              }
+              if (expOutsource > 0) {
+                financialInserts.push({ period: periodDate, project_id: p.id, type: 'expense', subject: '外注加工費', amount: expOutsource, recorded_date: recordedDate, is_limited: true });
+              }
+            }
+          }
+
+          if (financialInserts.length > 0) {
+            await supabase.from('financial_records').insert(financialInserts);
+          }
+        }
+      } catch (syncErr) {
+        console.error('Failed to sync financial records', syncErr);
+      }
+      // ------------------------------------
 
       await fetchRecords(currentMonth);
       await fetchMasters();

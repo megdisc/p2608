@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Pagination, MultiSelectDropdown, SortIcon } from '../components';
-import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
+import { TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
 
 import { supabase } from '../lib';
 import type { MemberItem, ClientItem, StaffItem } from '../types';

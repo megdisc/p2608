@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, MESSAGES } from '../constants';
+import { MESSAGES } from '../constants';
 
 import { getCurrentJSTMonth } from '../utils';
 import { useAlert } from '../contexts/AlertContext';

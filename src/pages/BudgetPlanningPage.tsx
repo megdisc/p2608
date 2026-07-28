@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
+import { TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 
 import { useAlert } from '../contexts/AlertContext';
 

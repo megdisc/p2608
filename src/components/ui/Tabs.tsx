@@ -1,5 +1,5 @@
 import type { Tab } from '../../types';
-import type { ScreenTabConfig } from '../../constants';
+import type { ScreenTabConfig } from '../../config';
 
 type TabsProps = {
   tabs: ScreenTabConfig[];

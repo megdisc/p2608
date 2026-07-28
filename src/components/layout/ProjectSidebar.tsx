@@ -24,7 +24,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             <div className="nav-subcategory">{MENU_SUBCATEGORIES.SCREEN_COMPOSITION}</div>
           </div>
           <button 
-            className={`nav-button ${activeTab === 'screenComposition' ? 'active' : ''}`}
+            className={`nav-button ${['screenComposition', 'tableComposition'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('screenComposition')}
           >
             {PAGE_NAMES.SCREEN_COMPOSITION}

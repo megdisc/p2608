@@ -138,6 +138,7 @@ export function FinancialRecordPage() {
       dateFilterKey="period"
       hideHeader={true}
       showRestrictionColumn={true}
+      restrictionTooltipText="報酬配分による自動表示データは編集不可です"
       canEditRow={(item) => !item.isLimited}
       canDeleteRow={(item) => !item.isLimited}
     />

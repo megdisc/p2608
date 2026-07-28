@@ -241,9 +241,12 @@ INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cd
 
 -- Project Budgets
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 3300000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃）（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃）（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
+
+-- 完了案件の報酬配分による自動生成収支記録のシード
+INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', true, '2026-06-30');
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 350000);
@@ -252,8 +255,11 @@ INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES 
 
 -- 新規サービスLP制作
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '売上', 1000000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃）（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
+INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
+
+-- 完了案件の報酬配分による自動生成収支記録のシード (新規Webサービス開発支援)
+INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', true, '2026-06-30');
 
 -- 社内基幹システム移行
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '売上', 1200000);

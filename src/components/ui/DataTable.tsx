@@ -61,6 +61,7 @@ type DataTableProps<T> = {
   onSingleMonthChange?: (month: string) => void;
   disableAddButton?: boolean;
   highlightInputColumns?: boolean;
+  restrictionTooltipText?: string;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -88,7 +89,8 @@ export function DataTable<T extends { id: string }>({
   singleMonth,
   onSingleMonthChange,
   disableAddButton,
-  highlightInputColumns
+  highlightInputColumns,
+  restrictionTooltipText
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -480,6 +482,12 @@ export function DataTable<T extends { id: string }>({
     // Default render for non-editable state
     if (col.render) return col.render(item, draftData, setDraftData);
     
+    if (col.inputType === 'select' || col.inputType === 'radio') {
+      const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
+      const option = opts.find(o => o.value === item[col.key]);
+      return option ? option.label : item[col.key];
+    }
+    
     if (col.inputType === 'date' && item[col.key]) {
       return <DateInput value={item[col.key]} onChange={() => {}} />;
     }
@@ -613,7 +621,7 @@ export function DataTable<T extends { id: string }>({
                     className={isDeleted ? 'deleted-row' : ''}
                     onMouseEnter={(e) => {
                       if (showRestrictionColumn && !isRowEditable) {
-                        setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: MESSAGES.RESTRICTED_EDIT });
+                        setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: restrictionTooltipText || MESSAGES.RESTRICTED_EDIT });
                       }
                     }}
                     onMouseMove={(e) => {

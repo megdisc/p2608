@@ -5,9 +5,7 @@
 // システム・モジュール名に関する定数群
 export const WORDS_SYSTEM = {
   SYSTEM_ID: 'p2608',
-  SYSTEM_NAME: '統合管理システム',
-  SYSTEM_NAME_INVENTORY: '在庫管理システム',
-  SYSTEM_NAME_PROJECT: '工賃管理システム',
+  SYSTEM_NAME: '工賃管理システム',
 
   // モジュール名
   AGGREGATION: '集計系',
@@ -84,8 +82,7 @@ export const WORDS_CONTACT_AUTH = {
   PASSWORD: 'パスワード',
   PASSWORD_PLACEHOLDER: '••••••••',
   PHONE: '電話番号',
-  LOGIN_INVENTORY: '在庫管理システムへログイン',
-  LOGIN_PROJECT: '工賃管理システムへログイン',
+  LOGIN: 'ログイン',
   LOGOUT: 'ログアウト',
 };
 
@@ -191,8 +188,6 @@ export const WORDS_MESSAGE = {
  */
 
 export const SYSTEM_NAME = WORDS_SYSTEM.SYSTEM_NAME;
-export const SYSTEM_NAME_INVENTORY = WORDS_SYSTEM.SYSTEM_NAME_INVENTORY;
-export const SYSTEM_NAME_PROJECT = WORDS_SYSTEM.SYSTEM_NAME_PROJECT;
 export const SYSTEM_ID = WORDS_SYSTEM.SYSTEM_ID;
 
 export const MENU_CATEGORIES = {
@@ -335,8 +330,7 @@ export const LOGIN_LABELS = {
 };
 
 export const BUTTON_LABELS = {
-  LOGIN_INVENTORY: WORDS_CONTACT_AUTH.LOGIN_INVENTORY,
-  LOGIN_PROJECT: WORDS_CONTACT_AUTH.LOGIN_PROJECT,
+  LOGIN: WORDS_CONTACT_AUTH.LOGIN,
   LOGOUT: WORDS_CONTACT_AUTH.LOGOUT,
   ADD: WORDS_COMMON.ADD,
   SAVE: WORDS_COMMON.SAVE,

@@ -1,17 +1,8 @@
-import { AppLayout, ProjectAppLayout } from './components';
+import { ProjectAppLayout } from './components';
 import { useState, useEffect, useRef } from 'react';
 import './index.css';
 import type { Tab } from './types';
-import { 
-  InventoryPage, 
-  TransactionPage, 
-  StocktakingPage, 
-  MasterPage, 
-  CategoryPage, 
-  SupplierPage, 
-  LocationPage,
-  StaffPage,
-  LoginPage,
+import {
   ScreenCompositionPage,
   ScreenFinancePage,
   ScreenProjectPage,
@@ -19,7 +10,8 @@ import {
   ScreenStaffPage,
   ScreenClientPage,
   ScreenSkillPage,
-  ScreenWagePage
+  ScreenWagePage,
+  LoginPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -27,25 +19,21 @@ import { NavigationProvider } from './contexts/NavigationContext';
 import { MESSAGES } from './constants';
 
 function AppContent() {
-  const { isAuthenticated, activeSystem } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = sessionStorage.getItem('activeTab');
     if (saved) return saved as Tab;
-    return activeSystem === 'project' ? 'projectSummary' : 'inventory';
+    return 'projectSummary';
   });
 
   const prevAuth = useRef(isAuthenticated);
 
   useEffect(() => {
     if (!prevAuth.current && isAuthenticated) {
-      if (activeSystem === 'inventory') {
-        setActiveTab('inventory');
-      } else if (activeSystem === 'project') {
-        setActiveTab('projectSummary');
-      }
+      setActiveTab('projectSummary');
     }
     prevAuth.current = isAuthenticated;
-  }, [isAuthenticated, activeSystem]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     sessionStorage.setItem('activeTab', activeTab);
@@ -55,51 +43,32 @@ function AppContent() {
     return <LoginPage />;
   }
 
-  if (activeSystem === 'project') {
-    return (
-      <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
-        <AlertProvider>
-          <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-            {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary', 'screenUser'].includes(activeTab) ? (
-              <ScreenUserPage />
-            ) : ['staff', 'screenStaff'].includes(activeTab) ? (
-              <ScreenStaffPage />
-            ) : ['client', 'screenClient'].includes(activeTab) ? (
-              <ScreenClientPage />
-            ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
-              <ScreenSkillPage />
-            ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
-              <ScreenWagePage />
-            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary', 'screenProject'].includes(activeTab) ? (
-              <ScreenProjectPage />
-            ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
-              <ScreenFinancePage />
-            ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
-              <ScreenCompositionPage />
+  return (
+    <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
+      <AlertProvider>
+        <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+          {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary', 'screenUser'].includes(activeTab) ? (
+            <ScreenUserPage />
+          ) : ['staff', 'screenStaff'].includes(activeTab) ? (
+            <ScreenStaffPage />
+          ) : ['client', 'screenClient'].includes(activeTab) ? (
+            <ScreenClientPage />
+          ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
+            <ScreenSkillPage />
+          ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
+            <ScreenWagePage />
+          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary', 'screenProject'].includes(activeTab) ? (
+            <ScreenProjectPage />
+          ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
+            <ScreenFinancePage />
+          ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
+            <ScreenCompositionPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
             </div>
           )}
-          </ProjectAppLayout>
-        </AlertProvider>
-      </NavigationProvider>
-    );
-  }
-
-  return (
-    <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
-      <AlertProvider>
-        <AppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {activeTab === 'inventory' && <InventoryPage />}
-        {activeTab === 'transaction' && <TransactionPage />}
-        {activeTab === 'stocktaking' && <StocktakingPage />}
-        {activeTab === 'master' && <MasterPage />}
-        {activeTab === 'category' && <CategoryPage />}
-        {activeTab === 'supplier' && <SupplierPage />}
-        {activeTab === 'location' && <LocationPage />}
-        {activeTab === 'staff' && <StaffPage />}
-        </AppLayout>
+        </ProjectAppLayout>
       </AlertProvider>
     </NavigationProvider>
   );

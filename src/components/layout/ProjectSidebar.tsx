@@ -1,6 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth } from '../../contexts';
-import { SYSTEM_NAME_PROJECT, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
+import { SYSTEM_NAME, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type ProjectSidebarProps = {
   activeTab: Tab;
@@ -9,12 +9,13 @@ type ProjectSidebarProps = {
 
 export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps) {
   const { logout, user } = useAuth();
+  
 
   return (
     <aside className="sidebar">
       <header className="header">
         <span className="system-id">{SYSTEM_ID}</span>
-        <h1>{SYSTEM_NAME_PROJECT}</h1>
+        <h1>{SYSTEM_NAME}</h1>
       </header>
       
       <nav className="nav-menu">

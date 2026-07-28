@@ -2,24 +2,22 @@ import { Button, Input } from '../components';
 import { useState } from 'react';
 import { useAuth } from '../contexts';
 import { SYSTEM_NAME, SYSTEM_ID, LOGIN_LABELS, BUTTON_LABELS, PLACEHOLDERS } from '../constants';
-import type { SystemType } from '../types';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
 
-  const handleLogin = async (systemType: SystemType) => {
-    // 現状はバリデーションせずに login() を呼び出す
-    await login(email, password, systemType);
+  const handleLogin = async () => {
+    await login(email, password);
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <h1>{SYSTEM_NAME}</h1>
           <span className="system-id">{SYSTEM_ID}</span>
+          <h1>{SYSTEM_NAME}</h1>
         </div>
         
         <div className="login-form">
@@ -52,17 +50,9 @@ export function LoginPage() {
               type="button" 
               variant="primary" 
               style={{ width: '100%' }}
-              onClick={() => handleLogin('inventory')}
+              onClick={handleLogin}
             >
-              {BUTTON_LABELS.LOGIN_INVENTORY}
-            </Button>
-            <Button 
-              type="button" 
-              variant="secondary" 
-              style={{ width: '100%' }}
-              onClick={() => handleLogin('project')}
-            >
-              {BUTTON_LABELS.LOGIN_PROJECT}
+              {BUTTON_LABELS.LOGIN}
             </Button>
           </div>
         </div>

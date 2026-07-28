@@ -87,13 +87,8 @@ CREATE TYPE "public"."budget_category" AS ENUM (
 ALTER TYPE "public"."budget_category" OWNER TO "postgres";
 
 
-CREATE TYPE "public"."transaction_type" AS ENUM (
-    '受入',
-    '払出'
-);
 
 
-ALTER TYPE "public"."transaction_type" OWNER TO "postgres";
 
 
 
@@ -101,51 +96,8 @@ ALTER TYPE "public"."transaction_type" OWNER TO "postgres";
 -- 3. 関数・RPC (Functions)
 -- ==========================================
 
-CREATE OR REPLACE FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) RETURNS numeric
-    LANGUAGE "plpgsql" SECURITY DEFINER
-    AS $$
-DECLARE
-  v_prev_qty NUMERIC := 0;
-  v_prev_date TIMESTAMPTZ := '1970-01-01 00:00:00+00'::TIMESTAMPTZ;
-  v_tx_qty NUMERIC := 0;
-BEGIN
-  -- Find the most recent stocktaking record for the item/location before the target date
-  SELECT actual_qty, date 
-  INTO v_prev_qty, v_prev_date 
-  FROM stocktakings 
-  WHERE item_id = p_item_id 
-    AND location_id = p_location_id 
-    AND date < p_target_date 
-  ORDER BY date DESC 
-  LIMIT 1;
-
-  -- Default to 0 and '1970' if no previous record is found
-  IF v_prev_date IS NULL THEN
-    v_prev_qty := 0;
-    v_prev_date := '1970-01-01 00:00:00+00'::TIMESTAMPTZ;
-  END IF;
-
-  -- Sum transactions after the previous stocktaking date up to the target date
-  SELECT COALESCE(SUM(
-    CASE 
-      WHEN type = '受入' THEN quantity 
-      WHEN type = '払出' THEN -quantity 
-      ELSE 0 
-    END
-  ), 0) 
-  INTO v_tx_qty 
-  FROM transactions 
-  WHERE item_id = p_item_id 
-    AND location_id = p_location_id 
-    AND date > v_prev_date 
-    AND date <= p_target_date;
-
-  RETURN v_prev_qty + v_tx_qty;
-END;
-$$;
 
 
-ALTER FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."create_member_user"("email" "text", "password" "text", "name" "text", "yomigana" "text", "role" "text") RETURNS "uuid"
@@ -288,53 +240,8 @@ $$;
 ALTER FUNCTION "public"."get_inventory_summary"("p_target_date" timestamp with time zone) OWNER TO "postgres";
 
 
-CREATE OR REPLACE FUNCTION "public"."prevent_backdated_transactions"() RETURNS "trigger"
-    LANGUAGE "plpgsql"
-    AS $$
-DECLARE
-  v_latest_stocktaking_date TIMESTAMPTZ;
-  v_target_item_id UUID;
-  v_target_location_id UUID;
-BEGIN
-  -- Determine target item and location based on operation
-  IF TG_OP = 'DELETE' THEN
-    v_target_item_id := OLD.item_id;
-    v_target_location_id := OLD.location_id;
-  ELSE
-    v_target_item_id := NEW.item_id;
-    v_target_location_id := NEW.location_id;
-  END IF;
-
-  -- Get the latest stocktaking date for this item and location
-  SELECT date INTO v_latest_stocktaking_date
-  FROM stocktakings
-  WHERE item_id = v_target_item_id AND location_id = v_target_location_id
-  ORDER BY date DESC LIMIT 1;
-
-  -- Check DELETE
-  IF TG_OP = 'DELETE' THEN
-    IF v_latest_stocktaking_date IS NOT NULL AND OLD.date <= v_latest_stocktaking_date THEN
-      RAISE EXCEPTION 'Cannot delete transaction on or before the latest stocktaking date (%)', v_latest_stocktaking_date;
-    END IF;
-    RETURN OLD;
-  END IF;
-
-  -- Check INSERT / UPDATE
-  IF v_latest_stocktaking_date IS NOT NULL AND NEW.date <= v_latest_stocktaking_date THEN
-    RAISE EXCEPTION 'Cannot insert or update transaction on or before the latest stocktaking date (%)', v_latest_stocktaking_date;
-  END IF;
-
-  -- Additional check for UPDATE: cannot modify an already locked old record
-  IF TG_OP = 'UPDATE' AND v_latest_stocktaking_date IS NOT NULL AND OLD.date <= v_latest_stocktaking_date THEN
-    RAISE EXCEPTION 'Cannot modify transaction on or before the latest stocktaking date (%)', v_latest_stocktaking_date;
-  END IF;
-
-  RETURN NEW;
-END;
-$$;
 
 
-ALTER FUNCTION "public"."prevent_backdated_transactions"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."update_member_password"("user_id" "uuid", "new_password" "text") RETURNS "void"
@@ -416,22 +323,8 @@ CREATE TABLE IF NOT EXISTS "public"."skill_levels" (
 
 ALTER TABLE "public"."skill_levels" OWNER TO "postgres";
 
--- ------------------------------------------
--- テーブル: categories (カテゴリ)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."categories" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "code" character varying NOT NULL,
-    "name" character varying NOT NULL,
-    "description" "text",
-    "is_deleted" boolean DEFAULT false NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying DEFAULT ''::character varying NOT NULL
-);
 
 
-ALTER TABLE "public"."categories" OWNER TO "postgres";
 
 
 -- ------------------------------------------
@@ -470,45 +363,12 @@ CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
 ALTER TABLE "public"."daily_work_records" OWNER TO "postgres";
 
 
--- ------------------------------------------
--- テーブル: items (品目・在庫品)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."items" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "code" character varying NOT NULL,
-    "name" character varying NOT NULL,
-    "description" "text",
-    "supplier_id" "uuid",
-    "standard_price" numeric NOT NULL,
-    "standard_purchase_qty" numeric NOT NULL,
-    "category_id" "uuid",
-    "location_id" "uuid",
-    "is_deleted" boolean DEFAULT false NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying DEFAULT ''::character varying NOT NULL
-);
 
 
-ALTER TABLE "public"."items" OWNER TO "postgres";
 
 
--- ------------------------------------------
--- テーブル: locations (保管場所)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."locations" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "code" character varying NOT NULL,
-    "name" character varying NOT NULL,
-    "description" "text",
-    "is_deleted" boolean DEFAULT false NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying DEFAULT ''::character varying NOT NULL
-);
 
 
-ALTER TABLE "public"."locations" OWNER TO "postgres";
 
 
 -- ------------------------------------------
@@ -689,60 +549,16 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
 ALTER TABLE "public"."staffs" OWNER TO "postgres";
 
 
--- ------------------------------------------
--- テーブル: stocktakings (棚卸記録)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."stocktakings" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "date" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "item_id" "uuid" NOT NULL,
-    "system_qty" numeric NOT NULL,
-    "actual_qty" numeric NOT NULL,
-    "difference" numeric NOT NULL,
-    "staff_id" "uuid",
-    "location_id" "uuid" NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
 
 
-ALTER TABLE "public"."stocktakings" OWNER TO "postgres";
 
 
--- ------------------------------------------
--- テーブル: suppliers (仕入先)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."suppliers" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "code" character varying NOT NULL,
-    "name" character varying NOT NULL,
-    "contact_person" character varying,
-    "phone" character varying,
-    "is_deleted" boolean DEFAULT false NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying DEFAULT ''::character varying NOT NULL
-);
 
 
-ALTER TABLE "public"."suppliers" OWNER TO "postgres";
 
 
--- ------------------------------------------
--- テーブル: transactions (入出庫履歴)
--- ------------------------------------------
-CREATE TABLE IF NOT EXISTS "public"."transactions" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "date" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "item_id" "uuid" NOT NULL,
-    "type" "public"."transaction_type" NOT NULL,
-    "quantity" numeric NOT NULL,
-    "location_id" "uuid" NOT NULL,
-    "staff_id" "uuid",
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
 
 
-ALTER TABLE "public"."transactions" OWNER TO "postgres";
 
 -- ------------------------------------------
 -- テーブル: member_skill_evaluations
@@ -782,69 +598,13 @@ ALTER TABLE "public"."financial_records" OWNER TO "postgres";
 -- 5. ビュー定義 (Views)
 -- ==========================================
 
-CREATE OR REPLACE VIEW "public"."v_current_inventory" AS
- WITH "item_locations" AS (
-         SELECT "i"."id" AS "item_id",
-            "i"."name" AS "item_name",
-            "c"."name" AS "category_name",
-            "l"."id" AS "location_id",
-            "l"."name" AS "location_name"
-           FROM (("public"."items" "i"
-             LEFT JOIN "public"."categories" "c" ON (("i"."category_id" = "c"."id")))
-             CROSS JOIN "public"."locations" "l")
-          WHERE (("i"."is_deleted" = false) AND ("l"."is_deleted" = false))
-        ), "latest_stocktakings" AS (
-         SELECT "s"."item_id",
-            "s"."location_id",
-            "s"."actual_qty",
-            "s"."date"
-           FROM ( SELECT "stocktakings"."item_id",
-                    "stocktakings"."location_id",
-                    "stocktakings"."actual_qty",
-                    "stocktakings"."date",
-                    "row_number"() OVER (PARTITION BY "stocktakings"."item_id", "stocktakings"."location_id" ORDER BY "stocktakings"."date" DESC) AS "rn"
-                   FROM "public"."stocktakings") "s"
-          WHERE ("s"."rn" = 1)
-        ), "recent_transactions" AS (
-         SELECT "t"."item_id",
-            "t"."location_id",
-            "sum"(
-                CASE
-                    WHEN ("t"."type" = '受入'::"public"."transaction_type") THEN "t"."quantity"
-                    WHEN ("t"."type" = '払出'::"public"."transaction_type") THEN (- "t"."quantity")
-                    ELSE (0)::numeric
-                END) AS "tx_qty"
-           FROM ("public"."transactions" "t"
-             LEFT JOIN "latest_stocktakings" "ls_1" ON ((("t"."item_id" = "ls_1"."item_id") AND ("t"."location_id" = "ls_1"."location_id"))))
-          WHERE (("ls_1"."date" IS NULL) OR ("t"."date" > "ls_1"."date"))
-          GROUP BY "t"."item_id", "t"."location_id"
-        )
- SELECT "il"."item_id",
-    "il"."item_name",
-    "il"."category_name",
-    "il"."location_id",
-    "il"."location_name",
-    (COALESCE("ls"."actual_qty", (0)::numeric) + COALESCE("rt"."tx_qty", (0)::numeric)) AS "quantity"
-   FROM (("item_locations" "il"
-     LEFT JOIN "latest_stocktakings" "ls" ON ((("il"."item_id" = "ls"."item_id") AND ("il"."location_id" = "ls"."location_id"))))
-     LEFT JOIN "recent_transactions" "rt" ON ((("il"."item_id" = "rt"."item_id") AND ("il"."location_id" = "rt"."location_id"))));
-
-
-ALTER VIEW "public"."v_current_inventory" OWNER TO "postgres";
-
-
-ALTER TABLE ONLY "public"."categories"
-    ADD CONSTRAINT "categories_code_key" UNIQUE ("code");
 
 
 
-ALTER TABLE ONLY "public"."categories"
 
--- ==========================================
--- 6. 主キー・制約 (Primary Keys & Constraints)
--- ==========================================
 
-    ADD CONSTRAINT "categories_pkey" PRIMARY KEY ("id");
+
+
 
 
 
@@ -863,23 +623,15 @@ ALTER TABLE ONLY "public"."daily_work_records"
 
 
 
-ALTER TABLE ONLY "public"."items"
-    ADD CONSTRAINT "items_code_key" UNIQUE ("code");
 
 
 
-ALTER TABLE ONLY "public"."items"
-    ADD CONSTRAINT "items_pkey" PRIMARY KEY ("id");
 
 
 
-ALTER TABLE ONLY "public"."locations"
-    ADD CONSTRAINT "locations_code_key" UNIQUE ("code");
 
 
 
-ALTER TABLE ONLY "public"."locations"
-    ADD CONSTRAINT "locations_pkey" PRIMARY KEY ("id");
 
 
 
@@ -938,23 +690,15 @@ ALTER TABLE ONLY "public"."staffs"
 
 
 
-ALTER TABLE ONLY "public"."stocktakings"
-    ADD CONSTRAINT "stocktakings_pkey" PRIMARY KEY ("id");
 
 
 
-ALTER TABLE ONLY "public"."suppliers"
-    ADD CONSTRAINT "suppliers_code_key" UNIQUE ("code");
 
 
 
-ALTER TABLE ONLY "public"."suppliers"
-    ADD CONSTRAINT "suppliers_pkey" PRIMARY KEY ("id");
 
 
 
-ALTER TABLE ONLY "public"."transactions"
-    ADD CONSTRAINT "transactions_pkey" PRIMARY KEY ("id");
 
 
 
@@ -974,11 +718,9 @@ CREATE INDEX "idx_project_budget_items_project_id" ON "public"."project_budget_i
 
 
 
-CREATE OR REPLACE TRIGGER "check_transaction_date" BEFORE INSERT OR DELETE OR UPDATE ON "public"."transactions" FOR EACH ROW EXECUTE FUNCTION "public"."prevent_backdated_transactions"();
 
 
 
-CREATE OR REPLACE TRIGGER "update_categories_updated_at" BEFORE UPDATE ON "public"."categories" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
@@ -990,11 +732,9 @@ CREATE OR REPLACE TRIGGER "update_daily_work_records_modtime" BEFORE UPDATE ON "
 
 
 
-CREATE OR REPLACE TRIGGER "update_items_updated_at" BEFORE UPDATE ON "public"."items" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
-CREATE OR REPLACE TRIGGER "update_locations_updated_at" BEFORE UPDATE ON "public"."locations" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
@@ -1030,7 +770,6 @@ CREATE OR REPLACE TRIGGER "update_staffs_updated_at" BEFORE UPDATE ON "public"."
 
 
 
-CREATE OR REPLACE TRIGGER "update_suppliers_updated_at" BEFORE UPDATE ON "public"."suppliers" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 CREATE OR REPLACE TRIGGER "update_base_wages_updated_at" BEFORE UPDATE ON "public"."base_wages" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 CREATE OR REPLACE TRIGGER "update_skill_levels_updated_at" BEFORE UPDATE ON "public"."skill_levels" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 CREATE OR REPLACE TRIGGER "update_member_skill_evaluations_updated_at" BEFORE UPDATE ON "public"."member_skill_evaluations" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
@@ -1053,18 +792,12 @@ ALTER TABLE ONLY "public"."daily_work_records"
 
 
 
-ALTER TABLE ONLY "public"."items"
-    ADD CONSTRAINT "items_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id");
 
 
 
-ALTER TABLE ONLY "public"."items"
-    ADD CONSTRAINT "items_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id");
 
 
 
-ALTER TABLE ONLY "public"."items"
-    ADD CONSTRAINT "items_supplier_id_fkey" FOREIGN KEY ("supplier_id") REFERENCES "public"."suppliers"("id");
 
 
 
@@ -1148,33 +881,21 @@ ALTER TABLE ONLY "public"."staffs"
 
 
 
-ALTER TABLE ONLY "public"."stocktakings"
-    ADD CONSTRAINT "stocktakings_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "public"."items"("id");
 
 
 
-ALTER TABLE ONLY "public"."stocktakings"
-    ADD CONSTRAINT "stocktakings_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id");
 
 
 
-ALTER TABLE ONLY "public"."stocktakings"
-    ADD CONSTRAINT "stocktakings_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "public"."staffs"("id");
 
 
 
-ALTER TABLE ONLY "public"."transactions"
-    ADD CONSTRAINT "transactions_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "public"."items"("id");
 
 
 
-ALTER TABLE ONLY "public"."transactions"
-    ADD CONSTRAINT "transactions_location_id_fkey" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id");
 
 
 
-ALTER TABLE ONLY "public"."transactions"
-    ADD CONSTRAINT "transactions_staff_id_fkey" FOREIGN KEY ("staff_id") REFERENCES "public"."staffs"("id");
 
 ALTER TABLE ONLY "public"."member_skill_evaluations"
     ADD CONSTRAINT "member_skill_evaluations_member_id_fkey" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE CASCADE,
@@ -1372,9 +1093,6 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-GRANT ALL ON FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) TO "anon";
-GRANT ALL ON FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) TO "authenticated";
-GRANT ALL ON FUNCTION "public"."calculate_book_inventory"("p_item_id" "uuid", "p_location_id" "uuid", "p_target_date" timestamp with time zone) TO "service_role";
 
 
 
@@ -1396,9 +1114,6 @@ GRANT ALL ON FUNCTION "public"."get_inventory_summary"("p_target_date" timestamp
 
 
 
-GRANT ALL ON FUNCTION "public"."prevent_backdated_transactions"() TO "anon";
-GRANT ALL ON FUNCTION "public"."prevent_backdated_transactions"() TO "authenticated";
-GRANT ALL ON FUNCTION "public"."prevent_backdated_transactions"() TO "service_role";
 
 
 
@@ -1435,9 +1150,6 @@ GRANT ALL ON FUNCTION "public"."update_updated_at_column"() TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."categories" TO "anon";
-GRANT ALL ON TABLE "public"."categories" TO "authenticated";
-GRANT ALL ON TABLE "public"."categories" TO "service_role";
 
 
 
@@ -1453,15 +1165,9 @@ GRANT ALL ON TABLE "public"."daily_work_records" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."items" TO "anon";
-GRANT ALL ON TABLE "public"."items" TO "authenticated";
-GRANT ALL ON TABLE "public"."items" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."locations" TO "anon";
-GRANT ALL ON TABLE "public"."locations" TO "authenticated";
-GRANT ALL ON TABLE "public"."locations" TO "service_role";
 
 
 
@@ -1525,27 +1231,15 @@ GRANT ALL ON TABLE "public"."staffs" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."stocktakings" TO "anon";
-GRANT ALL ON TABLE "public"."stocktakings" TO "authenticated";
-GRANT ALL ON TABLE "public"."stocktakings" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."suppliers" TO "anon";
-GRANT ALL ON TABLE "public"."suppliers" TO "authenticated";
-GRANT ALL ON TABLE "public"."suppliers" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."transactions" TO "anon";
-GRANT ALL ON TABLE "public"."transactions" TO "authenticated";
-GRANT ALL ON TABLE "public"."transactions" TO "service_role";
 
 
 
-GRANT ALL ON TABLE "public"."v_current_inventory" TO "anon";
-GRANT ALL ON TABLE "public"."v_current_inventory" TO "authenticated";
-GRANT ALL ON TABLE "public"."v_current_inventory" TO "service_role";
 
 
 

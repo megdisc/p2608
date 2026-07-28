@@ -97,6 +97,7 @@ export function AssigneeSummaryPage() {
       columns={columns}
       emptyMessage="表示するデータがありません"
       footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-caption)' }}>集計日時：{formattedDate}</span>}
+      hideHeader={true}
     />
   );
 }

@@ -48,6 +48,7 @@ export function BaseWagePage() {
       initialSort={{ key: 'wage', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideHeader={true}
     />
   );
 }

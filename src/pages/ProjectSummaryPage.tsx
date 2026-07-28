@@ -90,6 +90,7 @@ export function ProjectSummaryPage() {
       columns={columns}
       emptyMessage="案件の集計データがありません"
       footerLeft={<span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-caption)' }}>集計日時：{formattedDate}</span>}
+      hideHeader={true}
     />
   );
 }

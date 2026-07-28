@@ -87,6 +87,7 @@ export function SkillEvaluationPage() {
       onBatchSave={handleBatchSave}
       disableAddButton={true}
       hideDeleteColumn={true}
+      hideHeader={true}
     />
   );
 }

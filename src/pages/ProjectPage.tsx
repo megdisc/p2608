@@ -141,6 +141,7 @@ export function ProjectPage() {
       onAddSubRow={handleAddSubRow}
       subSubItemsKey="requiredSkills"
       onAddSubSubRow={handleAddSubSubRow}
+      hideHeader={true}
     />
   );
 }

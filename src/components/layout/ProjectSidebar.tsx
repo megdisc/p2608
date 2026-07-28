@@ -1,6 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth } from '../../contexts';
-import { SYSTEM_NAME_PROJECT, SYSTEM_ID, MENU_CATEGORIES, MENU_SUBCATEGORIES, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
+import { SYSTEM_NAME_PROJECT, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type ProjectSidebarProps = {
   activeTab: Tab;
@@ -19,194 +19,58 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
       
       <nav className="nav-menu">
         <div className="nav-section">
-          <div className="nav-category">
-            {MENU_CATEGORIES.SCREEN_COMPOSITION}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SCREEN_COMPOSITION}</div>
-          </div>
+
           <button 
-            className={`nav-button ${['screenComposition', 'tableComposition'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('screenComposition')}
-          >
-            {PAGE_NAMES.SCREEN_COMPOSITION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'financialSummary' ? 'active' : ''}`}
+            className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('financialSummary')}
           >
             {PAGE_NAMES.SCREEN_FINANCE}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'projectSummary' ? 'active' : ''}`}
+            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('projectSummary')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'wageSummary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('wageSummary')}
+            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('projectUser')}
           >
             {PAGE_NAMES.SCREEN_USER}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
+            className={`nav-button ${['screenStaff', 'staff'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('staff')}
           >
             {PAGE_NAMES.SCREEN_STAFF}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'client' ? 'active' : ''}`}
+            className={`nav-button ${['screenClient', 'client'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('client')}
           >
             {PAGE_NAMES.SCREEN_CLIENT}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'skill' ? 'active' : ''}`}
+            className={`nav-button ${['screenSkill', 'skill', 'skillLevel'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('skill')}
           >
             {PAGE_NAMES.SCREEN_SKILL}
           </button>
           <button 
-            className={`nav-button ${activeTab === 'baseWage' ? 'active' : ''}`}
+            className={`nav-button ${['screenWage', 'baseWage'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('baseWage')}
           >
             {PAGE_NAMES.SCREEN_WAGE}
           </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">
-            {MENU_CATEGORIES.SETTINGS}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.SETTINGS}</div>
-          </div>
           <button 
-            className={`nav-button ${activeTab === 'projectUser' ? 'active' : ''}`}
-            onClick={() => setActiveTab('projectUser')}
+            className={`nav-button ${['screenComposition', 'tableComposition'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('screenComposition')}
           >
-            {PAGE_NAMES.PROJECT_USER}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'staff' ? 'active' : ''}`}
-            onClick={() => setActiveTab('staff')}
-          >
-            {PAGE_NAMES.STAFF}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'client' ? 'active' : ''}`}
-            onClick={() => setActiveTab('client')}
-          >
-            {PAGE_NAMES.CLIENT}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'skill' ? 'active' : ''}`}
-            onClick={() => setActiveTab('skill')}
-          >
-            {PAGE_NAMES.SKILL}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'skillLevel' ? 'active' : ''}`}
-            onClick={() => setActiveTab('skillLevel')}
-          >
-            {PAGE_NAMES.SKILL_LEVEL}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'baseWage' ? 'active' : ''}`}
-            onClick={() => setActiveTab('baseWage')}
-          >
-            {PAGE_NAMES.BASE_WAGE}
+            システム構成（開発用）
           </button>
         </div>
 
-        <div className="nav-section">
-          <div className="nav-category">
-            {MENU_CATEGORIES.RECORDING}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.RECORDING}</div>
-          </div>
-          <button 
-            className={`nav-button ${activeTab === 'skillEvaluation' ? 'active' : ''}`}
-            onClick={() => setActiveTab('skillEvaluation')}
-          >
-            {PAGE_NAMES.SKILL_EVALUATION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'baseWageAssignment' ? 'active' : ''}`}
-            onClick={() => setActiveTab('baseWageAssignment')}
-          >
-            {PAGE_NAMES.BASE_WAGE_ASSIGNMENT}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'project' ? 'active' : ''}`}
-            onClick={() => setActiveTab('project')}
-          >
-            {PAGE_NAMES.PROJECT_INFO}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'budgetPlanning' ? 'active' : ''}`}
-            onClick={() => setActiveTab('budgetPlanning')}
-          >
-            {PAGE_NAMES.BUDGET_PLANNING}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'assigneeAllocation' ? 'active' : ''}`}
-            onClick={() => setActiveTab('assigneeAllocation')}
-          >
-            {PAGE_NAMES.ASSIGNEE_ALLOCATION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'dailyWorkRecord' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dailyWorkRecord')}
-          >
-            {PAGE_NAMES.DAILY_WORK_RECORD}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'progressRecord' ? 'active' : ''}`}
-            onClick={() => setActiveTab('progressRecord')}
-          >
-            {PAGE_NAMES.PROGRESS_RECORD}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'rewardAllocation' ? 'active' : ''}`}
-            onClick={() => setActiveTab('rewardAllocation')}
-          >
-            {PAGE_NAMES.REWARD_ALLOCATION}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'financialRecord' ? 'active' : ''}`}
-            onClick={() => setActiveTab('financialRecord')}
-          >
-            {PAGE_NAMES.FINANCIAL_RECORD}
-          </button>
-        </div>
 
-        <div className="nav-section">
-          <div className="nav-category">
-            {MENU_CATEGORIES.AGGREGATION}
-            <div className="nav-subcategory">{MENU_SUBCATEGORIES.AGGREGATION}</div>
-          </div>
-          <button 
-            className={`nav-button ${activeTab === 'projectSummary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('projectSummary')}
-          >
-            {PAGE_NAMES.PROJECT_SUMMARY}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'assigneeSummary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('assigneeSummary')}
-          >
-            {PAGE_NAMES.ASSIGNEE_SUMMARY}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'wageSummary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('wageSummary')}
-          >
-            {PAGE_NAMES.WAGE_SUMMARY}
-          </button>
-          <button 
-            className={`nav-button ${activeTab === 'financialSummary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('financialSummary')}
-          >
-            {PAGE_NAMES.FINANCIAL_SUMMARY}
-          </button>
-        </div>
       </nav>
 
       <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>

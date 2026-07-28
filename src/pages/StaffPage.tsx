@@ -54,6 +54,7 @@ export function StaffPage() {
       initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideHeader={true}
     />
   );
 }

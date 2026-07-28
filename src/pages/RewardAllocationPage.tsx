@@ -237,6 +237,7 @@ export function RewardAllocationPage() {
       disableAddButton={true}
       hideDeleteColumn={true}
       highlightInputColumns={true}
+      hideHeader={true}
     />
   );
 }

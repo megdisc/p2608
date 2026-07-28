@@ -12,24 +12,14 @@ import {
   LocationPage,
   StaffPage,
   LoginPage,
-  ProjectPage,
-  ProjectUserPage,
-  SkillPage,
-  ClientPage,
-  DailyWorkRecordPage,
-  ProgressRecordPage,
-  RewardAllocationPage,
-  ProjectSummaryPage,
-  AssigneeSummaryPage,
-  WageSummaryPage,
-  BudgetPlanningPage,
-  AssigneeAllocationPage,
-  BaseWagePage,
-  BaseWageAssignmentPage,
-  SkillLevelPage,
-  SkillEvaluationPage,
   ScreenCompositionPage,
-  ScreenFinancePage
+  ScreenFinancePage,
+  ScreenProjectPage,
+  ScreenUserPage,
+  ScreenStaffPage,
+  ScreenClientPage,
+  ScreenSkillPage,
+  ScreenWagePage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -70,44 +60,22 @@ function AppContent() {
       <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
         <AlertProvider>
           <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-            {activeTab === 'projectUser' ? (
-            <ProjectUserPage />
-          ) : activeTab === 'skill' ? (
-            <SkillPage />
-          ) : activeTab === 'skillLevel' ? (
-            <SkillLevelPage />
-          ) : activeTab === 'skillEvaluation' ? (
-            <SkillEvaluationPage />
-          ) : activeTab === 'dailyWorkRecord' ? (
-            <DailyWorkRecordPage />
-          ) : activeTab === 'progressRecord' ? (
-            <ProgressRecordPage />
-          ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
-            <ScreenFinancePage />
-          ) : activeTab === 'client' ? (
-            <ClientPage />
-          ) : activeTab === 'project' ? (
-            <ProjectPage />
-          ) : activeTab === 'staff' ? (
-            <StaffPage />
-          ) : activeTab === 'rewardAllocation' ? (
-            <RewardAllocationPage />
-          ) : activeTab === 'projectSummary' ? (
-            <ProjectSummaryPage />
-          ) : activeTab === 'assigneeSummary' ? (
-            <AssigneeSummaryPage />
-          ) : activeTab === 'wageSummary' ? (
-            <WageSummaryPage />
-          ) : activeTab === 'budgetPlanning' ? (
-            <BudgetPlanningPage />
-          ) : activeTab === 'assigneeAllocation' ? (
-            <AssigneeAllocationPage />
-          ) : activeTab === 'baseWage' ? (
-            <BaseWagePage />
-          ) : activeTab === 'baseWageAssignment' ? (
-            <BaseWageAssignmentPage />
-          ) : ['screenComposition', 'tableComposition', 'screenProject', 'screenUser', 'screenStaff', 'screenClient', 'screenFinance', 'screenSkill', 'screenWage'].includes(activeTab) ? (
-            <ScreenCompositionPage />
+            {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary', 'screenUser'].includes(activeTab) ? (
+              <ScreenUserPage />
+            ) : ['staff', 'screenStaff'].includes(activeTab) ? (
+              <ScreenStaffPage />
+            ) : ['client', 'screenClient'].includes(activeTab) ? (
+              <ScreenClientPage />
+            ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
+              <ScreenSkillPage />
+            ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
+              <ScreenWagePage />
+            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary', 'screenProject'].includes(activeTab) ? (
+              <ScreenProjectPage />
+            ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
+              <ScreenFinancePage />
+            ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
+              <ScreenCompositionPage />
           ) : (
             <div style={{ padding: '32px' }}>
               <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Button, Pagination, MultiSelectDropdown, SortIcon, Tabs } from '../components';
+import { Button, Pagination, MultiSelectDropdown, SortIcon } from '../components';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
-import { getScreenConfigForTab } from '../config';
+
 import { supabase } from '../lib';
 import type { MemberItem, ClientItem, StaffItem } from '../types';
-import { useAlert, useNavigation } from '../contexts';
+import { useAlert } from '../contexts';
 
 type AllocationRow = {
   id: string; // task id
@@ -220,21 +220,10 @@ export function AssigneeAllocationPage() {
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
-  const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
-  const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.ASSIGNEE_ALLOCATION;
+
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
-          )}
-        </div>
-      </div>
-
       <div className="table-container">
         <table className="inventory-table">
           <thead>

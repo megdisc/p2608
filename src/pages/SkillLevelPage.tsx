@@ -102,6 +102,7 @@ export function SkillLevelPage() {
       initialSort={{ key: 'levelValue', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideHeader={true}
     />
   );
 }

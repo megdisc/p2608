@@ -52,6 +52,7 @@ export function ClientPage() {
       initialSort={{ key: 'name', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideHeader={true}
     />
   );
 }

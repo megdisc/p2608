@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, Tabs, type HeaderCell } from '../components/ui';
+import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, type HeaderCell } from '../components/ui';
 import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
-import { getScreenConfigForTab } from '../config';
+
 import { useAlert } from '../contexts/AlertContext';
-import { useNavigation } from '../contexts';
+
 import { useBudgetPlanning, type DetailItem, type ProjectDraft } from '../hooks';
 
 export function BudgetPlanningPage() {
@@ -13,9 +13,7 @@ export function BudgetPlanningPage() {
   const pageSize = 50;
   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const { showAlert } = useAlert();
-  const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
-  const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.BUDGET_PLANNING;
+
 
   useEffect(() => {
     fetchBudgetPlanning().catch(() => {
@@ -99,15 +97,6 @@ export function BudgetPlanningPage() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
-          )}
-        </div>
-      </div>
-
       <div className="table-container">
         <table className="inventory-table">
           <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />

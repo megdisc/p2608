@@ -214,6 +214,7 @@ export function ProgressRecordPage() {
       onSingleMonthChange={setCurrentMonth}
       hideDeleteColumn={true}
       highlightInputColumns={true}
+      hideHeader={true}
     />
   );
 }

@@ -72,6 +72,33 @@ export function ScreenCompositionPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
   const displayTitle = screenConfig ? screenConfig.screenName : '画面構成表';
+  
+  const isTableComposition = navContext.activeTab === 'tableComposition';
+
+  const dbTables = [
+    { physicalName: 'projects', logicalName: 'プロジェクト', description: 'プロジェクト基本情報' },
+    { physicalName: 'project_tasks', logicalName: 'プロジェクトタスク', description: 'プロジェクト内の各タスク情報' },
+    { physicalName: 'project_task_skills', logicalName: 'プロジェクトタスクスキル', description: 'タスクに必要なスキルとレベル' },
+    { physicalName: 'project_task_assignees', logicalName: 'プロジェクトタスク担当者', description: 'タスクの割り当てメンバー' },
+    { physicalName: 'project_budget_items', logicalName: 'プロジェクト予算項目', description: 'プロジェクトの予算（売上・原価・予備費）' },
+    { physicalName: 'members', logicalName: 'メンバー', description: 'プロジェクトに参加するメンバー情報' },
+    { physicalName: 'staffs', logicalName: 'スタッフ', description: 'システムを利用するスタッフ情報' },
+    { physicalName: 'clients', logicalName: '顧客', description: '取引先・クライアント情報' },
+    { physicalName: 'skills', logicalName: 'スキル', description: 'スキルのマスターデータ' },
+    { physicalName: 'skill_levels', logicalName: 'スキルレベル', description: '各スキルのレベル定義' },
+    { physicalName: 'member_skill_evaluations', logicalName: 'メンバースキル評価', description: 'メンバーの保有スキル評価' },
+    { physicalName: 'base_wages', logicalName: '基本給', description: '基本給（標準単価）のマスターデータ' },
+    { physicalName: 'daily_work_records', logicalName: '日次作業記録', description: 'メンバーの日々の作業実績（工数）' },
+    { physicalName: 'monthly_task_progress', logicalName: '月次タスク進捗', description: '月ごとのタスク進捗状況（進捗率など）' },
+    { physicalName: 'monthly_member_contributions', logicalName: '月次メンバー貢献度', description: '月ごとのメンバーの貢献度・報酬分配' },
+    { physicalName: 'financial_records', logicalName: '財務記録', description: '確定した財務データ（売上・経費等）' },
+    { physicalName: 'items', logicalName: 'アイテム', description: '備品・資材のマスターデータ' },
+    { physicalName: 'categories', logicalName: 'カテゴリ', description: 'アイテムのカテゴリ分類' },
+    { physicalName: 'locations', logicalName: '場所', description: 'アイテムの保管場所' },
+    { physicalName: 'suppliers', logicalName: '仕入先', description: 'アイテムの仕入先情報' },
+    { physicalName: 'transactions', logicalName: '取引（受入・払出）', description: 'アイテムの入出庫記録' },
+    { physicalName: 'stocktakings', logicalName: '棚卸し', description: 'アイテムの棚卸し記録' },
+  ];
 
   return (
     <>
@@ -85,35 +112,56 @@ export function ScreenCompositionPage() {
       </div>
 
       <div className="table-container">
-        <table className="inventory-table">
-          <thead>
-            <tr>
-              <th>画面</th>
-              <th>区分</th>
-              <th>タブ（既存の画面名称）</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <React.Fragment key={i}>
-                {row.existing.map((item, idx) => {
-                  const label = getCategoryLabel(item);
-                  return (
-                    <tr key={`${i}-${idx}`}>
-                      {idx === 0 && (
-                        <td rowSpan={row.existing.length} style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
-                          {row.screen}
-                        </td>
-                      )}
-                      <td style={{ backgroundColor: getCategoryColor(label), color: '#333333' }}>{label}</td>
-                      <td>{item}</td>
-                    </tr>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+        {isTableComposition ? (
+          <table className="inventory-table">
+            <thead>
+              <tr>
+                <th>物理名 (Table Name)</th>
+                <th>論理名 (Logical Name)</th>
+                <th>説明 (Description)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dbTables.map((table, i) => (
+                <tr key={i}>
+                  <td style={{ fontWeight: 'bold' }}>{table.physicalName}</td>
+                  <td>{table.logicalName}</td>
+                  <td>{table.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <table className="inventory-table">
+            <thead>
+              <tr>
+                <th>画面</th>
+                <th>区分</th>
+                <th>タブ（既存の画面名称）</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <React.Fragment key={i}>
+                  {row.existing.map((item, idx) => {
+                    const label = getCategoryLabel(item);
+                    return (
+                      <tr key={`${i}-${idx}`}>
+                        {idx === 0 && (
+                          <td rowSpan={row.existing.length} style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
+                            {row.screen}
+                          </td>
+                        )}
+                        <td style={{ backgroundColor: getCategoryColor(label), color: '#333333' }}>{label}</td>
+                        <td>{item}</td>
+                      </tr>
+                    );
+                  })}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );

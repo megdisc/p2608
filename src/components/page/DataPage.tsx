@@ -1,7 +1,7 @@
 import { DataTable, Tabs } from '../ui';
 import type { Column } from '../ui';
 import { useNavigation } from '../../contexts';
-import { getScreenConfigForTab } from '../../constants';
+import { getScreenConfigForTab } from '../../config';
 
 type DataPageProps<T> = {
   title: string;

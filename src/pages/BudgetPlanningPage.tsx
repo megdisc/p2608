@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, Tabs, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS, getScreenConfigForTab } from '../constants';
+import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
+import { getScreenConfigForTab } from '../config';
 import { useAlert } from '../contexts/AlertContext';
 import { useNavigation } from '../contexts';
 import { useBudgetPlanning, type DetailItem, type ProjectDraft } from '../hooks';

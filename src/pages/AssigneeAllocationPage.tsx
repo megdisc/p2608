@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Pagination, MultiSelectDropdown, SortIcon, Tabs } from '../components';
-import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS, getScreenConfigForTab } from '../constants';
+import { PAGE_NAMES, TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
+import { getScreenConfigForTab } from '../config';
 import { supabase } from '../lib';
 import type { MemberItem, ClientItem, StaffItem } from '../types';
 import { useAlert, useNavigation } from '../contexts';

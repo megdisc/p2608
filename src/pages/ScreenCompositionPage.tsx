@@ -1,5 +1,6 @@
 import React from 'react';
-import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES, getScreenConfigForTab } from '../constants';
+import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
+import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 

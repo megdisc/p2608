@@ -1,4 +1,4 @@
-import { PAGE_NAMES } from './strings';
+import { PAGE_NAMES } from '../constants';
 import type { Tab } from '../types';
 
 export type ScreenTabConfig = {

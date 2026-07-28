@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MultiRowHeader, Tabs, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, MESSAGES, getScreenConfigForTab } from '../constants';
+import { PAGE_NAMES, MESSAGES } from '../constants';
+import { getScreenConfigForTab } from '../config';
 import { useAlert } from '../contexts/AlertContext';
 import { useNavigation } from '../contexts';
 import { useFinancialSummary } from '../hooks';

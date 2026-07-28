@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MonthInput, Pagination, MultiRowHeader, Button, Tabs, type HeaderCell } from '../components/ui';
-import { PAGE_NAMES, MESSAGES, getScreenConfigForTab } from '../constants';
+import { PAGE_NAMES, MESSAGES } from '../constants';
+import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { getCurrentJSTMonth } from '../utils';
 import { useAlert } from '../contexts/AlertContext';

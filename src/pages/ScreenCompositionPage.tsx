@@ -77,23 +77,237 @@ export function ScreenCompositionPage() {
   const isTableComposition = navContext.activeTab === 'tableComposition';
 
   const dbTables = [
-    { physicalName: 'projects', logicalName: 'プロジェクト', description: 'プロジェクト基本情報' },
-    { physicalName: 'project_tasks', logicalName: 'プロジェクトタスク', description: 'プロジェクト内の各タスク情報' },
-    { physicalName: 'project_task_skills', logicalName: 'プロジェクトタスクスキル', description: 'タスクに必要なスキルとレベル' },
-    { physicalName: 'project_task_assignees', logicalName: 'プロジェクトタスク担当者', description: 'タスクの割り当てメンバー' },
-    { physicalName: 'project_budget_items', logicalName: 'プロジェクト予算項目', description: 'プロジェクトの予算（売上・原価・予備費）' },
-    { physicalName: 'members', logicalName: 'メンバー', description: 'プロジェクトに参加するメンバー情報' },
-    { physicalName: 'staffs', logicalName: 'スタッフ', description: 'システムを利用するスタッフ情報' },
-    { physicalName: 'clients', logicalName: '顧客', description: '取引先・クライアント情報' },
-    { physicalName: 'skills', logicalName: 'スキル', description: 'スキルのマスターデータ' },
-    { physicalName: 'skill_levels', logicalName: 'スキルレベル', description: '各スキルのレベル定義' },
-    { physicalName: 'member_skill_evaluations', logicalName: 'メンバースキル評価', description: 'メンバーの保有スキル評価' },
-    { physicalName: 'base_wages', logicalName: '基本給', description: '基本給（標準単価）のマスターデータ' },
-    { physicalName: 'daily_work_records', logicalName: '日次作業記録', description: 'メンバーの日々の作業実績（工数）' },
-    { physicalName: 'monthly_task_progress', logicalName: '月次タスク進捗', description: '月ごとのタスク進捗状況（進捗率など）' },
-    { physicalName: 'monthly_member_contributions', logicalName: '月次メンバー貢献度', description: '月ごとのメンバーの貢献度・報酬分配' },
-    { physicalName: 'financial_records', logicalName: '財務記録', description: '確定した財務データ（売上・経費等）' },
+    { 
+      physicalName: 'projects', 
+      logicalName: 'プロジェクト', 
+      description: 'プロジェクト基本情報',
+      columns: [
+        { name: 'id', desc: 'プロジェクトID' },
+        { name: 'name', desc: 'プロジェクト名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'client_id', desc: '紐づく顧客ID' },
+        { name: 'start_date', desc: '開始日' },
+        { name: 'end_date', desc: '終了予定日・終了日' },
+        { name: 'project_type', desc: 'プロジェクト種別' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'project_tasks', 
+      logicalName: 'プロジェクトタスク', 
+      description: 'プロジェクト内の各タスク情報',
+      columns: [
+        { name: 'id', desc: 'タスクID' },
+        { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'name', desc: 'タスク名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'is_canceled', desc: 'キャンセルフラグ' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'project_task_skills', 
+      logicalName: 'プロジェクトタスクスキル', 
+      description: 'タスクに必要なスキルとレベル',
+      columns: [
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'skill_id', desc: '要求スキルID' },
+        { name: 'skill_level_id', desc: '要求スキルレベルID' }
+      ]
+    },
+    { 
+      physicalName: 'project_task_assignees', 
+      logicalName: 'プロジェクトタスク担当者', 
+      description: 'タスクの割り当てメンバー',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'client_id', desc: '顧客ID' },
+        { name: 'staff_id', desc: 'スタッフID' }
+      ]
+    },
+    { 
+      physicalName: 'project_budget_items', 
+      logicalName: 'プロジェクト予算項目', 
+      description: 'プロジェクトの予算（売上・原価・予備費）',
+      columns: [
+        { name: 'id', desc: '予算項目ID' },
+        { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'category', desc: '予算カテゴリ（売上/経費/予備費）' },
+        { name: 'subject', desc: '科目・内容' },
+        { name: 'task_id', desc: '関連タスクID' },
+        { name: 'amount', desc: '金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'members', 
+      logicalName: 'メンバー', 
+      description: 'プロジェクトに参加するメンバー情報',
+      columns: [
+        { name: 'id', desc: '利用者ID' },
+        { name: 'name', desc: '利用者名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'role', desc: '権限ロール' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'base_wage_id', desc: '基本給ID' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'staffs', 
+      logicalName: 'スタッフ', 
+      description: 'システムを利用するスタッフ情報',
+      columns: [
+        { name: 'id', desc: 'スタッフID' },
+        { name: 'name', desc: 'スタッフ名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'role', desc: '権限ロール' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'clients', 
+      logicalName: '顧客', 
+      description: '取引先・クライアント情報',
+      columns: [
+        { name: 'id', desc: '顧客ID' },
+        { name: 'name', desc: '顧客・企業名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'contact_person', desc: '担当者名' },
+        { name: 'phone', desc: '電話番号' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'skills', 
+      logicalName: 'スキル', 
+      description: 'スキルのマスターデータ',
+      columns: [
+        { name: 'id', desc: 'スキルID' },
+        { name: 'name', desc: 'スキル名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'description', desc: 'スキルの説明' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'skill_levels', 
+      logicalName: 'スキルレベル', 
+      description: '各スキルのレベル定義',
+      columns: [
+        { name: 'id', desc: 'スキルレベルID' },
+        { name: 'level_value', desc: 'レベル数値' },
+        { name: 'description', desc: 'レベルの説明' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'member_skill_evaluations', 
+      logicalName: 'メンバースキル評価', 
+      description: 'メンバーの保有スキル評価',
+      columns: [
+        { name: 'id', desc: '評価ID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'skill_id', desc: 'スキルID' },
+        { name: 'skill_level_id', desc: 'スキルレベルID' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'base_wages', 
+      logicalName: '基本給', 
+      description: '基本給（標準単価）のマスターデータ',
+      columns: [
+        { name: 'id', desc: '基本給ID' },
+        { name: 'wage', desc: '基本給額' },
+        { name: 'description', desc: '説明・摘要' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'daily_work_records', 
+      logicalName: '日次作業記録', 
+      description: 'メンバーの日々の作業実績（工数）',
+      columns: [
+        { name: 'id', desc: '記録ID' },
+        { name: 'date', desc: '作業日' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'work_time', desc: '作業時間' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_task_progress', 
+      logicalName: '月次タスク進捗', 
+      description: '月ごとのタスク進捗状況（進捗率など）',
+      columns: [
+        { name: 'id', desc: '進捗記録ID' },
+        { name: 'year_month', desc: '対象年月' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'current_progress', desc: '現在の進捗率(%)' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_member_contributions', 
+      logicalName: '月次メンバー貢献度', 
+      description: '月ごとのメンバーの貢献度・報酬分配',
+      columns: [
+        { name: 'id', desc: '貢献度記録ID' },
+        { name: 'year_month', desc: '対象年月' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'contribution_ratio', desc: '貢献度・分配率(%)' },
+        { name: 'staff_id', desc: 'スタッフID' },
+        { name: 'client_id', desc: '顧客ID' },
+        { name: 'deduction_amount', desc: '控除額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'financial_records', 
+      logicalName: '財務記録', 
+      description: '確定した財務データ（売上・経費等）',
+      columns: [
+        { name: 'id', desc: '財務記録ID' },
+        { name: 'period', desc: '対象期間（年月）' },
+        { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'type', desc: '収支タイプ（収入/支出）' },
+        { name: 'subject', desc: '科目・内容' },
+        { name: 'amount', desc: '金額' },
+        { name: 'recorded_date', desc: '計上日' },
+        { name: 'recorded_by', desc: '記録者ID' },
+        { name: 'is_limited', desc: '限定公開フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
   ];
+
 
   return (
     <>
@@ -114,16 +328,26 @@ export function ScreenCompositionPage() {
                 <th>物理名 (Table Name)</th>
                 <th>論理名 (Logical Name)</th>
                 <th>説明 (Description)</th>
+                <th>カラム名 (Column Name)</th>
+                <th>カラム説明 (Column Description)</th>
               </tr>
             </thead>
             <tbody>
-              {dbTables.map((table, i) => (
-                <tr key={i}>
-                  <td style={{ fontWeight: 'bold' }}>{table.physicalName}</td>
-                  <td>{table.logicalName}</td>
-                  <td>{table.description}</td>
-                </tr>
-              ))}
+              {dbTables.flatMap((table, i) =>
+                table.columns.map((col, idx) => (
+                  <tr key={`${i}-${idx}`}>
+                    {idx === 0 && (
+                      <>
+                        <td rowSpan={table.columns.length} style={{ fontWeight: 'bold', verticalAlign: 'top' }}>{table.physicalName}</td>
+                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.logicalName}</td>
+                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.description}</td>
+                      </>
+                    )}
+                    <td style={{ verticalAlign: 'top', color: '#333' }}>{col.name}</td>
+                    <td style={{ verticalAlign: 'top', color: '#666' }}>{col.desc}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         ) : (

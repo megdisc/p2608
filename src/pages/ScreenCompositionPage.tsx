@@ -79,6 +79,7 @@ export function ScreenCompositionPage() {
   const dbTables = [
     { 
       physicalName: 'projects', 
+      tableType: 'トランザクション',
       logicalName: 'プロジェクト', 
       description: 'プロジェクト基本情報',
       columns: [
@@ -96,6 +97,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'project_tasks', 
+      tableType: 'トランザクション',
       logicalName: 'プロジェクトタスク', 
       description: 'プロジェクト内の各タスク情報',
       columns: [
@@ -111,6 +113,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'project_task_skills', 
+      tableType: 'トランザクション',
       logicalName: 'プロジェクトタスクスキル', 
       description: 'タスクに必要なスキルとレベル',
       columns: [
@@ -121,6 +124,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'project_task_assignees', 
+      tableType: 'トランザクション',
       logicalName: 'プロジェクトタスク担当者', 
       description: 'タスクの割り当てメンバー',
       columns: [
@@ -133,6 +137,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'project_budget_items', 
+      tableType: 'トランザクション',
       logicalName: 'プロジェクト予算項目', 
       description: 'プロジェクトの予算（売上・原価・予備費）',
       columns: [
@@ -148,6 +153,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'members', 
+      tableType: 'マスタ',
       logicalName: 'メンバー', 
       description: 'プロジェクトに参加するメンバー情報',
       columns: [
@@ -164,6 +170,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'staffs', 
+      tableType: 'マスタ',
       logicalName: 'スタッフ', 
       description: 'システムを利用するスタッフ情報',
       columns: [
@@ -179,6 +186,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'clients', 
+      tableType: 'マスタ',
       logicalName: '顧客', 
       description: '取引先・クライアント情報',
       columns: [
@@ -194,6 +202,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'skills', 
+      tableType: 'マスタ',
       logicalName: 'スキル', 
       description: 'スキルのマスターデータ',
       columns: [
@@ -208,18 +217,21 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'skill_levels', 
+      tableType: 'マスタ',
       logicalName: 'スキルレベル', 
       description: '各スキルのレベル定義',
       columns: [
         { name: 'id', desc: 'スキルレベルID' },
         { name: 'level_value', desc: 'レベル数値' },
         { name: 'description', desc: 'レベルの説明' },
+        { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
     { 
       physicalName: 'member_skill_evaluations', 
+      tableType: 'トランザクション',
       logicalName: 'メンバースキル評価', 
       description: 'メンバーの保有スキル評価',
       columns: [
@@ -233,6 +245,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'base_wages', 
+      tableType: 'マスタ',
       logicalName: '基本給', 
       description: '基本給（標準単価）のマスターデータ',
       columns: [
@@ -246,6 +259,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'daily_work_records', 
+      tableType: 'トランザクション',
       logicalName: '日次作業記録', 
       description: 'メンバーの日々の作業実績（工数）',
       columns: [
@@ -260,6 +274,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'monthly_task_progress', 
+      tableType: 'トランザクション',
       logicalName: '月次タスク進捗', 
       description: '月ごとのタスク進捗状況（進捗率など）',
       columns: [
@@ -273,6 +288,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'monthly_member_contributions', 
+      tableType: 'トランザクション',
       logicalName: '月次メンバー貢献度', 
       description: '月ごとのメンバーの貢献度・報酬分配',
       columns: [
@@ -290,6 +306,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'financial_records', 
+      tableType: 'トランザクション',
       logicalName: '財務記録', 
       description: '確定した財務データ（売上・経費等）',
       columns: [
@@ -325,6 +342,7 @@ export function ScreenCompositionPage() {
           <table className="inventory-table">
             <thead>
               <tr>
+                <th>区分 (Type)</th>
                 <th>物理名 (Table Name)</th>
                 <th>論理名 (Logical Name)</th>
                 <th>説明 (Description)</th>
@@ -338,6 +356,18 @@ export function ScreenCompositionPage() {
                   <tr key={`${i}-${idx}`}>
                     {idx === 0 && (
                       <>
+                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>
+                          <span style={{ 
+                            display: 'inline-block', 
+                            padding: '2px 8px', 
+                            borderRadius: '4px', 
+                            fontSize: '0.85em',
+                            backgroundColor: table.tableType === 'マスタ' ? '#e3f2fd' : '#fff9c4',
+                            color: '#333'
+                          }}>
+                            {table.tableType}
+                          </span>
+                        </td>
                         <td rowSpan={table.columns.length} style={{ fontWeight: 'bold', verticalAlign: 'top' }}>{table.physicalName}</td>
                         <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.logicalName}</td>
                         <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.description}</td>

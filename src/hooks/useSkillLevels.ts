@@ -12,6 +12,7 @@ export function useSkillLevels() {
       const { data, error } = await supabase
         .from('skill_levels')
         .select('*')
+        .eq('is_deleted', false)
         .order('level_value');
       
       if (error) throw error;
@@ -32,7 +33,7 @@ export function useSkillLevels() {
       if (deletedIds.length > 0) {
         const { error: deleteError } = await supabase
           .from('skill_levels')
-          .delete()
+          .update({ is_deleted: true })
           .in('id', deletedIds);
         if (deleteError) throw deleteError;
       }

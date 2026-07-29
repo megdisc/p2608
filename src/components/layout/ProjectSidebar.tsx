@@ -28,14 +28,14 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_FINANCE}
           </button>
           <button 
-            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary', 'assigneeSummary'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('projectSummary')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
-            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('projectUser')}
+            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dailyWorkRecord')}
           >
             {PAGE_NAMES.SCREEN_USER}
           </button>

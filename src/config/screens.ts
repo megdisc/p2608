@@ -28,6 +28,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
       { id: 'projectSummary', label: PAGE_NAMES.PROJECT_SUMMARY },
+      { id: 'assigneeSummary', label: PAGE_NAMES.ASSIGNEE_SUMMARY },
     ],
   },
   SCREEN_USER: {
@@ -37,7 +38,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
       { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
-      { id: 'assigneeSummary', label: PAGE_NAMES.ASSIGNEE_SUMMARY },
       { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
     ],
   },

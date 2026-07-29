@@ -39,6 +39,7 @@ export function ScreenCompositionPage() {
         PAGE_NAMES.PROGRESS_RECORD,
         PAGE_NAMES.REWARD_ALLOCATION,
         PAGE_NAMES.PROJECT_SUMMARY,
+        PAGE_NAMES.ASSIGNEE_SUMMARY,
       ],
     },
     {
@@ -48,7 +49,6 @@ export function ScreenCompositionPage() {
         PAGE_NAMES.SKILL_EVALUATION,
         PAGE_NAMES.BASE_WAGE_ASSIGNMENT,
         PAGE_NAMES.DAILY_WORK_RECORD,
-        PAGE_NAMES.ASSIGNEE_SUMMARY,
         PAGE_NAMES.WAGE_SUMMARY,
       ],
     },

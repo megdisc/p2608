@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
 import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
@@ -131,29 +131,40 @@ export function ScreenCompositionPage() {
             <thead>
               <tr>
                 <th>画面</th>
-                <th>区分</th>
-                <th>タブ（既存の画面名称）</th>
+                <th>タブ（設定系）</th>
+                <th>タブ（記録系）</th>
+                <th>タブ（集計系）</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
-                <React.Fragment key={i}>
-                  {row.existing.map((item, idx) => {
-                    const label = getCategoryLabel(item);
-                    return (
-                      <tr key={`${i}-${idx}`}>
-                        {idx === 0 && (
-                          <td rowSpan={row.existing.length} style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
-                            {row.screen}
-                          </td>
-                        )}
-                        <td style={{ backgroundColor: getCategoryColor(label), color: '#333333' }}>{label}</td>
-                        <td>{item}</td>
-                      </tr>
-                    );
-                  })}
-                </React.Fragment>
-              ))}
+              {rows.map((row, i) => {
+                const settingsTabs = row.existing.filter(item => getCategoryLabel(item) === SETTINGS_LABEL);
+                const recordingTabs = row.existing.filter(item => getCategoryLabel(item) === RECORDING_LABEL);
+                const aggregationTabs = row.existing.filter(item => getCategoryLabel(item) === AGGREGATION_LABEL);
+
+                return (
+                  <tr key={i}>
+                    <td style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
+                      {row.screen}
+                    </td>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(SETTINGS_LABEL), color: '#333333' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {settingsTabs.map(item => <div key={item}>{item}</div>)}
+                      </div>
+                    </td>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(RECORDING_LABEL), color: '#333333' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {recordingTabs.map(item => <div key={item}>{item}</div>)}
+                      </div>
+                    </td>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: '#333333' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {aggregationTabs.map(item => <div key={item}>{item}</div>)}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

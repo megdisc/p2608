@@ -3,6 +3,7 @@ import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
 import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
+import { MainFeaturesPage } from './MainFeaturesPage';
 
 const AGGREGATION_LABEL = `${MENU_CATEGORIES.AGGREGATION}（${MENU_SUBCATEGORIES.AGGREGATION}）`;
 const RECORDING_LABEL = `${MENU_CATEGORIES.RECORDING}（${MENU_SUBCATEGORIES.RECORDING}）`;
@@ -75,6 +76,7 @@ export function ScreenCompositionPage() {
   const displayTitle = screenConfig ? screenConfig.screenName : '画面構成表';
   
   const isTableComposition = navContext.activeTab === 'tableComposition';
+  const isMainFeatures = navContext.activeTab === 'mainFeatures';
 
   const dbTables = [
     { 
@@ -338,7 +340,9 @@ export function ScreenCompositionPage() {
       </div>
 
       <div className="table-container">
-        {isTableComposition ? (
+        {isMainFeatures ? (
+          <MainFeaturesPage />
+        ) : isTableComposition ? (
           <table className="inventory-table">
             <thead>
               <tr>

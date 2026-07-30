@@ -241,6 +241,7 @@ export const PAGE_NAMES = {
   SCREEN_WAGE: '工賃体系管理',
   TAB_SCREEN_COMPOSITION: '画面構成',
   TAB_TABLE_COMPOSITION: 'テーブル構成',
+  TAB_MAIN_FEATURES: '主要機能',
 };
 
 export const TABLE_COLUMNS = {

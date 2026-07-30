@@ -61,7 +61,7 @@ function AppContent() {
             <ScreenProjectPage />
           ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
             <ScreenFinancePage />
-          ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
+          ) : ['screenComposition', 'tableComposition', 'mainFeatures'].includes(activeTab) ? (
             <ScreenCompositionPage />
           ) : (
             <div style={{ padding: '32px' }}>

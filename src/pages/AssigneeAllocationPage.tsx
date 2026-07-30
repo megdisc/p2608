@@ -266,7 +266,7 @@ export function AssigneeAllocationPage() {
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}
                   </td>
-                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                  <td className="bg-input-highlight">
                     <MultiSelectDropdown 
                       options={dbMembers.filter(u => {
                         const reqSkills = item.requiredSkills || [];
@@ -283,7 +283,7 @@ export function AssigneeAllocationPage() {
                       placeholder="選択"
                     />
                   </td>
-                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                  <td className="bg-input-highlight">
                     <MultiSelectDropdown 
                       options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
                       value={item.staffIds}
@@ -291,7 +291,7 @@ export function AssigneeAllocationPage() {
                       placeholder="選択"
                     />
                   </td>
-                  <td style={{ backgroundColor: 'var(--color-bg-input-highlight)' }}>
+                  <td className="bg-input-highlight">
                     <MultiSelectDropdown 
                       options={dbClients.map(c => ({ value: c.id, label: c.name }))}
                       value={item.clientIds}

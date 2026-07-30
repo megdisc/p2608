@@ -89,7 +89,7 @@ export function DataTable<T extends { id: string }>({
   singleMonth,
   onSingleMonthChange,
   disableAddButton,
-  highlightInputColumns,
+  highlightInputColumns = true,
   restrictionTooltipText
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
@@ -587,12 +587,11 @@ export function DataTable<T extends { id: string }>({
                           const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
                           const customStyle = {
                             ...baseStyle,
-                            ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
-                            ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                            ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
                           };
                           
                           return (
-                            <td key={col.key || idx} className={col.className} style={customStyle}>
+                            <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                               {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id) : null}
                             </td>
                           );
@@ -645,26 +644,25 @@ export function DataTable<T extends { id: string }>({
                       const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
                       const customStyle = {
                         ...baseStyle,
-                        ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
-                        ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                        ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
                       };
 
                       if (col.rowType === 'sub') {
                         return (
-                          <td key={col.key || idx} className={col.className} style={customStyle}>
+                          <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                             {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
                           </td>
                         );
                       }
                       if (col.rowType === 'sub-sub') {
                         return (
-                          <td key={col.key || idx} className={col.className} style={customStyle}>
+                          <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                             {null}
                           </td>
                         );
                       }
                       return (
-                        <td key={col.key || idx} className={col.className} style={customStyle}>
+                        <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                           <div style={{ 
                             display: 'flex', 
                             alignItems: 'center', 
@@ -721,19 +719,18 @@ export function DataTable<T extends { id: string }>({
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
                             const customStyle = {
                               ...baseStyle,
-                              ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {}),
-                              ...(isInputColumn ? { backgroundColor: 'var(--color-bg-input-highlight)' } : {})
+                              ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
                             };
 
                             if (col.rowType === 'sub-sub') {
                               return (
-                                <td key={col.key || idx} className={col.className} style={customStyle}>
+                                <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                                   {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id)) : null}
                                 </td>
                               );
                             }
                             return (
-                              <td key={col.key || idx} className={col.className} style={customStyle}>
+                              <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                                 {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id) : null}
                               </td>
                             );

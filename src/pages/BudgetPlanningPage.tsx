@@ -180,7 +180,7 @@ export function BudgetPlanningPage() {
                           </>
                         )}
                         <td>{rev?.subject || ''}</td>
-                        <td style={{ backgroundColor: rev ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
+                        <td className={rev ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
                           {rev ? (
                             <CurrencyInput
                               value={rev.amount}
@@ -189,7 +189,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{exp?.subject || ''}</td>
-                        <td style={{ backgroundColor: exp ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
+                        <td className={exp ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
                           {exp ? (
                             <CurrencyInput
                               value={exp.amount}
@@ -198,7 +198,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{res?.subject || ''}</td>
-                        <td style={{ backgroundColor: res ? (totalSurplus !== 0 ? 'var(--palette-red-300)' : 'var(--color-bg-input-highlight)') : undefined }}>
+                        <td className={res ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
                           {res ? (
                             <CurrencyInput
                               value={res.amount}

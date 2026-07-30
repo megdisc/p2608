@@ -19,13 +19,13 @@
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
-  --palette-blue-300: #cfcfff;
+  --palette-blue-300: #efefff;
   --palette-blue-700: #3f3fdf;
-  --palette-bluegreen-300: #afffff;
+  --palette-bluegreen-300: #dfffff;
   --palette-bluegreen-700: #1f8f8f;
-  --palette-red-300: #ffcfcf;
+  --palette-red-300: #ffefef;
   --palette-red-700: #df3f3f;
-  --palette-yellow-300: #ffffaf;
+  --palette-yellow-300: #ffffdf;
   --palette-yellow-700: #8f8f1f;
 
   /* --- フォント --- */
@@ -81,6 +81,7 @@
   --color-bg-inverse: var(--palette-gray-900);
   --color-bg-inverse-hover: var(--palette-gray-700);
   --color-bg-input-highlight: var(--palette-yellow-300);
+  --color-bg-error-highlight: var(--palette-red-300);
   --color-bg-checked: var(--palette-gray-700);
 
   /* --- テキスト --- */
@@ -320,6 +321,14 @@ button {
   border-spacing: 0;
   text-align: left;
   white-space: nowrap;
+}
+
+.bg-input-highlight {
+  background-color: var(--color-bg-input-highlight);
+}
+
+.bg-error-highlight {
+  background-color: var(--color-bg-error-highlight);
 }
 
 

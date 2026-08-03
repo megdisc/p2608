@@ -143,6 +143,7 @@ export function FinancialRecordPage() {
       onAddRow={handleAddRow}
       showDateFilter={true}
       dateFilterKey="period"
+      initialSort={{ key: 'period', direction: 'desc' }}
       hideHeader={true}
     />
   );

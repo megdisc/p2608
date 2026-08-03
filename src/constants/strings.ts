@@ -153,7 +153,7 @@ export const WORDS_PROJECT = {
   DEDUCTION_AMOUNT: '差引額',
   REWARD_UNIT_PRICE: '報酬単価',
   PROJECT_STATUS: '進捗状態',
-  FINANCIAL_PERIOD: '収支時期',
+  FINANCIAL_PERIOD: '計上日',
   RECORDED_DATE: '記録日',
 };
 

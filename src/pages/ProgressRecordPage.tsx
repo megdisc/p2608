@@ -114,23 +114,6 @@ export function ProgressRecordPage() {
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
     },
-    {
-      key: 'estimatedReward',
-      header: '報酬見込額',
-      sortable: false,
-      editable: false,
-      style: (item: any) => ({
-        textAlign: 'right',
-        borderBottom: item.isLastInTask ? undefined : 'none'
-      }),
-      render: (item: any) => {
-        if (!item.isFirstInTask) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        const task = project?.tasks.find(t => t.id === item.taskId);
-        const budget = task?.laborBudget || 0;
-        return `¥${budget.toLocaleString()}`;
-      }
-    },
     { 
       key: 'taskStatus', 
       header: '進捗状態', 
@@ -171,13 +154,6 @@ export function ProgressRecordPage() {
       sortable: false,
       editable: false, 
       render: (item: any) => item.userName
-    },
-    { 
-      key: 'workTime', 
-      header: TABLE_COLUMNS.CURRENT_MONTH_WORK_TIME, 
-      sortable: false,
-      editable: false,
-      style: { width: '120px', textAlign: 'right' }
     }
   ];
 

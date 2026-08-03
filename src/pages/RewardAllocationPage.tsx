@@ -45,7 +45,14 @@ export function RewardAllocationPage() {
       sortKey: 'projectYomigana',
       sortable: false,
       editable: false,
-      render: (item: any) => item.isFirstInProject ? item.projectName : '',
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        if (item.projectType === 'ongoing') {
+          const [year, month] = currentMonth.split('-');
+          return `${item.projectName}（${year}年${month}月分）`;
+        }
+        return item.projectName;
+      },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'
       })

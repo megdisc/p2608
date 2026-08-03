@@ -73,7 +73,7 @@ export function useProjectSummary() {
 
       const tempRows: any[] = [];
 
-      for (const p of projects) {
+      for (const p of projects.filter(p => p.project_type !== 'other' && p.project_type !== 'その他')) {
         const projectTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
         
         if (projectTasks.length === 0) {

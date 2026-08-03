@@ -79,7 +79,9 @@ export function AssigneeAllocationPage() {
 
       const formattedTasks: AllocationRow[] = [];
       
-      (projectsRes.data || []).forEach((p: any) => {
+      (projectsRes.data || [])
+        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+        .forEach((p: any) => {
         const projectTypeSortKey = p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1');
         (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)

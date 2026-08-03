@@ -34,7 +34,9 @@ export function useProjects() {
       setDbSkills(skillsRes.data || []);
       setDbSkillLevels(skillLevelsRes.data || []);
 
-      const formattedProjects: ProjectItem[] = (projectsRes.data || []).map((p: any) => ({
+      const formattedProjects: ProjectItem[] = (projectsRes.data || [])
+        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+        .map((p: any) => ({
         id: p.id,
         name: p.name,
         yomigana: p.yomigana || '',

@@ -45,7 +45,9 @@ export function useBudgetPlanning() {
 
       const items = (budgetsData as any[]) || [];
 
-      const initialDrafts: ProjectDraft[] = (projectsData as any[]).map(p => {
+      const initialDrafts: ProjectDraft[] = (projectsData as any[])
+        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+        .map(p => {
         const pItems = items.filter(b => b.project_id === p.id);
 
         const revSubjects = [WORDS_PROJECT.SUBJECT_REVENUE_SALES, WORDS_PROJECT.SUBJECT_REVENUE_OTHER];

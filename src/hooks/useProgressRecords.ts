@@ -92,7 +92,9 @@ export function useProgressRecords() {
       
       const budgetItems = budgetsRes.data || [];
       
-      const formattedProjects = (projectsRes.data || []).map((p: any) => ({
+      const formattedProjects = (projectsRes.data || [])
+        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+        .map((p: any) => ({
         id: p.id,
         name: p.name,
         yomigana: p.yomigana || '',

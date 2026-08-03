@@ -295,16 +295,16 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 -- Financial Records (Manually Input Seed Data)
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, recorded_by, is_limited) VALUES
 ('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 3300000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', 'その他収益', 50000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（その他）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-06-01', NULL, 'revenue', 'その他収益', 50000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-06-01', NULL, 'expense', '労務費（その他）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
 ('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '外注加工費', 200000, '2026-06-30', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false),
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', 'その他費用', 100000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-06-01', NULL, 'expense', 'その他費用', 100000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
 
 ('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 1500000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
-('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費（利用者工賃）', 800000, '2026-07-15', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-07-01', NULL, 'expense', '労務費（利用者工賃）', 800000, '2026-07-15', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
 ('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '外注加工費', 300000, '2026-07-15', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false),
-('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', 'その他費用', 50000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-07-01', NULL, 'expense', 'その他費用', 50000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
 
-('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', 'その他収益', 10000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
-('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（その他）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
-('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', 'その他費用', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false);
+('2026-08-01', NULL, 'revenue', 'その他収益', 10000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-08-01', NULL, 'expense', '労務費（その他）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-08-01', NULL, 'expense', 'その他費用', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false);

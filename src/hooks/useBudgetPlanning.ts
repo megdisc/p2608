@@ -56,9 +56,7 @@ export function useBudgetPlanning() {
 
         const activeTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
         const expSubjects = activeTasks.flatMap((t: any) => [
-          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER}（${t.name}）`, taskId: t.id },
-          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER}（${t.name}）`, taskId: t.id },
-          { subject: `${WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE}（${t.name}）`, taskId: t.id }
+          { subject: `労務費・外注加工費（${t.name}）`, taskId: t.id }
         ]);
         expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
 

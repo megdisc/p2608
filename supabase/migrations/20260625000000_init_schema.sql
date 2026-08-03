@@ -582,7 +582,7 @@ CREATE TABLE IF NOT EXISTS "public"."financial_records" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL PRIMARY KEY,
     "period" date NOT NULL,
     "project_id" "uuid",
-    "type" text NOT NULL CHECK ("type" IN ('revenue', 'expense')),
+    "type" text NOT NULL CHECK ("type" IN ('revenue', 'expense', 'reserve')),
     "subject" text NOT NULL,
     "amount" integer DEFAULT 0 NOT NULL,
     "recorded_date" date NOT NULL,

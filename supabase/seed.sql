@@ -307,4 +307,7 @@ INSERT INTO financial_records (period, project_id, type, subject, amount, record
 
 ('2026-08-01', NULL, 'revenue', 'その他収益', 10000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
 ('2026-08-01', NULL, 'expense', '労務費（その他）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
-('2026-08-01', NULL, 'expense', 'その他費用', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false);
+('2026-08-01', NULL, 'expense', 'その他費用', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false),
+
+('2026-08-01', NULL, 'reserve', '工賃変動積立金', 100000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-08-01', NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false);

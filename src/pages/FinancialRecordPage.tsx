@@ -41,7 +41,8 @@ export function FinancialRecordPage() {
       inputType: 'radio',
       options: [
         { label: WORDS_PROJECT.REVENUE, value: 'revenue' },
-        { label: WORDS_PROJECT.EXPENSE, value: 'expense' }
+        { label: WORDS_PROJECT.EXPENSE, value: 'expense' },
+        { label: WORDS_PROJECT.RESERVE, value: 'reserve' }
       ],
       onCellChange: (newType, item) => {
         // If type changes, clear the subject as it might no longer be valid
@@ -64,6 +65,12 @@ export function FinancialRecordPage() {
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER }
+          ];
+        } else if (item.type === 'reserve') {
+          return [
+            { label: '', value: '' },
+            { label: WORDS_PROJECT.SUBJECT_RESERVE_WAGE, value: WORDS_PROJECT.SUBJECT_RESERVE_WAGE },
+            { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
           ];
         }
         // default to revenue subjects

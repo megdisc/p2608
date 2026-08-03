@@ -39,7 +39,7 @@ export function useProjects() {
         name: p.name,
         yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
-        projectTypeSortKey: (p.project_type || 'one-off') === 'ongoing' ? '0' : '1',
+        projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
         customerId: p.client_id || '',
         startDate: p.start_date,
         endDate: p.end_date || '',

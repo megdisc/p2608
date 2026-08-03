@@ -58,8 +58,8 @@ export function BudgetPlanningPage() {
     let aVal = '';
     let bVal = '';
     if (sortConfig.key === 'projectType') {
-      aVal = a.project.projectType === 'ongoing' ? '0' : '1';
-      bVal = b.project.projectType === 'ongoing' ? '0' : '1';
+      aVal = a.project.projectType === 'ongoing' ? '0' : (a.project.projectType === 'その他' ? '2' : '1');
+      bVal = b.project.projectType === 'ongoing' ? '0' : (b.project.projectType === 'その他' ? '2' : '1');
     } else if (sortConfig.key === 'name') {
       aVal = a.project.yomigana || a.project.name || '';
       bVal = b.project.yomigana || b.project.name || '';
@@ -126,7 +126,7 @@ export function BudgetPlanningPage() {
                       onMouseLeave={() => setHoveredProjectId(null)}
                     >
                       <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
-                        {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
+                        {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
                       </td>
                       <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
                         {draft.project.name}
@@ -172,7 +172,7 @@ export function BudgetPlanningPage() {
                         {i === 0 && (
                           <>
                             <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
-                              {draft.project.projectType === 'ongoing' ? '継続' : '単発'}
+                              {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
                             </td>
                             <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
                               {draft.project.name}

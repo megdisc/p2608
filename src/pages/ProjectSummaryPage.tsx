@@ -23,6 +23,7 @@ export function ProjectSummaryPage() {
       sortable: true,
       render: (item) => {
         if (!item.isFirstInProject) return '';
+        if (item.projectType === 'その他') return 'その他';
         return item.projectType === 'ongoing' ? '継続' : '単発';
       },
       style: (item) => ({

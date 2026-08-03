@@ -80,7 +80,7 @@ export function AssigneeAllocationPage() {
       const formattedTasks: AllocationRow[] = [];
       
       (projectsRes.data || []).forEach((p: any) => {
-        const projectTypeSortKey = (p.project_type || 'one-off') === 'ongoing' ? '0' : '1';
+        const projectTypeSortKey = p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1');
         (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
           .forEach((pt: any) => {
@@ -88,7 +88,7 @@ export function AssigneeAllocationPage() {
             formattedTasks.push({
               id: pt.id,
               projectId: p.id,
-              projectType: (p.project_type === 'other' || p.project_type === 'その他') ? 'one-off' : (p.project_type || 'one-off'),
+              projectType: p.project_type || 'one-off',
               projectTypeSortKey,
               projectName: p.name,
               projectYomigana: p.yomigana || '',

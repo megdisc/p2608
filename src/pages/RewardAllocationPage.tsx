@@ -63,7 +63,7 @@ export function RewardAllocationPage() {
       sortKey: 'projectTypeSortKey',
       sortable: true,
       editable: false,
-      render: (item: any) => item.isFirstInProject ? (item.projectType === 'ongoing' ? '継続' : '単発') : '',
+      render: (item: any) => item.isFirstInProject ? (item.projectType === 'その他' ? 'その他' : (item.projectType === 'ongoing' ? '継続' : '単発')) : '',
       style: (item: any) => ({
         width: '80px',
         borderBottom: item.isLastInProject ? undefined : 'none'

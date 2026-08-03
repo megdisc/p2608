@@ -129,7 +129,7 @@ export const WORDS_PROJECT = {
   PROGRESS_RATE: '進捗率',
   STATUS_NOT_STARTED: '未着手',
   STATUS_IN_PROGRESS: '進行中',
-  STATUS_COMPLETED: '完了',
+  STATUS_FINISHED: '終了',
   STATUS_CANCELED: '中止',
   PREV_MONTH_PROGRESS: '月初進捗率 (%)',
   CURRENT_MONTH_PROGRESS: '月末進捗率 (%)',

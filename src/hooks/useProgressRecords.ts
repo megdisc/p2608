@@ -7,7 +7,7 @@ export type MonthlyTaskRecord = {
   id: string;
   year_month: string;
   task_id: string;
-  current_progress: number;
+  status: string;
 };
 
 export type MonthlyContributionRecord = {
@@ -31,8 +31,10 @@ export type ProgressFlatRecord = {
   yearMonth: string;
   taskId: string;
   taskName: string;
-  prevProgress: number | string;
-  currentProgress: number;
+  taskStatus: string;
+  taskPrevStatus: string;
+  taskCompletedAt?: string;
+  projectStatus: string;
   userId: string;
   userName: string;
   assigneeType: string;
@@ -74,7 +76,7 @@ export function useProgressRecords() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted, is_canceled,
+            id, name, yomigana, is_deleted, is_canceled, status, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
           )
         `).eq('is_deleted', false).order('yomigana', { ascending: true }),
@@ -116,6 +118,8 @@ export function useProgressRecords() {
                 return res;
               }),
             isCanceled: pt.is_canceled || false,
+            status: pt.status || 'not_started',
+            completedAt: pt.completed_at,
             laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.subject?.includes('労務費・外注加工費'))?.amount || 0
           }))
       }));
@@ -187,6 +191,33 @@ export function useProgressRecords() {
       const projectTaskRecords = currentMonthTaskRecords.filter(r => taskIdsInProject.includes(r.task_id));
       const projectMemberRecords = currentMonthMemberRecords.filter(r => taskIdsInProject.includes(r.task_id));
       
+      let projectStatus = 'not_started';
+      if (project.tasks.length > 0) {
+        let allNotStarted = true;
+        let allCompletedOrCanceled = true;
+        
+        for (const pt of project.tasks) {
+          let ptStatus = 'not_started';
+          if (project.projectType === 'ongoing') {
+            const ptRecord = currentMonthTaskRecords.find(r => r.task_id === pt.id);
+            ptStatus = ptRecord ? ptRecord.status : 'not_started';
+          } else {
+            ptStatus = pt.status || 'not_started';
+          }
+          
+          if (ptStatus !== 'not_started') allNotStarted = false;
+          if (ptStatus !== 'completed' && ptStatus !== 'canceled') allCompletedOrCanceled = false;
+        }
+        
+        if (allNotStarted) {
+          projectStatus = 'not_started';
+        } else if (allCompletedOrCanceled) {
+          projectStatus = 'completed';
+        } else {
+          projectStatus = 'in_progress';
+        }
+      }
+      
       for (const t of project.tasks) {
         const membersToProcess = new Set<string>(t.assigneeIds || []);
         
@@ -205,12 +236,19 @@ export function useProgressRecords() {
 
         const taskRecord = projectTaskRecords.find(r => r.task_id === t.id);
         const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
-        
-        let taskPrevProgressRaw = prevTaskRecord ? Number(prevTaskRecord.current_progress) : 0;
-        let taskPrevProgress = Math.min(100, Math.max(0, Math.round(taskPrevProgressRaw / 10) * 10));
-        
-        let taskCurrentProgressRaw = taskRecord ? Number(taskRecord.current_progress) : taskPrevProgressRaw;
-        let taskCurrentProgress = Math.min(100, Math.max(0, Math.round(taskCurrentProgressRaw / 10) * 10));
+        let taskPrevStatus = 'not_started';
+        if (project.projectType === 'ongoing') {
+          taskPrevStatus = prevTaskRecord ? prevTaskRecord.status : 'not_started';
+        } else {
+          taskPrevStatus = t.status || 'not_started';
+        }
+
+        let taskCurrentStatus = 'not_started';
+        if (project.projectType === 'ongoing') {
+          taskCurrentStatus = taskRecord ? taskRecord.status : 'not_started';
+        } else {
+          taskCurrentStatus = t.status || 'not_started';
+        }
         
         let hasAssignees = false;
 
@@ -255,11 +293,13 @@ export function useProgressRecords() {
             projectYomigana: project.yomigana || '',
             projectType: project.projectType || 'one-off',
             projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
+            projectStatus: projectStatus,
             yearMonth: currentMonth,
             taskId: t.id,
             taskName: t.task,
-            prevProgress: taskPrevProgress,
-            currentProgress: taskCurrentProgress,
+            taskStatus: taskCurrentStatus,
+            taskPrevStatus: taskPrevStatus,
+            taskCompletedAt: t.completedAt,
             userId: prefixedId,
             userName: getUserName(prefixedId),
             assigneeType: getAssigneeType(prefixedId),
@@ -280,11 +320,13 @@ export function useProgressRecords() {
              projectYomigana: project.yomigana || '',
              projectType: project.projectType || 'one-off',
              projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
+             projectStatus: projectStatus,
              yearMonth: currentMonth,
              taskId: t.id,
              taskName: t.task,
-             prevProgress: taskPrevProgress,
-             currentProgress: taskCurrentProgress,
+             taskStatus: taskCurrentStatus,
+             taskPrevStatus: taskPrevStatus,
+             taskCompletedAt: t.completedAt,
              userId: '',
              userName: '',
              assigneeType: '',
@@ -360,13 +402,21 @@ export function useProgressRecords() {
       for (const r of drafts) {
         if (deletedIds.includes(r.id)) continue;
 
-        if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) { 
-          taskUpserts.push({
-            year_month: currentMonth,
-            task_id: r.taskId,
-            current_progress: r.currentProgress || 0
-          });
-          if (r.isCanceled !== undefined) {
+        if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
+          if (r.projectType === 'ongoing') {
+            taskUpserts.push({
+              year_month: currentMonth,
+              task_id: r.taskId,
+              status: r.taskStatus || 'not_started'
+            });
+          } else {
+            projectTaskUpdates.push({
+              id: r.taskId,
+              status: r.taskStatus || 'not_started',
+              is_canceled: r.taskStatus === 'canceled'
+            });
+          }
+          if (r.isCanceled !== undefined && r.projectType === 'ongoing') {
             projectTaskUpdates.push({
               id: r.taskId,
               is_canceled: r.isCanceled
@@ -413,7 +463,17 @@ export function useProgressRecords() {
       if (projectTaskUpdates.length > 0) {
         const uniqueProjectTasks = Array.from(new Map(projectTaskUpdates.map(t => [t.id, t])).values());
         for (const t of uniqueProjectTasks) {
-          promises.push(supabase.from('project_tasks').update({ is_canceled: t.is_canceled }).eq('id', t.id));
+          const updateData: any = {};
+          if (t.is_canceled !== undefined) updateData.is_canceled = t.is_canceled;
+          if (t.status !== undefined) {
+             updateData.status = t.status;
+             if (t.status === 'completed') {
+               updateData.completed_at = new Date().toISOString();
+             } else {
+               updateData.completed_at = null;
+             }
+          }
+          promises.push(supabase.from('project_tasks').update(updateData).eq('id', t.id));
         }
       }
 

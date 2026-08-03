@@ -44,7 +44,7 @@ export function useWageSummary() {
         workRes
       ] = await Promise.all([
         supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled)').eq('is_deleted', false),
+        supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
@@ -93,9 +93,13 @@ export function useWageSummary() {
           if (activeTasks.length === 0) continue;
           
           const allCompleted = activeTasks.every((t: any) => {
-            const cTask = cTasks.find((r: any) => r.task_id === t.id);
-            const prog = cTask ? Number(cTask.current_progress) : 0;
-            return prog === 100;
+            if (project.project_type === 'ongoing') {
+              const cTask = cTasks.find((r: any) => r.task_id === t.id);
+              const pTask = pTaskRes.data?.find((r: any) => r.task_id === t.id);
+              return cTask?.status === 'completed' && pTask?.status !== 'completed';
+            } else {
+              return t.status === 'completed' && t.completed_at && t.completed_at.startsWith(monthStr);
+            }
           });
 
           if (!allCompleted) continue;

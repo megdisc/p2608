@@ -80,16 +80,17 @@ export function ProgressRecordPage() {
         const projectTasks = drafts.filter(d => d.projectId === item.projectId && d.isFirstInTask);
         if (projectTasks.length === 0) return WORDS_PROJECT.STATUS_NOT_STARTED;
 
-        const allCanceled = projectTasks.every(t => t.isCanceled);
-        if (allCanceled) return WORDS_PROJECT.STATUS_CANCELED;
+        let allNotStarted = true;
+        let allCompletedOrCanceled = true;
 
-        const activeTasks = projectTasks.filter(t => !t.isCanceled);
-        const allCompleted = activeTasks.every(t => Number(t.currentProgress) === 100);
-        if (allCompleted) return WORDS_PROJECT.STATUS_COMPLETED;
+        for (const t of projectTasks) {
+          const status = t.taskStatus || 'not_started';
+          if (status !== 'not_started') allNotStarted = false;
+          if (status !== 'completed' && status !== 'canceled') allCompletedOrCanceled = false;
+        }
 
-        const allNotStarted = activeTasks.every(t => Number(t.currentProgress) === 0 || !t.currentProgress);
         if (allNotStarted) return WORDS_PROJECT.STATUS_NOT_STARTED;
-
+        if (allCompletedOrCanceled) return WORDS_PROJECT.STATUS_FINISHED;
         return WORDS_PROJECT.STATUS_IN_PROGRESS;
       },
       style: (item: any) => ({
@@ -131,41 +132,29 @@ export function ProgressRecordPage() {
       }
     },
     { 
-      key: 'prevProgress', 
-      header: TABLE_COLUMNS.PREV_MONTH_PROGRESS, 
-      sortable: false,
-      editable: false,
-      render: (item: any) => item.isFirstInTask && item.taskId ? item.prevProgress : '',
-      style: (item: any) => ({
-        width: '120px', 
-        textAlign: 'right',
-        borderBottom: item.isLastInTask ? undefined : 'none'
-      })
-    },
-    { 
-      key: 'currentProgress', 
-      header: TABLE_COLUMNS.CURRENT_MONTH_PROGRESS, 
+      key: 'taskStatus', 
+      header: '進捗状態', 
       sortable: false,
       editable: (item: any) => item.isFirstInTask,
       inputType: 'radio',
-      options: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(v => ({ label: String(v), value: String(v) })),
-      render: (item: any) => item.isFirstInTask ? item.currentProgress : '',
+      options: [
+        { label: '未着手', value: 'not_started' },
+        { label: '進行中', value: 'in_progress' },
+        { label: '完了', value: 'completed' },
+        { label: '中止', value: 'canceled' }
+      ],
+      render: (item: any) => {
+         if (!item.isFirstInTask) return '';
+         const v = item.taskStatus;
+         if (v === 'not_started') return '未着手';
+         if (v === 'in_progress') return '進行中';
+         if (v === 'completed') return '完了';
+         if (v === 'canceled') return '中止';
+         return '';
+      },
       style: (item: any) => ({
-        borderBottom: item.isLastInTask ? undefined : 'none'
-      })
-    },
-    {
-      key: 'isCanceled',
-      header: TABLE_COLUMNS.IS_CANCELED,
-      sortable: false,
-      editable: (item: any) => item.isFirstInTask,
-      inputType: 'checkbox',
-      render: (item: any) => item.isFirstInTask ? (item.isCanceled ? '✓' : '') : '',
-      style: (item: any) => ({
-        width: '80px',
-        textAlign: 'center',
-        backgroundColor: 'var(--palette-yellow-100)',
-        borderBottom: item.isLastInTask ? undefined : 'none'
+        borderBottom: item.isLastInTask ? undefined : 'none',
+        minWidth: '280px'
       })
     },
     { 

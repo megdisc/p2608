@@ -44,11 +44,23 @@ export function RewardAllocationPage() {
       const activeTasks = Array.from(taskMap.values()).filter(t => !t.isCanceled);
 
       if (activeTasks.length > 0) {
-        const allCurrent100 = activeTasks.every(t => Number(t.currentProgress) === 100);
-        const atLeastOnePrevNot100 = activeTasks.some(t => Number(t.prevProgress) < 100);
+        const firstTask = activeTasks[0];
+        const isOngoing = firstTask.projectType === 'ongoing';
+        const allCompleted = activeTasks.every(t => t.taskStatus === 'completed');
 
-        if (allCurrent100 && atLeastOnePrevNot100) {
-          completedProjectIds.add(projectId);
+        if (allCompleted) {
+          if (isOngoing) {
+            const atLeastOnePrevNotCompleted = activeTasks.some(t => t.taskPrevStatus !== 'completed');
+            if (atLeastOnePrevNotCompleted) {
+              completedProjectIds.add(projectId);
+            }
+          } else {
+            const atLeastOneCompletedThisMonth = activeTasks.some(t => t.taskCompletedAt && t.taskCompletedAt.startsWith(currentMonth));
+            // もし過去データでcompletedAtが無い場合は抽出されないが、それは仕方ない（要件としては「今月完了したもの」）
+            if (atLeastOneCompletedThisMonth) {
+              completedProjectIds.add(projectId);
+            }
+          }
         }
       }
     }

@@ -79,11 +79,17 @@ export function AssigneeSummaryPage() {
       render: (item) => item.taskName
     },
     { 
-      key: 'progressRate', 
-      header: TABLE_COLUMNS.PROGRESS_RATE,
+      key: 'taskStatus', 
+      header: '進捗状態',
       sortable: false,
-      render: (item) => item.progressRate,
-      style: { textAlign: 'right' }
+      render: (item) => {
+        if (!item.taskStatus) return '';
+        if (item.taskStatus === 'completed') return '完了';
+        if (item.taskStatus === 'in_progress') return '進行中';
+        if (item.taskStatus === 'canceled') return '中止';
+        return '未着手';
+      },
+      style: { width: '100px', textAlign: 'center' }
     }
   ], [targetDate]);
 

@@ -16,7 +16,7 @@ export type SummaryRow = {
   projectType: string;
   projectTypeSortKey: string;
   taskName: string;
-  progressRate: number;
+  taskStatus: string;
   isFirstInAssignee: boolean;
   isFirstInProject: boolean;
   isLastInAssignee: boolean;
@@ -41,7 +41,7 @@ export function useAssigneeSummary() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type,
           project_tasks (
-            id, name, yomigana, is_deleted,
+            id, name, yomigana, is_deleted, status,
             project_task_assignees (
               id, member_id, client_id, staff_id
             )
@@ -50,7 +50,7 @@ export function useAssigneeSummary() {
         supabase.from('members').select('id, name, yomigana').eq('is_deleted', false),
         supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false),
         supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false),
-        supabase.from('monthly_task_progress').select('task_id, current_progress, year_month')
+        supabase.from('monthly_task_progress').select('task_id, status, year_month')
       ]);
 
       if (projectsRes.error) throw projectsRes.error;
@@ -69,10 +69,10 @@ export function useAssigneeSummary() {
       const clientMap = new Map(clients.map(c => [c.id, { name: c.name, yomigana: c.yomigana }]));
       const staffMap = new Map(staffs.map(s => [s.id, { name: s.name, yomigana: s.yomigana }]));
 
-      const latestProgressMap = new Map<string, number>();
+      const latestProgressMap = new Map<string, string>();
       const sortedRecords = [...records].sort((a, b) => a.year_month.localeCompare(b.year_month));
       for (const r of sortedRecords) {
-        latestProgressMap.set(r.task_id, Number(r.current_progress));
+        latestProgressMap.set(r.task_id, r.status || 'not_started');
       }
 
       const tempRows: any[] = [];
@@ -82,7 +82,12 @@ export function useAssigneeSummary() {
 
         for (const t of projectTasks) {
           const assignees = t.project_task_assignees || [];
-          const progressRate = latestProgressMap.get(t.id) || 0;
+          let taskStatus = 'not_started';
+          if (p.project_type === 'ongoing') {
+            taskStatus = latestProgressMap.get(t.id) || 'not_started';
+          } else {
+            taskStatus = t.status || 'not_started';
+          }
           
           if (assignees.length === 0) {
             tempRows.push({
@@ -99,7 +104,7 @@ export function useAssigneeSummary() {
               taskId: t.id,
               taskName: t.name,
               taskYomigana: t.yomigana || '',
-              progressRate,
+              taskStatus,
             });
           } else {
             for (const a of assignees) {
@@ -142,7 +147,7 @@ export function useAssigneeSummary() {
                 taskId: t.id,
                 taskName: t.name,
                 taskYomigana: t.yomigana || '',
-                progressRate,
+                taskStatus,
               });
             }
           }
@@ -191,7 +196,7 @@ export function useAssigneeSummary() {
           projectType: r.projectType,
           projectTypeSortKey: r.projectTypeSortKey,
           taskName: r.taskName,
-          progressRate: r.progressRate,
+          taskStatus: r.taskStatus,
           isFirstInAssignee,
           isFirstInProject,
           isLastInAssignee,

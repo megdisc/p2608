@@ -34,6 +34,8 @@ export type ProjectTask = {
   requiredSkills: TaskSkill[];
   assigneeIds?: string[];
   isCanceled?: boolean;
+  status?: string;
+  completedAt?: string;
   laborBudget?: number;
 };
 

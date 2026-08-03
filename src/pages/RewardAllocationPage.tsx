@@ -23,49 +23,7 @@ export function RewardAllocationPage() {
   }, [currentMonth, fetchRecords, fetchMasters]);
 
   const filteredRecords = useMemo(() => {
-    const projectGroups = new Map<string, ProgressFlatRecord[]>();
-    for (const r of records) {
-      if (!projectGroups.has(r.projectId)) {
-        projectGroups.set(r.projectId, []);
-      }
-      projectGroups.get(r.projectId)!.push(r);
-    }
-
-    const completedProjectIds = new Set<string>();
-
-    for (const [projectId, projectRecords] of projectGroups.entries()) {
-      const taskMap = new Map<string, ProgressFlatRecord>();
-      for (const r of projectRecords) {
-        if (!taskMap.has(r.taskId)) {
-          taskMap.set(r.taskId, r);
-        }
-      }
-
-      const activeTasks = Array.from(taskMap.values()).filter(t => !t.isCanceled);
-
-      if (activeTasks.length > 0) {
-        const firstTask = activeTasks[0];
-        const isOngoing = firstTask.projectType === 'ongoing';
-        const allCompleted = activeTasks.every(t => t.taskStatus === 'completed');
-
-        if (allCompleted) {
-          if (isOngoing) {
-            const atLeastOnePrevNotCompleted = activeTasks.some(t => t.taskPrevStatus !== 'completed');
-            if (atLeastOnePrevNotCompleted) {
-              completedProjectIds.add(projectId);
-            }
-          } else {
-            const atLeastOneCompletedThisMonth = activeTasks.some(t => t.taskCompletedAt && t.taskCompletedAt.startsWith(currentMonth));
-            // もし過去データでcompletedAtが無い場合は抽出されないが、それは仕方ない（要件としては「今月完了したもの」）
-            if (atLeastOneCompletedThisMonth) {
-              completedProjectIds.add(projectId);
-            }
-          }
-        }
-      }
-    }
-
-    return records.filter(r => completedProjectIds.has(r.projectId));
+    return records;
   }, [records]);
 
   const columns: Column<ProgressFlatRecord>[] = [

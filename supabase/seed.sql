@@ -181,8 +181,8 @@ INSERT INTO project_budget_items (project_id, category, subject, task_id, amount
 INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
 INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 
--- 完了案件の報酬配分による自動生成収支記録のシード
-INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', true, '2026-06-30');
+-- 完了案件の収支記録のシード
+INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', false, '2026-06-30');
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 350000);
@@ -194,8 +194,8 @@ INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES 
 INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
 INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
--- 完了案件の報酬配分による自動生成収支記録のシード (新規Webサービス開発支援)
-INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', true, '2026-06-30');
+-- 完了案件の収支記録のシード (新規Webサービス開発支援)
+INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', false, '2026-06-30');
 
 -- 社内基幹システム移行
 INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '売上', 1200000);
@@ -292,7 +292,19 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'baf4f0c2-954d-46ac-a3e4-a0ad211155c8', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 高橋次郎: Python (1.初級)
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: セキュリティ監査 (2.中級)
 
--- Financial Records
+-- Financial Records (Manually Input Seed Data)
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, recorded_by, is_limited) VALUES
-('2026-06-30', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 500000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
-('2026-06-30', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費', 120000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false);
+('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '売上', 3300000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', 'その他収益', 50000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（その他）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '外注加工費', 200000, '2026-06-30', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false),
+('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', 'その他費用', 100000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+
+('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '売上', 1500000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '労務費（利用者工賃）', 800000, '2026-07-15', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '外注加工費', 300000, '2026-07-15', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false),
+('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', 'その他費用', 50000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+
+('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', 'その他収益', 10000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（その他）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false),
+('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', 'その他費用', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false);

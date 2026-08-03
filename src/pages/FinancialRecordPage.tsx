@@ -35,13 +35,6 @@ export function FinancialRecordPage() {
       inputType: 'date'
     },
     { 
-      key: 'projectId', 
-      header: TABLE_COLUMNS.PROJECT_NAME, 
-      editable: true, 
-      inputType: 'select', 
-      options: projectOptions
-    },
-    { 
       key: 'type', 
       header: TABLE_COLUMNS.TYPE, 
       editable: true, 
@@ -80,6 +73,13 @@ export function FinancialRecordPage() {
           { label: WORDS_PROJECT.SUBJECT_REVENUE_OTHER, value: WORDS_PROJECT.SUBJECT_REVENUE_OTHER }
         ];
       }
+    },
+    { 
+      key: 'projectId', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
+      editable: true, 
+      inputType: 'select', 
+      options: projectOptions
     },
     { 
       key: 'amount', 
@@ -137,10 +137,6 @@ export function FinancialRecordPage() {
       showDateFilter={true}
       dateFilterKey="period"
       hideHeader={true}
-      showRestrictionColumn={true}
-      restrictionTooltipText="報酬配分による自動表示データは編集不可です"
-      canEditRow={(item) => !item.isLimited}
-      canDeleteRow={(item) => !item.isLimited}
     />
   );
 }

@@ -88,7 +88,7 @@ export function AssigneeAllocationPage() {
             formattedTasks.push({
               id: pt.id,
               projectId: p.id,
-              projectType: p.project_type || 'one-off',
+              projectType: (p.project_type === 'other' || p.project_type === 'その他') ? 'one-off' : (p.project_type || 'one-off'),
               projectTypeSortKey,
               projectName: p.name,
               projectYomigana: p.yomigana || '',

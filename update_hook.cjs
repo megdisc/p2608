@@ -59,20 +59,7 @@ const updated = content.replace(
 
           if (!allCompleted) continue;
 
-          const taskBudgets = budgets.filter((b: any) => b.task_id === contrib.task_id);
-          const taskLaborBudget = taskBudgets.reduce((sum: number, b: any) => sum + (Number(b.amount) || 0), 0);
-
-          const allTaskContribs = cMems.filter((r: any) => r.task_id === contrib.task_id);
-          const totalRatio = allTaskContribs.reduce((sum: number, r: any) => sum + (Number(r.contribution_ratio) || 0), 0);
-          
-          let alloc = 0;
-          if (totalRatio > 0) {
-            const ratio = Number(contrib.contribution_ratio) || 0;
-            alloc = Math.floor(taskLaborBudget * (ratio / totalRatio));
-          }
-
-          const ded = Number(contrib.deduction_amount) || 0;
-          const unitPrice = alloc - ded;
+          const unitPrice = Number(contrib.deduction_amount) || 0;
 
           sumRewardUnitPrice += unitPrice;
           

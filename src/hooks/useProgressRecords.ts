@@ -17,8 +17,9 @@ export type MonthlyContributionRecord = {
   staff_id?: string;
   client_id?: string;
   task_id: string;
-  contribution_ratio: number;
+  contribution_ratio?: number;
   deduction_amount?: number;
+  allocation_amount?: number;
 };
 
 export type ProgressFlatRecord = {
@@ -40,7 +41,7 @@ export type ProgressFlatRecord = {
   assigneeType: string;
   userYomigana: string;
   workTime: number | string;
-  contributionRatio: number;
+  allocationAmount: number;
   isSaved: boolean;
   isFirstInProject?: boolean;
   isFirstInTask?: boolean;
@@ -305,8 +306,7 @@ export function useProgressRecords() {
             assigneeType: getAssigneeType(prefixedId),
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
-            contributionRatio: savedMemberRecord ? Number(savedMemberRecord.contribution_ratio) : 0,
-            deductionAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
+            allocationAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
             isSaved: !!savedMemberRecord,
             isCanceled: t.isCanceled
           });
@@ -332,8 +332,7 @@ export function useProgressRecords() {
              assigneeType: '',
              userYomigana: '',
              workTime: '-',
-             contributionRatio: 0,
-             deductionAmount: 0,
+             allocationAmount: 0,
              isSaved: !!taskRecord,
              isCanceled: t.isCanceled
            });
@@ -427,7 +426,7 @@ export function useProgressRecords() {
         if (r.userId && r.taskId) {
           const [type, id] = r.userId.split('_');
           
-          if (r.isSaved || Number(r.contributionRatio) > 0 || Number(r.deductionAmount) > 0) {
+          if (r.isSaved || Number(r.allocationAmount) > 0) {
             memberUpserts.push({
               ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
               year_month: currentMonth,
@@ -435,8 +434,8 @@ export function useProgressRecords() {
               staff_id: type === 'staff' ? id : null,
               client_id: type === 'outsource' ? id : null,
               task_id: r.taskId,
-              contribution_ratio: Number(r.contributionRatio) || 0,
-              deduction_amount: Number(r.deductionAmount) || 0
+              contribution_ratio: 0,
+              deduction_amount: Number(r.allocationAmount) || 0
             });
           }
         }

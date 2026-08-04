@@ -123,47 +123,12 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
 
 -- Additional Task Progress
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'completed');
 
 -- Additional Member Contributions
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 1000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 500);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 40);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 60);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70, 2000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-05', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 30, 0);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 1000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 500);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 50);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 50);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70, 2000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 30, 0);
 
 -- 2026-07 Task Progress and Allocations
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 150000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 150000);
 
 -- 2026-08 Task Progress and Allocations
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'canceled');
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 100000);
-INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 100000);
 
 -- Continuous Project (Internal Business)
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'ぱんのはんばい・かふぇうんえい', NULL, '2026-06', NULL, 'ongoing');
@@ -323,3 +288,92 @@ INSERT INTO financial_records (period, project_id, type, subject, amount, record
 
 ('2026-08-01', NULL, 'reserve', '工賃変動積立金', 100000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
 ('2026-08-01', NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false);
+
+-- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
+
+-- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'canceled');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'canceled');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'canceled');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'a1234567-89ab-cdef-0123-456789abcdef', 'completed');
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 60, 20000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 40, 15000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 60, 20000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 40, 15000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 60, 40000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 40, 30000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 60, 40000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 40, 30000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 60, 40000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 40, 30000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 60, 60000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8daa6b8b-ddb2-462a-9594-1738f004832f', 40, 45000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 60, 60000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8daa6b8b-ddb2-462a-9594-1738f004832f', 40, 45000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 60, 80000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 40, 60000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 60, 80000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 40, 60000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 100000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 75000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 60, 100000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 40, 75000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 60, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 40, 90000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 60, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 40, 90000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 60, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 40, 90000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 60, 140000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 40, 105000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 60, 140000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 40, 105000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 60, 160000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 40, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 60, 160000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 40, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 60, 160000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 40, 120000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 60, 180000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 40, 135000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 60, 180000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 40, 135000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 60, 200000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 40, 150000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 60, 200000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 40, 150000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'a1234567-89ab-cdef-0123-456789abcdef', 60, 220000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 40, 165000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'a1234567-89ab-cdef-0123-456789abcdef', 60, 220000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 40, 165000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'a1234567-89ab-cdef-0123-456789abcdef', 60, 220000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 40, 165000);

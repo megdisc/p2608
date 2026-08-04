@@ -59,6 +59,9 @@ export function WageSummaryPage() {
               </tr>
             ) : (
               paginatedRows.map(row => {
+                const totalTaskIncentives = row.taskIncentives.reduce((sum, t) => sum + (t.amount || 0), 0);
+                const deductionAmount = row.basicWage === null ? null : -Math.min(totalTaskIncentives, row.basicWage);
+                
                 const incentiveRows = row.taskIncentives.length > 0 
                   ? [
                       ...row.taskIncentives.map((t, i) => ({ 
@@ -69,11 +72,11 @@ export function WageSummaryPage() {
                         rowSpan: i === 0 ? row.taskIncentives.length + 2 : undefined,
                         hideSubject: i > 0
                       })),
-                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: row.basicWage === null ? null : -row.basicWage, isBold: false, rowSpan: undefined, hideSubject: true },
+                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: deductionAmount, isBold: false, rowSpan: undefined, hideSubject: true },
                       { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
                     ]
                   : [
-                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: row.basicWage === null ? null : -row.basicWage, isBold: false, rowSpan: 2, hideSubject: false },
+                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: deductionAmount, isBold: false, rowSpan: 2, hideSubject: false },
                       { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
                     ];
 

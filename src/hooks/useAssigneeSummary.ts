@@ -90,22 +90,8 @@ export function useAssigneeSummary() {
           }
           
           if (assignees.length === 0) {
-            tempRows.push({
-              assigneeType: '',
-              assigneeTypeSortKey: 99,
-              assigneeId: 'unassigned',
-              assigneeName: '未割り当て',
-              assigneeYomigana: '',
-              projectId: p.id,
-              projectName: p.name,
-              projectYomigana: p.yomigana || '',
-              projectType: p.project_type || 'one-off',
-              projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
-              taskId: t.id,
-              taskName: t.name,
-              taskYomigana: t.yomigana || '',
-              taskStatus,
-            });
+            // Do not add unassigned tasks to Assignee Summary (担当状況集計)
+            // User requested not to show "Other" (未割り当て) assignee data.
           } else {
             for (const a of assignees) {
               let assigneeName = '不明';

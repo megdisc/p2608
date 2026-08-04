@@ -123,6 +123,12 @@ export function AssigneeAllocationPage() {
 
   const handleBatchSave = async () => {
     try {
+      const hasEmptyStaff = drafts.some(t => t.staffIds.length === 0);
+      if (hasEmptyStaff) {
+        showAlert('職員が未入力のタスクがあります', 'error');
+        return;
+      }
+
       setLoading(true);
 
       for (const t of drafts) {
@@ -268,7 +274,7 @@ export function AssigneeAllocationPage() {
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}
                   </td>
-                  <td className="bg-input-highlight">
+                  <td className={item.staffIds.length === 0 ? 'bg-error-highlight' : 'bg-input-highlight'}>
                     <MultiSelectDropdown 
                       options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
                       value={item.staffIds}

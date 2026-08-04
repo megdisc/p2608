@@ -35,6 +35,8 @@ export type ProgressFlatRecord = {
   taskStatus: string;
   taskPrevStatus: string;
   taskCompletedAt?: string;
+  laborBudget?: number;
+  pastAllocationAmount?: number;
   projectStatus: string;
   userId: string;
   userName: string;
@@ -61,6 +63,8 @@ export function useProgressRecords() {
   const [prevMonthTaskRecords, setPrevMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
   const [currentMonthMemberRecords, setCurrentMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
   const [prevMonthMemberRecords, setPrevMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
+  const [historicalMemberRecords, setHistoricalMemberRecords] = useState<MonthlyContributionRecord[]>([]);
+
   
   const [workTimeSummary, setWorkTimeSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
@@ -145,11 +149,12 @@ export function useProgressRecords() {
       const nextYear = month === 12 ? year + 1 : year;
       const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
-      const [cTaskRes, pTaskRes, cMemRes, pMemRes, workTimeRes] = await Promise.all([
+      const [cTaskRes, pTaskRes, cMemRes, pMemRes, histMemRes, workTimeRes] = await Promise.all([
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
         supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
         supabase.from('monthly_member_contributions').select('*').eq('year_month', prevMonthStr),
+        supabase.from('monthly_member_contributions').select('*').lt('year_month', monthStr),
         supabase.from('daily_work_records').select('member_id, task_id, work_time').gte('date', startDate).lt('date', endDate)
       ]);
       
@@ -157,12 +162,14 @@ export function useProgressRecords() {
       if (pTaskRes.error) throw pTaskRes.error;
       if (cMemRes.error) throw cMemRes.error;
       if (pMemRes.error) throw pMemRes.error;
+      if (histMemRes.error) throw histMemRes.error;
       if (workTimeRes.error) throw workTimeRes.error;
 
       setCurrentMonthTaskRecords(cTaskRes.data || []);
       setPrevMonthTaskRecords(pTaskRes.data || []);
       setCurrentMonthMemberRecords(cMemRes.data || []);
       setPrevMonthMemberRecords(pMemRes.data || []);
+      setHistoricalMemberRecords(histMemRes.data || []);
 
       const timeMap: Record<string, number> = {};
       (workTimeRes.data || []).forEach((r: any) => {
@@ -187,6 +194,9 @@ export function useProgressRecords() {
     const flatRows: ProgressFlatRecord[] = [];
 
     for (const project of dbProjects) {
+      if (project.startDate > currentMonth) continue;
+      if (project.endDate && currentMonth > project.endDate) continue;
+
       const taskIdsInProject = project.tasks.map(t => t.id);
       
       const projectTaskRecords = currentMonthTaskRecords.filter(r => taskIdsInProject.includes(r.task_id));
@@ -229,6 +239,13 @@ export function useProgressRecords() {
         }
 
         const taskMemberRecords = projectMemberRecords.filter(r => r.task_id === t.id);
+        const taskHistoricalRecords = historicalMemberRecords.filter(r => r.task_id === t.id);
+        
+        let pastAllocationAmount = 0;
+        for (const r of taskHistoricalRecords) {
+          pastAllocationAmount += (r.deduction_amount || 0);
+        }
+
         for (const r of taskMemberRecords) {
           if (r.member_id) membersToProcess.add(`member_${r.member_id}`);
           if (r.staff_id) membersToProcess.add(`staff_${r.staff_id}`);
@@ -301,6 +318,8 @@ export function useProgressRecords() {
             taskStatus: taskCurrentStatus,
             taskPrevStatus: taskPrevStatus,
             taskCompletedAt: t.completedAt,
+            laborBudget: t.laborBudget || 0,
+            pastAllocationAmount: pastAllocationAmount,
             userId: prefixedId,
             userName: getUserName(prefixedId),
             assigneeType: getAssigneeType(prefixedId),
@@ -386,7 +405,7 @@ export function useProgressRecords() {
     });
 
     return finalRows;
-  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, workTimeSummary]);
+  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, historicalMemberRecords, workTimeSummary]);
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {

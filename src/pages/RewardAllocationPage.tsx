@@ -7,7 +7,6 @@ import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
 export function RewardAllocationPage() {
   const {
     displayData: records,
-    dbProjects,
     loading,
     currentMonth,
     setCurrentMonth,
@@ -126,9 +125,7 @@ export function RewardAllocationPage() {
       }),
       render: (item: any) => {
         if (!item.isFirstInTask) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        const task = project?.tasks.find(t => t.id === item.taskId);
-        const budget = task?.laborBudget || 0;
+        const budget = (item.laborBudget || 0) - (item.pastAllocationAmount || 0);
         return `¥${budget.toLocaleString()}`;
       }
     },
@@ -192,11 +189,14 @@ export function RewardAllocationPage() {
         if (!item.isFirstInTask) return '';
         const taskRows = drafts.filter(r => r.taskId === item.taskId && r.userId);
         const total = taskRows.reduce((sum, r) => sum + (Number(r.allocationAmount) || 0), 0);
-        const project = dbProjects.find(p => p.id === item.projectId);
-        const task = project?.tasks.find(t => t.id === item.taskId);
-        const budget = task?.laborBudget || 0;
+        const budget = (item.laborBudget || 0) - (item.pastAllocationAmount || 0);
         const diff = budget - total;
-        return `¥${diff.toLocaleString()}`;
+        
+        const diffStr = `¥${diff.toLocaleString()}`;
+        if (diff < 0) {
+          return <div className="bg-error-highlight p-2 -mx-3 -my-2">{diffStr}</div>;
+        }
+        return diffStr;
       }
     },
   ];

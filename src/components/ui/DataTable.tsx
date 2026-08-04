@@ -27,7 +27,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties | ((item: T) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
-  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'datetime-local' | 'email' | 'password' | 'checkbox';
+  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'month' | 'datetime-local' | 'email' | 'password' | 'checkbox';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
   customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;
@@ -488,8 +488,9 @@ export function DataTable<T extends { id: string }>({
       return option ? option.label : item[col.key];
     }
     
-    if (col.inputType === 'date' && item[col.key]) {
-      return <DateInput value={item[col.key]} onChange={() => {}} />;
+    if ((col.inputType === 'date' || col.inputType === 'month') && item[col.key]) {
+      const v = item[col.key];
+      return typeof v === 'string' ? v : '';
     }
     
     if (col.inputType === 'number') {

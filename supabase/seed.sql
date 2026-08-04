@@ -131,8 +131,8 @@ INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-05
 INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
 INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'completed');
 INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
 INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'completed');
 
 -- Additional Member Contributions
@@ -152,6 +152,18 @@ INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contri
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 100);
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 70, 2000);
 INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 30, 0);
+
+-- 2026-07 Task Progress and Allocations
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 150000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 150000);
+
+-- 2026-08 Task Progress and Allocations
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
+INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'canceled');
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 100000);
+INSERT INTO monthly_member_contributions (year_month, member_id, task_id, contribution_ratio, deduction_amount) VALUES ('2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 50, 100000);
 
 -- Continuous Project (Internal Business)
 INSERT INTO projects (id, name, yomigana, client_id, start_date, end_date, project_type) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'ぱんのはんばい・かふぇうんえい', NULL, '2026-06', NULL, 'ongoing');

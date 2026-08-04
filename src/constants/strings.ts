@@ -61,7 +61,7 @@ export const WORDS_COMMON = {
   ADD: '追加',
   EDIT: '編集',
   DELETE: '削除',
-  SAVE: '確定',
+  SAVE: '保存',
   CANCEL: '取消',
   CLOSE: '閉じる',
   YOMIGANA: 'よみがな',

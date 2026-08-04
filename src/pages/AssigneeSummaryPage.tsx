@@ -80,7 +80,7 @@ export function AssigneeSummaryPage() {
     },
     { 
       key: 'taskStatus', 
-      header: '進捗状態',
+      header: TABLE_COLUMNS.TASK_STATUS,
       sortable: false,
       render: (item) => {
         if (!item.taskStatus) return '';

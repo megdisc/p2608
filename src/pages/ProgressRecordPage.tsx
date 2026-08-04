@@ -116,7 +116,7 @@ export function ProgressRecordPage() {
     },
     { 
       key: 'taskStatus', 
-      header: '進捗状態', 
+      header: TABLE_COLUMNS.TASK_STATUS, 
       sortable: false,
       editable: (item: any) => item.isFirstInTask,
       inputType: 'radio',

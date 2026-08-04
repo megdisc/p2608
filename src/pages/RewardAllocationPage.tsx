@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
 
@@ -57,19 +57,33 @@ export function RewardAllocationPage() {
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
-    { 
-      key: 'allocationStatus', 
-      header: '配分状態', 
+    {
+      key: 'projectStatus',
+      header: TABLE_COLUMNS.PROJECT_STATUS,
       sortable: false,
       editable: false,
       render: (item: any, drafts: any[]) => {
         if (!item.isFirstInProject) return '';
-        const projectRecords = drafts.filter(d => d.projectId === item.projectId && d.userId);
-        const isConfirmed = projectRecords.some(r => r.isSaved);
-        return isConfirmed ? '確定済' : '未確定';
+        
+        const projectTasks = drafts.filter(d => d.projectId === item.projectId && d.isFirstInTask);
+        if (projectTasks.length === 0) return WORDS_PROJECT.STATUS_NOT_STARTED;
+
+        let allNotStarted = true;
+        let allCompletedOrCanceled = true;
+
+        for (const t of projectTasks) {
+          const status = t.taskStatus || 'not_started';
+          if (status !== 'not_started') allNotStarted = false;
+          if (status !== 'completed' && status !== 'canceled') allCompletedOrCanceled = false;
+        }
+
+        if (allNotStarted) return WORDS_PROJECT.STATUS_NOT_STARTED;
+        if (allCompletedOrCanceled) return WORDS_PROJECT.STATUS_FINISHED;
+        return WORDS_PROJECT.STATUS_IN_PROGRESS;
       },
       style: (item: any) => ({
-        width: '80px',
+        width: '100px',
+        textAlign: 'center',
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
@@ -83,9 +97,27 @@ export function RewardAllocationPage() {
         borderBottom: item.isLastInTask ? undefined : 'none'
       })
     },
+    { 
+      key: 'taskStatus', 
+      header: TABLE_COLUMNS.TASK_STATUS, 
+      sortable: false,
+      editable: false,
+      render: (item: any) => {
+         if (!item.isFirstInTask) return '';
+         const v = item.taskStatus;
+         if (v === 'not_started') return '未着手';
+         if (v === 'in_progress') return '進行中';
+         if (v === 'completed') return '完了';
+         if (v === 'canceled') return '中止';
+         return '';
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none'
+      })
+    },
     {
       key: 'estimatedReward',
-      header: '報酬見込額',
+      header: '報酬予算',
       sortable: false,
       editable: false,
       style: (item: any) => ({

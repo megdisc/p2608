@@ -246,8 +246,8 @@ export function AssigneeAllocationPage() {
               <th colSpan={3} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
             </tr>
             <tr>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_MEMBER}</th>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_STAFF}</th>
+              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_MEMBER}</th>
               <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_ORG_LOCATION.OUTSOURCE}</th>
             </tr>
           </thead>
@@ -270,6 +270,14 @@ export function AssigneeAllocationPage() {
                   </td>
                   <td className="bg-input-highlight">
                     <MultiSelectDropdown 
+                      options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
+                      value={item.staffIds}
+                      onChange={(newVal) => handleChange(item.id, 'staffIds', newVal)}
+                      placeholder="選択"
+                    />
+                  </td>
+                  <td className="bg-input-highlight">
+                    <MultiSelectDropdown 
                       options={dbMembers.filter(u => {
                         const reqSkills = item.requiredSkills || [];
                         if (reqSkills.length === 0) return true;
@@ -282,14 +290,6 @@ export function AssigneeAllocationPage() {
                       }).map(u => ({ value: u.id, label: u.name }))}
                       value={item.memberIds}
                       onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
-                      placeholder="選択"
-                    />
-                  </td>
-                  <td className="bg-input-highlight">
-                    <MultiSelectDropdown 
-                      options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
-                      value={item.staffIds}
-                      onChange={(newVal) => handleChange(item.id, 'staffIds', newVal)}
                       placeholder="選択"
                     />
                   </td>

@@ -167,8 +167,8 @@ export function useProjectSummary() {
         if (a.taskYomigana !== b.taskYomigana) return a.taskYomigana.localeCompare(b.taskYomigana);
         
         const getAssigneeTypePriority = (type: string) => {
-          if (type === WORDS_PERSON.ROLE_MEMBER) return 1;
-          if (type === WORDS_PERSON.ROLE_STAFF) return 2;
+          if (type === WORDS_PERSON.ROLE_STAFF) return 1;
+          if (type === WORDS_PERSON.ROLE_MEMBER) return 2;
           if (type === WORDS_ORG_LOCATION.OUTSOURCE) return 3;
           return 4;
         };

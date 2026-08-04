@@ -351,8 +351,8 @@ export function useProgressRecords() {
       if (tA !== tB) return tA.localeCompare(tB);
       
       const getTypePrio = (userId: string) => {
-        if (userId.startsWith('member_')) return 1;
-        if (userId.startsWith('staff_')) return 2;
+        if (userId.startsWith('staff_')) return 1;
+        if (userId.startsWith('member_')) return 2;
         if (userId.startsWith('outsource_')) return 3;
         return 4;
       };

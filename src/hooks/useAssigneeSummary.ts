@@ -118,13 +118,13 @@ export function useAssigneeSummary() {
                 assigneeName = m?.name || '不明';
                 assigneeYomigana = m?.yomigana || '';
                 displayAssigneeType = WORDS_PERSON.ROLE_MEMBER;
-                assigneeTypeSortKey = 1;
+                assigneeTypeSortKey = 2;
               } else if (a.staff_id) {
                 const s = staffMap.get(a.staff_id);
                 assigneeName = s?.name || '不明';
                 assigneeYomigana = s?.yomigana || '';
                 displayAssigneeType = WORDS_PERSON.ROLE_STAFF;
-                assigneeTypeSortKey = 2;
+                assigneeTypeSortKey = 1;
               } else if (a.client_id) {
                 const c = clientMap.get(a.client_id);
                 assigneeName = c?.name || '不明';

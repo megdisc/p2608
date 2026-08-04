@@ -65,7 +65,7 @@ export function useBudgetPlanning() {
         const expenses = expSubjects.map((es: any) => {
           let dbItem;
           if (es.taskId) {
-            dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId && b.subject === es.subject);
+            dbItem = pItems.find(b => b.category === 'expense' && b.task_id === es.taskId);
           } else {
             dbItem = pItems.find(b => b.category === 'expense' && b.subject === es.subject && !b.task_id);
           }

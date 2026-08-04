@@ -125,7 +125,7 @@ export function useProgressRecords() {
             isCanceled: pt.is_canceled || false,
             status: pt.status || 'not_started',
             completedAt: pt.completed_at,
-            laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.subject?.includes('労務費・外注加工費'))?.amount || 0
+            laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.category === 'expense')?.amount || 0
           }))
       }));
       setDbProjects(formattedProjects as ProjectItem[]);

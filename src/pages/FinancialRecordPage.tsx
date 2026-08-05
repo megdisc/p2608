@@ -92,7 +92,7 @@ export function FinancialRecordPage() {
       key: 'amount', 
       header: TABLE_COLUMNS.AMOUNT, 
       editable: true, 
-      inputType: 'number' 
+      inputType: 'currency' 
     },
     { 
       key: 'recordedDate', 

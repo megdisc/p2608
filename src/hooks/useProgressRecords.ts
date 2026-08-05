@@ -43,6 +43,7 @@ export type ProgressFlatRecord = {
   assigneeType: string;
   userYomigana: string;
   workTime: number | string;
+  cumulativeWorkTime: number | string;
   allocationAmount: number;
   isSaved: boolean;
   isFirstInProject?: boolean;
@@ -67,6 +68,7 @@ export function useProgressRecords() {
 
   
   const [workTimeSummary, setWorkTimeSummary] = useState<Record<string, number>>({});
+  const [cumulativeWorkTimeSummary, setCumulativeWorkTimeSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
 
@@ -155,7 +157,7 @@ export function useProgressRecords() {
         supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
         supabase.from('monthly_member_contributions').select('*').eq('year_month', prevMonthStr),
         supabase.from('monthly_member_contributions').select('*').lt('year_month', monthStr),
-        supabase.from('daily_work_records').select('member_id, task_id, work_time').gte('date', startDate).lt('date', endDate)
+        supabase.from('daily_work_records').select('member_id, task_id, work_time, date').lt('date', endDate)
       ]);
       
       if (cTaskRes.error) throw cTaskRes.error;
@@ -172,13 +174,23 @@ export function useProgressRecords() {
       setHistoricalMemberRecords(histMemRes.data || []);
 
       const timeMap: Record<string, number> = {};
+      const cumulativeTimeMap: Record<string, number> = {};
+      
       (workTimeRes.data || []).forEach((r: any) => {
         if (r.member_id) {
           const key = `member_${r.member_id}_${r.task_id}`;
-          timeMap[key] = (timeMap[key] || 0) + Number(r.work_time);
+          const t = Number(r.work_time);
+          
+          cumulativeTimeMap[key] = (cumulativeTimeMap[key] || 0) + t;
+          
+          if (r.date >= startDate && r.date < endDate) {
+             timeMap[key] = (timeMap[key] || 0) + t;
+          }
         }
       });
+      
       setWorkTimeSummary(timeMap);
+      setCumulativeWorkTimeSummary(cumulativeTimeMap);
 
     } catch (error) {
       console.error('Error fetching records:', error);
@@ -230,10 +242,16 @@ export function useProgressRecords() {
       }
       
       for (const t of project.tasks) {
-        const membersToProcess = new Set<string>(t.assigneeIds || []);
+        const membersToProcess = new Set<string>();
         
+        for (const assignee of (t.assigneeIds || [])) {
+          if (assignee.startsWith('staff_') || assignee.startsWith('outsource_')) {
+            membersToProcess.add(assignee);
+          }
+        }
+
         for (const member of dbMembers) {
-          if ((workTimeSummary[`member_${member.id}_${t.id}`] || 0) > 0) {
+          if ((cumulativeWorkTimeSummary[`member_${member.id}_${t.id}`] || 0) > 0) {
             membersToProcess.add(`member_${member.id}`);
           }
         }
@@ -247,7 +265,6 @@ export function useProgressRecords() {
         }
 
         for (const r of taskMemberRecords) {
-          if (r.member_id) membersToProcess.add(`member_${r.member_id}`);
           if (r.staff_id) membersToProcess.add(`staff_${r.staff_id}`);
           if (r.client_id) membersToProcess.add(`outsource_${r.client_id}`);
         }
@@ -303,6 +320,7 @@ export function useProgressRecords() {
           else if (type === 'outsource') savedMemberRecord = taskMemberRecords.find(r => r.client_id === id);
 
           const workTime = type === 'member' ? (workTimeSummary[`${prefixedId}_${t.id}`] || 0) : '-';
+          const cumulativeWorkTime = type === 'member' ? (cumulativeWorkTimeSummary[`${prefixedId}_${t.id}`] || 0) : '-';
 
           flatRows.push({
             id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
@@ -325,6 +343,7 @@ export function useProgressRecords() {
             assigneeType: getAssigneeType(prefixedId),
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
+            cumulativeWorkTime,
             allocationAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
             isSaved: !!savedMemberRecord,
             isCanceled: t.isCanceled
@@ -351,6 +370,7 @@ export function useProgressRecords() {
              assigneeType: '',
              userYomigana: '',
              workTime: '-',
+             cumulativeWorkTime: '-',
              allocationAmount: 0,
              isSaved: !!taskRecord,
              isCanceled: t.isCanceled
@@ -405,7 +425,7 @@ export function useProgressRecords() {
     });
 
     return finalRows;
-  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, historicalMemberRecords, workTimeSummary]);
+  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, historicalMemberRecords, workTimeSummary, cumulativeWorkTimeSummary]);
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {

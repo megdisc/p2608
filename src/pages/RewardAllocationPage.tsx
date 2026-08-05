@@ -150,6 +150,13 @@ export function RewardAllocationPage() {
       editable: false,
       style: { width: '120px', textAlign: 'right' }
     },
+    { 
+      key: 'cumulativeWorkTime', 
+      header: TABLE_COLUMNS.CUMULATIVE_WORK_TIME, 
+      sortable: false,
+      editable: false,
+      style: { width: '120px', textAlign: 'right' }
+    },
     {
       key: 'allocationAmount',
       header: '配分額',

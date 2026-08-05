@@ -33,6 +33,7 @@ type DataPageProps<T> = {
   highlightInputColumns?: boolean;
   hideHeader?: boolean;
   restrictionTooltipText?: string;
+  hideSubSubItems?: (subItem: any) => boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -64,7 +65,8 @@ export function DataPage<T extends { id: string }>({
   disableAddButton,
   highlightInputColumns,
   hideHeader,
-  restrictionTooltipText
+  restrictionTooltipText,
+  hideSubSubItems
 }: DataPageProps<T>) {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -110,6 +112,7 @@ export function DataPage<T extends { id: string }>({
         disableAddButton={disableAddButton}
         highlightInputColumns={highlightInputColumns}
         restrictionTooltipText={restrictionTooltipText}
+        hideSubSubItems={hideSubSubItems}
       />
     </>
   );

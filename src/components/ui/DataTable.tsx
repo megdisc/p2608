@@ -22,7 +22,7 @@ export type Column<T> = {
   sortKey?: string;
   sortable?: boolean;
   render?: (item: T, draftData: T[], updateData: (newData: T[]) => void) => React.ReactNode;
-  mainRender?: (item: T, addSubRow?: () => void) => React.ReactNode;
+  mainRender?: (item: T, addSubRow?: () => void, subItem?: any) => React.ReactNode;
   rowType?: 'main' | 'sub' | 'sub-sub';
   className?: string;
   style?: React.CSSProperties | ((item: T) => React.CSSProperties);
@@ -62,6 +62,7 @@ type DataTableProps<T> = {
   disableAddButton?: boolean;
   highlightInputColumns?: boolean;
   restrictionTooltipText?: string;
+  hideSubSubItems?: (subItem: any) => boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -90,7 +91,8 @@ export function DataTable<T extends { id: string }>({
   onSingleMonthChange,
   disableAddButton,
   highlightInputColumns = true,
-  restrictionTooltipText
+  restrictionTooltipText,
+  hideSubSubItems
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -561,6 +563,7 @@ export function DataTable<T extends { id: string }>({
               const subItems = subItemsKey ? ((item as any)[subItemsKey] as any[]) || [] : [];
 
               const renderSubSubRows = (subItem: any) => {
+                if (hideSubSubItems && hideSubSubItems(subItem)) return null;
                 const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                 return (
                   <React.Fragment key={`${subItem.id}-skills`}>
@@ -708,13 +711,14 @@ export function DataTable<T extends { id: string }>({
                             const isMainCol = col.rowType === 'main' || !col.rowType;
                             let borderBottomStyle: string | undefined;
                             const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
+                            const isSubSubHidden = hideSubSubItems && hideSubSubItems(subItem);
                             if (isMainCol) {
                               const isLastSubItem = subItem === subItems[subItems.length - 1];
-                              if (!isLastSubItem || subSubItems.length > 0) {
+                              if (!isLastSubItem || (!isSubSubHidden && subSubItems.length > 0)) {
                                 borderBottomStyle = 'none';
                               }
                             } else if (col.rowType === 'sub') {
-                              if (subSubItems.length > 0) {
+                              if (!isSubSubHidden && subSubItems.length > 0) {
                                 borderBottomStyle = 'none';
                               }
                             }
@@ -730,7 +734,7 @@ export function DataTable<T extends { id: string }>({
                             if (col.rowType === 'sub-sub') {
                               return (
                                 <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                  {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id)) : null}
+                                  {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id), subItem) : null}
                                 </td>
                               );
                             }

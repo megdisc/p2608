@@ -71,8 +71,14 @@ export function ProjectPage() {
       options: [{ label: 'スキルを選択', value: '' }, ...dbSkills.map(s => ({ label: s.name, value: s.id }))],
       rowType: 'sub-sub',
       render: (item: any) => dbSkills.find(s => s.id === item.skillId)?.name || '',
-      mainRender: (_item, addSubSubRow) => (
-         <Button onClick={addSubSubRow} style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}>＋ スキル追加</Button>
+      mainRender: (_item, addSubSubRow, subItem) => (
+         <Button 
+           onClick={addSubSubRow} 
+           disabled={subItem?.assigneeType === 'external'}
+           style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
+         >
+           ＋ スキル追加
+         </Button>
       )
     },
     { 
@@ -151,6 +157,7 @@ export function ProjectPage() {
       onAddSubRow={handleAddSubRow}
       subSubItemsKey="requiredSkills"
       onAddSubSubRow={handleAddSubSubRow}
+      hideSubSubItems={(subItem) => subItem.assigneeType === 'external'}
       hideHeader={true}
     />
   );

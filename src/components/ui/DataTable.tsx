@@ -713,6 +713,10 @@ export function DataTable<T extends { id: string }>({
                               if (!isLastSubItem || subSubItems.length > 0) {
                                 borderBottomStyle = 'none';
                               }
+                            } else if (col.rowType === 'sub') {
+                              if (subSubItems.length > 0) {
+                                borderBottomStyle = 'none';
+                              }
                             }
                             
                             const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;

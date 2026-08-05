@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, Pagination, MultiSelectDropdown, SortIcon } from '../components';
-import { TABLE_COLUMNS, MESSAGES, WORDS_PERSON, WORDS_ORG_LOCATION, OPTIONS, BUTTON_LABELS } from '../constants';
+import { TABLE_COLUMNS, MESSAGES, OPTIONS, BUTTON_LABELS } from '../constants';
 
 import { supabase } from '../lib';
-import type { MemberItem, ClientItem, StaffItem } from '../types';
+import type { MemberItem, ClientItem } from '../types';
 import { useAlert } from '../contexts';
 
 type AllocationRow = {
@@ -16,8 +16,8 @@ type AllocationRow = {
   task: string;
   taskYomigana: string;
   memberIds: string[];
-  staffIds: string[];
   clientIds: string[];
+  assigneeType: string;
   isFirstInProject?: boolean;
   isLastInProject?: boolean;
   isFirstInTask?: boolean;
@@ -30,7 +30,6 @@ export function AssigneeAllocationPage() {
   const [originalDrafts, setOriginalDrafts] = useState<AllocationRow[]>([]);
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
-  const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
   const [memberSkillMap, setMemberSkillMap] = useState<Record<string, Record<string, number>>>({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
@@ -42,14 +41,13 @@ export function AssigneeAllocationPage() {
   const fetchAllData = async () => {
     try {
       setLoading(true);
-      const [membersRes, clientsRes, staffsRes, projectsRes, evalsRes] = await Promise.all([
+      const [membersRes, clientsRes, projectsRes, evalsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted,
+            id, name, yomigana, is_deleted, assignee_type,
             project_task_assignees ( member_id, client_id, staff_id ),
             project_task_skills ( skill_id, skill_levels ( level_value ) )
           )
@@ -61,13 +59,11 @@ export function AssigneeAllocationPage() {
 
       if (membersRes.error) throw membersRes.error;
       if (clientsRes.error) throw clientsRes.error;
-      if (staffsRes.error) throw staffsRes.error;
       if (projectsRes.error) throw projectsRes.error;
       if (evalsRes.error) throw evalsRes.error;
 
       setDbMembers(membersRes.data || []);
       setDbClients(clientsRes.data || []);
-      setDbStaffs(staffsRes.data || []);
 
       const evals = evalsRes.data || [];
       const skillMap: Record<string, Record<string, number>> = {};
@@ -96,8 +92,8 @@ export function AssigneeAllocationPage() {
               projectYomigana: p.yomigana || '',
               task: pt.name,
               taskYomigana: pt.yomigana || '',
+              assigneeType: pt.assignee_type || 'internal',
               memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
-              staffIds: assignees.filter((a: any) => a.staff_id).map((a: any) => a.staff_id),
               clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 skillId: pts.skill_id,
@@ -123,12 +119,6 @@ export function AssigneeAllocationPage() {
 
   const handleBatchSave = async () => {
     try {
-      const hasEmptyStaff = drafts.some(t => t.staffIds.length === 0);
-      if (hasEmptyStaff) {
-        showAlert('職員が未入力のタスクがあります', 'error');
-        return;
-      }
-
       setLoading(true);
 
       for (const t of drafts) {
@@ -136,7 +126,6 @@ export function AssigneeAllocationPage() {
         
         const assigneeInserts: any[] = [];
         t.memberIds.forEach(id => assigneeInserts.push({ task_id: t.id, member_id: id }));
-        t.staffIds.forEach(id => assigneeInserts.push({ task_id: t.id, staff_id: id }));
         t.clientIds.forEach(id => assigneeInserts.push({ task_id: t.id, client_id: id }));
         
         if (assigneeInserts.length > 0) {
@@ -154,8 +143,8 @@ export function AssigneeAllocationPage() {
     }
   };
 
-  const handleChange = (id: string, field: 'memberIds' | 'staffIds' | 'clientIds', newIds: string[]) => {
-    setDrafts(prev => prev.map(d => d.id === id ? { ...d, [field]: newIds } : d));
+  const handleChange = (id: string, field: 'memberIds' | 'clientIds' | 'assigneeType', newValue: any) => {
+    setDrafts(prev => prev.map(d => d.id === id ? { ...d, [field]: newValue } : d));
   };
 
   const isModified = JSON.stringify(drafts) !== JSON.stringify(originalDrafts);
@@ -236,25 +225,21 @@ export function AssigneeAllocationPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th rowSpan={2} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+              <th rowSpan={1} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_TYPE}
                   <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
-              <th rowSpan={2} style={{ width: '200px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
+              <th rowSpan={1} style={{ width: '200px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_NAME}
                   <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
-              <th rowSpan={2} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
-              <th colSpan={3} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
-            </tr>
-            <tr>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_STAFF}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_PERSON.ROLE_MEMBER}</th>
-              <th style={{ backgroundColor: 'var(--color-bg-subtle)', top: '43px', width: '200px' }}>{WORDS_ORG_LOCATION.OUTSOURCE}</th>
+              <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
+              <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
+              <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
             </tr>
           </thead>
           <tbody>
@@ -274,38 +259,34 @@ export function AssigneeAllocationPage() {
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}
                   </td>
-                  <td className={item.staffIds.length === 0 ? 'bg-error-highlight' : 'bg-input-highlight'}>
-                    <MultiSelectDropdown 
-                      options={dbStaffs.map(s => ({ value: s.id, label: s.name }))}
-                      value={item.staffIds}
-                      onChange={(newVal) => handleChange(item.id, 'staffIds', newVal)}
-                      placeholder="選択"
-                    />
+                  <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
+                    {OPTIONS.ASSIGNEE_TYPE_OPTIONS.find(opt => opt.value === item.assigneeType)?.label || item.assigneeType}
                   </td>
                   <td className="bg-input-highlight">
-                    <MultiSelectDropdown 
-                      options={dbMembers.filter(u => {
-                        const reqSkills = item.requiredSkills || [];
-                        if (reqSkills.length === 0) return true;
-                        
-                        const uSkills = memberSkillMap[u.id] || {};
-                        return reqSkills.every(rs => {
-                           const uLevel = uSkills[rs.skillId] || 0;
-                           return uLevel >= rs.levelValue;
-                        });
-                      }).map(u => ({ value: u.id, label: u.name }))}
-                      value={item.memberIds}
-                      onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
-                      placeholder="選択"
-                    />
-                  </td>
-                  <td className="bg-input-highlight">
-                    <MultiSelectDropdown 
-                      options={dbClients.map(c => ({ value: c.id, label: c.name }))}
-                      value={item.clientIds}
-                      onChange={(newVal) => handleChange(item.id, 'clientIds', newVal)}
-                      placeholder="選択"
-                    />
+                    {item.assigneeType === 'internal' ? (
+                      <MultiSelectDropdown 
+                        options={dbMembers.filter(u => {
+                          const reqSkills = item.requiredSkills || [];
+                          if (reqSkills.length === 0) return true;
+                          
+                          const uSkills = memberSkillMap[u.id] || {};
+                          return reqSkills.every(rs => {
+                             const uLevel = uSkills[rs.skillId] || 0;
+                             return uLevel >= rs.levelValue;
+                          });
+                        }).map(u => ({ value: u.id, label: u.name }))}
+                        value={item.memberIds}
+                        onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
+                        placeholder="利用者を選択"
+                      />
+                    ) : (
+                      <MultiSelectDropdown 
+                        options={dbClients.map(c => ({ value: c.id, label: c.name }))}
+                        value={item.clientIds}
+                        onChange={(newVal) => handleChange(item.id, 'clientIds', newVal)}
+                        placeholder="外注先を選択"
+                      />
+                    )}
                   </td>
                 </tr>
               ))

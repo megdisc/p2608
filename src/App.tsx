@@ -23,14 +23,14 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = sessionStorage.getItem('activeTab');
     if (saved) return saved as Tab;
-    return 'projectSummary';
+    return 'dailyWorkRecord';
   });
 
   const prevAuth = useRef(isAuthenticated);
 
   useEffect(() => {
     if (!prevAuth.current && isAuthenticated) {
-      setActiveTab('projectSummary');
+      setActiveTab('dailyWorkRecord');
     }
     prevAuth.current = isAuthenticated;
   }, [isAuthenticated]);
@@ -47,7 +47,7 @@ function AppContent() {
     <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
       <AlertProvider>
         <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'wageSummary', 'screenUser'].includes(activeTab) ? (
+          {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'screenUser'].includes(activeTab) ? (
             <ScreenUserPage />
           ) : ['staff', 'screenStaff'].includes(activeTab) ? (
             <ScreenStaffPage />
@@ -57,9 +57,9 @@ function AppContent() {
             <ScreenSkillPage />
           ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
             <ScreenWagePage />
-          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectSummary', 'screenProject'].includes(activeTab) ? (
+          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'screenProject'].includes(activeTab) ? (
             <ScreenProjectPage />
-          ) : ['financialRecord', 'financialSummary', 'screenFinance'].includes(activeTab) ? (
+          ) : ['financialRecord', 'financialSummary', 'wageSummary', 'screenFinance'].includes(activeTab) ? (
             <ScreenFinancePage />
           ) : ['screenComposition', 'tableComposition', 'mainFeatures'].includes(activeTab) ? (
             <ScreenCompositionPage />

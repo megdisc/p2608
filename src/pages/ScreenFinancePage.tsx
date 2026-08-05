@@ -5,6 +5,7 @@ import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 import { FinancialRecordPage } from './FinancialRecordPage';
 import { FinancialSummaryPage } from './FinancialSummaryPage';
+import { WageSummaryPage } from './WageSummaryPage';
 
 export function ScreenFinancePage() {
   const navContext = useNavigation();
@@ -23,7 +24,7 @@ export function ScreenFinancePage() {
         </div>
       </div>
       
-      {isSummary ? <FinancialSummaryPage /> : <FinancialRecordPage />}
+      {navContext.activeTab === 'wageSummary' ? <WageSummaryPage /> : isSummary ? <FinancialSummaryPage /> : <FinancialRecordPage />}
     </>
   );
 }

@@ -8,7 +8,6 @@ import { SkillEvaluationPage } from './SkillEvaluationPage';
 import { BaseWageAssignmentPage } from './BaseWageAssignmentPage';
 import { DailyWorkRecordPage } from './DailyWorkRecordPage';
 import { AssigneeSummaryPage } from './AssigneeSummaryPage';
-import { WageSummaryPage } from './WageSummaryPage';
 
 export function ScreenUserPage() {
   const navContext = useNavigation();
@@ -27,8 +26,6 @@ export function ScreenUserPage() {
         return <DailyWorkRecordPage />;
       case 'assigneeSummary':
         return <AssigneeSummaryPage />;
-      case 'wageSummary':
-        return <WageSummaryPage />;
       default:
         return <ProjectUserPage />;
     }

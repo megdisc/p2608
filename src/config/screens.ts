@@ -15,6 +15,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_FINANCE: {
     screenName: PAGE_NAMES.SCREEN_FINANCE,
     tabs: [
+      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
       { id: 'financialRecord', label: PAGE_NAMES.FINANCIAL_RECORD },
       { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
     ],
@@ -27,8 +28,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'assigneeAllocation', label: PAGE_NAMES.ASSIGNEE_ALLOCATION },
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
-      { id: 'projectSummary', label: PAGE_NAMES.PROJECT_SUMMARY },
-      { id: 'assigneeSummary', label: PAGE_NAMES.ASSIGNEE_SUMMARY },
     ],
   },
   SCREEN_USER: {
@@ -38,7 +37,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
       { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
-      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
+      { id: 'assigneeSummary', label: PAGE_NAMES.ASSIGNEE_SUMMARY },
     ],
   },
   SCREEN_STAFF: {

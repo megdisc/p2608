@@ -30,7 +30,7 @@ export function useBudgetPlanning() {
         .from('projects')
         .select(`
           id, name, yomigana, project_type,
-          project_tasks(id, name, yomigana, is_deleted)
+          project_tasks(id, name, yomigana, is_deleted, assignee_type)
         `)
         .eq('is_deleted', false)
         .order('yomigana');
@@ -50,16 +50,28 @@ export function useBudgetPlanning() {
         .map(p => {
         const pItems = items.filter(b => b.project_id === p.id);
 
-        const revSubjects = [WORDS_PROJECT.SUBJECT_REVENUE_SALES, WORDS_PROJECT.SUBJECT_REVENUE_OTHER];
+        const revSubjects = [WORDS_PROJECT.SUBJECT_REVENUE_SALES];
         const revenues = revSubjects.map(subj => {
           const dbItem = pItems.find(b => b.category === 'revenue' && b.subject === subj);
           return { id: dbItem?.id, subject: subj, amount: dbItem?.amount || 0 };
         });
 
         const activeTasks = (p.project_tasks || []).filter((t: any) => !t.is_deleted);
-        const expSubjects = activeTasks.flatMap((t: any) => [
-          { subject: `労務費・外注加工費（${t.name}）`, taskId: t.id }
-        ]);
+        
+        const expSubjects: { subject: string; taskId?: string }[] = [];
+        expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, taskId: undefined });
+        
+        const internalTasks = activeTasks.filter((t: any) => t.assignee_type !== 'external');
+        const externalTasks = activeTasks.filter((t: any) => t.assignee_type === 'external');
+
+        internalTasks.forEach((t: any) => {
+          expSubjects.push({ subject: `労務費（${t.name}）`, taskId: t.id });
+        });
+
+        externalTasks.forEach((t: any) => {
+          expSubjects.push({ subject: `外注加工費（${t.name}）`, taskId: t.id });
+        });
+        
         expSubjects.push({ subject: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, taskId: undefined });
 
         const expenses = expSubjects.map((es: any) => {

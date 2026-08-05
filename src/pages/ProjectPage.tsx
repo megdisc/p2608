@@ -55,6 +55,15 @@ export function ProjectPage() {
       sortable: false
     },
     { 
+      key: 'assigneeType', 
+      header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
+      editable: true, 
+      inputType: 'radio', 
+      options: OPTIONS.ASSIGNEE_TYPE_OPTIONS,
+      rowType: 'sub',
+      sortable: false
+    },
+    { 
       key: 'skillId', 
       header: TABLE_COLUMNS.REQUIRED_SKILLS, 
       editable: true, 
@@ -115,6 +124,7 @@ export function ProjectPage() {
     return {
       id: generateId(),
       task: '',
+      assigneeType: OPTIONS.ASSIGNEE_TYPE_OPTIONS[0].value,
       requiredSkills: [],
     };
   };

@@ -19,7 +19,7 @@ export function useProjects() {
         supabase.from('projects').select(`
           id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted,
+            id, name, yomigana, is_deleted, assignee_type,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
@@ -53,6 +53,7 @@ export function useProjects() {
               id: pt.id,
               task: pt.name,
               taskYomigana: pt.yomigana || '',
+              assigneeType: pt.assignee_type || 'internal',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(),
                 skillId: pts.skill_id,
@@ -121,7 +122,8 @@ export function useProjects() {
             id: t.id,
             project_id: p.id,
             name: t.task,
-            yomigana: t.taskYomigana
+            yomigana: t.taskYomigana,
+            assignee_type: t.assigneeType || 'internal'
           };
 
           const { error: tErr } = await supabase.from('project_tasks').upsert(taskData);

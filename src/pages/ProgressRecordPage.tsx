@@ -1,5 +1,5 @@
 import { DataPage, type Column } from '../components';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
@@ -140,22 +140,27 @@ export function ProgressRecordPage() {
         minWidth: '280px'
       })
     },
-    { 
-      key: 'assigneeType', 
-      header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
-      sortable: false,
-      editable: false, 
-      render: (item: any) => item.assigneeType
-    },
-    { 
-      key: 'userName', 
-      header: TABLE_COLUMNS.ASSIGNEE, 
-      sortKey: 'userYomigana',
-      sortable: false,
-      editable: false, 
-      render: (item: any) => item.userName
-    }
   ];
+
+  const taskLevelData = useMemo(() => {
+    return displayData
+      .filter(d => d.isFirstInTask)
+      .map((d, i, arr) => {
+        let isLastInProject = true;
+        if (i < arr.length - 1) {
+          if (arr[i + 1].projectId === d.projectId) {
+            isLastInProject = false;
+          }
+        }
+        return {
+          ...d,
+          userId: '',
+          isSaved: false,
+          isLastInTask: true,
+          isLastInProject
+        };
+      });
+  }, [displayData]);
 
   const handleBatchSave = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {
@@ -171,7 +176,7 @@ export function ProgressRecordPage() {
   return (
     <DataPage 
       title={PAGE_NAMES.PROGRESS_RECORD}
-      data={displayData}
+      data={taskLevelData}
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_PROGRESS_RECORD}
       onBatchSave={handleBatchSave}

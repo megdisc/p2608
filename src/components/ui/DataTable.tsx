@@ -63,6 +63,12 @@ type DataTableProps<T> = {
   highlightInputColumns?: boolean;
   restrictionTooltipText?: string;
   hideSubSubItems?: (subItem: any) => boolean;
+  serverSidePagination?: boolean;
+  totalCount?: number;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  onSortChange?: (sortConfig: SortConfig) => void;
+  onDateFilterChange?: (startDate: string, endDate: string) => void;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -92,7 +98,13 @@ export function DataTable<T extends { id: string }>({
   disableAddButton,
   highlightInputColumns = true,
   restrictionTooltipText,
-  hideSubSubItems
+  hideSubSubItems,
+  serverSidePagination,
+  totalCount,
+  currentPage: externalCurrentPage,
+  onPageChange,
+  onSortChange,
+  onDateFilterChange
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -120,7 +132,12 @@ export function DataTable<T extends { id: string }>({
   const singleDate = externalSingleDate !== undefined ? externalSingleDate : internalSingleDate;
   const setSingleDate = onSingleDateChange || setInternalSingleDate;
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [internalCurrentPage, setInternalCurrentPage] = useState(1);
+  const currentPage = externalCurrentPage !== undefined ? externalCurrentPage : internalCurrentPage;
+  const setCurrentPage = (page: number) => {
+    setInternalCurrentPage(page);
+    if (onPageChange) onPageChange(page);
+  };
   const pageSize = 50;
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
@@ -147,6 +164,13 @@ export function DataTable<T extends { id: string }>({
 
   const { sortedExistingRows, newRows } = useMemo(() => {
     let sourceData = draftData;
+    
+    if (serverSidePagination) {
+      const existingRows = sourceData.filter(item => !newRowIds.has(item.id));
+      const newRows = sourceData.filter(item => newRowIds.has(item.id));
+      return { sortedExistingRows: existingRows, newRows };
+    }
+
     if (showDateFilter) {
       const effStart = startDate <= endDate ? startDate : endDate;
       const effEnd = startDate <= endDate ? endDate : startDate;
@@ -190,30 +214,34 @@ export function DataTable<T extends { id: string }>({
     });
 
     return { sortedExistingRows: existingRows, newRows };
-  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, dateFilterKey, showSingleDateFilter, startDate, endDate, singleDate]);
+  }, [draftData, sortConfig, newRowIds, columns, showDateFilter, dateFilterKey, showSingleDateFilter, startDate, endDate, singleDate, serverSidePagination]);
 
-  const totalItems = sortedExistingRows.length;
+  const totalItems = serverSidePagination && totalCount !== undefined ? totalCount : sortedExistingRows.length;
   const totalPages = Math.ceil(totalItems / pageSize);
 
   useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
+    if (!serverSidePagination && currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
     }
-  }, [totalPages, currentPage]);
+  }, [totalPages, currentPage, serverSidePagination]);
 
   const visibleData = useMemo(() => {
+    if (serverSidePagination) {
+      return [...sortedExistingRows, ...newRows];
+    }
     const startIndex = (currentPage - 1) * pageSize;
     const paginatedExisting = sortedExistingRows.slice(startIndex, startIndex + pageSize);
     return [...paginatedExisting, ...newRows];
-  }, [sortedExistingRows, newRows, currentPage, pageSize]);
+  }, [sortedExistingRows, newRows, currentPage, pageSize, serverSidePagination]);
 
   const handleSort = (key: string) => {
     if (!key) return;
     setSortConfig(current => {
-      if (current.key === key) {
-        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
-      }
-      return { key, direction: 'asc' };
+      const newConfig: SortConfig = current.key === key 
+        ? { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
+        : { key, direction: 'asc' };
+      if (onSortChange) onSortChange(newConfig);
+      return newConfig;
     });
   };
 
@@ -782,14 +810,20 @@ export function DataTable<T extends { id: string }>({
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <DateInput 
                 value={startDate} 
-                onChange={(val) => setStartDate(val)} 
+                onChange={(val) => {
+                  setStartDate(val);
+                  if (onDateFilterChange) onDateFilterChange(val, endDate);
+                }} 
                 className="date-filter-pill"
                 style={{ width: 'auto', minWidth: '160px' }}
               />
               <span>～</span>
               <DateInput 
                 value={endDate} 
-                onChange={(val) => setEndDate(val)} 
+                onChange={(val) => {
+                  setEndDate(val);
+                  if (onDateFilterChange) onDateFilterChange(startDate, val);
+                }} 
                 className="date-filter-pill"
                 style={{ width: 'auto', minWidth: '160px' }}
               />

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { FinancialRecordItem } from '../types';
-import { getCurrentJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly, formatJSTDateOnly } from '../utils';
 
 export function useFinancialRecords() {
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
@@ -9,19 +9,50 @@ export function useFinancialRecords() {
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+  
+  const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc'|'desc'}>({ key: 'period', direction: 'desc' });
+  const [startDate, setStartDate] = useState(() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - 2);
+    return formatJSTDateOnly(d);
+  });
+  const [endDate, setEndDate] = useState(() => getCurrentJSTDateOnly());
+
   const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
-      const [
-        { data: recData, error: recError },
-        { data: projData, error: projError },
-        { data: staffData, error: staffError },
-      ] = await Promise.all([
-        supabase.from('financial_records').select(`
+      let query = supabase.from('financial_records').select(`
           id, period, type, subject, amount, recorded_date, is_limited,
           project:projects(id, name),
           staff:staffs(id, name)
-        `),
+        `, { count: 'exact' });
+
+      if (startDate) query = query.gte('period', startDate);
+      if (endDate) query = query.lte('period', endDate);
+
+      let dbSortKey = 'period';
+      if (sortConfig.key === 'projectId') dbSortKey = 'project_id';
+      else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
+      else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
+      else if (['period', 'type', 'subject', 'amount', 'is_limited'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
+
+      query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
+      if (dbSortKey !== 'recorded_date') {
+        query = query.order('recorded_date', { ascending: sortConfig.direction === 'asc' });
+      }
+
+      const startIdx = (page - 1) * pageSize;
+      query = query.range(startIdx, startIdx + pageSize - 1);
+
+      const [
+        { data: recData, error: recError, count },
+        { data: projData, error: projError },
+        { data: staffData, error: staffError },
+      ] = await Promise.all([
+        query,
         supabase.from('projects').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
       ]);
@@ -42,13 +73,9 @@ export function useFinancialRecords() {
           recordedBy: r.staff?.id || '',
           isLimited: r.is_limited
         }));
-        // Sort by period descending, then recorded_date descending
-        mapped.sort((a, b) => {
-          if (a.period !== b.period) return b.period.localeCompare(a.period);
-          return b.recordedDate.localeCompare(a.recordedDate);
-        });
         setItems(mapped);
       }
+      if (count !== null) setTotalCount(count);
       if (projData) setProjects(projData);
       if (staffData) setStaffs(staffData);
     } catch (error) {
@@ -57,7 +84,7 @@ export function useFinancialRecords() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, pageSize, sortConfig, startDate, endDate]);
 
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
@@ -93,8 +120,24 @@ export function useFinancialRecords() {
     await fetchRecords();
   }, [items, fetchRecords]);
 
+  const handleSortChange = useCallback((newConfig: { key: string, direction: 'asc'|'desc' }) => {
+    setSortConfig(newConfig);
+    setPage(1);
+  }, []);
+
+  const handleDateFilterChange = useCallback((start: string, end: string) => {
+    setStartDate(start);
+    setEndDate(end);
+    setPage(1);
+  }, []);
+
   return {
     items,
+    totalCount,
+    page,
+    setPage,
+    handleSortChange,
+    handleDateFilterChange,
     projects,
     staffs,
     loading,

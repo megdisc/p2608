@@ -34,6 +34,12 @@ type DataPageProps<T> = {
   hideHeader?: boolean;
   restrictionTooltipText?: string;
   hideSubSubItems?: (subItem: any) => boolean;
+  serverSidePagination?: boolean;
+  totalCount?: number;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  onSortChange?: (sortConfig: { key: string; direction: 'asc' | 'desc' }) => void;
+  onDateFilterChange?: (startDate: string, endDate: string) => void;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -66,7 +72,13 @@ export function DataPage<T extends { id: string }>({
   highlightInputColumns,
   hideHeader,
   restrictionTooltipText,
-  hideSubSubItems
+  hideSubSubItems,
+  serverSidePagination,
+  totalCount,
+  currentPage,
+  onPageChange,
+  onSortChange,
+  onDateFilterChange
 }: DataPageProps<T>) {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -113,6 +125,12 @@ export function DataPage<T extends { id: string }>({
         highlightInputColumns={highlightInputColumns}
         restrictionTooltipText={restrictionTooltipText}
         hideSubSubItems={hideSubSubItems}
+        serverSidePagination={serverSidePagination}
+        totalCount={totalCount}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+        onSortChange={onSortChange}
+        onDateFilterChange={onDateFilterChange}
       />
     </>
   );

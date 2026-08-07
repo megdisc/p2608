@@ -9,6 +9,11 @@ import { getCurrentJSTDateOnly } from '../utils';
 export function FinancialRecordPage() {
   const { 
     items, 
+    totalCount,
+    page,
+    setPage,
+    handleSortChange,
+    handleDateFilterChange,
     projects, 
     staffs, 
     loading, 
@@ -145,6 +150,12 @@ export function FinancialRecordPage() {
       dateFilterKey="period"
       initialSort={{ key: 'period', direction: 'desc' }}
       hideHeader={true}
+      serverSidePagination={true}
+      totalCount={totalCount}
+      currentPage={page}
+      onPageChange={setPage}
+      onSortChange={handleSortChange}
+      onDateFilterChange={handleDateFilterChange}
     />
   );
 }

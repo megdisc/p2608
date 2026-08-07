@@ -16,6 +16,7 @@ export function FinancialRecordPage() {
     handleDateFilterChange,
     projects, 
     staffs, 
+    clients,
     loading, 
     fetchRecords, 
     batchSaveRecords 
@@ -31,6 +32,7 @@ export function FinancialRecordPage() {
 
   const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
   const staffOptions = useMemo(() => [{ label: '', value: '' }, ...staffs.map(s => ({ label: s.name, value: s.id }))], [staffs]);
+  const clientOptions = useMemo(() => [{ label: '-', value: '' }, ...clients.map(c => ({ label: c.name, value: c.id }))], [clients]);
 
   const columns: Column<FinancialRecordItem>[] = [
     { 
@@ -84,6 +86,17 @@ export function FinancialRecordPage() {
           { label: '', value: '' },
           { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES }
         ];
+      },
+      onCellChange: (newSubject) => {
+        if (
+          newSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
+          newSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
+          newSubject === WORDS_PROJECT.SUBJECT_RESERVE_WAGE ||
+          newSubject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
+        ) {
+          return { clientId: '' };
+        }
+        return {};
       }
     },
     { 
@@ -92,6 +105,36 @@ export function FinancialRecordPage() {
       editable: true, 
       inputType: 'select', 
       options: projectOptions
+    },
+    { 
+      key: 'clientId', 
+      header: TABLE_COLUMNS.CLIENT_NAME, 
+      editable: (item) => {
+        if (
+          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
+          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
+          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_WAGE ||
+          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
+        ) {
+          return false;
+        }
+        return true;
+      }, 
+      inputType: 'select', 
+      options: clientOptions,
+      render: (item) => {
+        if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER) {
+          return '利用者一括';
+        }
+        if (
+          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
+          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_WAGE ||
+          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
+        ) {
+          return '自社';
+        }
+        return clientOptions.find(o => o.value === item.clientId)?.label || '-';
+      }
     },
     { 
       key: 'amount', 
@@ -128,6 +171,7 @@ export function FinancialRecordPage() {
     id: `draft-${Date.now()}`,
     period: getCurrentJSTDateOnly(),
     projectId: '',
+    clientId: '',
     type: 'revenue',
     subject: '',
     amount: 0,

@@ -85,6 +85,7 @@ export type FinancialRecordItem = {
   id: string;
   period: string;
   projectId: string;
+  clientId?: string;
   type: 'revenue' | 'expense' | 'reserve';
   subject: string;
   amount: number;

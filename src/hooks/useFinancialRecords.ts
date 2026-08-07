@@ -7,6 +7,7 @@ export function useFinancialRecords() {
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
   const [projects, setProjects] = useState<{id: string, name: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
+  const [clients, setClients] = useState<{id: string, name: string}[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [totalCount, setTotalCount] = useState(0);
@@ -27,7 +28,8 @@ export function useFinancialRecords() {
       let query = supabase.from('financial_records').select(`
           id, period, type, subject, amount, recorded_date, is_limited,
           project:projects(id, name),
-          staff:staffs(id, name)
+          staff:staffs(id, name),
+          client:clients(id, name)
         `, { count: 'exact' });
 
       if (startDate) query = query.gte('period', startDate);
@@ -51,21 +53,25 @@ export function useFinancialRecords() {
         { data: recData, error: recError, count },
         { data: projData, error: projError },
         { data: staffData, error: staffError },
+        { data: clientData, error: clientError },
       ] = await Promise.all([
         query,
         supabase.from('projects').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
+        supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
       ]);
 
       if (recError) throw recError;
       if (projError) throw projError;
       if (staffError) throw staffError;
+      if (clientError) throw clientError;
 
       if (recData) {
         const mapped: FinancialRecordItem[] = recData.map((r: any) => ({
           id: r.id,
           period: r.period,
           projectId: r.project?.id || '',
+          clientId: r.client?.id || '',
           type: r.type,
           subject: r.subject,
           amount: r.amount,
@@ -78,6 +84,7 @@ export function useFinancialRecords() {
       if (count !== null) setTotalCount(count);
       if (projData) setProjects(projData);
       if (staffData) setStaffs(staffData);
+      if (clientData) setClients(clientData);
     } catch (error) {
       console.error('Error fetching financial records:', error);
       throw error;
@@ -94,6 +101,7 @@ export function useFinancialRecords() {
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
       period: d.period || today,
       project_id: d.projectId || null,
+      client_id: d.clientId || null,
       type: d.type || 'revenue',
       subject: d.subject || '',
       amount: d.amount || 0,
@@ -140,6 +148,7 @@ export function useFinancialRecords() {
     handleDateFilterChange,
     projects,
     staffs,
+    clients,
     loading,
     fetchRecords,
     batchSaveRecords

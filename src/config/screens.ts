@@ -28,6 +28,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'assigneeAllocation', label: PAGE_NAMES.ASSIGNEE_ALLOCATION },
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
+      { id: 'projectFinancialRecord', label: PAGE_NAMES.PROJECT_FINANCIAL_RECORD },
     ],
   },
   SCREEN_USER: {

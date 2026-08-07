@@ -57,7 +57,7 @@ function AppContent() {
             <ScreenSkillPage />
           ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
             <ScreenWagePage />
-          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'screenProject'].includes(activeTab) ? (
+          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'projectFinancialRecord', 'screenProject'].includes(activeTab) ? (
             <ScreenProjectPage />
           ) : ['financialRecord', 'financialSummary', 'wageSummary', 'screenFinance'].includes(activeTab) ? (
             <ScreenFinancePage />

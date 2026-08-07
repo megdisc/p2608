@@ -144,5 +144,24 @@ export type SkillEvaluationGridRow = {
   evaluations: Record<string, string>; // mapping from skillId to skillLevelId
 };
 
+export type ProjectFinancialRecordSubRow = {
+  id: string;
+  type: 'revenue' | 'expense' | 'reserve';
+  subject: string;
+  amount: number;
+  period: string;
+  recordedDate: string;
+};
+
+export type ProjectFinancialSummaryRow = {
+  id: string; // projectId
+  projectName: string;
+  projectType: string;
+  totalRevenue: number;
+  totalExpense: number;
+  totalReserve: number;
+  records: ProjectFinancialRecordSubRow[];
+};
+
 export type Tab = 
-  | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'financialSummary' | 'wageSummary' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage';
+  | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'wageSummary' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage';

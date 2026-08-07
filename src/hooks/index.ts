@@ -5,6 +5,7 @@ export * from './useStaffs';
 
 export * from './useProjects';
 export * from './useAssigneeSummary';
+export * from './useProjectFinancialRecords';
 export * from './useBudgetPlanning';
 export * from './useDailyWorkRecords';
 

@@ -12,6 +12,7 @@ export * from './AssigneeSummaryPage';
 export * from './BudgetPlanningPage';
 export * from './AssigneeAllocationPage';
 export * from './RewardAllocationPage';
+export * from './ProjectFinancialRecordPage';
 export * from './WageSummaryPage';
 export * from './BaseWagePage';
 export * from './BaseWageAssignmentPage';

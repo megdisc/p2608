@@ -36,7 +36,7 @@ export const WORDS_SYSTEM = {
   PROGRESS_STATUS: '進捗状況',
   REWARD_ALLOCATION: '報酬配分',
   FINANCIAL_SUMMARY: '収支集計',
-  WAGE_SUMMARY: '工賃・控除集計',
+  WAGE_SUMMARY: '工賃・控除明細',
   SYSTEM_COMPOSITION: 'システム構成',
   SCREEN_PROJECT: '案件管理',
   SCREEN_USER: '利用者管理',

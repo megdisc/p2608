@@ -1,6 +1,7 @@
 /**
- * ふりがな（yomigana）に基づいた汎用比較・ソート関数
- * aVal/bVal が文字列の場合、yomigana フィールドがあればそれを優先して比較します。
+ * 汎用比較・ソート関数
+ * aVal/bVal を第一優先で比較します。
+ * aVal と bVal が同値（0）で、オブジェクトにふりがながある場合は、ふりがな順でタイブレークを行います。
  */
 export function compareValues(
   aVal: any,
@@ -9,38 +10,42 @@ export function compareValues(
   aObj?: any,
   bObj?: any
 ): number {
-  if (aObj && bObj) {
-    const aYomi =
-      aObj.yomigana ||
-      aObj.memberYomigana ||
-      aObj.assigneeYomigana ||
-      aObj.userYomigana ||
-      aObj.projectYomigana ||
-      aObj.taskYomigana;
-    const bYomi =
-      bObj.yomigana ||
-      bObj.memberYomigana ||
-      bObj.assigneeYomigana ||
-      bObj.userYomigana ||
-      bObj.projectYomigana ||
-      bObj.taskYomigana;
-
-    // もし比較値が文字列で、かつ両方のオブジェクトにふりがながある場合はふりがなで比較
-    if (aYomi && bYomi && typeof aVal === 'string' && typeof bVal === 'string') {
-      const cmp = aYomi.localeCompare(bYomi, 'ja');
-      return direction === 'asc' ? cmp : -cmp;
-    }
-  }
-
   if (aVal === undefined || aVal === null) aVal = '';
   if (bVal === undefined || bVal === null) bVal = '';
 
-  if (typeof aVal === 'string' && typeof bVal === 'string') {
-    const cmp = aVal.localeCompare(bVal, 'ja');
-    return direction === 'asc' ? cmp : -cmp;
+  let cmp = 0;
+
+  if (typeof aVal === 'number' && typeof bVal === 'number') {
+    if (aVal < bVal) cmp = -1;
+    else if (aVal > bVal) cmp = 1;
+  } else if (typeof aVal === 'string' && typeof bVal === 'string') {
+    cmp = aVal.localeCompare(bVal, 'ja');
+  } else {
+    if (aVal < bVal) cmp = -1;
+    else if (aVal > bVal) cmp = 1;
   }
 
-  if (aVal < bVal) return direction === 'asc' ? -1 : 1;
-  if (aVal > bVal) return direction === 'asc' ? 1 : -1;
-  return 0;
+  // もし aVal と bVal が同値（cmp === 0）で、オブジェクトにふりがながある場合はふりがな順でタイブレーク
+  if (cmp === 0 && aObj && bObj) {
+    const aYomi =
+      aObj.projectYomigana ||
+      aObj.taskYomigana ||
+      aObj.userYomigana ||
+      aObj.yomigana ||
+      aObj.memberYomigana ||
+      aObj.assigneeYomigana;
+    const bYomi =
+      bObj.projectYomigana ||
+      bObj.taskYomigana ||
+      bObj.userYomigana ||
+      bObj.yomigana ||
+      bObj.memberYomigana ||
+      bObj.assigneeYomigana;
+
+    if (aYomi && bYomi) {
+      cmp = aYomi.localeCompare(bYomi, 'ja');
+    }
+  }
+
+  return direction === 'asc' ? cmp : -cmp;
 }

@@ -380,13 +380,17 @@ export function useProgressRecords() {
     }
 
     flatRows.sort((a, b) => {
+      if (a.projectTypeSortKey !== b.projectTypeSortKey) {
+        return a.projectTypeSortKey.localeCompare(b.projectTypeSortKey);
+      }
+
       const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
       const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
-      if (pA !== pB) return pA.localeCompare(pB);
+      if (pA !== pB) return pA.localeCompare(pB, 'ja');
 
       const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.taskYomigana || '';
       const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.taskYomigana || '';
-      if (tA !== tB) return tA.localeCompare(tB);
+      if (tA !== tB) return tA.localeCompare(tB, 'ja');
       
       const getTypePrio = (userId: string) => {
         if (userId.startsWith('staff_')) return 1;
@@ -399,7 +403,7 @@ export function useProgressRecords() {
       const bPrio = getTypePrio(b.userId);
       if (aPrio !== bPrio) return aPrio - bPrio;
 
-      return a.userYomigana.localeCompare(b.userYomigana);
+      return a.userYomigana.localeCompare(b.userYomigana, 'ja');
     });
 
     let prevProjectId = '';

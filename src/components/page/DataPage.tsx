@@ -21,6 +21,9 @@ type DataPageProps<T> = {
   showMonthFilter?: boolean;
   singleMonth?: string;
   onSingleMonthChange?: (month: string) => void;
+  showYearFilter?: boolean;
+  singleYear?: string;
+  onSingleYearChange?: (year: string) => void;
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   hideDeleteColumn?: boolean;
@@ -38,6 +41,7 @@ type DataPageProps<T> = {
   totalCount?: number;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  sortConfig?: { key: string; direction: 'asc' | 'desc' };
   onSortChange?: (sortConfig: { key: string; direction: 'asc' | 'desc' }) => void;
   onDateFilterChange?: (startDate: string, endDate: string) => void;
 };
@@ -60,6 +64,9 @@ export function DataPage<T extends { id: string }>({
   showMonthFilter,
   singleMonth,
   onSingleMonthChange,
+  showYearFilter,
+  singleYear,
+  onSingleYearChange,
   canEditRow,
   canDeleteRow,
   hideDeleteColumn,
@@ -77,6 +84,7 @@ export function DataPage<T extends { id: string }>({
   totalCount,
   currentPage,
   onPageChange,
+  sortConfig,
   onSortChange,
   onDateFilterChange
 }: DataPageProps<T>) {
@@ -112,6 +120,9 @@ export function DataPage<T extends { id: string }>({
         showMonthFilter={showMonthFilter}
         singleMonth={singleMonth}
         onSingleMonthChange={onSingleMonthChange}
+        showYearFilter={showYearFilter}
+        singleYear={singleYear}
+        onSingleYearChange={onSingleYearChange}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
         hideDeleteColumn={hideDeleteColumn}
@@ -129,6 +140,7 @@ export function DataPage<T extends { id: string }>({
         totalCount={totalCount}
         currentPage={currentPage}
         onPageChange={onPageChange}
+        sortConfig={sortConfig}
         onSortChange={onSortChange}
         onDateFilterChange={onDateFilterChange}
       />

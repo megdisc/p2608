@@ -40,7 +40,7 @@ export function useProjectFinancialRecords() {
               type: r.type,
               subject: r.subject,
               amount,
-              period: r.period,
+              period: r.period ? r.period.substring(0, 7) : '',
               recordedDate: r.recorded_date
             };
           });

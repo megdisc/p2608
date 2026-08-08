@@ -4,7 +4,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants
 import type { FinancialRecordItem } from '../types';
 import { useAlert, useAuth } from '../contexts';
 import { useFinancialRecords } from '../hooks';
-import { getCurrentJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly, getCurrentJSTMonth } from '../utils';
 
 export function FinancialRecordPage() {
   const { 
@@ -13,7 +13,9 @@ export function FinancialRecordPage() {
     page,
     setPage,
     handleSortChange,
-    handleDateFilterChange,
+    currentYear,
+    handleYearChange,
+    sortConfig,
     projects, 
     staffs, 
     clients,
@@ -39,7 +41,7 @@ export function FinancialRecordPage() {
       key: 'period', 
       header: TABLE_COLUMNS.PERIOD,
       editable: true,
-      inputType: 'date'
+      inputType: 'month'
     },
     { 
       key: 'type', 
@@ -169,7 +171,7 @@ export function FinancialRecordPage() {
 
   const handleAddRow = (): FinancialRecordItem => ({
     id: `draft-${Date.now()}`,
-    period: getCurrentJSTDateOnly(),
+    period: getCurrentJSTMonth(),
     projectId: '',
     clientId: '',
     type: 'revenue',
@@ -190,16 +192,17 @@ export function FinancialRecordPage() {
       emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
       onBatchSave={handleBatchSave}
       onAddRow={handleAddRow}
-      showDateFilter={true}
-      dateFilterKey="period"
+      showYearFilter={true}
+      singleYear={currentYear}
+      onSingleYearChange={handleYearChange}
       initialSort={{ key: 'period', direction: 'desc' }}
+      sortConfig={sortConfig}
       hideHeader={true}
       serverSidePagination={true}
       totalCount={totalCount}
       currentPage={page}
       onPageChange={setPage}
       onSortChange={handleSortChange}
-      onDateFilterChange={handleDateFilterChange}
     />
   );
 }

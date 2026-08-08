@@ -10,6 +10,8 @@ import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth, compareVa
 
 import { DateInput } from './DateInput';
 import { MonthInput } from './MonthInput';
+import { MonthDisplay } from './MonthDisplay';
+import { YearInput } from './YearInput';
 import { Pagination } from './Pagination';
 import { NumberInput } from './NumberInput';
 import { NumberDisplay } from './NumberDisplay';
@@ -59,6 +61,9 @@ type DataTableProps<T> = {
   showMonthFilter?: boolean;
   singleMonth?: string;
   onSingleMonthChange?: (month: string) => void;
+  showYearFilter?: boolean;
+  singleYear?: string;
+  onSingleYearChange?: (year: string) => void;
   disableAddButton?: boolean;
   highlightInputColumns?: boolean;
   restrictionTooltipText?: string;
@@ -67,6 +72,7 @@ type DataTableProps<T> = {
   totalCount?: number;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  sortConfig?: SortConfig;
   onSortChange?: (sortConfig: SortConfig) => void;
   onDateFilterChange?: (startDate: string, endDate: string) => void;
 };
@@ -95,6 +101,9 @@ export function DataTable<T extends { id: string }>({
   showMonthFilter,
   singleMonth,
   onSingleMonthChange,
+  showYearFilter,
+  singleYear,
+  onSingleYearChange,
   disableAddButton,
   highlightInputColumns = true,
   restrictionTooltipText,
@@ -103,6 +112,7 @@ export function DataTable<T extends { id: string }>({
   totalCount,
   currentPage: externalCurrentPage,
   onPageChange,
+  sortConfig: externalSortConfig,
   onSortChange,
   onDateFilterChange
 }: DataTableProps<T>) {
@@ -110,10 +120,12 @@ export function DataTable<T extends { id: string }>({
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
   const tableRef = useRef<HTMLTableElement>(null);
   
-  const [sortConfig, setSortConfig] = useState<SortConfig>(() => initialSort || {
+  const [internalSortConfig, setInternalSortConfig] = useState<SortConfig>(() => initialSort || {
     key: columns.length > 0 ? columns[0].key : '',
     direction: 'asc'
   });
+
+  const sortConfig = externalSortConfig || internalSortConfig;
 
   const [draftData, setDraftData] = useState<T[]>(data);
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
@@ -227,13 +239,12 @@ export function DataTable<T extends { id: string }>({
 
   const handleSort = (key: string) => {
     if (!key) return;
-    setSortConfig(current => {
-      const newConfig: SortConfig = current.key === key 
-        ? { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
-        : { key, direction: 'asc' };
-      if (onSortChange) onSortChange(newConfig);
-      return newConfig;
-    });
+    const currentConfig = sortConfig;
+    const newConfig: SortConfig = currentConfig.key === key 
+      ? { key, direction: currentConfig.direction === 'asc' ? 'desc' : 'asc' }
+      : { key, direction: 'asc' };
+    setInternalSortConfig(newConfig);
+    if (onSortChange) onSortChange(newConfig);
   };
 
   const handleCellChange = (id: string, key: string, value: any, col?: Column<T>, isSubItem: boolean = false, parentId?: string, isSubSubItem: boolean = false, subParentId?: string) => {
@@ -451,6 +462,15 @@ export function DataTable<T extends { id: string }>({
         );
       }
 
+      if (col.inputType === 'month') {
+        return (
+          <MonthInput 
+            value={value as string}
+            onChange={(newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId)}
+          />
+        );
+      }
+
       if (col.inputType === 'number') {
         return (
           <NumberInput 
@@ -509,7 +529,11 @@ export function DataTable<T extends { id: string }>({
       return option ? option.label : item[col.key];
     }
     
-    if ((col.inputType === 'date' || col.inputType === 'month') && item[col.key]) {
+    if (col.inputType === 'month' && item[col.key]) {
+      return <MonthDisplay value={item[col.key]} />;
+    }
+    
+    if (col.inputType === 'date' && item[col.key]) {
       const v = item[col.key];
       return typeof v === 'string' ? v : '';
     }
@@ -799,24 +823,24 @@ export function DataTable<T extends { id: string }>({
         <div className="filter-controls">
           {showDateFilter ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DateInput 
-                value={startDate} 
+              <MonthInput 
+                value={startDate.length >= 7 ? startDate.substring(0, 7) : startDate} 
                 onChange={(val) => {
                   setStartDate(val);
                   if (onDateFilterChange) onDateFilterChange(val, endDate);
                 }} 
                 className="date-filter-pill"
-                style={{ width: 'auto', minWidth: '160px' }}
+                style={{ width: 'auto', minWidth: '140px' }}
               />
               <span>～</span>
-              <DateInput 
-                value={endDate} 
+              <MonthInput 
+                value={endDate.length >= 7 ? endDate.substring(0, 7) : endDate} 
                 onChange={(val) => {
                   setEndDate(val);
                   if (onDateFilterChange) onDateFilterChange(startDate, val);
                 }} 
                 className="date-filter-pill"
-                style={{ width: 'auto', minWidth: '160px' }}
+                style={{ width: 'auto', minWidth: '140px' }}
               />
             </div>
           ) : showSingleDateFilter ? (
@@ -913,6 +937,51 @@ export function DataTable<T extends { id: string }>({
                 disabled={singleMonth === getCurrentJSTMonth()}
               >
                 今月
+              </Button>
+            </div>
+          ) : showYearFilter ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  if (singleYear && onSingleYearChange) {
+                    onSingleYearChange(String(parseInt(singleYear) - 1));
+                  }
+                }}
+              >
+                ＜
+              </Button>
+              <YearInput 
+                value={singleYear || ''}
+                onChange={(val) => {
+                  if (val && onSingleYearChange) {
+                    onSingleYearChange(val);
+                  }
+                }}
+                className="date-filter-pill"
+                style={{ width: 'auto', minWidth: '100px' }}
+              />
+              <Button 
+                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                onClick={() => {
+                  if (singleYear && onSingleYearChange) {
+                    onSingleYearChange(String(parseInt(singleYear) + 1));
+                  }
+                }}
+              >
+                ＞
+              </Button>
+              <Button 
+                variant="secondary"
+                style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+                onClick={() => {
+                  if (onSingleYearChange) {
+                    onSingleYearChange(new Date().getFullYear().toString());
+                  }
+                }}
+                disabled={singleYear === new Date().getFullYear().toString()}
+              >
+                今年
               </Button>
             </div>
           ) : footerLeft ? (

@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
-import { PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
+import { PAGE_NAMES, MESSAGES, WORDS_PROJECT, TABLE_COLUMNS } from '../constants';
 import type { ProjectFinancialSummaryRow } from '../types';
 import { useAlert } from '../contexts';
 import { useProjectFinancialRecords } from '../hooks';
@@ -75,9 +75,9 @@ export function ProjectFinancialRecordPage() {
     },
     {
       key: 'period',
-      header: '計上日',
+      header: TABLE_COLUMNS.PERIOD,
       editable: false,
-      inputType: 'date',
+      inputType: 'month',
       rowType: 'sub',
       sortable: false
     }

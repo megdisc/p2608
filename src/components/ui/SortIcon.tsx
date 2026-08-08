@@ -1,17 +1,20 @@
-
-
 type SortIconProps = {
   active: boolean;
-  direction: 'asc' | 'desc';
+  direction?: 'asc' | 'desc';
 };
 
-export function SortIcon({ active, direction }: SortIconProps) {
+export function SortIcon({ active, direction = 'asc' }: SortIconProps) {
   return (
-    <span style={{ 
-      fontSize: 'var(--text-caption)', 
-      color: active ? 'inherit' : 'var(--color-border)', 
-      transition: 'color 0.2s' 
-    }}>
+    <span
+      style={{
+        fontSize: '12px',
+        color: active ? '#0f172a' : '#cbd5e1',
+        fontWeight: active ? 'bold' : 'normal',
+        marginLeft: '4px',
+        userSelect: 'none',
+        transition: 'color 0.15s ease'
+      }}
+    >
       {active && direction === 'desc' ? '▼' : '▲'}
     </span>
   );

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { FinancialRecordItem } from '../types';
-import { getCurrentJSTDateOnly, formatJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly } from '../utils';
 
 export function useFinancialRecords() {
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
@@ -15,12 +15,7 @@ export function useFinancialRecords() {
   const pageSize = 50;
   
   const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc'|'desc'}>({ key: 'period', direction: 'desc' });
-  const [startDate, setStartDate] = useState(() => {
-    const d = new Date();
-    d.setMonth(d.getMonth() - 2);
-    return formatJSTDateOnly(d);
-  });
-  const [endDate, setEndDate] = useState(() => getCurrentJSTDateOnly());
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
 
   const fetchRecords = useCallback(async () => {
     try {
@@ -32,11 +27,13 @@ export function useFinancialRecords() {
           client:clients(id, name)
         `, { count: 'exact' });
 
-      if (startDate) query = query.gte('period', startDate);
-      if (endDate) query = query.lte('period', endDate);
+      if (currentYear) {
+        query = query.gte('period', `${currentYear}-01-01`).lte('period', `${currentYear}-12-31`);
+      }
 
       let dbSortKey = 'period';
       if (sortConfig.key === 'projectId') dbSortKey = 'project_id';
+      else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
       else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
       else if (['period', 'type', 'subject', 'amount', 'is_limited'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
@@ -69,7 +66,7 @@ export function useFinancialRecords() {
       if (recData) {
         const mapped: FinancialRecordItem[] = recData.map((r: any) => ({
           id: r.id,
-          period: r.period,
+          period: r.period ? r.period.substring(0, 7) : '',
           projectId: r.project?.id || '',
           clientId: r.client?.id || '',
           type: r.type,
@@ -91,7 +88,7 @@ export function useFinancialRecords() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, sortConfig, startDate, endDate]);
+  }, [page, pageSize, sortConfig, currentYear]);
 
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
@@ -99,7 +96,7 @@ export function useFinancialRecords() {
     // Process new and updated records
     const upserts = drafts.map(d => ({
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-      period: d.period || today,
+      period: d.period ? (d.period.length === 7 ? `${d.period}-01` : d.period) : today,
       project_id: d.projectId || null,
       client_id: d.clientId || null,
       type: d.type || 'revenue',
@@ -133,9 +130,8 @@ export function useFinancialRecords() {
     setPage(1);
   }, []);
 
-  const handleDateFilterChange = useCallback((start: string, end: string) => {
-    setStartDate(start);
-    setEndDate(end);
+  const handleYearChange = useCallback((year: string) => {
+    setCurrentYear(year);
     setPage(1);
   }, []);
 
@@ -144,8 +140,10 @@ export function useFinancialRecords() {
     totalCount,
     page,
     setPage,
+    currentYear,
+    sortConfig,
     handleSortChange,
-    handleDateFilterChange,
+    handleYearChange,
     projects,
     staffs,
     clients,

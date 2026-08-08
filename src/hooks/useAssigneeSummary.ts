@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
-import { WORDS_PERSON, WORDS_ORG_LOCATION } from '../constants';
+import { WORDS_PERSON } from '../constants';
 import { getCurrentISOString } from '../utils';
 
 export type SummaryRow = {
@@ -34,8 +34,6 @@ export function useAssigneeSummary() {
       const [
         projectsRes,
         membersRes,
-        clientsRes,
-        staffsRes,
         progressRes
       ] = await Promise.all([
         supabase.from('projects').select(`
@@ -48,26 +46,18 @@ export function useAssigneeSummary() {
           )
         `).eq('is_deleted', false),
         supabase.from('members').select('id, name, yomigana').eq('is_deleted', false),
-        supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false),
-        supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false),
         supabase.from('monthly_task_progress').select('task_id, status, year_month')
       ]);
 
       if (projectsRes.error) throw projectsRes.error;
       if (membersRes.error) throw membersRes.error;
-      if (clientsRes.error) throw clientsRes.error;
-      if (staffsRes.error) throw staffsRes.error;
       if (progressRes.error) throw progressRes.error;
 
       const projects = projectsRes.data || [];
       const members = membersRes.data || [];
-      const clients = clientsRes.data || [];
-      const staffs = staffsRes.data || [];
       const records = progressRes.data || [];
 
       const memberMap = new Map(members.map(m => [m.id, { name: m.name, yomigana: m.yomigana }]));
-      const clientMap = new Map(clients.map(c => [c.id, { name: c.name, yomigana: c.yomigana }]));
-      const staffMap = new Map(staffs.map(s => [s.id, { name: s.name, yomigana: s.yomigana }]));
 
       const latestProgressMap = new Map<string, string>();
       const sortedRecords = [...records].sort((a, b) => a.year_month.localeCompare(b.year_month));
@@ -94,35 +84,16 @@ export function useAssigneeSummary() {
             // User requested not to show "Other" (未割り当て) assignee data.
           } else {
             for (const a of assignees) {
-              let assigneeName = '不明';
-              let assigneeYomigana = '';
-              let displayAssigneeType = '';
-              let assigneeTypeSortKey = 99;
+              if (!a.member_id) continue;
 
-              if (a.member_id) {
-                const m = memberMap.get(a.member_id);
-                assigneeName = m?.name || '不明';
-                assigneeYomigana = m?.yomigana || '';
-                displayAssigneeType = WORDS_PERSON.ROLE_MEMBER;
-                assigneeTypeSortKey = 2;
-              } else if (a.staff_id) {
-                const s = staffMap.get(a.staff_id);
-                assigneeName = s?.name || '不明';
-                assigneeYomigana = s?.yomigana || '';
-                displayAssigneeType = WORDS_PERSON.ROLE_STAFF;
-                assigneeTypeSortKey = 1;
-              } else if (a.client_id) {
-                const c = clientMap.get(a.client_id);
-                assigneeName = c?.name || '不明';
-                assigneeYomigana = c?.yomigana || '';
-                displayAssigneeType = WORDS_ORG_LOCATION.OUTSOURCE;
-                assigneeTypeSortKey = 3;
-              }
+              const m = memberMap.get(a.member_id);
+              const assigneeName = m?.name || '不明';
+              const assigneeYomigana = m?.yomigana || '';
 
               tempRows.push({
-                assigneeType: displayAssigneeType,
-                assigneeTypeSortKey,
-                assigneeId: `${displayAssigneeType}_${a.member_id || a.staff_id || a.client_id || 'unassigned'}`,
+                assigneeType: WORDS_PERSON.ROLE_MEMBER,
+                assigneeTypeSortKey: 2,
+                assigneeId: `member_${a.member_id}`,
                 assigneeName,
                 assigneeYomigana,
                 projectId: p.id,

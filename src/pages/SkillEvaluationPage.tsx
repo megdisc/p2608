@@ -28,6 +28,7 @@ export function SkillEvaluationPage() {
         key: 'memberName', 
         header: TABLE_COLUMNS.NAME, 
         sortable: true,
+        sortKey: 'memberYomigana',
         editable: false
       }
     ];

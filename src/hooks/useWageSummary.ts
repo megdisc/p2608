@@ -1,10 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
-import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
+import { getCurrentJSTMonth, getPreviousMonth, compareValues } from '../utils';
 
 export type WageRow = {
   id: string;
   name: string;
+  yomigana: string;
   wageRate: number | null;
   workTime: number;
   basicWage: number | null;
@@ -128,6 +129,7 @@ export function useWageSummary() {
         return {
           id: member.id,
           name: member.name,
+          yomigana: member.yomigana || '',
           wageRate,
           workTime: totalWorkTime,
           basicWage,
@@ -164,14 +166,13 @@ export function useWageSummary() {
   const sortedData = useMemo(() => {
     if (!sortConfig) return data;
     return [...data].sort((a: any, b: any) => {
-      const aVal = a[sortConfig.key];
-      const bVal = b[sortConfig.key];
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      let aVal = a[sortConfig.key];
+      let bVal = b[sortConfig.key];
+      if (sortConfig.key === 'name') {
+        aVal = a.yomigana || a.name;
+        bVal = b.yomigana || b.name;
       }
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
+      return compareValues(aVal, bVal, sortConfig.direction, a, b);
     });
   }, [data, sortConfig]);
 

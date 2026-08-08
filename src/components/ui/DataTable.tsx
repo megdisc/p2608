@@ -6,7 +6,7 @@ import { Select } from './Select';
 import { RadioButton } from './RadioButton';
 import { DateTimeInput } from './DateTimeInput';
 import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
-import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth } from '../../utils';
+import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth, compareValues } from '../../utils';
 
 import { DateInput } from './DateInput';
 import { MonthInput } from './MonthInput';
@@ -200,17 +200,8 @@ export function DataTable<T extends { id: string }>({
 
       let aVal = (a as any)[actualSortKey];
       let bVal = (b as any)[actualSortKey];
-      
-      if (aVal === undefined) aVal = '';
-      if (bVal === undefined) bVal = '';
 
-      if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-      }
-      
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
+      return compareValues(aVal, bVal, sortConfig.direction, a, b);
     });
 
     return { sortedExistingRows: existingRows, newRows };

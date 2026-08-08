@@ -56,6 +56,7 @@ export function useSkillEvaluations() {
         const row: any = {
           id: member.id, // Row ID is Member ID
           memberName: member.name,
+          memberYomigana: member.yomigana || '',
           evaluations
         };
         

@@ -16,22 +16,9 @@ export function AssigneeSummaryPage() {
   }, [fetchAssigneeSummary, showAlert]);
 
   const columns: Column<SummaryRow>[] = useMemo(() => [
-    {
-      key: 'assigneeType',
-      header: TABLE_COLUMNS.ASSIGNEE_TYPE,
-      sortable: true,
-      sortKey: 'assigneeTypeSortKey',
-      render: (item) => {
-        if (!item.isFirstInAssignee) return '';
-        return item.assigneeType;
-      },
-      style: (item) => ({
-        borderBottom: item.isLastInAssignee ? undefined : 'none'
-      })
-    },
     { 
       key: 'assigneeName', 
-      header: TABLE_COLUMNS.ASSIGNEE,
+      header: TABLE_COLUMNS.NAME,
       sortable: true,
       sortKey: 'assigneeYomigana',
       render: (item) => {

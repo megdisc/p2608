@@ -16,7 +16,7 @@ export function BaseWageAssignmentPage() {
   }, [fetchAssignments, showAlert]);
 
   const columns: Column<MemberItem>[] = [
-    { key: 'name', header: TABLE_COLUMNS.NAME, editable: false, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.NAME, sortable: true, sortKey: 'yomigana', editable: false, inputType: 'text' },
     { 
       key: 'baseWageId', 
       header: TABLE_COLUMNS.BASE_WAGE, 

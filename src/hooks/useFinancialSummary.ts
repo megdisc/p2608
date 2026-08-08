@@ -118,7 +118,7 @@ export function useFinancialSummary(year: string) {
         };
       });
 
-      const sortedData = formattedData.sort((a, b) => b.period.localeCompare(a.period));
+      const sortedData = formattedData.sort((a, b) => a.period.localeCompare(b.period));
       setData(sortedData);
     } catch (err) {
       console.error('Error fetching financial summary:', err);

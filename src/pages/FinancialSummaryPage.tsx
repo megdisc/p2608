@@ -8,7 +8,7 @@ export function FinancialSummaryPage() {
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
   const { data, loading, fetchSummary } = useFinancialSummary(currentYear);
   const { showAlert } = useAlert();
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'period', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'period', direction: 'asc' });
 
   useEffect(() => {
     fetchSummary().catch(() => {
@@ -31,6 +31,35 @@ export function FinancialSummaryPage() {
     if (a.period > b.period) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;
   });
+
+  const totals = data.reduce(
+    (acc, row) => ({
+      revSales: acc.revSales + row.revSales,
+      revOther: acc.revOther + row.revOther,
+      revTotal: acc.revTotal + row.revTotal,
+      expLaborMember: acc.expLaborMember + row.expLaborMember,
+      expLaborOther: acc.expLaborOther + row.expLaborOther,
+      expOutsource: acc.expOutsource + row.expOutsource,
+      expOther: acc.expOther + row.expOther,
+      expTotal: acc.expTotal + row.expTotal,
+      resWage: acc.resWage + row.resWage,
+      resEquipment: acc.resEquipment + row.resEquipment,
+      resTotal: acc.resTotal + row.resTotal,
+    }),
+    {
+      revSales: 0,
+      revOther: 0,
+      revTotal: 0,
+      expLaborMember: 0,
+      expLaborOther: 0,
+      expOutsource: 0,
+      expOther: 0,
+      expTotal: 0,
+      resWage: 0,
+      resEquipment: 0,
+      resTotal: 0,
+    }
+  );
 
   const headerRows: HeaderCell[][] = [
     [
@@ -94,6 +123,46 @@ export function FinancialSummaryPage() {
                   </td>
                 </tr>
               ))}
+              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
+                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>{currentYear}年累計</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.revSales.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.revOther.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.revTotal.toLocaleString()}</strong>
+                </td>
+                
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expLaborMember.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expLaborOther.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expOutsource.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expOther.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expTotal.toLocaleString()}</strong>
+                </td>
+                
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.resWage.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.resEquipment.toLocaleString()}</strong>
+                </td>
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.resTotal.toLocaleString()}</strong>
+                </td>
+              </tr>
             </tbody>
           )}
         </table>

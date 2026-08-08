@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { MultiRowHeader, type HeaderCell } from '../components/ui';
+import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
 import { MESSAGES } from '../constants';
 import { useAlert } from '../contexts/AlertContext';
 import { useFinancialSummary } from '../hooks';
 
 export function FinancialSummaryPage() {
-  const { data, loading, fetchSummary } = useFinancialSummary();
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
+  const { data, loading, fetchSummary } = useFinancialSummary(currentYear);
   const { showAlert } = useAlert();
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'period', direction: 'desc' });
 
@@ -96,6 +97,43 @@ export function FinancialSummaryPage() {
             </tbody>
           )}
         </table>
+      </div>
+
+      <div className="action-bar">
+        <div className="filter-controls">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                setCurrentYear(String(parseInt(currentYear) - 1));
+              }}
+            >
+              ＜
+            </Button>
+            <YearInput 
+              value={currentYear}
+              onChange={setCurrentYear}
+              className="date-filter-pill"
+              style={{ width: 'auto', minWidth: '100px' }}
+            />
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                setCurrentYear(String(parseInt(currentYear) + 1));
+              }}
+            >
+              ＞
+            </Button>
+            <Button 
+              variant="secondary"
+              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              onClick={() => setCurrentYear(new Date().getFullYear().toString())}
+              disabled={currentYear === new Date().getFullYear().toString()}
+            >
+              今年
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   );

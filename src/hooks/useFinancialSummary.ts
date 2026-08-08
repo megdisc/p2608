@@ -23,42 +23,49 @@ export type FinancialSummaryRow = {
   resTotal: number;
 };
 
-export function useFinancialSummary() {
+export function useFinancialSummary(year: string) {
   const [data, setData] = useState<FinancialSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchSummary = useCallback(async () => {
+    const fetchSummary = useCallback(async () => {
     try {
       setLoading(true);
       const { data: records, error } = await supabase
         .from('financial_records')
-        .select('period, type, subject, amount');
+        .select('period, type, subject, amount')
+        .gte('period', `${year}-01-01`)
+        .lte('period', `${year}-12-31`);
         
       if (error) throw error;
 
       const summaryMap = new Map<string, FinancialSummaryRow>();
+      
+      // Initialize 12 months for the selected year
+      for (let i = 1; i <= 12; i++) {
+        const monthStr = i.toString().padStart(2, '0');
+        const periodKey = `${year}-${monthStr}`;
+        summaryMap.set(periodKey, {
+          id: periodKey,
+          period: periodKey,
+          revSales: 0,
+          revOther: 0,
+          revTotal: 0,
+          expLaborMember: 0,
+          expLaborOther: 0,
+          expOutsource: 0,
+          expOther: 0,
+          expTotal: 0,
+          resWage: 0,
+          resEquipment: 0,
+          resTotal: 0
+        });
+      }
 
       (records || []).forEach(record => {
-        const [year, month] = record.period.split('-');
-        const periodKey = `${year}年${month}月`;
+        const [y, m] = record.period.split('-');
+        const periodKey = `${y}-${m}`;
 
-        if (!summaryMap.has(periodKey)) {
-          summaryMap.set(periodKey, {
-            id: periodKey,
-            period: periodKey,
-            revSales: 0,
-            revOther: 0,
-            revTotal: 0,
-            expLaborMember: 0,
-            expLaborOther: 0,
-            expOutsource: 0,
-            expOther: 0,
-            expTotal: 0,
-            resWage: 0,
-            resEquipment: 0,
-            resTotal: 0
-          });
-        }
+        if (!summaryMap.has(periodKey)) return;
 
         const row = summaryMap.get(periodKey)!;
         const amt = record.amount || 0;
@@ -102,7 +109,16 @@ export function useFinancialSummary() {
         }
       });
 
-      const sortedData = Array.from(summaryMap.values()).sort((a, b) => b.period.localeCompare(a.period));
+      // We want to return the period displayed as YYYY年MM月, so we format it before returning
+      const formattedData = Array.from(summaryMap.values()).map(row => {
+        const [y, m] = row.period.split('-');
+        return {
+          ...row,
+          period: `${y}年${m}月`
+        };
+      });
+
+      const sortedData = formattedData.sort((a, b) => b.period.localeCompare(a.period));
       setData(sortedData);
     } catch (err) {
       console.error('Error fetching financial summary:', err);
@@ -110,7 +126,7 @@ export function useFinancialSummary() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [year]);
 
   return {
     data,

@@ -10,6 +10,7 @@ export * from './MonthDisplay';
 export * from './YearDisplay';
 export * from './DateInput';
 export * from './MonthInput';
+export * from './YearInput';
 export * from './NumberDisplay';
 export * from './NumberInput';
 export * from './CurrencyInput';

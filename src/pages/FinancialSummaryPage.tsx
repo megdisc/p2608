@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useAlert } from '../contexts/AlertContext';
 import { useFinancialSummary } from '../hooks';
 
@@ -35,8 +35,8 @@ export function FinancialSummaryPage() {
   const totals = data.reduce(
     (acc, row) => ({
       revSales: acc.revSales + row.revSales,
-      revOther: acc.revOther + row.revOther,
       revTotal: acc.revTotal + row.revTotal,
+      expMaterial: acc.expMaterial + row.expMaterial,
       expLaborMember: acc.expLaborMember + row.expLaborMember,
       expLaborOther: acc.expLaborOther + row.expLaborOther,
       expOutsource: acc.expOutsource + row.expOutsource,
@@ -48,8 +48,8 @@ export function FinancialSummaryPage() {
     }),
     {
       revSales: 0,
-      revOther: 0,
       revTotal: 0,
+      expMaterial: 0,
       expLaborMember: 0,
       expLaborOther: 0,
       expOutsource: 0,
@@ -63,23 +63,23 @@ export function FinancialSummaryPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: '時期', rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: '収益', colSpan: 3 },
-      { label: '費用', colSpan: 5 },
-      { label: '積立金', colSpan: 3 },
+      { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
+      { label: TABLE_COLUMNS.REVENUE, colSpan: 2 },
+      { label: TABLE_COLUMNS.EXPENSE, colSpan: 6 },
+      { label: TABLE_COLUMNS.RESERVE, colSpan: 3 },
     ],
     [
-      { label: '売上' },
-      { label: 'その他収益' },
-      { label: '合計' },
-      { label: '労務費（利用者工賃）' },
-      { label: '労務費（その他）' },
-      { label: '外注加工費' },
-      { label: 'その他費用' },
-      { label: '合計' },
-      { label: '工賃変動積立金' },
-      { label: '設備等修繕維持積立金' },
-      { label: '合計' }
+      { label: TABLE_COLUMNS.SUBJECT_REVENUE_SALES },
+      { label: TABLE_COLUMNS.TOTAL },
+      { label: TABLE_COLUMNS.SUBJECT_EXPENSE_MATERIAL },
+      { label: TABLE_COLUMNS.SUBJECT_EXPENSE_LABOR_MEMBER },
+      { label: TABLE_COLUMNS.SUBJECT_EXPENSE_LABOR_OTHER },
+      { label: TABLE_COLUMNS.SUBJECT_EXPENSE_OUTSOURCE },
+      { label: TABLE_COLUMNS.SUBJECT_EXPENSE_OTHER },
+      { label: TABLE_COLUMNS.TOTAL },
+      { label: TABLE_COLUMNS.SUBJECT_RESERVE_WAGE },
+      { label: TABLE_COLUMNS.SUBJECT_RESERVE_EQUIPMENT },
+      { label: TABLE_COLUMNS.TOTAL }
     ]
   ];
 
@@ -103,11 +103,11 @@ export function FinancialSummaryPage() {
                 <tr key={row.id}>
                   <td>{row.period}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.revOther.toLocaleString()}</td>
                   <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                     <strong>¥{row.revTotal.toLocaleString()}</strong>
                   </td>
                   
+                  <td style={{ textAlign: 'right' }}>¥{row.expMaterial.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expLaborMember.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
                   <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
@@ -131,12 +131,12 @@ export function FinancialSummaryPage() {
                   <strong>¥{totals.revSales.toLocaleString()}</strong>
                 </td>
                 <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  <strong>¥{totals.revOther.toLocaleString()}</strong>
-                </td>
-                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   <strong>¥{totals.revTotal.toLocaleString()}</strong>
                 </td>
                 
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{totals.expMaterial.toLocaleString()}</strong>
+                </td>
                 <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   <strong>¥{totals.expLaborMember.toLocaleString()}</strong>
                 </td>

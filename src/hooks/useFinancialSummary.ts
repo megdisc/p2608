@@ -1,16 +1,18 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 
+import { WORDS_PROJECT } from '../constants';
+
 export type FinancialSummaryRow = {
   id: string; // just period
   period: string; // YYYY年MM月
   
   // Revenue
   revSales: number;
-  revOther: number;
   revTotal: number;
   
   // Expense
+  expMaterial: number;
   expLaborMember: number;
   expLaborOther: number;
   expOutsource: number;
@@ -48,8 +50,8 @@ export function useFinancialSummary(year: string) {
           id: periodKey,
           period: periodKey,
           revSales: 0,
-          revOther: 0,
           revTotal: 0,
+          expMaterial: 0,
           expLaborMember: 0,
           expLaborOther: 0,
           expOutsource: 0,
@@ -72,10 +74,10 @@ export function useFinancialSummary(year: string) {
         const subj = record.subject || '';
 
         // Reserves
-        if (subj.includes('工賃変動積立金')) {
+        if (subj === WORDS_PROJECT.SUBJECT_RESERVE_WAGE || subj.includes('工賃変動積立金')) {
           row.resWage += amt;
           row.resTotal += amt;
-        } else if (subj.includes('設備等修繕維持積立金')) {
+        } else if (subj === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || subj.includes('設備等修繕維持積立金')) {
           row.resEquipment += amt;
           row.resTotal += amt;
         } else if (subj.includes('積立金')) { // fallback for other reserves
@@ -84,20 +86,18 @@ export function useFinancialSummary(year: string) {
         } 
         // Revenues
         else if (record.type === 'revenue') {
-          if (subj.includes('売上')) {
-            row.revSales += amt;
-          } else {
-            row.revOther += amt;
-          }
+          row.revSales += amt;
           row.revTotal += amt;
         } 
         // Expenses
         else if (record.type === 'expense') {
-          if (subj.includes('労務費（利用者工賃）')) {
+          if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subj.includes('材料費')) {
+            row.expMaterial += amt;
+          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || subj.includes('労務費（利用者工賃）')) {
             row.expLaborMember += amt;
-          } else if (subj.includes('労務費（その他）')) {
+          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || subj.includes('労務費（その他）') || subj.includes('労務費（利用者工賃以外）')) {
             row.expLaborOther += amt;
-          } else if (subj.includes('外注加工費')) {
+          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || subj.includes('外注加工費')) {
             row.expOutsource += amt;
           } else if (subj.includes('労務費・外注加工費')) {
              // Fallback for old data

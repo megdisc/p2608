@@ -72,19 +72,21 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
         className="multi-select-input" 
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          minHeight: '32px',
-          padding: '4px',
+          minHeight: '24px',
+          padding: '2px 4px',
+          boxSizing: 'border-box',
           border: '1px solid var(--color-border)',
           borderRadius: '4px',
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '4px',
+          alignItems: 'center',
+          gap: '2px',
           cursor: 'pointer',
           background: 'var(--color-bg-main)'
         }}
       >
         {selectedOptions.length === 0 && (
-          <span style={{ color: 'var(--color-text-muted)', padding: '2px 4px', fontSize: 'var(--text-body)' }}>
+          <span style={{ color: 'var(--color-text-muted)', padding: '0 4px', fontSize: 'var(--text-body)', lineHeight: '20px' }}>
             {placeholder}
           </span>
         )}
@@ -95,9 +97,11 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
               background: 'var(--color-bg-subtle)',
               border: '1px solid var(--color-border)',
               borderRadius: '12px',
-              padding: '2px 8px',
+              padding: '0 6px',
+              height: '18px',
+              lineHeight: '18px',
               fontSize: 'var(--text-caption)',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '4px'
             }}

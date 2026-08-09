@@ -350,7 +350,10 @@ th.sticky-right {
 
 .inventory-table th,
 .inventory-table td {
-  padding: 10px var(--space-3);
+  height: 42px;
+  padding: 0 var(--space-3);
+  box-sizing: border-box;
+  vertical-align: middle;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -365,6 +368,10 @@ th.sticky-right {
   color: var(--color-text-main);
   border-top: 1px solid var(--color-border);
   text-align: left;
+}
+
+.inventory-table thead tr:not(:first-child) th {
+  border-top: none;
 }
 
 .inventory-table tbody tr {
@@ -430,6 +437,16 @@ th.sticky-right {
 
 .action-btn:hover {
   background-color: var(--color-bg-inverse-hover);
+}
+
+.inventory-table .action-btn {
+  height: 24px;
+  padding: 0 var(--space-2);
+  font-size: var(--text-caption);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Inline Input for DataTable */

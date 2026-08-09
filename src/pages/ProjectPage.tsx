@@ -40,7 +40,6 @@ export function ProjectPage() {
       mainRender: (_item, addSubRow) => (
         <Button 
           onClick={addSubRow}
-          style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
         >
           ＋ タスク追加
         </Button>
@@ -75,7 +74,6 @@ export function ProjectPage() {
          <Button 
            onClick={addSubSubRow} 
            disabled={subItem?.assigneeType === 'external'}
-           style={{ padding: '4px 8px', fontSize: 'var(--text-caption)' }}
          >
            ＋ スキル追加
          </Button>

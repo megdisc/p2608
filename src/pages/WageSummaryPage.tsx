@@ -95,22 +95,17 @@ export function WageSummaryPage() {
                       const isLast = index === maxRows - 1;
                       return (
                         <tr key={`${row.id}-item-${index}`}>
-                          {index === 0 && (
-                            <td 
-                              rowSpan={maxRows} 
-                              style={{ verticalAlign: 'top' }}
-                            >
-                              {row.name}
-                            </td>
-                          )}
-                          {!item.hideSubject && (
-                            <td 
-                              rowSpan={item.rowSpan}
-                              style={item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', verticalAlign: 'top' } : { verticalAlign: 'top' }}
-                            >
-                              {item.subject}
-                            </td>
-                          )}
+                          <td style={{ borderBottom: isLast ? undefined : 'none' }}>
+                            {index === 0 ? row.name : ''}
+                          </td>
+                          <td 
+                            style={{ 
+                              borderBottom: (wageItems[index + 1]?.hideSubject && wageItems[index + 1]?.subject === item.subject) ? 'none' : undefined,
+                              ...(item.isBold && !item.hideSubject ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' } : {})
+                            }}
+                          >
+                            {!item.hideSubject ? item.subject : ''}
+                          </td>
                           <td style={item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' } : undefined}>
                             {item.content}
                           </td>
@@ -127,9 +122,9 @@ export function WageSummaryPage() {
                             </>
                           ) : (
                             <>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td style={{ borderBottom: 'none' }}></td>
+                              <td style={{ borderBottom: 'none' }}></td>
+                              <td style={{ borderBottom: 'none' }}></td>
                             </>
                           )}
                           {isLast ? (

@@ -120,10 +120,10 @@ export function BudgetPlanningPage() {
                 if (maxRows === 0) {
                   rows.push(
                     <tr key={`${draft.project.id}-total`}>
-                      <td rowSpan={1} style={{ verticalAlign: 'top' }}>
+                      <td>
                         {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
                       </td>
-                      <td rowSpan={1} style={{ verticalAlign: 'top' }}>
+                      <td>
                         {draft.project.name}
                       </td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
@@ -160,16 +160,12 @@ export function BudgetPlanningPage() {
                     const res = draft.reserves[i];
                     rows.push(
                       <tr key={`${draft.project.id}-detail-${i}`}>
-                        {i === 0 && (
-                          <>
-                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
-                              {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
+                            <td style={{ borderBottom: 'none' }}>
+                              {i === 0 ? (draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')) : ''}
                             </td>
-                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
-                              {draft.project.name}
+                            <td style={{ borderBottom: 'none' }}>
+                              {i === 0 ? draft.project.name : ''}
                             </td>
-                          </>
-                        )}
                         <td>{rev?.subject || ''}</td>
                         <td className={rev ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
                           {rev ? (
@@ -206,6 +202,8 @@ export function BudgetPlanningPage() {
                   // Total
                   rows.push(
                     <tr key={`${draft.project.id}-total`}>
+                      <td></td>
+                      <td></td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         <strong>¥{sumRevenues.toLocaleString()}</strong>

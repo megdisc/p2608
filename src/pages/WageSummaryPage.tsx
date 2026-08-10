@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
 import { MESSAGES } from '../constants';
 
@@ -20,8 +20,6 @@ export function WageSummaryPage() {
     paginatedRows,
   } = useWageSummary();
   const { showAlert } = useAlert();
-  const [hoveredMemberId, setHoveredMemberId] = useState<string | null>(null);
-
   useEffect(() => {
     fetchWageSummary(currentMonth).catch(() => {
       showAlert(MESSAGES.FETCH_ERROR, 'error');
@@ -96,19 +94,11 @@ export function WageSummaryPage() {
                     {wageItems.map((item, index) => {
                       const isLast = index === maxRows - 1;
                       return (
-                        <tr 
-                          key={`${row.id}-item-${index}`}
-                          onMouseEnter={() => setHoveredMemberId(isLast ? row.id : null)}
-                          onMouseLeave={() => setHoveredMemberId(null)}
-                        >
+                        <tr key={`${row.id}-item-${index}`}>
                           {index === 0 && (
                             <td 
                               rowSpan={maxRows} 
-                              style={{ 
-                                verticalAlign: 'top',
-                                backgroundColor: hoveredMemberId === row.id ? 'var(--color-bg-subtle)' : undefined,
-                                transition: 'background-color 0.2s'
-                              }}
+                              style={{ verticalAlign: 'top' }}
                             >
                               {row.name}
                             </td>
@@ -116,22 +106,22 @@ export function WageSummaryPage() {
                           {!item.hideSubject && (
                             <td 
                               rowSpan={item.rowSpan}
-                              style={item.isBold ? { fontWeight: 'bold', verticalAlign: 'top' } : { verticalAlign: 'top' }}
+                              style={item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', verticalAlign: 'top' } : { verticalAlign: 'top' }}
                             >
                               {item.subject}
                             </td>
                           )}
-                          <td style={item.isBold ? { fontWeight: 'bold' } : undefined}>
+                          <td style={item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' } : undefined}>
                             {item.content}
                           </td>
-                          <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', ...(item.isBold ? { fontWeight: 'bold' } : {}) }}>
+                          <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', ...(item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' } : {}) }}>
                             {item.amount === null ? '-' : `¥${item.amount.toLocaleString()}`}
                           </td>
                           {isLast ? (
                             <>
-                              <td style={{ fontWeight: 'bold' }}>控除合計</td>
+                              <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>控除合計</td>
                               <td></td>
-                              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold' }}>
+                              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                                 {row.dedTotal === null ? '-' : `¥${row.dedTotal.toLocaleString()}`}
                               </td>
                             </>
@@ -143,7 +133,7 @@ export function WageSummaryPage() {
                             </>
                           )}
                           {isLast ? (
-                            <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                            <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', color: 'var(--color-primary)' }}>
                               ¥{row.payment.toLocaleString()}
                             </td>
                           ) : (

@@ -11,7 +11,6 @@ export function BudgetPlanningPage() {
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
-  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
   const { showAlert } = useAlert();
 
 
@@ -120,15 +119,11 @@ export function BudgetPlanningPage() {
 
                 if (maxRows === 0) {
                   rows.push(
-                    <tr
-                      key={`${draft.project.id}-total`}
-                      onMouseEnter={() => setHoveredProjectId(draft.project.id)}
-                      onMouseLeave={() => setHoveredProjectId(null)}
-                    >
-                      <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                    <tr key={`${draft.project.id}-total`}>
+                      <td rowSpan={1} style={{ verticalAlign: 'top' }}>
                         {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
                       </td>
-                      <td rowSpan={1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                      <td rowSpan={1} style={{ verticalAlign: 'top' }}>
                         {draft.project.name}
                       </td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
@@ -164,17 +159,13 @@ export function BudgetPlanningPage() {
                     const exp = draft.expenses[i];
                     const res = draft.reserves[i];
                     rows.push(
-                      <tr
-                        key={`${draft.project.id}-detail-${i}`}
-                        onMouseEnter={() => setHoveredProjectId(draft.project.id)}
-                        onMouseLeave={() => setHoveredProjectId(null)}
-                      >
+                      <tr key={`${draft.project.id}-detail-${i}`}>
                         {i === 0 && (
                           <>
-                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
                               {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
                             </td>
-                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top', backgroundColor: hoveredProjectId === draft.project.id ? 'var(--color-bg-subtle)' : undefined, transition: 'background-color 0.2s' }}>
+                            <td rowSpan={maxRows + 1} style={{ verticalAlign: 'top' }}>
                               {draft.project.name}
                             </td>
                           </>
@@ -214,11 +205,7 @@ export function BudgetPlanningPage() {
 
                   // Total
                   rows.push(
-                    <tr
-                      key={`${draft.project.id}-total`}
-                      onMouseEnter={() => setHoveredProjectId(draft.project.id)}
-                      onMouseLeave={() => setHoveredProjectId(null)}
-                    >
+                    <tr key={`${draft.project.id}-total`}>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         <strong>¥{sumRevenues.toLocaleString()}</strong>

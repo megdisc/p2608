@@ -22,6 +22,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
 
           <button 
+            className={`nav-button ${['dashboard'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            {PAGE_NAMES.SCREEN_DASHBOARD}
+          </button>
+          <button 
             className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('financialSummary')}
           >

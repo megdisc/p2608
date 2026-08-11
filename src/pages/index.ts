@@ -28,3 +28,4 @@ export * from './ScreenStaffPage';
 export * from './ScreenClientPage';
 export * from './ScreenSkillPage';
 export * from './ScreenWagePage';
+export * from './DashboardPage';

@@ -11,7 +11,8 @@ import {
   ScreenClientPage,
   ScreenSkillPage,
   ScreenWagePage,
-  LoginPage
+  LoginPage,
+  DashboardPage
 } from './pages';
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -23,14 +24,14 @@ function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const saved = sessionStorage.getItem('activeTab');
     if (saved) return saved as Tab;
-    return 'dailyWorkRecord';
+    return 'dashboard';
   });
 
   const prevAuth = useRef(isAuthenticated);
 
   useEffect(() => {
     if (!prevAuth.current && isAuthenticated) {
-      setActiveTab('dailyWorkRecord');
+      setActiveTab('dashboard');
     }
     prevAuth.current = isAuthenticated;
   }, [isAuthenticated]);
@@ -47,7 +48,9 @@ function AppContent() {
     <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
       <AlertProvider>
         <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'screenUser'].includes(activeTab) ? (
+          {['dashboard'].includes(activeTab) ? (
+            <DashboardPage />
+          ) : ['projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary', 'screenUser'].includes(activeTab) ? (
             <ScreenUserPage />
           ) : ['staff', 'screenStaff'].includes(activeTab) ? (
             <ScreenStaffPage />

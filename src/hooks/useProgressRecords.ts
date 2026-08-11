@@ -81,7 +81,7 @@ export function useProgressRecords() {
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
-          id, name, yomigana, project_type, start_date, end_date,
+          id, name, yomigana, project_type, client_id, start_date, end_date,
           project_tasks (
             id, name, yomigana, is_deleted, is_canceled, status, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
@@ -108,6 +108,7 @@ export function useProgressRecords() {
         name: p.name,
         yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
+        customerId: p.client_id,
         startDate: p.start_date,
         endDate: p.end_date,
         tasks: (p.project_tasks || [])

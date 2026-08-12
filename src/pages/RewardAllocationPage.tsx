@@ -252,8 +252,20 @@ export function RewardAllocationPage() {
         isAutoCalculated: false
       };
     });
-    
-    const expenses = [...nonLaborExpenses, ...laborExpenses];
+
+    const materialExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL);
+    const otherExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);
+    const restNonLabor = nonLaborExpenses.filter(e => e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);
+
+    const internalLabor = laborExpenses.filter(e => !e.subject.startsWith('外注加工費'));
+    const externalLabor = laborExpenses.filter(e => e.subject.startsWith('外注加工費'));
+
+    const expenses: any[] = [];
+    if (materialExpense) expenses.push(materialExpense);
+    expenses.push(...internalLabor);
+    expenses.push(...externalLabor);
+    if (otherExpense) expenses.push(otherExpense);
+    expenses.push(...restNonLabor);
 
     const reserves = (budgetDraft?.reserves || []).map(b => {
       const actual = projFin.find(f => f.type === 'reserve' && f.subject === b.subject);
@@ -263,9 +275,14 @@ export function RewardAllocationPage() {
       };
     });
 
+    const [yearStr, monthStr] = currentMonth.split('-');
+    const formattedProjectName = (isOngoing && yearStr && monthStr) 
+      ? `${firstRec.projectName}（${yearStr}年${monthStr}月分）`
+      : firstRec.projectName;
+
     return {
       id: pid,
-      name: firstRec.projectName,
+      name: formattedProjectName,
       yomigana: firstRec.projectYomigana,
       projectType: firstRec.projectType,
       projectTypeSortKey: firstRec.projectTypeSortKey,

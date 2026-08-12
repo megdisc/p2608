@@ -19,9 +19,16 @@ const getCategoryLabel = (pageName: string) => {
 };
 
 const getCategoryColor = (label: string) => {
-  if (label === AGGREGATION_LABEL) return '#fff9c4'; // Light yellow
-  if (label === RECORDING_LABEL) return '#e3f2fd'; // Light blue
-  if (label === SETTINGS_LABEL) return '#ffebee'; // Light red
+  if (label === AGGREGATION_LABEL) return 'var(--palette-yellow-300)';
+  if (label === RECORDING_LABEL) return 'var(--palette-bluegreen-300)';
+  if (label === SETTINGS_LABEL) return 'var(--palette-red-300)';
+  return 'transparent';
+};
+
+const getFrequencyColor = (freq: string) => {
+  if (freq === '毎日') return 'var(--palette-bluegreen-300)';
+  if (freq === '毎月') return 'var(--palette-yellow-300)';
+  if (freq === '随時') return 'var(--palette-red-300)';
   return 'transparent';
 };
 
@@ -75,6 +82,27 @@ export function ScreenCompositionPage() {
   
   const isTableComposition = navContext.activeTab === 'tableComposition';
   const isMainFeatures = navContext.activeTab === 'mainFeatures';
+  const isWorkflow = navContext.activeTab === 'workflow';
+
+  const workflows = [
+    { frequency: '随時', name: '施設情報登録', description: '自施設の基本情報を登録する。', implemented: false },
+    { frequency: '随時', name: '職員情報登録', description: '職員の基本情報を更新する。', implemented: true },
+    { frequency: '随時', name: '取引先情報登録', description: '取引先・顧客の基本情報を更新する。', implemented: true },
+    { frequency: '随時', name: 'スキル体系登録', description: '業務に必要なスキル体系を定義する。', implemented: true },
+    { frequency: '随時', name: '工賃体系登録', description: '基本工賃単価を定義する。', implemented: true },
+    { frequency: '随時', name: '利用者情報登録', description: '利用者の基本情報を更新する。', implemented: true },
+    { frequency: '随時', name: '利用者スキル評価', description: '利用者のスキルレベルを評価する。', implemented: true },
+    { frequency: '随時', name: '利用者工賃単価評価', description: '利用者の基本工賃単価を決定する。', implemented: true },
+    { frequency: '随時', name: '案件情報登録・予算編成・担当者割当', description: '案件の基本情報、予算計画、および担当者を割り当てる。', implemented: true },
+    { frequency: '毎日', name: '作業記録', description: '利用者の日々の作業時間を記録する。', implemented: true },
+    { frequency: '随時', name: '材料費／経費記録', description: '日々の材料費や経費などを記録する。', implemented: true },
+    { frequency: '毎月', name: '材料費／経費確定', description: '月間の材料費や経費を確定する。', implemented: false },
+    { frequency: '毎月', name: '収益確定', description: '月間の収益を確定する。', implemented: false },
+    { frequency: '毎月', name: '積立金確定', description: '月間の積立金を確定する。', implemented: false },
+    { frequency: '毎月', name: '外注加工費確定', description: '月間の外注加工費を確定する。', implemented: false },
+    { frequency: '毎月', name: '基本工賃額／控除額確定', description: '各利用者の基本工賃や控除を集計・確定する。', implemented: true },
+    { frequency: '毎月', name: 'インセンティブ額確定（報酬分配）', description: '進捗と貢献度に基づいてインセンティブ報酬を確定する。', implemented: true },
+  ];
 
   const dbTables = [
     { 
@@ -340,6 +368,31 @@ export function ScreenCompositionPage() {
       <div className="table-container">
         {isMainFeatures ? (
           <MainFeaturesPage />
+        ) : isWorkflow ? (
+          <table className="inventory-table">
+            <thead>
+              <tr>
+                <th style={{ width: '10%', textAlign: 'center' }}>実装</th>
+                <th style={{ width: '10%', textAlign: 'center' }}>頻度</th>
+                <th style={{ width: '30%' }}>名称</th>
+                <th style={{ width: '50%' }}>説明</th>
+              </tr>
+            </thead>
+            <tbody>
+              {workflows.map((wf, index) => (
+                <tr key={index}>
+                  <td style={{ textAlign: 'center', fontWeight: 'var(--weight-heading)', color: wf.implemented ? 'var(--color-success)' : 'inherit' }}>
+                    {wf.implemented ? '済' : ''}
+                  </td>
+                  <td style={{ backgroundColor: getFrequencyColor(wf.frequency), textAlign: 'center', color: 'var(--color-text-main)' }}>
+                    {wf.frequency}
+                  </td>
+                  <td style={{ fontWeight: 'var(--weight-heading)' }}>{wf.name}</td>
+                  <td style={{ whiteSpace: 'normal' }}>{wf.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : isTableComposition ? (
           <table className="inventory-table">
             <thead>
@@ -361,22 +414,22 @@ export function ScreenCompositionPage() {
                         <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>
                           <span style={{ 
                             display: 'inline-block', 
-                            padding: '2px 8px', 
-                            borderRadius: '4px', 
-                            fontSize: '0.85em',
-                            backgroundColor: table.tableType === 'マスタ' ? '#e3f2fd' : '#fff9c4',
-                            color: '#333'
+                            padding: 'var(--space-1) var(--space-2)', 
+                            borderRadius: 'var(--radius-sm)', 
+                            fontSize: 'var(--text-caption)',
+                            backgroundColor: table.tableType === 'マスタ' ? 'var(--palette-bluegreen-300)' : 'var(--palette-yellow-300)',
+                            color: 'var(--color-text-main)'
                           }}>
                             {table.tableType}
                           </span>
                         </td>
-                        <td rowSpan={table.columns.length} style={{ fontWeight: 'bold', verticalAlign: 'top' }}>{table.physicalName}</td>
+                        <td rowSpan={table.columns.length} style={{ fontWeight: 'var(--weight-heading)', verticalAlign: 'top' }}>{table.physicalName}</td>
                         <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.logicalName}</td>
                         <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.description}</td>
                       </>
                     )}
-                    <td style={{ verticalAlign: 'top', color: '#333' }}>{col.name}</td>
-                    <td style={{ verticalAlign: 'top', color: '#666' }}>{col.desc}</td>
+                    <td style={{ verticalAlign: 'top', color: 'var(--color-text-main)' }}>{col.name}</td>
+                    <td style={{ verticalAlign: 'top', color: 'var(--color-text-muted)' }}>{col.desc}</td>
                   </tr>
                 ))
               )}
@@ -400,21 +453,21 @@ export function ScreenCompositionPage() {
 
                 return (
                   <tr key={i}>
-                    <td style={{ verticalAlign: 'top', fontWeight: 'bold', backgroundColor: 'var(--surface-color)' }}>
+                    <td style={{ verticalAlign: 'top', fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
                       {row.screen}
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(SETTINGS_LABEL), color: '#333333' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(SETTINGS_LABEL), color: 'var(--color-text-main)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {settingsTabs.map(item => <div key={item}>{item}</div>)}
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(RECORDING_LABEL), color: '#333333' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(RECORDING_LABEL), color: 'var(--color-text-main)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {recordingTabs.map(item => <div key={item}>{item}</div>)}
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: '#333333' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: 'var(--color-text-main)' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {aggregationTabs.map(item => <div key={item}>{item}</div>)}
                       </div>
                     </td>

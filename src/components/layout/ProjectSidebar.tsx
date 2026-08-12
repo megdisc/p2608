@@ -70,7 +70,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_WAGE}
           </button>
           <button 
-            className={`nav-button ${['screenComposition', 'tableComposition'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenComposition', 'tableComposition', 'mainFeatures', 'workflow'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('screenComposition')}
           >
             システム構成（開発用）

@@ -1,157 +1,142 @@
-import { useState } from 'react';
-import { MultiRowHeader, type HeaderCell, Pagination, MonthDisplay } from '../components/ui';
-import { MESSAGES, WORDS_PROJECT } from '../constants';
-import { useProjectFinancialRecords } from '../hooks';
-import { useAlert } from '../contexts';
-import { useEffect } from 'react';
+import { DataPage, type Column } from '../components';
+import { useEffect, useMemo } from 'react';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
+import type { FinancialRecordItem } from '../types';
+import { useAlert, useAuth } from '../contexts';
+import { useFinancialRecords } from '../hooks';
+import { getCurrentJSTDateOnly, getCurrentJSTMonth } from '../utils';
 
 export function ProjectFinancialRecordPage() {
-  const { items, loading, fetchRecords } = useProjectFinancialRecords();
+  const { 
+    items, 
+    totalCount,
+    page,
+    setPage,
+    handleSortChange,
+    currentYear,
+    handleYearChange,
+    sortConfig,
+    projects, 
+    clients,
+    loading, 
+    fetchRecords, 
+    batchSaveRecords 
+  } = useFinancialRecords();
   const { showAlert } = useAlert();
-  
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectName', direction: 'asc' });
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 50;
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchRecords().catch(() => {
-      showAlert('収支記録の取得に失敗しました', 'error');
+      showAlert('材料費・経費記録の取得に失敗しました', 'error');
     });
   }, [fetchRecords, showAlert]);
 
-  const handleSort = (key: string) => {
-    setSortConfig(current => {
-      if (current && current.key === key) {
-        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' };
+  const filteredItems = useMemo(() => {
+    return items.filter(item => 
+      item.type === 'expense' && 
+      (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER)
+    );
+  }, [items]);
+
+  const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
+  const clientOptions = useMemo(() => [{ label: '-', value: '' }, ...clients.map(c => ({ label: c.name, value: c.id }))], [clients]);
+
+  const columns: Column<FinancialRecordItem>[] = [
+    { 
+      key: 'projectId', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
+      editable: true, 
+      inputType: 'select', 
+      options: projectOptions
+    },
+    { 
+      key: 'period', 
+      header: TABLE_COLUMNS.PERIOD,
+      editable: true,
+      inputType: 'month'
+    },
+    { 
+      key: 'type', 
+      header: TABLE_COLUMNS.TYPE, 
+      editable: false, 
+      render: () => WORDS_PROJECT.EXPENSE
+    },
+    {
+      key: 'subject',
+      header: TABLE_COLUMNS.SUBJECT,
+      editable: true,
+      inputType: 'radio',
+      options: [
+        { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
+        { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER }
+      ]
+    },
+    { 
+      key: 'clientId', 
+      header: TABLE_COLUMNS.CLIENT_NAME, 
+      editable: true, 
+      inputType: 'select', 
+      options: clientOptions,
+      render: (item) => {
+        return clientOptions.find(o => o.value === item.clientId)?.label || '-';
       }
-      return { key, direction: 'asc' };
-    });
+    },
+    { 
+      key: 'amount', 
+      header: TABLE_COLUMNS.AMOUNT, 
+      editable: true, 
+      inputType: 'currency' 
+    }
+  ];
+
+  const handleBatchSave = async (drafts: FinancialRecordItem[], _deletedIds: string[]) => {
+    try {
+      const sanitizedDrafts = drafts.map(d => ({
+        ...d,
+        type: 'expense' as const
+      }));
+      await batchSaveRecords(sanitizedDrafts);
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
+    } catch (err) {
+      console.error(err);
+      showAlert(MESSAGES.SAVE_ERROR, 'error');
+    }
   };
 
-  const sortedItems = [...items].sort((a, b) => {
-    if (!sortConfig) return 0;
-    if (sortConfig.key === 'projectName') {
-      const aVal = a.projectName || '';
-      const bVal = b.projectName || '';
-      if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
-    }
-    return 0;
+  const handleAddRow = (): FinancialRecordItem => ({
+    id: `draft-${Date.now()}`,
+    period: getCurrentJSTMonth(),
+    projectId: '',
+    clientId: '',
+    type: 'expense',
+    subject: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL,
+    amount: 0,
+    recordedDate: getCurrentJSTDateOnly(),
+    recordedBy: user?.id || '',
+    isLimited: false
   });
-
-  const totalPages = Math.ceil(sortedItems.length / pageSize);
-  const paginatedItems = sortedItems.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-  const headerRows: HeaderCell[][] = [
-    [
-      { label: '案件', rowSpan: 2, width: '200px', sortKey: 'projectName' },
-      { label: '対象時期', rowSpan: 2, width: '120px' },
-      { label: '収益', colSpan: 2 },
-      { label: '費用', colSpan: 2 },
-      { label: '積立金', colSpan: 2 },
-      { label: '余剰', rowSpan: 2, width: '120px' }
-    ],
-    [
-      { label: '科目' },
-      { label: '金額' },
-      { label: '科目' },
-      { label: '金額' },
-      { label: '科目' },
-      { label: '金額' }
-    ]
-  ];
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
-    <>
-      <div className="table-container">
-        <table className="inventory-table">
-          <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
-          {paginatedItems.length === 0 ? (
-            <tbody>
-              <tr>
-                <td colSpan={10} className="empty-message">案件データがありません</td>
-              </tr>
-            </tbody>
-          ) : (
-            paginatedItems.map(proj => {
-              // Group records by period
-              const periodMap: Record<string, { rev: number, exp: number, res: number }> = {};
-              
-              if (proj.records.length === 0) {
-                periodMap['-'] = { rev: 0, exp: 0, res: 0 };
-              } else {
-                proj.records.forEach(r => {
-                  const p = r.period || '-';
-                  if (!periodMap[p]) periodMap[p] = { rev: 0, exp: 0, res: 0 };
-                  if (r.type === 'revenue') periodMap[p].rev += r.amount;
-                  if (r.type === 'expense') periodMap[p].exp += r.amount;
-                  if (r.type === 'reserve') periodMap[p].res += r.amount;
-                });
-              }
-
-              const periods = Object.keys(periodMap).sort((a, b) => b.localeCompare(a)); // desc
-              
-              return (
-                <tbody key={proj.id} style={{ display: 'contents' }}>
-                  {periods.map((period, index) => {
-                    const data = periodMap[period];
-                    const surplus = data.rev - data.exp - data.res;
-                    return (
-                      <tr key={`${proj.id}-${period}`}>
-                        <td style={{ borderBottom: 'none' }}>
-                          {index === 0 ? proj.projectName : ''}
-                        </td>
-                        <td>{period !== '-' ? <MonthDisplay value={period} /> : '-'}</td>
-                        <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                          <strong>{WORDS_PROJECT.TOTAL}</strong>
-                        </td>
-                        <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                          ¥{data.rev.toLocaleString()}
-                        </td>
-                        <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                          <strong>{WORDS_PROJECT.TOTAL}</strong>
-                        </td>
-                        <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                          ¥{data.exp.toLocaleString()}
-                        </td>
-                        <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                          <strong>{WORDS_PROJECT.TOTAL}</strong>
-                        </td>
-                        <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                          ¥{data.res.toLocaleString()}
-                        </td>
-                        <td style={{ 
-                          textAlign: 'right', 
-                          fontWeight: 'bold', 
-                          WebkitTextStroke: '0.5px currentColor',
-                          fontVariantNumeric: 'tabular-nums',
-                          paddingRight: '8px'
-                        }}>
-                          <strong style={{ color: surplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
-                            ¥{surplus.toLocaleString()}
-                          </strong>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              );
-            })
-          )}
-        </table>
-      </div>
-
-      <div className="action-bar">
-        <div className="filter-controls"></div>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-        <div style={{ flex: 1 }}></div>
-      </div>
-    </>
+    <DataPage 
+      title={PAGE_NAMES.PROJECT_FINANCIAL_RECORD}
+      data={filteredItems}
+      columns={columns}
+      emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
+      onBatchSave={handleBatchSave}
+      onAddRow={handleAddRow}
+      showYearFilter={true}
+      singleYear={currentYear}
+      onSingleYearChange={handleYearChange}
+      initialSort={{ key: 'projectId', direction: 'asc' }}
+      sortConfig={sortConfig}
+      hideHeader={true}
+      serverSidePagination={true}
+      totalCount={totalCount}
+      currentPage={page}
+      onPageChange={setPage}
+      onSortChange={handleSortChange}
+    />
   );
 }

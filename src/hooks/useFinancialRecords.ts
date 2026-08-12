@@ -3,7 +3,9 @@ import { supabase } from '../lib';
 import type { FinancialRecordItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
 
-export function useFinancialRecords() {
+export function useFinancialRecords(
+  initialSort: { key: string, direction: 'asc' | 'desc' } = { key: 'period', direction: 'desc' }
+) {
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
   const [projects, setProjects] = useState<{id: string, name: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
@@ -14,7 +16,7 @@ export function useFinancialRecords() {
   const [page, setPage] = useState(1);
   const pageSize = 50;
   
-  const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc'|'desc'}>({ key: 'period', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<{key: string, direction: 'asc'|'desc'}>(initialSort);
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
 
   const fetchRecords = useCallback(async () => {

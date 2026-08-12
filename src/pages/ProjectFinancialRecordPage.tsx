@@ -21,7 +21,7 @@ export function ProjectFinancialRecordPage() {
     loading, 
     fetchRecords, 
     batchSaveRecords 
-  } = useFinancialRecords();
+  } = useFinancialRecords({ key: 'projectId', direction: 'asc' });
   const { showAlert } = useAlert();
   const { user } = useAuth();
 
@@ -37,6 +37,18 @@ export function ProjectFinancialRecordPage() {
       (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER)
     );
   }, [items]);
+
+  const sortedItems = useMemo(() => {
+    return [...filteredItems].sort((a, b) => {
+      if (sortConfig.key === 'projectId') {
+        const projA = projects.find(p => p.id === a.projectId)?.name || '';
+        const projB = projects.find(p => p.id === b.projectId)?.name || '';
+        if (projA < projB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (projA > projB) return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [filteredItems, projects, sortConfig]);
 
   const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
   const clientOptions = useMemo(() => [{ label: '-', value: '' }, ...clients.map(c => ({ label: c.name, value: c.id }))], [clients]);
@@ -121,7 +133,7 @@ export function ProjectFinancialRecordPage() {
   return (
     <DataPage 
       title={PAGE_NAMES.PROJECT_FINANCIAL_RECORD}
-      data={filteredItems}
+      data={sortedItems}
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
       onBatchSave={handleBatchSave}

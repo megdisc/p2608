@@ -35,7 +35,7 @@ export const WORDS_SYSTEM = {
   SKILL_EVALUATION: 'スキル評価',
   BASE_WAGE_ASSIGNMENT: '工賃単価評価',
   PROGRESS_STATUS: '進捗状況',
-  REWARD_ALLOCATION: '収支精算',
+  REWARD_ALLOCATION: '月次精算',
   FINANCIAL_SUMMARY: '収支集計',
   WAGE_SUMMARY: '工賃・控除明細',
   SYSTEM_COMPOSITION: 'システム構成',

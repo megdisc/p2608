@@ -280,17 +280,25 @@ export function RewardAllocationPage() {
       ? `${firstRec.projectName}（${yearStr}年${monthStr}月分）`
       : firstRec.projectName;
 
+    const projectTasks = projRecords.filter(r => r.isFirstInTask);
+    const isFinished = firstRec?.projectStatus === 'completed' || 
+      firstRec?.projectStatus === 'finished' || 
+      firstRec?.projectStatus === WORDS_PROJECT.STATUS_FINISHED ||
+      (projectTasks.length > 0 && projectTasks.every(t => t.taskStatus === 'completed' || t.taskStatus === 'canceled'));
+
     return {
       id: pid,
       name: formattedProjectName,
       yomigana: firstRec.projectYomigana,
       projectType: firstRec.projectType,
       projectTypeSortKey: firstRec.projectTypeSortKey,
+      isOngoing,
+      isFinished,
       revenues,
       expenses,
       reserves
     };
-  });
+  }).filter(proj => proj.isOngoing || proj.isFinished);
 
   displayProjects.sort((a, b) => {
     if (!sortConfig) return 0;

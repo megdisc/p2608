@@ -101,7 +101,7 @@ export function ScreenCompositionPage() {
     { frequency: '毎月', name: '積立金確定', description: '月間の積立金を確定する。', implemented: false },
     { frequency: '毎月', name: '外注加工費確定', description: '月間の外注加工費を確定する。', implemented: false },
     { frequency: '毎月', name: '基本工賃額／控除額確定', description: '各利用者の基本工賃や控除を集計・確定する。', implemented: true },
-    { frequency: '毎月', name: 'インセンティブ額確定（報酬分配）', description: '進捗と貢献度に基づいてインセンティブ報酬を確定する。', implemented: true },
+    { frequency: '毎月', name: 'インセンティブ額確定（収支精算）', description: '進捗と貢献度に基づいてインセンティブ報酬を確定する。', implemented: true },
   ];
 
   const dbTables = [

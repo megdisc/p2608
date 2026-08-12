@@ -121,7 +121,7 @@ export function BudgetPlanningPage() {
                   rows.push(
                     <tr key={`${draft.project.id}-total`}>
                       <td>
-                        {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')}
+                        {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
                       </td>
                       <td>
                         {draft.project.name}
@@ -161,7 +161,7 @@ export function BudgetPlanningPage() {
                     rows.push(
                       <tr key={`${draft.project.id}-detail-${i}`}>
                             <td style={{ borderBottom: 'none' }}>
-                              {i === 0 ? (draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? '継続' : '単発')) : ''}
+                              {i === 0 ? (draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
                             </td>
                             <td style={{ borderBottom: 'none' }}>
                               {i === 0 ? draft.project.name : ''}

@@ -13,18 +13,30 @@ export type MonthlyFinancialRecord = {
 
 export function useMonthlyFinancials() {
   const [financials, setFinancials] = useState<MonthlyFinancialRecord[]>([]);
+  const [allExpenseRecords, setAllExpenseRecords] = useState<MonthlyFinancialRecord[]>([]);
   const [loadingFinancials, setLoadingFinancials] = useState(false);
 
   const fetchFinancials = useCallback(async (monthStr: string) => {
     try {
       setLoadingFinancials(true);
-      const { data, error } = await supabase
-        .from('financial_records')
-        .select('*')
-        .eq('period', monthStr);
+      const [recRes, allExpRes] = await Promise.all([
+        supabase
+          .from('financial_records')
+          .select('*')
+          .gte('period', `${monthStr}-01`)
+          .lte('period', `${monthStr}-31`),
+        supabase
+          .from('financial_records')
+          .select('*')
+          .eq('type', 'expense')
+          .in('subject', ['材料費', '経費'])
+      ]);
       
-      if (error) throw error;
-      setFinancials(data || []);
+      if (recRes.error) throw recRes.error;
+      if (allExpRes.error) throw allExpRes.error;
+
+      setFinancials(recRes.data || []);
+      setAllExpenseRecords(allExpRes.data || []);
     } catch (err) {
       console.error('Error fetching monthly financials:', err);
       throw err;
@@ -63,6 +75,7 @@ export function useMonthlyFinancials() {
 
   return {
     financials,
+    allExpenseRecords,
     loadingFinancials,
     fetchFinancials,
     saveFinancials

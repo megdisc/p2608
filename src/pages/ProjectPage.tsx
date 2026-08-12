@@ -116,7 +116,7 @@ export function ProjectPage() {
       id: generateId(),
       name: '',
       yomigana: '',
-      projectType: 'one-off',
+      projectType: 'ongoing',
       customerId: '',
       startDate: new Date().toISOString().substring(0, 7),
       endDate: '',

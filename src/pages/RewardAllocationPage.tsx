@@ -27,6 +27,7 @@ export function RewardAllocationPage() {
 
   const {
     financials,
+    allExpenseRecords,
     loadingFinancials,
     fetchFinancials,
     saveFinancials
@@ -90,13 +91,19 @@ export function RewardAllocationPage() {
     setAllocationDrafts(prev => ({ ...prev, [id]: Number(value) || 0 }));
   };
 
+  const isAutoCalculatedSubject = (subject: string) => {
+    return subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER;
+  };
+
   const isModified = useMemo(() => {
     for (const f of financialDrafts) {
+      if (isAutoCalculatedSubject(f.subject)) continue;
       const orig = financials.find(o => o.id === f.id);
       if (!orig && f.amount !== 0) return true;
       if (orig && orig.amount !== f.amount) return true;
     }
     for (const f of financials) {
+      if (isAutoCalculatedSubject(f.subject)) continue;
       if (!financialDrafts.find(d => d.id === f.id)) return true;
     }
     for (const r of progressRecords) {
@@ -109,7 +116,10 @@ export function RewardAllocationPage() {
 
   const handleBatchSave = async () => {
     try {
-      const upsertFin = financialDrafts.filter(f => !f.id.startsWith('TEMP') || f.amount > 0);
+      const upsertFin = financialDrafts.filter(f => 
+        !isAutoCalculatedSubject(f.subject) &&
+        (!f.id.startsWith('TEMP') || f.amount > 0)
+      );
       await saveFinancials(upsertFin, []);
       
       const modifiedProgressRecords = progressRecords.map(r => ({
@@ -170,6 +180,7 @@ export function RewardAllocationPage() {
     const budgetDraft = budgetDrafts.find(b => b.project.id === pid);
     const projDbInfo = dbProjects.find(p => p.id === pid);
     const clientName = dbClients.find(c => c.id === projDbInfo?.customerId)?.name || '';
+    const isOngoing = projDbInfo?.projectType === 'ongoing';
     
     const revenues = (budgetDraft?.revenues || []).map(b => {
       const actual = projFin.find(f => f.type === 'revenue' && f.subject === b.subject);
@@ -183,15 +194,53 @@ export function RewardAllocationPage() {
     const nonLaborExpenses = (budgetDraft?.expenses || [])
       .filter(b => !b.taskId)
       .map(b => {
-        const actual = projFin.find(f => f.type === 'expense' && f.subject === b.subject);
+        const isAuto = isAutoCalculatedSubject(b.subject);
+        let amount = 0;
+        if (isAuto) {
+          const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === b.subject);
+          if (isOngoing) {
+            amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+          } else {
+            amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+          }
+        } else {
+          const actual = projFin.find(f => f.type === 'expense' && f.subject === b.subject);
+          amount = actual?.amount || 0;
+        }
+
         return {
           id: b.subject,
           subject: b.subject,
           payee: '',
-          amount: actual?.amount || 0,
-          type: 'non-labor'
+          amount,
+          type: 'non-labor',
+          isAutoCalculated: isAuto
         };
       });
+
+    // Ensure material & expense subjects are included if recorded in financial_records
+    const existingSubjects = new Set(nonLaborExpenses.map(e => e.subject));
+    [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].forEach(subj => {
+      if (!existingSubjects.has(subj)) {
+        const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
+        let amount = 0;
+        if (isOngoing) {
+          amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        } else {
+          amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        }
+        if (amount > 0) {
+          nonLaborExpenses.push({
+            id: subj,
+            subject: subj,
+            payee: '',
+            amount,
+            type: 'non-labor',
+            isAutoCalculated: true
+          });
+        }
+      }
+    });
 
     const laborExpenses = projRecords.filter(r => r.userId).map(r => {
       return {
@@ -199,7 +248,8 @@ export function RewardAllocationPage() {
         subject: r.assigneeType === '外注先' ? `外注加工費（${r.taskName}）` : `労務費（${r.taskName}）`,
         payee: r.userName,
         amount: allocationDrafts[r.id] || 0,
-        type: 'labor'
+        type: 'labor',
+        isAutoCalculated: false
       };
     });
     
@@ -260,7 +310,7 @@ export function RewardAllocationPage() {
                 rows.push(
                   <tr key={`${proj.id}-total`}>
                     <td style={{ borderBottom: 'none' }}>
-                      {proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? '継続' : '単発')}
+                      {proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
                     </td>
                     <td style={{ borderBottom: 'none' }}>
                       {proj.name}
@@ -296,7 +346,7 @@ export function RewardAllocationPage() {
                   rows.push(
                     <tr key={`proj-${proj.id}-${i}`}>
                       <td style={{ borderBottom: 'none' }}>
-                        {i === 0 ? (proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? '継続' : '単発')) : ''}
+                        {i === 0 ? (proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
                       </td>
                       <td style={{ borderBottom: 'none' }}>
                         {i === 0 ? proj.name : ''}
@@ -312,10 +362,14 @@ export function RewardAllocationPage() {
                       {/* Expense */}
                       <td>{exp?.subject || ''}</td>
                       <td>{exp?.payee || ''}</td>
-                      <td className={exp ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                      <td className={exp ? (exp.isAutoCalculated ? undefined : (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
                         {exp ? (
                           exp.type === 'labor' ? (
                             <CurrencyInput value={exp.amount} onChange={val => handleAllocationChange(exp.id, val)} />
+                          ) : exp.isAutoCalculated ? (
+                            <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
+                              ¥{exp.amount.toLocaleString()}
+                            </span>
                           ) : (
                             <CurrencyInput value={exp.amount} onChange={val => handleFinChange(proj.id, 'expense', exp.subject, val)} />
                           )

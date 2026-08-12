@@ -42,7 +42,7 @@ export function ProgressRecordPage() {
         const project = dbProjects.find(p => p.id === item.projectId);
         if (!project) return '';
         if (project.projectType === 'その他') return 'その他';
-        return project.projectType === 'ongoing' ? '継続' : '単発';
+        return project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
       },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'

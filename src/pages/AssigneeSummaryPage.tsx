@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts/AlertContext';
 import { formatJST } from '../utils';
 import { useAssigneeSummary, type SummaryRow } from '../hooks';
@@ -36,7 +36,7 @@ export function AssigneeSummaryPage() {
       render: (item) => {
         if (!item.isFirstInProject) return '';
         if (item.projectType === 'その他') return 'その他';
-        return item.projectType === 'ongoing' ? '継続' : '単発';
+        return item.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
       },
       style: (item) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'

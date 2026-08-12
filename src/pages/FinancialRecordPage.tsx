@@ -41,7 +41,7 @@ export function FinancialRecordPage() {
       key: 'period', 
       header: TABLE_COLUMNS.PERIOD,
       editable: true,
-      inputType: 'month'
+      inputType: 'date'
     },
     { 
       key: 'type', 
@@ -143,6 +143,12 @@ export function FinancialRecordPage() {
       header: TABLE_COLUMNS.AMOUNT, 
       editable: true, 
       inputType: 'currency' 
+    },
+    {
+      key: 'remarks',
+      header: TABLE_COLUMNS.REMARKS,
+      editable: true,
+      inputType: 'text'
     },
     { 
       key: 'recordedDate', 

@@ -23,7 +23,7 @@ export function useFinancialRecords(
     try {
       setLoading(true);
       let query = supabase.from('financial_records').select(`
-          id, period, type, subject, amount, recorded_date, is_limited,
+          id, period, type, subject, amount, remarks, recorded_date, is_limited,
           project:projects(id, name),
           staff:staffs(id, name),
           client:clients(id, name)
@@ -38,7 +38,7 @@ export function useFinancialRecords(
       else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
       else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
-      else if (['period', 'type', 'subject', 'amount', 'is_limited'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
+      else if (['period', 'type', 'subject', 'amount', 'remarks', 'is_limited'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
 
       query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
       if (dbSortKey !== 'recorded_date') {
@@ -68,12 +68,13 @@ export function useFinancialRecords(
       if (recData) {
         const mapped: FinancialRecordItem[] = recData.map((r: any) => ({
           id: r.id,
-          period: r.period ? r.period.substring(0, 7) : '',
+          period: r.period || '',
           projectId: r.project?.id || '',
           clientId: r.client?.id || '',
           type: r.type,
           subject: r.subject,
           amount: r.amount,
+          remarks: r.remarks || '',
           recordedDate: r.recorded_date,
           recordedBy: r.staff?.id || '',
           isLimited: r.is_limited
@@ -98,12 +99,13 @@ export function useFinancialRecords(
     // Process new and updated records
     const upserts = drafts.map(d => ({
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-      period: d.period ? (d.period.length === 7 ? `${d.period}-01` : d.period) : today,
+      period: d.period || today,
       project_id: d.projectId || null,
       client_id: d.clientId || null,
       type: d.type || 'revenue',
       subject: d.subject || '',
       amount: d.amount || 0,
+      remarks: d.remarks || null,
       recorded_date: d.recordedDate || today,
       recorded_by: d.recordedBy || null,
       is_limited: d.isLimited || false

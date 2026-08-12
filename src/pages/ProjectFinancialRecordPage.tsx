@@ -4,7 +4,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants
 import type { FinancialRecordItem } from '../types';
 import { useAlert, useAuth } from '../contexts';
 import { useFinancialRecords } from '../hooks';
-import { getCurrentJSTDateOnly, getCurrentJSTMonth } from '../utils';
+import { getCurrentJSTDateOnly } from '../utils';
 
 export function ProjectFinancialRecordPage() {
   const { 
@@ -17,11 +17,10 @@ export function ProjectFinancialRecordPage() {
     handleYearChange,
     sortConfig,
     projects, 
-    clients,
     loading, 
     fetchRecords, 
     batchSaveRecords 
-  } = useFinancialRecords({ key: 'projectId', direction: 'asc' });
+  } = useFinancialRecords({ key: 'period', direction: 'desc' });
   const { showAlert } = useAlert();
   const { user } = useAuth();
 
@@ -40,6 +39,12 @@ export function ProjectFinancialRecordPage() {
 
   const sortedItems = useMemo(() => {
     return [...filteredItems].sort((a, b) => {
+      if (sortConfig.key === 'period') {
+        const pA = a.period || '';
+        const pB = b.period || '';
+        if (pA < pB) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (pA > pB) return sortConfig.direction === 'asc' ? 1 : -1;
+      }
       if (sortConfig.key === 'projectId') {
         const projA = projects.find(p => p.id === a.projectId)?.name || '';
         const projB = projects.find(p => p.id === b.projectId)?.name || '';
@@ -51,21 +56,20 @@ export function ProjectFinancialRecordPage() {
   }, [filteredItems, projects, sortConfig]);
 
   const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
-  const clientOptions = useMemo(() => [{ label: '-', value: '' }, ...clients.map(c => ({ label: c.name, value: c.id }))], [clients]);
 
   const columns: Column<FinancialRecordItem>[] = [
+    { 
+      key: 'period', 
+      header: TABLE_COLUMNS.PERIOD,
+      editable: true,
+      inputType: 'date'
+    },
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
       editable: true, 
       inputType: 'select', 
       options: projectOptions
-    },
-    { 
-      key: 'period', 
-      header: TABLE_COLUMNS.PERIOD,
-      editable: true,
-      inputType: 'month'
     },
     { 
       key: 'type', 
@@ -84,20 +88,16 @@ export function ProjectFinancialRecordPage() {
       ]
     },
     { 
-      key: 'clientId', 
-      header: TABLE_COLUMNS.CLIENT_NAME, 
-      editable: true, 
-      inputType: 'select', 
-      options: clientOptions,
-      render: (item) => {
-        return clientOptions.find(o => o.value === item.clientId)?.label || '-';
-      }
-    },
-    { 
       key: 'amount', 
       header: TABLE_COLUMNS.AMOUNT, 
       editable: true, 
       inputType: 'currency' 
+    },
+    {
+      key: 'remarks',
+      header: TABLE_COLUMNS.REMARKS,
+      editable: true,
+      inputType: 'text'
     }
   ];
 
@@ -117,12 +117,13 @@ export function ProjectFinancialRecordPage() {
 
   const handleAddRow = (): FinancialRecordItem => ({
     id: `draft-${Date.now()}`,
-    period: getCurrentJSTMonth(),
+    period: getCurrentJSTDateOnly(),
     projectId: '',
     clientId: '',
     type: 'expense',
     subject: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL,
     amount: 0,
+    remarks: '',
     recordedDate: getCurrentJSTDateOnly(),
     recordedBy: user?.id || '',
     isLimited: false
@@ -141,7 +142,7 @@ export function ProjectFinancialRecordPage() {
       showYearFilter={true}
       singleYear={currentYear}
       onSingleYearChange={handleYearChange}
-      initialSort={{ key: 'projectId', direction: 'asc' }}
+      initialSort={{ key: 'period', direction: 'desc' }}
       sortConfig={sortConfig}
       hideHeader={true}
       serverSidePagination={true}

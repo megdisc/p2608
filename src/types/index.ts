@@ -89,6 +89,7 @@ export type FinancialRecordItem = {
   type: 'revenue' | 'expense' | 'reserve';
   subject: string;
   amount: number;
+  remarks?: string;
   recordedDate: string;
   recordedBy: string;
   isLimited: boolean;

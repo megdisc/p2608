@@ -359,6 +359,11 @@ export function RewardAllocationPage() {
                   const rev = proj.revenues[i];
                   const exp = proj.expenses[i];
                   const res = proj.reserves[i];
+
+                  const prevExp = i > 0 ? proj.expenses[i - 1] : null;
+                  const nextExp = i < proj.expenses.length - 1 ? proj.expenses[i + 1] : null;
+                  const isFirstInSubjectGroup = exp && (!prevExp || prevExp.subject !== exp.subject);
+                  const isLastInSubjectGroup = exp && (!nextExp || nextExp.subject !== exp.subject);
   
                   rows.push(
                     <tr key={`proj-${proj.id}-${i}`}>
@@ -377,7 +382,9 @@ export function RewardAllocationPage() {
                       </td>
   
                       {/* Expense */}
-                      <td>{exp?.subject || ''}</td>
+                      <td style={{ borderBottom: (exp && !isLastInSubjectGroup) ? 'none' : undefined }}>
+                        {isFirstInSubjectGroup ? exp.subject : ''}
+                      </td>
                       <td>{exp?.payee || ''}</td>
                       <td className={exp ? (exp.isAutoCalculated ? undefined : (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
                         {exp ? (

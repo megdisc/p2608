@@ -12,9 +12,9 @@ type AllocationRow = {
   projectType: string;
   projectTypeSortKey: string;
   projectName: string;
-  projectYomigana: string;
+  projectCode: string;
   task: string;
-  taskYomigana: string;
+  taskCode: string;
   memberIds: string[];
   clientIds: string[];
   assigneeType: string;
@@ -45,9 +45,9 @@ export function AssigneeAllocationPage() {
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, name, yomigana, project_type, client_id, start_date, end_date,
+          id, code, name, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted, assignee_type,
+            id, code, name, is_deleted, assignee_type,
             project_task_assignees ( member_id, client_id, staff_id ),
             project_task_skills ( skill_id, skill_levels ( level_value ) )
           )
@@ -89,9 +89,9 @@ export function AssigneeAllocationPage() {
               projectType: p.project_type || 'one-off',
               projectTypeSortKey,
               projectName: p.name,
-              projectYomigana: p.yomigana || '',
+              projectCode: p.code || '',
               task: pt.name,
-              taskYomigana: pt.yomigana || '',
+              taskCode: pt.code || '',
               assigneeType: pt.assignee_type || 'internal',
               memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
               clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
@@ -167,8 +167,8 @@ export function AssigneeAllocationPage() {
         aVal = a.projectTypeSortKey;
         bVal = b.projectTypeSortKey;
       } else if (sortConfig.key === 'name') {
-        aVal = a.projectYomigana;
-        bVal = b.projectYomigana;
+        aVal = a.projectCode;
+        bVal = b.projectCode;
       }
       if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -178,10 +178,10 @@ export function AssigneeAllocationPage() {
     const keyA = a.projectTypeSortKey;
     const keyB = b.projectTypeSortKey;
     if (keyA !== keyB) return keyA.localeCompare(keyB);
-    const projA = a.projectYomigana;
-    const projB = b.projectYomigana;
+    const projA = a.projectCode;
+    const projB = b.projectCode;
     if (projA !== projB) return projA.localeCompare(projB);
-    return a.taskYomigana.localeCompare(b.taskYomigana);
+    return a.taskCode.localeCompare(b.taskCode);
   });
 
   // Re-apply grouping flags dynamically
@@ -225,18 +225,20 @@ export function AssigneeAllocationPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th rowSpan={1} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+              <th rowSpan={1} style={{ width: '100px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_TYPE}
                   <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
+              <th rowSpan={1} style={{ width: '100px' }}>{TABLE_COLUMNS.PROJECT_ID}</th>
               <th rowSpan={1} style={{ width: '200px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_NAME}
                   <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
+              <th rowSpan={1} style={{ width: '100px' }}>{TABLE_COLUMNS.TASK_ID}</th>
               <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
               <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
               <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
@@ -245,7 +247,7 @@ export function AssigneeAllocationPage() {
           <tbody>
             {paginatedDrafts.length === 0 ? (
               <tr>
-                <td colSpan={6} className="empty-message">案件データがありません</td>
+                <td colSpan={7} className="empty-message">案件データがありません</td>
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
@@ -254,7 +256,13 @@ export function AssigneeAllocationPage() {
                     {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
+                    {item.isFirstInProject ? item.projectCode : ''}
+                  </td>
+                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectName : ''}
+                  </td>
+                  <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
+                    {item.isFirstInTask ? item.taskCode : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}

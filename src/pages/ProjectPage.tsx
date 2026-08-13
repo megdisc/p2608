@@ -17,8 +17,8 @@ export function ProjectPage() {
 
   const columns: Column<ProjectItem>[] = [
     { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
-    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text', rowType: 'main' },
-    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text', rowType: 'main' },
+    { key: 'code', header: TABLE_COLUMNS.PROJECT_ID, editable: false, inputType: 'text', rowType: 'main' },
+    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
     { 
       key: 'customerId', 
       header: TABLE_COLUMNS.CUSTOMER, 
@@ -31,11 +31,11 @@ export function ProjectPage() {
     { key: 'startDate', header: '開始時期', editable: true, inputType: 'month', rowType: 'main' },
     { key: 'endDate', header: '終了時期', editable: true, inputType: 'month', rowType: 'main' },
     { 
-      key: 'task', 
-      header: TABLE_COLUMNS.TASK, 
-      editable: true, 
+      key: 'code', 
+      header: TABLE_COLUMNS.TASK_ID, 
+      editable: false, 
       inputType: 'text', 
-      rowType: 'sub',
+      rowType: 'sub', 
       sortable: false,
       mainRender: (_item, addSubRow) => (
         <Button 
@@ -46,8 +46,8 @@ export function ProjectPage() {
       )
     },
     { 
-      key: 'taskYomigana', 
-      header: TABLE_COLUMNS.YOMIGANA, 
+      key: 'task', 
+      header: TABLE_COLUMNS.TASK, 
       editable: true, 
       inputType: 'text', 
       rowType: 'sub',
@@ -111,11 +111,45 @@ export function ProjectPage() {
         });
   };
 
+  const generateNextProjectCode = (existingItems: ProjectItem[]) => {
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const monthChar = String.fromCharCode(65 + now.getMonth());
+    const prefix = `P-${yy}${monthChar}`;
+
+    let maxSeq = 0;
+    existingItems.forEach(item => {
+      if (item.code && item.code.startsWith(prefix)) {
+        const seqNum = parseInt(item.code.slice(prefix.length), 10);
+        if (!isNaN(seqNum) && seqNum > maxSeq) maxSeq = seqNum;
+      }
+    });
+    return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
+  };
+
+  const generateNextTaskCode = (existingItems: ProjectItem[]) => {
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const monthChar = String.fromCharCode(65 + now.getMonth());
+    const prefix = `T-${yy}${monthChar}`;
+
+    let maxSeq = 0;
+    existingItems.forEach(p => {
+      (p.tasks || []).forEach(t => {
+        if (t.code && t.code.startsWith(prefix)) {
+          const seqNum = parseInt(t.code.slice(prefix.length), 10);
+          if (!isNaN(seqNum) && seqNum > maxSeq) maxSeq = seqNum;
+        }
+      });
+    });
+    return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
+  };
+
   const handleAdd = () => {
     return {
       id: generateId(),
+      code: generateNextProjectCode(items),
       name: '',
-      yomigana: '',
       projectType: 'ongoing',
       customerId: '',
       startDate: new Date().toISOString().substring(0, 7),
@@ -127,6 +161,7 @@ export function ProjectPage() {
   const handleAddSubRow = (_parentId: string) => {
     return {
       id: generateId(),
+      code: generateNextTaskCode(items),
       task: '',
       assigneeType: OPTIONS.ASSIGNEE_TYPE_OPTIONS[0].value,
       requiredSkills: [],

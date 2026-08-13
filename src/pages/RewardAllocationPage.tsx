@@ -289,7 +289,7 @@ export function RewardAllocationPage() {
     return {
       id: pid,
       name: formattedProjectName,
-      yomigana: firstRec.projectYomigana,
+      code: firstRec.projectCode,
       projectType: firstRec.projectType,
       projectTypeSortKey: firstRec.projectTypeSortKey,
       isOngoing,
@@ -306,7 +306,7 @@ export function RewardAllocationPage() {
     if (sortConfig.key === 'projectType') {
       aVal = a.projectTypeSortKey; bVal = b.projectTypeSortKey;
     } else if (sortConfig.key === 'projectName') {
-      aVal = a.yomigana || a.name; bVal = b.yomigana || b.name;
+      aVal = a.code || a.name; bVal = b.code || b.name;
     }
     if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;

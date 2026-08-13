@@ -29,6 +29,7 @@ export type TaskSkill = {
 
 export type ProjectTask = {
   id: string;
+  code?: string;
   task: string;
   taskYomigana?: string;
   requiredSkills: TaskSkill[];
@@ -42,8 +43,9 @@ export type ProjectTask = {
 
 export type ProjectItem = {
   id: string;
+  code?: string;
   name: string;
-  yomigana: string;
+  yomigana?: string;
   projectType: 'one-off' | 'ongoing' | 'その他';
   projectTypeSortKey?: string;
   customerId?: string;

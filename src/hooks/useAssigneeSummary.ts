@@ -12,10 +12,11 @@ export type SummaryRow = {
   assigneeYomigana: string;
   projectId: string;
   projectName: string;
-  projectYomigana: string;
+  projectCode: string;
   projectType: string;
   projectTypeSortKey: string;
   taskName: string;
+  taskCode?: string;
   taskStatus: string;
   isFirstInAssignee: boolean;
   isFirstInProject: boolean;
@@ -37,9 +38,9 @@ export function useAssigneeSummary() {
         progressRes
       ] = await Promise.all([
         supabase.from('projects').select(`
-          id, name, yomigana, project_type,
+          id, code, name, project_type,
           project_tasks (
-            id, name, yomigana, is_deleted, status,
+            id, code, name, is_deleted, status,
             project_task_assignees (
               id, member_id, client_id, staff_id
             )
@@ -98,12 +99,12 @@ export function useAssigneeSummary() {
                 assigneeYomigana,
                 projectId: p.id,
                 projectName: p.name,
-                projectYomigana: p.yomigana || '',
+                projectCode: p.code || '',
                 projectType: p.project_type || 'one-off',
                 projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
                 taskId: t.id,
                 taskName: t.name,
-                taskYomigana: t.yomigana || '',
+                taskCode: t.code || '',
                 taskStatus,
               });
             }
@@ -115,8 +116,8 @@ export function useAssigneeSummary() {
         if (a.assigneeTypeSortKey !== b.assigneeTypeSortKey) return a.assigneeTypeSortKey - b.assigneeTypeSortKey;
         if (a.assigneeYomigana !== b.assigneeYomigana) return a.assigneeYomigana.localeCompare(b.assigneeYomigana);
         if (a.projectTypeSortKey !== b.projectTypeSortKey) return a.projectTypeSortKey.localeCompare(b.projectTypeSortKey);
-        if (a.projectYomigana !== b.projectYomigana) return a.projectYomigana.localeCompare(b.projectYomigana);
-        return a.taskYomigana.localeCompare(b.taskYomigana);
+        if (a.projectCode !== b.projectCode) return a.projectCode.localeCompare(b.projectCode);
+        return (a.taskCode || '').localeCompare(b.taskCode || '');
       });
 
       const flatRows: SummaryRow[] = [];
@@ -149,10 +150,11 @@ export function useAssigneeSummary() {
           assigneeYomigana: r.assigneeYomigana,
           projectId: r.projectId,
           projectName: r.projectName,
-          projectYomigana: r.projectYomigana,
+          projectCode: r.projectCode,
           projectType: r.projectType,
           projectTypeSortKey: r.projectTypeSortKey,
           taskName: r.taskName,
+          taskCode: r.taskCode,
           taskStatus: r.taskStatus,
           isFirstInAssignee,
           isFirstInProject,

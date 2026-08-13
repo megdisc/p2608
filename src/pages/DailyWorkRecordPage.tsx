@@ -63,7 +63,7 @@ export function DailyWorkRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      sortKey: 'projectYomigana',
+      sortKey: 'projectCode',
       sortable: false,
       editable: false, 
       inputType: 'select',

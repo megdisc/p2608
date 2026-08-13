@@ -17,9 +17,9 @@ export function useProjects() {
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
-          id, name, yomigana, project_type, client_id, start_date, end_date,
+          id, code, name, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted, assignee_type,
+            id, code, name, is_deleted, assignee_type,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
@@ -38,8 +38,8 @@ export function useProjects() {
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
         .map((p: any) => ({
         id: p.id,
+        code: p.code || '',
         name: p.name,
-        yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
         projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
         customerId: p.client_id || '',
@@ -47,12 +47,12 @@ export function useProjects() {
         endDate: p.end_date || '',
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
-          .sort((a: any, b: any) => (a.yomigana || '').localeCompare(b.yomigana || ''))
+          .sort((a: any, b: any) => (a.code || '').localeCompare(b.code || ''))
           .map((pt: any) => {
             return {
               id: pt.id,
+              code: pt.code || '',
               task: pt.name,
-              taskYomigana: pt.yomigana || '',
               assigneeType: pt.assignee_type || 'internal',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(),
@@ -71,7 +71,7 @@ export function useProjects() {
         if (keyA !== keyB) {
           return keyA.localeCompare(keyB);
         }
-        return (a.yomigana || '').localeCompare(b.yomigana || '');
+        return (a.code || a.name || '').localeCompare(b.code || b.name || '');
       });
 
       setItems(formattedProjects);
@@ -104,8 +104,8 @@ export function useProjects() {
       for (const p of activeProjects) {
         const projData = {
           id: p.id,
+          code: p.code,
           name: p.name,
-          yomigana: p.yomigana,
           project_type: p.projectType || 'one-off',
           client_id: p.customerId || null,
           start_date: p.startDate,
@@ -121,8 +121,8 @@ export function useProjects() {
           const taskData = {
             id: t.id,
             project_id: p.id,
+            code: t.code,
             name: t.task,
-            yomigana: t.taskYomigana,
             assignee_type: t.assigneeType || 'internal'
           };
 

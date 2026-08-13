@@ -29,11 +29,11 @@ export function useBudgetPlanning() {
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
         .select(`
-          id, name, yomigana, project_type,
-          project_tasks(id, name, yomigana, is_deleted, assignee_type)
+          id, code, name, project_type,
+          project_tasks(id, code, name, is_deleted, assignee_type)
         `)
         .eq('is_deleted', false)
-        .order('yomigana');
+        .order('code');
 
       if (projectsError) throw projectsError;
 
@@ -93,8 +93,8 @@ export function useBudgetPlanning() {
         return {
           project: {
             id: p.id,
+            code: p.code || '',
             name: p.name,
-            yomigana: p.yomigana,
             projectType: p.project_type,
             startDate: '',
             endDate: null,

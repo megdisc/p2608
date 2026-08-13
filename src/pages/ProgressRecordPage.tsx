@@ -51,7 +51,7 @@ export function ProgressRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      sortKey: 'projectYomigana',
+      sortKey: 'projectCode',
       editable: false, 
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],

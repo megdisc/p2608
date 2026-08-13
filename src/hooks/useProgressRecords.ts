@@ -26,7 +26,7 @@ export type ProgressFlatRecord = {
   id: string;
   projectId: string;
   projectName: string;
-  projectYomigana: string;
+  projectCode: string;
   projectType: string;
   projectTypeSortKey: string;
   yearMonth: string;
@@ -81,12 +81,12 @@ export function useProgressRecords() {
         supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
-          id, name, yomigana, project_type, client_id, start_date, end_date,
+          id, code, name, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted, is_canceled, status, completed_at,
+            id, code, name, is_deleted, is_canceled, status, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
           )
-        `).eq('is_deleted', false).order('yomigana', { ascending: true }),
+        `).eq('is_deleted', false).order('code', { ascending: true }),
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -105,8 +105,8 @@ export function useProgressRecords() {
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
         .map((p: any) => ({
         id: p.id,
+        code: p.code || '',
         name: p.name,
-        yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
         customerId: p.client_id,
         startDate: p.start_date,
@@ -115,8 +115,8 @@ export function useProgressRecords() {
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => ({
             id: pt.id,
+            code: pt.code || '',
             task: pt.name,
-            taskYomigana: pt.yomigana || '',
             assigneeIds: (pt.project_task_assignees || [])
               .flatMap((pta: any) => {
                 const res = [];
@@ -327,7 +327,7 @@ export function useProgressRecords() {
             id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
             projectId: project.id,
             projectName: project.name,
-            projectYomigana: project.yomigana || '',
+            projectCode: project.code || '',
             projectType: project.projectType || 'one-off',
             projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
             projectStatus: projectStatus,
@@ -356,7 +356,7 @@ export function useProgressRecords() {
              id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
              projectId: project.id,
              projectName: project.name,
-             projectYomigana: project.yomigana || '',
+             projectCode: project.code || '',
              projectType: project.projectType || 'one-off',
              projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
              projectStatus: projectStatus,
@@ -385,13 +385,13 @@ export function useProgressRecords() {
         return a.projectTypeSortKey.localeCompare(b.projectTypeSortKey);
       }
 
-      const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
-      const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
-      if (pA !== pB) return pA.localeCompare(pB, 'ja');
+      const pA = dbProjects.find(p => p.id === a.projectId)?.code || '';
+      const pB = dbProjects.find(p => p.id === b.projectId)?.code || '';
+      if (pA !== pB) return pA.localeCompare(pB);
 
-      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.taskYomigana || '';
-      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.taskYomigana || '';
-      if (tA !== tB) return tA.localeCompare(tB, 'ja');
+      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.code || '';
+      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.code || '';
+      if (tA !== tB) return tA.localeCompare(tB);
       
       const getTypePrio = (userId: string) => {
         if (userId.startsWith('staff_')) return 1;

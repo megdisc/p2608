@@ -42,12 +42,12 @@ export function useDailyWorkRecords() {
       const [membersRes, projectsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, name, yomigana, project_type, start_date, end_date,
+          id, code, name, project_type, start_date, end_date,
           project_tasks (
-            id, name, yomigana, is_deleted,
+            id, code, name, is_deleted,
             project_task_assignees ( member_id )
           )
-        `).eq('is_deleted', false).order('yomigana', { ascending: true }),
+        `).eq('is_deleted', false).order('code', { ascending: true }),
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -57,8 +57,8 @@ export function useDailyWorkRecords() {
       
       const formattedProjects = (projectsRes.data || []).map((p: any) => ({
         id: p.id,
+        code: p.code || '',
         name: p.name,
-        yomigana: p.yomigana || '',
         projectType: p.project_type || 'one-off',
         startDate: p.start_date,
         endDate: p.end_date,
@@ -66,8 +66,8 @@ export function useDailyWorkRecords() {
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => ({
             id: pt.id,
+            code: pt.code || '',
             task: pt.name,
-            taskYomigana: pt.yomigana || '',
             assigneeIds: (pt.project_task_assignees || [])
               .map((pta: any) => pta.member_id)
               .filter(Boolean)
@@ -191,12 +191,12 @@ export function useDailyWorkRecords() {
       const pOrderB = getPTypeOrder(b.projectType);
       if (pOrderA !== pOrderB) return pOrderA - pOrderB;
 
-      const pA = dbProjects.find(p => p.id === a.projectId)?.yomigana || '';
-      const pB = dbProjects.find(p => p.id === b.projectId)?.yomigana || '';
+      const pA = dbProjects.find(p => p.id === a.projectId)?.code || '';
+      const pB = dbProjects.find(p => p.id === b.projectId)?.code || '';
       if (pA !== pB) return pA.localeCompare(pB);
 
-      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.taskYomigana || '';
-      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.taskYomigana || '';
+      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.code || '';
+      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.code || '';
       return tA.localeCompare(tB);
     });
 

@@ -55,7 +55,7 @@ export function useFinancialRecords(
         { data: clientData, error: clientError },
       ] = await Promise.all([
         query,
-        supabase.from('projects').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('projects').select('id, name, code').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
       ]);

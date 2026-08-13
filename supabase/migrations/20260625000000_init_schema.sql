@@ -482,11 +482,11 @@ ALTER TABLE "public"."project_task_skills" OWNER TO "postgres";
 CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "project_id" "uuid" NOT NULL,
+    "code" character varying,
     "name" character varying NOT NULL,
     "is_deleted" boolean DEFAULT false NOT NULL,
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "yomigana" character varying,
     "is_canceled" boolean DEFAULT false NOT NULL
 );
 
@@ -499,8 +499,8 @@ ALTER TABLE "public"."project_tasks" OWNER TO "postgres";
 -- ------------------------------------------
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "code" character varying,
     "name" character varying NOT NULL,
-    "yomigana" character varying,
     "client_id" "uuid",
     "start_date" "date" NOT NULL,
     "end_date" "date",
@@ -1320,11 +1320,11 @@ SET search_path = public, extensions;
 -- 11. システム予約データ (System Reserved Data)
 -- ==========================================
 -- Create "Other" Project (System reserved)
-INSERT INTO projects (id, name, yomigana, project_type, start_date)
-VALUES ('00000000-0000-0000-0000-000000000001', 'その他', 'んんん', 'その他', '2000-01-01')
+INSERT INTO projects (id, name, code, project_type, start_date)
+VALUES ('00000000-0000-0000-0000-000000000001', 'その他', 'P-00A000', 'その他', '2000-01-01')
 ON CONFLICT (id) DO NOTHING;
 
 -- Create "Other" Task (System reserved)
-INSERT INTO project_tasks (id, project_id, name, yomigana)
-VALUES ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'その他', 'んんん')
+INSERT INTO project_tasks (id, project_id, name, code)
+VALUES ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'その他', 'T-00A000')
 ON CONFLICT (id) DO NOTHING;

@@ -28,6 +28,9 @@ export function compareValues(
   // もし aVal と bVal が同値（cmp === 0）で、オブジェクトにふりがながある場合はふりがな順でタイブレーク
   if (cmp === 0 && aObj && bObj) {
     const aYomi =
+      aObj.projectCode ||
+      aObj.taskCode ||
+      aObj.code ||
       aObj.projectYomigana ||
       aObj.taskYomigana ||
       aObj.userYomigana ||
@@ -35,6 +38,9 @@ export function compareValues(
       aObj.memberYomigana ||
       aObj.assigneeYomigana;
     const bYomi =
+      bObj.projectCode ||
+      bObj.taskCode ||
+      bObj.code ||
       bObj.projectYomigana ||
       bObj.taskYomigana ||
       bObj.userYomigana ||

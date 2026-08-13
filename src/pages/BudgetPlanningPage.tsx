@@ -60,8 +60,8 @@ export function BudgetPlanningPage() {
       aVal = a.project.projectType === 'ongoing' ? '0' : (a.project.projectType === 'その他' ? '2' : '1');
       bVal = b.project.projectType === 'ongoing' ? '0' : (b.project.projectType === 'その他' ? '2' : '1');
     } else if (sortConfig.key === 'name') {
-      aVal = a.project.yomigana || a.project.name || '';
-      bVal = b.project.yomigana || b.project.name || '';
+      aVal = a.project.code || a.project.name || '';
+      bVal = b.project.code || b.project.name || '';
     }
     if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -76,6 +76,7 @@ export function BudgetPlanningPage() {
   const headerRows: HeaderCell[][] = [
     [
       { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
+      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px' },
       { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'name' },
       { label: '収益　A', colSpan: 2 },
       { label: '費用　B', colSpan: 2 },
@@ -102,7 +103,7 @@ export function BudgetPlanningPage() {
           {paginatedDrafts.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={10} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
+                <td colSpan={11} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
             </tbody>
           ) : (
@@ -122,6 +123,9 @@ export function BudgetPlanningPage() {
                     <tr key={`${draft.project.id}-total`}>
                       <td>
                         {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
+                      </td>
+                      <td>
+                        {draft.project.code}
                       </td>
                       <td>
                         {draft.project.name}
@@ -165,6 +169,9 @@ export function BudgetPlanningPage() {
                               {i === 0 ? (draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
                             </td>
                             <td style={{ borderBottom: 'none' }}>
+                              {i === 0 ? draft.project.code : ''}
+                            </td>
+                            <td style={{ borderBottom: 'none' }}>
                               {i === 0 ? draft.project.name : ''}
                             </td>
                         <td>{rev?.subject || ''}</td>
@@ -203,6 +210,7 @@ export function BudgetPlanningPage() {
                   // Total
                   rows.push(
                     <tr key={`${draft.project.id}-total`}>
+                      <td></td>
                       <td></td>
                       <td></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>

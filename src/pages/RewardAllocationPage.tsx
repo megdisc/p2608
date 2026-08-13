@@ -377,12 +377,15 @@ export function RewardAllocationPage() {
   
                   rows.push(
                     <tr key={`proj-${proj.id}-${i}`}>
-                      <td style={{ borderBottom: 'none' }}>
-                        {i === 0 ? (proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
-                      </td>
-                      <td style={{ borderBottom: 'none' }}>
-                        {i === 0 ? proj.name : ''}
-                      </td>
+                    <td style={{ borderBottom: 'none' }}>
+                      {i === 0 ? proj.code : ''}
+                    </td>
+                    <td style={{ borderBottom: 'none' }}>
+                      {i === 0 ? proj.name : ''}
+                    </td>
+                    <td style={{ borderBottom: 'none' }}>
+                      {i === 0 ? (proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
+                    </td>
                       
                       {/* Revenue */}
                       <td>{rev?.subject || ''}</td>

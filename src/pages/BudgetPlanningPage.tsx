@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, type HeaderCell } from '../components/ui';
+import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, RadioButton, type HeaderCell } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
 
 import { useAlert } from '../contexts/AlertContext';
@@ -8,7 +8,7 @@ import { useBudgetPlanning, type DetailItem, type ProjectDraft } from '../hooks'
 
 export function BudgetPlanningPage() {
   const { drafts, setDrafts, originalDrafts, loading, fetchBudgetPlanning, batchSaveBudgets } = useBudgetPlanning();
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'code', direction: 'desc' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
   const { showAlert } = useAlert();
@@ -41,6 +41,16 @@ export function BudgetPlanningPage() {
     });
   };
 
+  const handleProjectTypeChange = (pIndex: number, newType: string) => {
+    setDrafts(prev => {
+      const next = [...prev];
+      const draft = { ...next[pIndex] };
+      draft.project = { ...draft.project, projectType: newType as any };
+      next[pIndex] = draft;
+      return next;
+    });
+  };
+
   const isModified = JSON.stringify(drafts) !== JSON.stringify(originalDrafts);
 
   const handleSort = (key: string) => {
@@ -56,12 +66,15 @@ export function BudgetPlanningPage() {
     if (!sortConfig) return 0;
     let aVal = '';
     let bVal = '';
-    if (sortConfig.key === 'projectType') {
+    if (sortConfig.key === 'code') {
+      aVal = a.project.code || '';
+      bVal = b.project.code || '';
+    } else if (sortConfig.key === 'name') {
+      aVal = a.project.name || '';
+      bVal = b.project.name || '';
+    } else if (sortConfig.key === 'projectType') {
       aVal = a.project.projectType === 'ongoing' ? '0' : (a.project.projectType === 'その他' ? '2' : '1');
       bVal = b.project.projectType === 'ongoing' ? '0' : (b.project.projectType === 'その他' ? '2' : '1');
-    } else if (sortConfig.key === 'name') {
-      aVal = a.project.code || a.project.name || '';
-      bVal = b.project.code || b.project.name || '';
     }
     if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -75,9 +88,9 @@ export function BudgetPlanningPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
-      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px' },
+      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px', sortKey: 'code' },
       { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'name' },
+      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '160px', sortKey: 'projectType' },
       { label: '収益　A', colSpan: 2 },
       { label: '費用　B', colSpan: 2 },
       { label: '積立金　C', colSpan: 2 },
@@ -118,17 +131,36 @@ export function BudgetPlanningPage() {
 
                 const rows = [];
 
+                const renderProjectTypeRadio = () => (
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <RadioButton
+                      label="毎月"
+                      name={`projectType_${draft.project.id}`}
+                      value="ongoing"
+                      checked={draft.project.projectType === 'ongoing'}
+                      onChange={() => handleProjectTypeChange(draftIndex, 'ongoing')}
+                    />
+                    <RadioButton
+                      label="案件終了時"
+                      name={`projectType_${draft.project.id}`}
+                      value="one-off"
+                      checked={draft.project.projectType !== 'ongoing'}
+                      onChange={() => handleProjectTypeChange(draftIndex, 'one-off')}
+                    />
+                  </div>
+                );
+
                 if (maxRows === 0) {
                   rows.push(
                     <tr key={`${draft.project.id}-total`}>
-                      <td>
-                        {draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
-                      </td>
                       <td>
                         {draft.project.code}
                       </td>
                       <td>
                         {draft.project.name}
+                      </td>
+                      <td className="bg-input-highlight">
+                        {renderProjectTypeRadio()}
                       </td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
@@ -166,13 +198,13 @@ export function BudgetPlanningPage() {
                     rows.push(
                       <tr key={`${draft.project.id}-detail-${i}`}>
                             <td style={{ borderBottom: 'none' }}>
-                              {i === 0 ? (draft.project.projectType === 'その他' ? 'その他' : (draft.project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
-                            </td>
-                            <td style={{ borderBottom: 'none' }}>
                               {i === 0 ? draft.project.code : ''}
                             </td>
                             <td style={{ borderBottom: 'none' }}>
                               {i === 0 ? draft.project.name : ''}
+                            </td>
+                            <td className="bg-input-highlight" style={{ borderBottom: 'none' }}>
+                              {i === 0 ? renderProjectTypeRadio() : ''}
                             </td>
                         <td>{rev?.subject || ''}</td>
                         <td className={rev ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
@@ -212,7 +244,7 @@ export function BudgetPlanningPage() {
                     <tr key={`${draft.project.id}-total`}>
                       <td></td>
                       <td></td>
-                      <td></td>
+                      <td className="bg-input-highlight"></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         <strong>¥{sumRevenues.toLocaleString()}</strong>

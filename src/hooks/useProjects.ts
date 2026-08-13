@@ -66,12 +66,7 @@ export function useProjects() {
       }));
 
       formattedProjects.sort((a, b) => {
-        const keyA = a.projectTypeSortKey || '';
-        const keyB = b.projectTypeSortKey || '';
-        if (keyA !== keyB) {
-          return keyA.localeCompare(keyB);
-        }
-        return (a.code || a.name || '').localeCompare(b.code || b.name || '');
+        return (b.code || b.name || '').localeCompare(a.code || a.name || '');
       });
 
       setItems(formattedProjects);

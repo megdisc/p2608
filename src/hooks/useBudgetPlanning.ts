@@ -122,6 +122,14 @@ export function useBudgetPlanning() {
       const upserts: any[] = [];
 
       for (const draft of currentDrafts) {
+        if (draft.project.id) {
+          const { error: projErr } = await supabase
+            .from('projects')
+            .update({ project_type: draft.project.projectType || 'one-off' })
+            .eq('id', draft.project.id);
+          if (projErr) throw projErr;
+        }
+
         const processCategory = (items: DetailItem[], category: BudgetCategory) => {
           for (const item of items) {
             upserts.push({

@@ -16,7 +16,6 @@ export function ProjectPage() {
   }, [fetchProjects, showAlert]);
 
   const columns: Column<ProjectItem>[] = [
-    { key: 'projectType', header: TABLE_COLUMNS.PROJECT_TYPE, sortKey: 'projectTypeSortKey', editable: true, inputType: 'radio', options: OPTIONS.PROJECT_TYPE_OPTIONS, render: (item: any) => OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '', rowType: 'main' },
     { key: 'code', header: TABLE_COLUMNS.PROJECT_ID, editable: false, inputType: 'text', rowType: 'main' },
     { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
     { 
@@ -183,6 +182,7 @@ export function ProjectPage() {
       title={PAGE_NAMES.PROJECT_INFO}
       data={items}
       columns={columns}
+      initialSort={{ key: 'code', direction: 'desc' }}
       emptyMessage="案件データがありません"
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

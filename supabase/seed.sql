@@ -79,8 +79,8 @@ INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-4
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a');
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0');
-INSERT INTO projects (id, name, code, client_id, start_date, end_date) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'P-26D001', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '2026-04', '2026-08');
-INSERT INTO project_tasks (id, project_id, name, code, assignee_type) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'T-26D001', 'external');
+INSERT INTO projects (id, name, code, client_id, start_date, end_date, project_type) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'P-26D001', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '2026-04', '2026-08', 'one-off');
+INSERT INTO project_tasks (id, project_id, name, code, assignee_type, status, completed_at) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'T-26D001', 'external', 'completed', '2026-08-31 23:59:59+09');
 INSERT INTO project_task_skills (task_id, skill_id, skill_level_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb');
 INSERT INTO project_task_skills (task_id, skill_id, skill_level_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '8172c05b-207d-4ca4-82e5-c8e51328accc', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1');
 INSERT INTO project_task_assignees (task_id, client_id) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '0ff5f11e-b752-4b06-aaab-86984a67eec7');
@@ -144,7 +144,7 @@ INSERT INTO project_task_assignees (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4
 
 -- One-off Project (Internal Business)
 INSERT INTO projects (id, name, code, client_id, start_date, end_date, project_type) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', '社内業務マニュアル作成', 'P-26G001', NULL, '2026-07', '2026-08', 'one-off');
-INSERT INTO project_tasks (id, project_id, name, code, assignee_type) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'b2f5d91c-1234-4567-89ab-cdef01234567', 'マニュアル作成', 'T-26G001', 'internal');
+INSERT INTO project_tasks (id, project_id, name, code, assignee_type, status, completed_at) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'b2f5d91c-1234-4567-89ab-cdef01234567', 'マニュアル作成', 'T-26G001', 'internal', 'completed', '2026-08-31 23:59:59+09');
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '5ff5e55e-186f-43ce-84d2-aa751d8341b5');
 
 -- Continuous Project (With Client)

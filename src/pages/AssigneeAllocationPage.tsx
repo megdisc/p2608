@@ -14,7 +14,6 @@ type AllocationRow = {
   projectName: string;
   projectCode: string;
   task: string;
-  taskCode: string;
   memberIds: string[];
   clientIds: string[];
   assigneeType: string;
@@ -91,7 +90,6 @@ export function AssigneeAllocationPage() {
               projectName: p.name,
               projectCode: p.code || '',
               task: pt.name,
-              taskCode: pt.code || '',
               assigneeType: pt.assignee_type || 'internal',
               memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
               clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
@@ -181,7 +179,7 @@ export function AssigneeAllocationPage() {
     const projA = a.projectCode;
     const projB = b.projectCode;
     if (projA !== projB) return projB.localeCompare(projA);
-    return a.taskCode.localeCompare(b.taskCode);
+    return 0;
   });
 
   // Re-apply grouping flags dynamically
@@ -243,7 +241,6 @@ export function AssigneeAllocationPage() {
                   <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
-              <th rowSpan={1} style={{ width: '100px' }}>{TABLE_COLUMNS.TASK_ID}</th>
               <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
               <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
               <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
@@ -252,7 +249,7 @@ export function AssigneeAllocationPage() {
           <tbody>
             {paginatedDrafts.length === 0 ? (
               <tr>
-                <td colSpan={7} className="empty-message">案件データがありません</td>
+                <td colSpan={6} className="empty-message">案件データがありません</td>
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
@@ -265,9 +262,6 @@ export function AssigneeAllocationPage() {
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
-                  </td>
-                  <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
-                    {item.isFirstInTask ? item.taskCode : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}

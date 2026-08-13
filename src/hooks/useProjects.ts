@@ -19,7 +19,7 @@ export function useProjects() {
         supabase.from('projects').select(`
           id, code, name, project_type, client_id, start_date, end_date,
           project_tasks (
-            id, code, name, is_deleted, assignee_type,
+            id, name, is_deleted, assignee_type, created_at,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
@@ -47,11 +47,10 @@ export function useProjects() {
         endDate: p.end_date || '',
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
-          .sort((a: any, b: any) => (a.code || '').localeCompare(b.code || ''))
           .map((pt: any) => {
             return {
               id: pt.id,
-              code: pt.code || '',
+              code: '',
               task: pt.name,
               assigneeType: pt.assignee_type || 'internal',
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
@@ -116,7 +115,6 @@ export function useProjects() {
           const taskData = {
             id: t.id,
             project_id: p.id,
-            code: t.code,
             name: t.task,
             assignee_type: t.assigneeType || 'internal'
           };

@@ -117,7 +117,7 @@ export function useAssigneeSummary() {
         if (a.assigneeYomigana !== b.assigneeYomigana) return a.assigneeYomigana.localeCompare(b.assigneeYomigana);
         if (a.projectTypeSortKey !== b.projectTypeSortKey) return a.projectTypeSortKey.localeCompare(b.projectTypeSortKey);
         if (a.projectCode !== b.projectCode) return a.projectCode.localeCompare(b.projectCode);
-        return (a.taskCode || '').localeCompare(b.taskCode || '');
+        return (a.taskName || '').localeCompare(b.taskName || '');
       });
 
       const flatRows: SummaryRow[] = [];

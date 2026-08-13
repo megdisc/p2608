@@ -35,7 +35,7 @@ export function RewardAllocationPage() {
 
   const { showAlert } = useAlert();
 
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
 
   const [financialDrafts, setFinancialDrafts] = useState<MonthlyFinancialRecord[]>([]);
   
@@ -98,21 +98,18 @@ export function RewardAllocationPage() {
   const isModified = useMemo(() => {
     for (const f of financialDrafts) {
       if (isAutoCalculatedSubject(f.subject)) continue;
-      const orig = financials.find(o => o.id === f.id);
-      if (!orig && f.amount !== 0) return true;
-      if (orig && orig.amount !== f.amount) return true;
-    }
-    for (const f of financials) {
-      if (isAutoCalculatedSubject(f.subject)) continue;
-      if (!financialDrafts.find(d => d.id === f.id)) return true;
+      const orig = financials.find(o => o.project_id === f.project_id && o.type === f.type && o.subject === f.subject);
+      const origAmount = orig ? Number(orig.amount) || 0 : 0;
+      if (Number(f.amount) !== origAmount) return true;
     }
     for (const r of progressRecords) {
       if (r.userId) {
-        if ((allocationDrafts[r.id] || 0) !== (r.allocationAmount || 0)) return true;
+        const draftVal = allocationDrafts[r.id] ?? (r.allocationAmount || 0);
+        if (draftVal !== (r.allocationAmount || 0)) return true;
       }
     }
     return false;
-  }, [financialDrafts, financials, allocationDrafts, progressRecords]);
+  }, [financialDrafts, financials, progressRecords, allocationDrafts]);
 
   const handleBatchSave = async () => {
     try {
@@ -157,8 +154,9 @@ export function RewardAllocationPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
+      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px', sortKey: 'projectCode' },
       { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'projectName' },
+      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
       { label: '収益　A', colSpan: 3 },
       { label: '費用　B', colSpan: 3 },
       { label: '積立金　C', colSpan: 2 },
@@ -218,7 +216,6 @@ export function RewardAllocationPage() {
         };
       });
 
-    // Ensure material & expense subjects are included if recorded in financial_records
     const existingSubjects = new Set(nonLaborExpenses.map(e => e.subject));
     [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].forEach(subj => {
       if (!existingSubjects.has(subj)) {
@@ -303,10 +300,12 @@ export function RewardAllocationPage() {
   displayProjects.sort((a, b) => {
     if (!sortConfig) return 0;
     let aVal = ''; let bVal = '';
-    if (sortConfig.key === 'projectType') {
-      aVal = a.projectTypeSortKey; bVal = b.projectTypeSortKey;
+    if (sortConfig.key === 'projectCode') {
+      aVal = a.code || ''; bVal = b.code || '';
     } else if (sortConfig.key === 'projectName') {
-      aVal = a.code || a.name; bVal = b.code || b.name;
+      aVal = a.name || ''; bVal = b.name || '';
+    } else if (sortConfig.key === 'projectType') {
+      aVal = a.projectTypeSortKey || ''; bVal = b.projectTypeSortKey || '';
     }
     if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -319,7 +318,7 @@ export function RewardAllocationPage() {
         <table className="inventory-table">
           <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           {displayProjects.length === 0 ? (
-            <tbody><tr><td colSpan={12} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
+            <tbody><tr><td colSpan={13} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
           ) : (
             displayProjects.map(proj => {
               const maxRows = Math.max(1, proj.revenues.length, proj.expenses.length, proj.reserves.length);
@@ -335,10 +334,13 @@ export function RewardAllocationPage() {
                 rows.push(
                   <tr key={`${proj.id}-total`}>
                     <td style={{ borderBottom: 'none' }}>
-                      {proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
+                      {proj.code}
                     </td>
                     <td style={{ borderBottom: 'none' }}>
                       {proj.name}
+                    </td>
+                    <td style={{ borderBottom: 'none' }}>
+                      {proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
                     </td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>

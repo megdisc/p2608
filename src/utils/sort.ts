@@ -29,7 +29,6 @@ export function compareValues(
   if (cmp === 0 && aObj && bObj) {
     const aYomi =
       aObj.projectCode ||
-      aObj.taskCode ||
       aObj.code ||
       aObj.projectYomigana ||
       aObj.taskYomigana ||
@@ -39,7 +38,6 @@ export function compareValues(
       aObj.assigneeYomigana;
     const bYomi =
       bObj.projectCode ||
-      bObj.taskCode ||
       bObj.code ||
       bObj.projectYomigana ||
       bObj.taskYomigana ||

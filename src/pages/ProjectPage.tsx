@@ -30,11 +30,11 @@ export function ProjectPage() {
     { key: 'startDate', header: '開始時期', editable: true, inputType: 'month', rowType: 'main' },
     { key: 'endDate', header: '終了時期', editable: true, inputType: 'month', rowType: 'main' },
     { 
-      key: 'code', 
-      header: TABLE_COLUMNS.TASK_ID, 
-      editable: false, 
+      key: 'task', 
+      header: TABLE_COLUMNS.TASK, 
+      editable: true, 
       inputType: 'text', 
-      rowType: 'sub', 
+      rowType: 'sub',
       sortable: false,
       mainRender: (_item, addSubRow) => (
         <Button 
@@ -43,14 +43,6 @@ export function ProjectPage() {
           ＋ タスク追加
         </Button>
       )
-    },
-    { 
-      key: 'task', 
-      header: TABLE_COLUMNS.TASK, 
-      editable: true, 
-      inputType: 'text', 
-      rowType: 'sub',
-      sortable: false
     },
     { 
       key: 'assigneeType', 
@@ -126,24 +118,6 @@ export function ProjectPage() {
     return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
   };
 
-  const generateNextTaskCode = (existingItems: ProjectItem[]) => {
-    const now = new Date();
-    const yy = String(now.getFullYear()).slice(-2);
-    const monthChar = String.fromCharCode(65 + now.getMonth());
-    const prefix = `T-${yy}${monthChar}`;
-
-    let maxSeq = 0;
-    existingItems.forEach(p => {
-      (p.tasks || []).forEach(t => {
-        if (t.code && t.code.startsWith(prefix)) {
-          const seqNum = parseInt(t.code.slice(prefix.length), 10);
-          if (!isNaN(seqNum) && seqNum > maxSeq) maxSeq = seqNum;
-        }
-      });
-    });
-    return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
-  };
-
   const handleAdd = () => {
     return {
       id: generateId(),
@@ -160,7 +134,6 @@ export function ProjectPage() {
   const handleAddSubRow = (_parentId: string) => {
     return {
       id: generateId(),
-      code: generateNextTaskCode(items),
       task: '',
       assigneeType: OPTIONS.ASSIGNEE_TYPE_OPTIONS[0].value,
       requiredSkills: [],

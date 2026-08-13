@@ -37,7 +37,9 @@ export function MultiRowHeader({ rows, sortConfig, onSort }: MultiRowHeaderProps
                   cursor: isSortable ? 'pointer' : 'default',
                   userSelect: isSortable ? 'none' : 'auto',
                   backgroundColor: rowIndex > 0 ? 'var(--color-bg-subtle)' : undefined,
-                  top: rowIndex > 0 ? `${rowIndex * 42}px` : undefined
+                  top: rowIndex > 0 ? `${rowIndex * 42}px` : 0,
+                  height: cell.rowSpan ? `${cell.rowSpan * 42}px` : '42px',
+                  boxSizing: 'border-box'
                 }}
                 onClick={() => {
                   if (isSortable && onSort && cell.sortKey) {

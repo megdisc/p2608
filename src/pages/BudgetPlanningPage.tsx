@@ -132,7 +132,7 @@ export function BudgetPlanningPage() {
                 const rows = [];
 
                 const renderProjectTypeRadio = () => (
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', height: '42px' }}>
                     <RadioButton
                       label="毎月"
                       name={`projectType_${draft.project.id}`}

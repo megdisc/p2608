@@ -173,81 +173,128 @@ export function RewardAllocationPage() {
   const projectIds = Array.from(new Set(progressRecords.map(r => r.projectId)));
   const displayProjects = projectIds.map(pid => {
     const projRecords = progressRecords.filter(r => r.projectId === pid);
-    const projFin = financialDrafts.filter(f => f.project_id === pid);
     const firstRec = projRecords[0];
     const budgetDraft = budgetDrafts.find(b => b.project.id === pid);
     const projDbInfo = dbProjects.find(p => p.id === pid);
     const clientName = dbClients.find(c => c.id === projDbInfo?.customerId)?.name || '';
     const isOngoing = projDbInfo?.projectType === 'ongoing';
     
-    const revenues = (budgetDraft?.revenues || []).map(b => {
-      const actual = projFin.find(f => f.type === 'revenue' && f.subject === b.subject);
+    const revenues = (budgetDraft?.revenues || []).map(b => ({
+      subject: b.subject,
+      billingDest: clientName,
+      amount: Number(b.amount || 0)
+    }));
+
+    const nonLaborExpenses = [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].map(subj => {
+      const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
+      let amount = 0;
+      if (isOngoing) {
+        amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      } else {
+        amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      }
+
       return {
-        subject: b.subject,
-        billingDest: clientName,
-        amount: actual?.amount || 0
+        id: subj,
+        subject: subj,
+        payee: '',
+        amount,
+        type: 'non-labor',
+        isAutoCalculated: true
       };
     });
 
-    const nonLaborExpenses = (budgetDraft?.expenses || [])
-      .filter(b => !b.taskId)
-      .map(b => {
-        const isAuto = isAutoCalculatedSubject(b.subject);
-        let amount = 0;
-        if (isAuto) {
-          const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === b.subject);
-          if (isOngoing) {
-            amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-          } else {
-            amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-          }
-        } else {
-          const actual = projFin.find(f => f.type === 'expense' && f.subject === b.subject);
-          amount = actual?.amount || 0;
-        }
+    // Build labor expenses with staff row at the end of each task group,
+    // and equal allocation per member in thousands, with remainder to staff.
+    const laborExpenses: any[] = [];
+    const taskBudgetItems = (budgetDraft?.expenses || []).filter(b => b.taskId);
 
-        return {
-          id: b.subject,
-          subject: b.subject,
-          payee: '',
-          amount,
-          type: 'non-labor',
-          isAutoCalculated: isAuto
-        };
-      });
+    // Get unique task ids and task names
+    const taskMap = new Map<string, { taskId: string, taskName: string, budgetAmount: number }>();
+    taskBudgetItems.forEach(b => {
+      if (b.taskId) {
+        const pureTaskName = b.subject
+          .replace(/^労務費（利用者工賃）/, '')
+          .replace(/^労務費（利用者工賃以外）/, '')
+          .replace(/^労務費・外注加工費/, '')
+          .replace(/^労務費/, '')
+          .replace(/^外注加工費/, '')
+          .replace(/^（/, '')
+          .replace(/\)$/, '');
 
-    const existingSubjects = new Set(nonLaborExpenses.map(e => e.subject));
-    [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].forEach(subj => {
-      if (!existingSubjects.has(subj)) {
-        const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
-        let amount = 0;
-        if (isOngoing) {
-          amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-        } else {
-          amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-        }
-        if (amount > 0) {
-          nonLaborExpenses.push({
-            id: subj,
-            subject: subj,
-            payee: '',
-            amount,
-            type: 'non-labor',
-            isAutoCalculated: true
-          });
-        }
+        taskMap.set(b.taskId, {
+          taskId: b.taskId,
+          taskName: pureTaskName || b.subject,
+          budgetAmount: Number(b.amount) || 0
+        });
       }
     });
 
-    const laborExpenses = projRecords.filter(r => r.userId).map(r => {
-      return {
-        id: r.id, 
-        subject: r.assigneeType === '外注先' ? `外注加工費（${r.taskName}）` : `労務費（${r.taskName}）`,
-        payee: r.userName,
-        amount: allocationDrafts[r.id] || 0,
+    // Also include tasks from projRecords if not in budgetDraft
+    projRecords.forEach(r => {
+      if (r.taskId && !taskMap.has(r.taskId)) {
+        taskMap.set(r.taskId, {
+          taskId: r.taskId,
+          taskName: r.taskName,
+          budgetAmount: 0
+        });
+      }
+    });
+
+    taskMap.forEach(({ taskId, taskName, budgetAmount }) => {
+      const taskRecords = projRecords.filter(r => r.taskId === taskId);
+      const memberRecords = taskRecords.filter(r => r.assigneeType === '利用者');
+      const outsourceRecords = taskRecords.filter(r => r.assigneeType === '外注先');
+
+      const numMembers = memberRecords.length;
+
+      // Equal allocation in 1000s for members
+      const memberPerPerson = numMembers > 0 
+        ? Math.floor((budgetAmount / numMembers) / 1000) * 1000 
+        : 0;
+      const totalMemberAlloc = memberPerPerson * numMembers;
+      const staffAlloc = budgetAmount - totalMemberAlloc;
+
+      const subjectName = `労務費（${taskName}）`;
+
+      // 1. Members
+      memberRecords.forEach(m => {
+        const customVal = allocationDrafts[m.id];
+        laborExpenses.push({
+          id: m.id,
+          subject: subjectName,
+          payee: m.userName,
+          amount: customVal !== undefined ? customVal : memberPerPerson,
+          type: 'labor',
+          isAutoCalculated: false
+        });
+      });
+
+      // 2. Outsource (if any)
+      outsourceRecords.forEach(o => {
+        const customVal = allocationDrafts[o.id];
+        laborExpenses.push({
+          id: o.id,
+          subject: `外注加工費（${taskName}）`,
+          payee: o.userName,
+          amount: customVal !== undefined ? customVal : 0,
+          type: 'labor',
+          isAutoCalculated: false
+        });
+      });
+
+      // 3. Staff row at the end (Exactly 1 row per task, payee is always '職員')
+      const staffKey = `STAFF_ALLOC_${pid}_${taskId}`;
+      const customStaffVal = allocationDrafts[staffKey];
+
+      laborExpenses.push({
+        id: staffKey,
+        subject: subjectName,
+        payee: '職員',
+        amount: customStaffVal !== undefined ? customStaffVal : staffAlloc,
         type: 'labor',
         isAutoCalculated: false
-      };
+      });
     });
 
     const materialExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL);
@@ -264,13 +311,10 @@ export function RewardAllocationPage() {
     if (otherExpense) expenses.push(otherExpense);
     expenses.push(...restNonLabor);
 
-    const reserves = (budgetDraft?.reserves || []).map(b => {
-      const actual = projFin.find(f => f.type === 'reserve' && f.subject === b.subject);
-      return {
-        subject: b.subject,
-        amount: actual?.amount || 0
-      };
-    });
+    const reserves = (budgetDraft?.reserves || []).map(b => ({
+      subject: b.subject,
+      amount: Number(b.amount || 0)
+    }));
 
     const [yearStr, monthStr] = currentMonth.split('-');
     const formattedProjectName = (isOngoing && yearStr && monthStr) 
@@ -429,6 +473,7 @@ export function RewardAllocationPage() {
                 // Add a total row just like BudgetPlanning
                 rows.push(
                   <tr key={`proj-${proj.id}-total`}>
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>

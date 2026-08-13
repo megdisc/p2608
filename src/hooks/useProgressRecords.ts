@@ -381,13 +381,9 @@ export function useProgressRecords() {
     }
 
     flatRows.sort((a, b) => {
-      if (a.projectTypeSortKey !== b.projectTypeSortKey) {
-        return a.projectTypeSortKey.localeCompare(b.projectTypeSortKey);
-      }
-
       const pA = dbProjects.find(p => p.id === a.projectId)?.code || '';
       const pB = dbProjects.find(p => p.id === b.projectId)?.code || '';
-      if (pA !== pB) return pA.localeCompare(pB);
+      if (pA !== pB) return pB.localeCompare(pA);
 
       const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.code || '';
       const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.code || '';

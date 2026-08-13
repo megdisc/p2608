@@ -32,7 +32,7 @@ export function AssigneeAllocationPage() {
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [memberSkillMap, setMemberSkillMap] = useState<Record<string, Record<string, number>>>({});
   const [loading, setLoading] = useState(true);
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectType', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
   
@@ -163,24 +163,24 @@ export function AssigneeAllocationPage() {
     if (sortConfig) {
       let aVal = '';
       let bVal = '';
-      if (sortConfig.key === 'projectType') {
-        aVal = a.projectTypeSortKey;
-        bVal = b.projectTypeSortKey;
-      } else if (sortConfig.key === 'name') {
+      if (sortConfig.key === 'projectCode') {
         aVal = a.projectCode;
         bVal = b.projectCode;
+      } else if (sortConfig.key === 'name') {
+        aVal = a.projectName;
+        bVal = b.projectName;
+      } else if (sortConfig.key === 'projectType') {
+        aVal = a.projectTypeSortKey;
+        bVal = b.projectTypeSortKey;
       }
       if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
     }
     
-    // Default fallback sorting
-    const keyA = a.projectTypeSortKey;
-    const keyB = b.projectTypeSortKey;
-    if (keyA !== keyB) return keyA.localeCompare(keyB);
+    // Default fallback sorting (projectCode desc)
     const projA = a.projectCode;
     const projB = b.projectCode;
-    if (projA !== projB) return projA.localeCompare(projB);
+    if (projA !== projB) return projB.localeCompare(projA);
     return a.taskCode.localeCompare(b.taskCode);
   });
 
@@ -225,17 +225,22 @@ export function AssigneeAllocationPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th rowSpan={1} style={{ width: '100px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+              <th rowSpan={1} style={{ width: '100px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectCode')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {TABLE_COLUMNS.PROJECT_TYPE}
-                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
+                  {TABLE_COLUMNS.PROJECT_ID}
+                  <SortIcon active={sortConfig?.key === 'projectCode'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
-              <th rowSpan={1} style={{ width: '100px' }}>{TABLE_COLUMNS.PROJECT_ID}</th>
               <th rowSpan={1} style={{ width: '200px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('name')}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {TABLE_COLUMNS.PROJECT_NAME}
                   <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
+                </div>
+              </th>
+              <th rowSpan={1} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {TABLE_COLUMNS.PROJECT_TYPE}
+                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
               <th rowSpan={1} style={{ width: '100px' }}>{TABLE_COLUMNS.TASK_ID}</th>
@@ -253,13 +258,13 @@ export function AssigneeAllocationPage() {
               paginatedDrafts.map((item) => (
                 <tr key={item.id}>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
-                    {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
-                  </td>
-                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectCode : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectName : ''}
+                  </td>
+                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
+                    {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.taskCode : ''}

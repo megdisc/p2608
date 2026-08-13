@@ -33,16 +33,14 @@ export function ProgressRecordPage() {
 
   const columns: Column<any>[] = [
     {
-      key: 'projectType',
-      header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortKey: 'projectTypeSortKey',
+      key: 'projectCode',
+      header: TABLE_COLUMNS.PROJECT_ID,
+      sortKey: 'projectCode',
       sortable: true,
+      editable: false,
       render: (item: any) => {
         if (!item.isFirstInProject) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        if (!project) return '';
-        if (project.projectType === 'その他') return 'その他';
-        return project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
+        return item.projectCode || '';
       },
       style: (item: any) => ({
         borderBottom: item.isLastInProject ? undefined : 'none'
@@ -185,7 +183,7 @@ export function ProgressRecordPage() {
       onSingleMonthChange={setCurrentMonth}
       hideDeleteColumn={true}
       highlightInputColumns={true}
-      initialSort={{ key: 'projectType', direction: 'asc' }}
+      initialSort={{ key: 'projectCode', direction: 'desc' }}
       hideHeader={true}
     />
   );

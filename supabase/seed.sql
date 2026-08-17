@@ -541,3 +541,8 @@ INSERT INTO daily_work_confirmations (work_date) VALUES
 ('2026-08-11'), ('2026-08-12'), ('2026-08-13'), ('2026-08-14'), ('2026-08-15'),
 ('2026-08-16')
 ON CONFLICT (work_date) DO NOTHING;
+
+-- === SEED MONTHLY SETTLEMENT CONFIRMATIONS (<= 2026-07) ===
+INSERT INTO monthly_settlement_confirmations (year_month) VALUES
+('2026-01'), ('2026-02'), ('2026-03'), ('2026-04'), ('2026-05'), ('2026-06'), ('2026-07')
+ON CONFLICT (year_month) DO NOTHING;

@@ -26,6 +26,13 @@ export function useWageSummary() {
   const pageSize = 50;
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'name', direction: 'asc' });
 
+  const [isMonthlySettlementConfirmed, setIsMonthlySettlementConfirmed] = useState(false);
+  const [hasProvisionalDailyWork, setHasProvisionalDailyWork] = useState(false);
+
+  const isWageSummaryConfirmed = useMemo(() => {
+    return isMonthlySettlementConfirmed && !hasProvisionalDailyWork;
+  }, [isMonthlySettlementConfirmed, hasProvisionalDailyWork]);
+
   const fetchWageSummary = useCallback(async (monthStr: string) => {
     try {
       setLoading(true);
@@ -42,7 +49,9 @@ export function useWageSummary() {
         cTaskRes,
         pTaskRes,
         cMemRes,
-        workRes
+        workRes,
+        dailyConfirmRes,
+        monthlyConfirmRes
       ] = await Promise.all([
         supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
@@ -50,7 +59,9 @@ export function useWageSummary() {
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
         supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
-        supabase.from('daily_work_records').select('member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`)
+        supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
+        supabase.from('daily_work_confirmations').select('work_date').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`),
+        supabase.from('monthly_settlement_confirmations').select('year_month').eq('year_month', monthStr)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -60,6 +71,42 @@ export function useWageSummary() {
       if (pTaskRes.error) throw pTaskRes.error;
       if (cMemRes.error) throw cMemRes.error;
       if (workRes.error) throw workRes.error;
+
+      // Check monthly settlement confirmation
+      let monthlyConfirmed = false;
+      if (monthlyConfirmRes.data && monthlyConfirmRes.data.length > 0) {
+        monthlyConfirmed = true;
+      } else {
+        try {
+          const saved = localStorage.getItem('monthly_settlement_confirmed');
+          const list = saved ? JSON.parse(saved) : ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
+          monthlyConfirmed = list.includes(monthStr);
+        } catch {
+          monthlyConfirmed = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'].includes(monthStr);
+        }
+      }
+      setIsMonthlySettlementConfirmed(monthlyConfirmed);
+
+      // Check daily work confirmations for dates with work_time > 0
+      const workRecords = workRes.data || [];
+      const confirmedDateSet = new Set((dailyConfirmRes.data || []).map((d: any) => d.work_date));
+
+      try {
+        const savedDaily = localStorage.getItem('daily_work_confirmations');
+        if (savedDaily) {
+          JSON.parse(savedDaily).forEach((d: string) => confirmedDateSet.add(d));
+        }
+      } catch {}
+
+      const datesWithWork = new Set(workRecords.filter((w: any) => Number(w.work_time) > 0).map((w: any) => w.date));
+      let provisionalDaily = false;
+      for (const d of datesWithWork) {
+        if (!confirmedDateSet.has(d)) {
+          provisionalDaily = true;
+          break;
+        }
+      }
+      setHasProvisionalDailyWork(provisionalDaily);
 
       const members = membersRes.data || [];
       const projects = projectsRes.data || [];
@@ -194,6 +241,9 @@ export function useWageSummary() {
     sortedData,
     totalPages,
     paginatedRows,
-    pageSize
+    pageSize,
+    isWageSummaryConfirmed,
+    isMonthlySettlementConfirmed,
+    hasProvisionalDailyWork
   };
 }

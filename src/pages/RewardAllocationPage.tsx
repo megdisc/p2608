@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
 import { getCurrentJSTMonth } from '../utils/date';
@@ -6,6 +6,7 @@ import { useAlert } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
 import { useBudgetPlanning } from '../hooks/useBudgetPlanning';
+import { supabase } from '../lib';
 
 export function RewardAllocationPage() {
   const {
@@ -73,6 +74,20 @@ export function RewardAllocationPage() {
     } catch {}
     return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
   });
+
+  const fetchMonthlyConfirmations = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('monthly_settlement_confirmations').select('year_month');
+      if (!error && data && data.length > 0) {
+        const dbMonths = data.map(d => d.year_month);
+        setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    fetchMonthlyConfirmations();
+  }, [fetchMonthlyConfirmations]);
 
   const isConfirmed = useMemo(() => {
     return confirmedMonths.includes(currentMonth);
@@ -171,6 +186,10 @@ export function RewardAllocationPage() {
       await handleBatchSave();
     }
 
+    try {
+      await supabase.from('monthly_settlement_confirmations').upsert({ year_month: currentMonth }, { onConflict: 'year_month' });
+    } catch {}
+
     setConfirmedMonths(prev => {
       if (prev.includes(currentMonth)) return prev;
       const next = [...prev, currentMonth];
@@ -181,7 +200,11 @@ export function RewardAllocationPage() {
     showAlert(`${currentMonth}の月次精算を確定しました。`, 'success');
   };
 
-  const handleUnconfirm = () => {
+  const handleUnconfirm = async () => {
+    try {
+      await supabase.from('monthly_settlement_confirmations').delete().eq('year_month', currentMonth);
+    } catch {}
+
     setConfirmedMonths(prev => {
       const next = prev.filter(m => m !== currentMonth);
       localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));

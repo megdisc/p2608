@@ -274,6 +274,57 @@ export function useDailyWorkRecords() {
     }
   };
 
+  const [confirmedDates, setConfirmedDates] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('daily_work_confirmations');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ['2026-06-15', '2026-06-16', '2026-06-17', '2026-06-29', '2026-06-30'];
+  });
+
+  const fetchConfirmations = useCallback(async () => {
+    try {
+      const { data, error } = await supabase.from('daily_work_confirmations').select('work_date');
+      if (!error && data && data.length > 0) {
+        const dbDates = data.map(d => d.work_date);
+        setConfirmedDates(prev => {
+          const merged = Array.from(new Set([...prev, ...dbDates]));
+          localStorage.setItem('daily_work_confirmations', JSON.stringify(merged));
+          return merged;
+        });
+      }
+    } catch (err) {
+      console.error('Error fetching daily work confirmations:', err);
+    }
+  }, []);
+
+  const confirmDate = useCallback(async (date: string) => {
+    try {
+      setConfirmedDates(prev => {
+        if (prev.includes(date)) return prev;
+        const next = [...prev, date];
+        localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
+        return next;
+      });
+      await supabase.from('daily_work_confirmations').upsert({ work_date: date }, { onConflict: 'work_date' });
+    } catch (err) {
+      console.error('Error confirming date:', err);
+    }
+  }, []);
+
+  const unconfirmDate = useCallback(async (date: string) => {
+    try {
+      setConfirmedDates(prev => {
+        const next = prev.filter(d => d !== date);
+        localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
+        return next;
+      });
+      await supabase.from('daily_work_confirmations').delete().eq('work_date', date);
+    } catch (err) {
+      console.error('Error unconfirming date:', err);
+    }
+  }, []);
+
   return {
     dbMembers,
     dbProjects,
@@ -282,6 +333,10 @@ export function useDailyWorkRecords() {
     currentDate,
     setCurrentDate,
     displayData,
+    confirmedDates,
+    confirmDate,
+    unconfirmDate,
+    fetchConfirmations,
     fetchMasters,
     fetchRecords,
     batchSaveDailyWorkRecords

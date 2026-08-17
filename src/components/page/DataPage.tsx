@@ -44,6 +44,10 @@ type DataPageProps<T> = {
   sortConfig?: { key: string; direction: 'asc' | 'desc' };
   onSortChange?: (sortConfig: { key: string; direction: 'asc' | 'desc' }) => void;
   onDateFilterChange?: (startDate: string, endDate: string) => void;
+  isConfirmed?: boolean;
+  onConfirm?: () => void;
+  onUnconfirm?: () => void;
+  confirmDisabled?: boolean;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -86,7 +90,11 @@ export function DataPage<T extends { id: string }>({
   onPageChange,
   sortConfig,
   onSortChange,
-  onDateFilterChange
+  onDateFilterChange,
+  isConfirmed,
+  onConfirm,
+  onUnconfirm,
+  confirmDisabled
 }: DataPageProps<T>) {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -143,6 +151,10 @@ export function DataPage<T extends { id: string }>({
         sortConfig={sortConfig}
         onSortChange={onSortChange}
         onDateFilterChange={onDateFilterChange}
+        isConfirmed={isConfirmed}
+        onConfirm={onConfirm}
+        onUnconfirm={onUnconfirm}
+        confirmDisabled={confirmDisabled}
       />
     </>
   );

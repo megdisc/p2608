@@ -1,5 +1,5 @@
 import { DataPage, type Column } from '../components';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useDailyWorkRecords, type DailyFlatRecord } from '../hooks';
@@ -12,6 +12,10 @@ export function DailyWorkRecordPage() {
     currentDate, 
     setCurrentDate, 
     displayData, 
+    confirmedDates,
+    confirmDate,
+    unconfirmDate,
+    fetchConfirmations,
     fetchMasters, 
     fetchRecords, 
     batchSaveDailyWorkRecords 
@@ -22,7 +26,8 @@ export function DailyWorkRecordPage() {
     fetchMasters().catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchMasters, showAlert]);
+    fetchConfirmations();
+  }, [fetchMasters, fetchConfirmations, showAlert]);
 
   useEffect(() => {
     if (dbMembers.length > 0) {
@@ -31,6 +36,42 @@ export function DailyWorkRecordPage() {
       });
     }
   }, [currentDate, dbMembers, fetchRecords, showAlert]);
+
+  const isConfirmed = useMemo(() => {
+    return confirmedDates.includes(currentDate);
+  }, [confirmedDates, currentDate]);
+
+  const hasNonZeroRecords = useMemo(() => {
+    return displayData.some(r => Number(r.workTime) > 0);
+  }, [displayData]);
+
+  const handleConfirm = useCallback(async () => {
+    if (!hasNonZeroRecords) {
+      showAlert('作業記録が存在しない（またはすべて0時間の）日付は確定不要です。', 'error');
+      return;
+    }
+    await confirmDate(currentDate);
+    showAlert(`${currentDate}の作業記録を確定しました。`, 'success');
+  }, [hasNonZeroRecords, confirmDate, currentDate, showAlert]);
+
+  const handleUnconfirm = useCallback(async () => {
+    await unconfirmDate(currentDate);
+    showAlert(`${currentDate}の確定を解除しました。`, 'success');
+  }, [unconfirmDate, currentDate, showAlert]);
+
+  const canEditRow = useCallback(() => !isConfirmed, [isConfirmed]);
+  const canDeleteRow = useCallback(() => !isConfirmed, [isConfirmed]);
+
+  const footerLeft = useMemo(() => {
+    if (!hasNonZeroRecords) {
+      return (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
+          確定不要（作業データなし）
+        </span>
+      );
+    }
+    return undefined;
+  }, [hasNonZeroRecords]);
 
   const columns: Column<any>[] = [
     { 
@@ -134,6 +175,15 @@ export function DailyWorkRecordPage() {
       hideDeleteColumn={true}
       highlightInputColumns={true}
       hideHeader={true}
+      canEditRow={canEditRow}
+      canDeleteRow={canDeleteRow}
+      showRestrictionColumn={true}
+      restrictionTooltipText="確定済のため変更不可"
+      isConfirmed={isConfirmed}
+      onConfirm={handleConfirm}
+      onUnconfirm={handleUnconfirm}
+      confirmDisabled={!hasNonZeroRecords}
+      footerLeft={footerLeft}
     />
   );
 }

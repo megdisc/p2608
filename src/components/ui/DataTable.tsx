@@ -75,6 +75,10 @@ type DataTableProps<T> = {
   sortConfig?: SortConfig;
   onSortChange?: (sortConfig: SortConfig) => void;
   onDateFilterChange?: (startDate: string, endDate: string) => void;
+  isConfirmed?: boolean;
+  onConfirm?: () => void;
+  onUnconfirm?: () => void;
+  confirmDisabled?: boolean;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -114,7 +118,11 @@ export function DataTable<T extends { id: string }>({
   onPageChange,
   sortConfig: externalSortConfig,
   onSortChange,
-  onDateFilterChange
+  onDateFilterChange,
+  isConfirmed,
+  onConfirm,
+  onUnconfirm,
+  confirmDisabled
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -992,16 +1000,29 @@ export function DataTable<T extends { id: string }>({
         {isEditingEnabled ? (
           <div className="action-buttons">
             {onAddRow && (
-              <Button onClick={handleAddClick} disabled={disableAddButton}>
+              <Button onClick={handleAddClick} disabled={isConfirmed || disableAddButton}>
                 {BUTTON_LABELS.ADD}
               </Button>
             )}
-            <Button onClick={handleCancelClick} disabled={!canCancel}>
+            <Button onClick={handleCancelClick} disabled={isConfirmed || !canCancel}>
               {BUTTON_LABELS.CANCEL}
             </Button>
-            <Button variant="primary" onClick={handleSaveClick} disabled={!canSave}>
+            <Button variant="primary" onClick={handleSaveClick} disabled={isConfirmed || !canSave}>
               {BUTTON_LABELS.SAVE}
             </Button>
+            {!isConfirmed ? (
+              onConfirm ? (
+                <Button variant="primary" onClick={onConfirm} disabled={confirmDisabled}>
+                  確定
+                </Button>
+              ) : null
+            ) : (
+              onUnconfirm ? (
+                <Button variant="secondary" onClick={onUnconfirm}>
+                  解除
+                </Button>
+              ) : null
+            )}
           </div>
         ) : (
           <div className="action-buttons"></div>

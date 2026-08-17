@@ -252,7 +252,12 @@ export function useProgressRecords() {
         }
 
         for (const member of dbMembers) {
-          if ((cumulativeWorkTimeSummary[`member_${member.id}_${t.id}`] || 0) > 0) {
+          const isOngoing = project.projectType === 'ongoing';
+          const targetWorkTime = isOngoing
+            ? (workTimeSummary[`member_${member.id}_${t.id}`] || 0)
+            : (cumulativeWorkTimeSummary[`member_${member.id}_${t.id}`] || 0);
+
+          if (targetWorkTime > 0) {
             membersToProcess.add(`member_${member.id}`);
           }
         }
@@ -266,6 +271,7 @@ export function useProgressRecords() {
         }
 
         for (const r of taskMemberRecords) {
+          if (r.member_id) membersToProcess.add(`member_${r.member_id}`);
           if (r.staff_id) membersToProcess.add(`staff_${r.staff_id}`);
           if (r.client_id) membersToProcess.add(`outsource_${r.client_id}`);
         }

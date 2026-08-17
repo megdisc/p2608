@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip } from '../components/ui';
+import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
+import { getCurrentJSTMonth } from '../utils/date';
 import { useAlert } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
@@ -65,11 +66,22 @@ export function RewardAllocationPage() {
     setAllocationDrafts(allocs);
   }, [progressRecords]);
 
-  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value) setCurrentMonth(e.target.value);
-  };
+  const [confirmedMonths, setConfirmedMonths] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('monthly_settlement_confirmed');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const isConfirmed = useMemo(() => {
+    return confirmedMonths.includes(currentMonth);
+  }, [confirmedMonths, currentMonth]);
+
 
   const handleFinChange = (projectId: string, type: 'revenue' | 'expense' | 'reserve', subject: string, value: string | number) => {
+    if (isConfirmed) return;
     setFinancialDrafts(prev => {
       const existing = prev.find(f => f.project_id === projectId && f.type === type && f.subject === subject);
       if (existing) {
@@ -88,6 +100,7 @@ export function RewardAllocationPage() {
   };
 
   const handleAllocationChange = (id: string, value: string | number) => {
+    if (isConfirmed) return;
     setAllocationDrafts(prev => ({ ...prev, [id]: Number(value) || 0 }));
   };
 
@@ -96,6 +109,7 @@ export function RewardAllocationPage() {
   };
 
   const isModified = useMemo(() => {
+    if (isConfirmed) return false;
     for (const f of financialDrafts) {
       if (isAutoCalculatedSubject(f.subject)) continue;
       const orig = financials.find(o => o.project_id === f.project_id && o.type === f.type && o.subject === f.subject);
@@ -109,7 +123,7 @@ export function RewardAllocationPage() {
       }
     }
     return false;
-  }, [financialDrafts, financials, progressRecords, allocationDrafts]);
+  }, [financialDrafts, financials, progressRecords, allocationDrafts, isConfirmed]);
 
   const handleBatchSave = async () => {
     try {
@@ -139,6 +153,42 @@ export function RewardAllocationPage() {
       if (r.userId) allocs[r.id] = r.allocationAmount || 0;
     });
     setAllocationDrafts(allocs);
+  };
+
+  const handleConfirm = async () => {
+    const hasSurplusError = displayProjects.some(proj => {
+      const sumRev = proj.revenues.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const sumExp = proj.expenses.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const sumRes = proj.reserves.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      return (sumRev - sumExp - sumRes) !== 0;
+    });
+
+    if (hasSurplusError) {
+      showAlert('余剰が¥0でない案件があるため、確定できません。金額を調整してください。', 'error');
+      return;
+    }
+
+    if (isModified) {
+      await handleBatchSave();
+    }
+
+    setConfirmedMonths(prev => {
+      if (prev.includes(currentMonth)) return prev;
+      const next = [...prev, currentMonth];
+      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
+      return next;
+    });
+
+    showAlert(`${currentMonth}の月次精算を確定しました。`, 'success');
+  };
+
+  const handleUnconfirm = () => {
+    setConfirmedMonths(prev => {
+      const next = prev.filter(m => m !== currentMonth);
+      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
+      return next;
+    });
+    showAlert(`${currentMonth}の確定を解除しました。`, 'success');
   };
 
   const handleSort = (key: string) => {
@@ -440,8 +490,8 @@ export function RewardAllocationPage() {
                       {/* Revenue */}
                       <td>{rev?.subject || ''}</td>
                       <td>{rev ? (rev.billingDest || <span style={{ color: 'var(--color-text-muted)' }}>(未設定)</span>) : ''}</td>
-                      <td className={rev ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
-                        {rev ? <CurrencyInput value={rev.amount} onChange={val => handleFinChange(proj.id, 'revenue', rev.subject, val)} /> : null}
+                      <td className={rev ? (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                        {rev ? <CurrencyInput disabled={isConfirmed} value={rev.amount} onChange={val => handleFinChange(proj.id, 'revenue', rev.subject, val)} /> : null}
                       </td>
   
                       {/* Expense */}
@@ -449,24 +499,24 @@ export function RewardAllocationPage() {
                         {isFirstInSubjectGroup ? exp.subject : ''}
                       </td>
                       <td>{exp?.payee || ''}</td>
-                      <td className={exp ? (exp.isAutoCalculated ? undefined : (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
+                      <td className={exp ? (exp.isAutoCalculated ? undefined : (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
                         {exp ? (
                           exp.type === 'labor' ? (
-                            <CurrencyInput value={exp.amount} onChange={val => handleAllocationChange(exp.id, val)} />
+                            <CurrencyInput disabled={isConfirmed} value={exp.amount} onChange={val => handleAllocationChange(exp.id, val)} />
                           ) : exp.isAutoCalculated ? (
                             <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
                               ¥{exp.amount.toLocaleString()}
                             </span>
                           ) : (
-                            <CurrencyInput value={exp.amount} onChange={val => handleFinChange(proj.id, 'expense', exp.subject, val)} />
+                            <CurrencyInput disabled={isConfirmed} value={exp.amount} onChange={val => handleFinChange(proj.id, 'expense', exp.subject, val)} />
                           )
                         ) : null}
                       </td>
   
                       {/* Reserve */}
                       <td>{res?.subject || ''}</td>
-                      <td className={res ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
-                        {res ? <CurrencyInput value={res.amount} onChange={val => handleFinChange(proj.id, 'reserve', res.subject, val)} /> : null}
+                      <td className={res ? (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                        {res ? <CurrencyInput disabled={isConfirmed} value={res.amount} onChange={val => handleFinChange(proj.id, 'reserve', res.subject, val)} /> : null}
                       </td>
   
                       {/* Surplus */}
@@ -498,7 +548,7 @@ export function RewardAllocationPage() {
                 );
               }
 
-              if (totalSurplus !== 0) {
+              if (!isConfirmed && totalSurplus !== 0) {
                 return (
                   <Tooltip as="tbody" key={proj.id} text="余剰が¥0になるように、金額を調整してください。">
                     {rows}
@@ -517,20 +567,82 @@ export function RewardAllocationPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <input
-            type="month"
-            value={currentMonth}
-            onChange={handleMonthChange}
-            className="date-filter-pill"
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                if (currentMonth) {
+                  const [y, m] = currentMonth.split('-');
+                  const date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                  date.setMonth(date.getMonth() - 1);
+                  const newY = date.getFullYear();
+                  const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                  setCurrentMonth(`${newY}-${newM}`);
+                }
+              }}
+            >
+              ＜
+            </Button>
+            <MonthInput 
+              value={currentMonth || ''}
+              onChange={(val) => {
+                if (val) {
+                  setCurrentMonth(val);
+                }
+              }}
+              className="date-filter-pill"
+              style={{ width: 'auto', minWidth: '140px' }}
+            />
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                if (currentMonth) {
+                  const [y, m] = currentMonth.split('-');
+                  const date = new Date(parseInt(y), parseInt(m) - 1, 1);
+                  date.setMonth(date.getMonth() + 1);
+                  const newY = date.getFullYear();
+                  const newM = (date.getMonth() + 1).toString().padStart(2, '0');
+                  setCurrentMonth(`${newY}-${newM}`);
+                }
+              }}
+            >
+              ＞
+            </Button>
+            <Button 
+              variant="secondary"
+              style={{ 
+                padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)'
+              }}
+              onClick={() => {
+                setCurrentMonth(getCurrentJSTMonth());
+              }}
+              disabled={currentMonth === getCurrentJSTMonth()}
+            >
+              今月
+            </Button>
+          </div>
+          {isConfirmed && (
+            <span style={{ marginLeft: '12px', padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+              確定済
+            </span>
+          )}
         </div>
         <div className="action-buttons">
-          <Button variant="secondary" onClick={handleCancel} disabled={!isModified}>
+          <Button variant="secondary" onClick={handleCancel} disabled={isConfirmed || !isModified}>
             {BUTTON_LABELS.CANCEL || '取消'}
           </Button>
-          <Button variant="primary" onClick={handleBatchSave} disabled={!isModified}>
-            {BUTTON_LABELS.SAVE || '確定'}
+          <Button variant="primary" onClick={handleBatchSave} disabled={isConfirmed || !isModified}>
+            {BUTTON_LABELS.SAVE || '保存'}
           </Button>
+          {!isConfirmed ? (
+            <Button variant="primary" onClick={handleConfirm}>
+              確定
+            </Button>
+          ) : (
+            <Button variant="secondary" onClick={handleUnconfirm}>
+              解除
+            </Button>
+          )}
         </div>
         <div style={{ flex: 1 }}></div>
       </div>

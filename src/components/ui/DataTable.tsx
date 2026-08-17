@@ -629,7 +629,7 @@ export function DataTable<T extends { id: string }>({
                             }
                           }
                           
-                          const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                          const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                           
                           const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
                           const customStyle = {
@@ -686,7 +686,7 @@ export function DataTable<T extends { id: string }>({
                         borderBottomStyle = 'none';
                       }
                       
-                      const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                      const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                       
                       const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
                       const customStyle = {
@@ -766,7 +766,7 @@ export function DataTable<T extends { id: string }>({
                               }
                             }
                             
-                            const isInputColumn = highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
                             const customStyle = {

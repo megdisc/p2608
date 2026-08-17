@@ -459,6 +459,11 @@ th.sticky-right {
   white-space: nowrap;
 }
 
+.inline-input:disabled {
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
 .custom-checkbox {
   appearance: none;
   width: 18px;

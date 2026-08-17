@@ -69,10 +69,9 @@ export function RewardAllocationPage() {
   const [confirmedMonths, setConfirmedMonths] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('monthly_settlement_confirmed');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
   });
 
   const isConfirmed = useMemo(() => {
@@ -490,7 +489,7 @@ export function RewardAllocationPage() {
                       {/* Revenue */}
                       <td>{rev?.subject || ''}</td>
                       <td>{rev ? (rev.billingDest || <span style={{ color: 'var(--color-text-muted)' }}>(未設定)</span>) : ''}</td>
-                      <td className={rev ? (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                      <td className={rev ? (!isConfirmed ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
                         {rev ? <CurrencyInput disabled={isConfirmed} value={rev.amount} onChange={val => handleFinChange(proj.id, 'revenue', rev.subject, val)} /> : null}
                       </td>
   
@@ -499,7 +498,7 @@ export function RewardAllocationPage() {
                         {isFirstInSubjectGroup ? exp.subject : ''}
                       </td>
                       <td>{exp?.payee || ''}</td>
-                      <td className={exp ? (exp.isAutoCalculated ? undefined : (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
+                      <td className={exp ? (exp.isAutoCalculated || isConfirmed ? undefined : (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
                         {exp ? (
                           exp.type === 'labor' ? (
                             <CurrencyInput disabled={isConfirmed} value={exp.amount} onChange={val => handleAllocationChange(exp.id, val)} />
@@ -515,7 +514,7 @@ export function RewardAllocationPage() {
   
                       {/* Reserve */}
                       <td>{res?.subject || ''}</td>
-                      <td className={res ? (!isConfirmed && totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                      <td className={res ? (!isConfirmed ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
                         {res ? <CurrencyInput disabled={isConfirmed} value={res.amount} onChange={val => handleFinChange(proj.id, 'reserve', res.subject, val)} /> : null}
                       </td>
   
@@ -545,6 +544,14 @@ export function RewardAllocationPage() {
                       <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>¥{totalSurplus.toLocaleString()}</strong>
                     </td>
                   </tr>
+                );
+              }
+
+              if (isConfirmed) {
+                return (
+                  <Tooltip as="tbody" key={proj.id} text="確定済のため変更不可">
+                    {rows}
+                  </Tooltip>
                 );
               }
 
@@ -621,11 +628,6 @@ export function RewardAllocationPage() {
               今月
             </Button>
           </div>
-          {isConfirmed && (
-            <span style={{ marginLeft: '12px', padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
-              確定済
-            </span>
-          )}
         </div>
         <div className="action-buttons">
           <Button variant="secondary" onClick={handleCancel} disabled={isConfirmed || !isModified}>

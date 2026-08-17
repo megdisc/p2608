@@ -179,11 +179,14 @@ export function RewardAllocationPage() {
     const clientName = dbClients.find(c => c.id === projDbInfo?.customerId)?.name || '';
     const isOngoing = projDbInfo?.projectType === 'ongoing';
     
-    const revenues = (budgetDraft?.revenues || []).map(b => ({
-      subject: b.subject,
-      billingDest: clientName,
-      amount: Number(b.amount || 0)
-    }));
+    const revenues = (budgetDraft?.revenues || []).map(b => {
+      const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'revenue' && f.subject === b.subject);
+      return {
+        subject: b.subject,
+        billingDest: clientName,
+        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0)
+      };
+    });
 
     const nonLaborExpenses = [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].map(subj => {
       const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
@@ -253,7 +256,7 @@ export function RewardAllocationPage() {
         ? Math.floor((budgetAmount / numMembers) / 1000) * 1000 
         : 0;
       const totalMemberAlloc = memberPerPerson * numMembers;
-      const staffAlloc = budgetAmount - totalMemberAlloc;
+      const staffAlloc = outsourceRecords.length > 0 ? 0 : (budgetAmount - totalMemberAlloc);
 
       const subjectName = `労務費（${taskName}）`;
 
@@ -277,7 +280,7 @@ export function RewardAllocationPage() {
           id: o.id,
           subject: `外注加工費（${taskName}）`,
           payee: o.userName,
-          amount: customVal !== undefined ? customVal : 0,
+          amount: customVal !== undefined ? customVal : budgetAmount,
           type: 'labor',
           isAutoCalculated: false
         });
@@ -311,10 +314,13 @@ export function RewardAllocationPage() {
     if (otherExpense) expenses.push(otherExpense);
     expenses.push(...restNonLabor);
 
-    const reserves = (budgetDraft?.reserves || []).map(b => ({
-      subject: b.subject,
-      amount: Number(b.amount || 0)
-    }));
+    const reserves = (budgetDraft?.reserves || []).map(b => {
+      const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'reserve' && f.subject === b.subject);
+      return {
+        subject: b.subject,
+        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0)
+      };
+    });
 
     const [yearStr, monthStr] = currentMonth.split('-');
     const formattedProjectName = (isOngoing && yearStr && monthStr) 

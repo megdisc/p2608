@@ -532,3 +532,12 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-19', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4);
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-20', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 1);
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-20', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 1);
+
+-- === SEED DAILY WORK CONFIRMATIONS (<= 2026-08-16) ===
+INSERT INTO daily_work_confirmations (work_date) VALUES
+('2026-06-15'), ('2026-06-16'), ('2026-06-17'), ('2026-06-29'), ('2026-06-30'),
+('2026-08-01'), ('2026-08-02'), ('2026-08-03'), ('2026-08-04'), ('2026-08-05'),
+('2026-08-06'), ('2026-08-07'), ('2026-08-08'), ('2026-08-09'), ('2026-08-10'),
+('2026-08-11'), ('2026-08-12'), ('2026-08-13'), ('2026-08-14'), ('2026-08-15'),
+('2026-08-16')
+ON CONFLICT (work_date) DO NOTHING;

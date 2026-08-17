@@ -48,6 +48,7 @@ type DataPageProps<T> = {
   onConfirm?: () => void;
   onUnconfirm?: () => void;
   confirmDisabled?: boolean;
+  statusBadge?: React.ReactNode;
 };
 
 export function DataPage<T extends { id: string }>({ 
@@ -94,7 +95,8 @@ export function DataPage<T extends { id: string }>({
   isConfirmed,
   onConfirm,
   onUnconfirm,
-  confirmDisabled
+  confirmDisabled,
+  statusBadge
 }: DataPageProps<T>) {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -155,6 +157,7 @@ export function DataPage<T extends { id: string }>({
         onConfirm={onConfirm}
         onUnconfirm={onUnconfirm}
         confirmDisabled={confirmDisabled}
+        statusBadge={statusBadge}
       />
     </>
   );

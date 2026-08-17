@@ -47,7 +47,7 @@ export function DailyWorkRecordPage() {
 
   const handleConfirm = useCallback(async () => {
     if (!hasNonZeroRecords) {
-      showAlert('作業記録が存在しない（またはすべて0時間の）日付は確定不要です。', 'error');
+      showAlert('作業記録が存在しない（またはすべて0時間の）日付は確定対象外です。', 'error');
       return;
     }
     await confirmDate(currentDate);
@@ -61,17 +61,6 @@ export function DailyWorkRecordPage() {
 
   const canEditRow = useCallback(() => !isConfirmed, [isConfirmed]);
   const canDeleteRow = useCallback(() => !isConfirmed, [isConfirmed]);
-
-  const footerLeft = useMemo(() => {
-    if (!hasNonZeroRecords) {
-      return (
-        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
-          確定不要（作業データなし）
-        </span>
-      );
-    }
-    return undefined;
-  }, [hasNonZeroRecords]);
 
   const columns: Column<any>[] = [
     { 
@@ -160,6 +149,28 @@ export function DailyWorkRecordPage() {
     }
   };
 
+  const statusBadge = useMemo(() => {
+    if (!hasNonZeroRecords) {
+      return (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
+          対象外
+        </span>
+      );
+    }
+    if (isConfirmed) {
+      return (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+          確定済
+        </span>
+      );
+    }
+    return (
+      <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#fef3c7', color: '#92400e' }}>
+        暫定
+      </span>
+    );
+  }, [hasNonZeroRecords, isConfirmed]);
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -183,7 +194,7 @@ export function DailyWorkRecordPage() {
       onConfirm={handleConfirm}
       onUnconfirm={handleUnconfirm}
       confirmDisabled={!hasNonZeroRecords}
-      footerLeft={footerLeft}
+      statusBadge={statusBadge}
     />
   );
 }

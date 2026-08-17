@@ -79,6 +79,7 @@ type DataTableProps<T> = {
   onConfirm?: () => void;
   onUnconfirm?: () => void;
   confirmDisabled?: boolean;
+  statusBadge?: React.ReactNode;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -122,7 +123,8 @@ export function DataTable<T extends { id: string }>({
   isConfirmed,
   onConfirm,
   onUnconfirm,
-  confirmDisabled
+  confirmDisabled,
+  statusBadge
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -889,6 +891,7 @@ export function DataTable<T extends { id: string }>({
               >
                 今日
               </Button>
+              {statusBadge}
             </div>
           ) : showMonthFilter ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -946,6 +949,7 @@ export function DataTable<T extends { id: string }>({
               >
                 今月
               </Button>
+              {statusBadge}
             </div>
           ) : showYearFilter ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -991,6 +995,7 @@ export function DataTable<T extends { id: string }>({
               >
                 今年
               </Button>
+              {statusBadge}
             </div>
           ) : footerLeft ? (
             footerLeft

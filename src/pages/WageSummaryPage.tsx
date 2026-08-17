@@ -20,13 +20,24 @@ export function WageSummaryPage() {
     paginatedRows,
   } = useWageSummary();
   const { showAlert } = useAlert();
+
   useEffect(() => {
     fetchWageSummary(currentMonth).catch(() => {
       showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
   }, [currentMonth, fetchWageSummary, showAlert]);
 
-    const headerRows: HeaderCell[][] = [
+  const confirmedMonths = React.useMemo<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('monthly_settlement_confirmed');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
+  }, [currentMonth]);
+
+  const isConfirmed = confirmedMonths.includes(currentMonth);
+
+  const headerRows: HeaderCell[][] = [
     [
       { label: '氏名', rowSpan: 2, width: '200px', sortKey: 'name' },
       { label: '工賃', colSpan: 3 },
@@ -188,6 +199,15 @@ export function WageSummaryPage() {
             >
               今月
             </Button>
+            {isConfirmed ? (
+              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+                確定済
+              </span>
+            ) : (
+              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#fef3c7', color: '#92400e' }}>
+                暫定
+              </span>
+            )}
           </div>
         </div>
         <Pagination

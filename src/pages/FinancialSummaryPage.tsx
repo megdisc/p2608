@@ -67,6 +67,7 @@ export function FinancialSummaryPage() {
       { label: TABLE_COLUMNS.REVENUE, colSpan: 2 },
       { label: TABLE_COLUMNS.EXPENSE, colSpan: 6 },
       { label: TABLE_COLUMNS.RESERVE, colSpan: 3 },
+      { label: TABLE_COLUMNS.SURPLUS, rowSpan: 2 },
     ],
     [
       { label: TABLE_COLUMNS.SUBJECT_REVENUE_SALES },
@@ -94,35 +95,42 @@ export function FinancialSummaryPage() {
           {sortedData.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={12} className="empty-message">表示するデータがありません</td>
+                <td colSpan={13} className="empty-message">表示するデータがありません</td>
               </tr>
             </tbody>
           ) : (
             <tbody>
-              {sortedData.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.period}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{row.revTotal.toLocaleString()}</strong>
-                  </td>
-                  
-                  <td style={{ textAlign: 'right' }}>¥{row.expMaterial.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.expLaborMember.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{row.expTotal.toLocaleString()}</strong>
-                  </td>
-                  
-                  <td style={{ textAlign: 'right' }}>¥{row.resWage.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>¥{row.resEquipment.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{row.resTotal.toLocaleString()}</strong>
-                  </td>
-                </tr>
-              ))}
+              {sortedData.map((row) => {
+                const surplus = row.revTotal - (row.expTotal + row.resTotal);
+                return (
+                  <tr key={row.id}>
+                    <td>{row.period}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                      <strong>¥{row.revTotal.toLocaleString()}</strong>
+                    </td>
+                    
+                    <td style={{ textAlign: 'right' }}>¥{row.expMaterial.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.expLaborMember.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                      <strong>¥{row.expTotal.toLocaleString()}</strong>
+                    </td>
+                    
+                    <td style={{ textAlign: 'right' }}>¥{row.resWage.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right' }}>¥{row.resEquipment.toLocaleString()}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                      <strong>¥{row.resTotal.toLocaleString()}</strong>
+                    </td>
+
+                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                      <strong>¥{surplus.toLocaleString()}</strong>
+                    </td>
+                  </tr>
+                );
+              })}
               <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
                 <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   <strong>{currentYear}年累計</strong>
@@ -161,6 +169,10 @@ export function FinancialSummaryPage() {
                 </td>
                 <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   <strong>¥{totals.resTotal.toLocaleString()}</strong>
+                </td>
+
+                <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  <strong>¥{(totals.revTotal - (totals.expTotal + totals.resTotal)).toLocaleString()}</strong>
                 </td>
               </tr>
             </tbody>

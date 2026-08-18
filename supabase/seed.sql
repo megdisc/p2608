@@ -12,10 +12,10 @@ INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca
 INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上結衣', 'いのうえゆい', 'staff-002@example.com', '職員');
 INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田拓海', 'うえだたくみ', 'staff-003@example.com', '職員');
 
--- Base Wages
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000001', 100, '新人レベル');
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000002', 250, '中堅レベル');
-INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000003', 500, 'ベテランレベル');
+-- Wage Rates
+INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000001', 100, '新人レベル');
+INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000002', 250, '中堅レベル');
+INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000003', 500, 'ベテランレベル');
 -- Categories
 
 -- Locations
@@ -30,15 +30,15 @@ INSERT INTO base_wages (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-
 -- Stocktakings
 
 -- Members
-INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com', 'a1b2c3d4-0000-0000-0000-000000000001');
-INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
-INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
-INSERT INTO members (id, name, yomigana, role, email, base_wage_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com', 'a1b2c3d4-0000-0000-0000-000000000003');
+INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com', 'a1b2c3d4-0000-0000-0000-000000000001');
+INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com', 'a1b2c3d4-0000-0000-0000-000000000003');
 
--- Clients
-INSERT INTO clients (id, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
-INSERT INTO clients (id, name, yomigana, contact_person, phone) VALUES ('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', '清水蒼', '0698765432');
-INSERT INTO clients (id, name, yomigana, contact_person, phone) VALUES ('0ff5f11e-b752-4b06-aaab-86984a67eec7', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', '05011112222');
+-- Partners
+INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
+INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', '清水蒼', '0698765432');
+INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('0ff5f11e-b752-4b06-aaab-86984a67eec7', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', '05011112222');
 
 -- Skills
 INSERT INTO skills (id, name, yomigana, description) VALUES ('ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'ネットワーク設計', 'ねっとわーくせっけい', 'ネットワーク構成の設計・構築');
@@ -157,43 +157,43 @@ INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cd
 INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cdef-0123-456789abcdef', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa');
 
 -- Project Budgets
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '就労支援事業収益', 3300000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '就労支援事業収益', 3300000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 
 -- 完了案件の収支記録のシード
 INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', false, '2026-06-30');
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '就労支援事業収益', 350000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '外注加工費（サーバー構築）', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '就労支援事業収益', 350000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'expense', '外注加工費（サーバー構築）', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 300000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'reserve', '設備等修繕維持積立金', 50000);
 
 -- 新規サービスLP制作
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '就労支援事業収益', 1000000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '就労支援事業収益', 1000000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
 -- 完了案件の収支記録のシード (新規Webサービス開発支援)
 INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', false, '2026-06-30');
 
 -- 社内基幹システム移行
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '就労支援事業収益', 1200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'expense', '外注加工費（データ移行計画）', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1200000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '就労支援事業収益', 1200000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'expense', '外注加工費（データ移行計画）', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1200000);
 
 -- パンの販売・カフェ運営
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（製造業務）', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（販売・接客業務）', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（製造業務）', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（販売・接客業務）', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
 -- 社内業務マニュアル作成
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'revenue', '就労支援事業収益', 100000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費（利用者工賃）（マニュアル作成）', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'revenue', '就労支援事業収益', 100000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費（利用者工賃）（マニュアル作成）', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
 
 -- 基幹システム保守運用
-INSERT INTO project_budget_items (project_id, category, subject, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '就労支援事業収益', 500000);
-INSERT INTO project_budget_items (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃）（保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
+INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '就労支援事業収益', 500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃）（保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
 
 -- Add daily work records for 2026-06-29
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3) ON CONFLICT DO NOTHING;
@@ -456,63 +456,44 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-20', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 1);
 
 -- === SEED DAILY WORK CONFIRMATIONS (<= 2026-08-16) ===
-INSERT INTO daily_work_confirmations (work_date) VALUES
-('2026-06-15'), ('2026-06-16'), ('2026-06-17'), ('2026-06-29'), ('2026-06-30'),
-('2026-08-01'), ('2026-08-02'), ('2026-08-03'), ('2026-08-04'), ('2026-08-05'),
-('2026-08-06'), ('2026-08-07'), ('2026-08-08'), ('2026-08-09'), ('2026-08-10'),
-('2026-08-11'), ('2026-08-12'), ('2026-08-13'), ('2026-08-14'), ('2026-08-15'),
-('2026-08-16')
-ON CONFLICT (work_date) DO NOTHING;
+UPDATE daily_work_records SET is_confirmed = true WHERE date <= '2026-08-16';
 
--- === SEED MONTHLY SETTLEMENT CONFIRMATIONS (<= 2026-07) ===
-INSERT INTO monthly_settlement_confirmations (year_month) VALUES
-('2026-01'), ('2026-02'), ('2026-03'), ('2026-04'), ('2026-05'), ('2026-06'), ('2026-07')
-ON CONFLICT (year_month) DO NOTHING;
-
+-- === SEED MONTHLY SETTLEMENTS (<= 2026-07) ===
+INSERT INTO monthly_settlements (year_month, is_confirmed) VALUES
+('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true);
 
 -- === SEED MONTHLY WAGE RECORDS ===
-INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, wage_total, deduction_total, payment) VALUES
-('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-01', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('3042a15f-805d-482e-87e3-5a1b136c4451', '2026-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('7f5f196b-3a6b-4cfa-b7c3-eb329ba4e000', '2026-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('c9c7f1fa-e2b5-4df1-aa6d-a540faaa62ad', '2026-02', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('d6d8557b-7044-4909-9e57-98a17e669536', '2026-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('b9a01407-e335-4434-8931-5e735dc5fe7f', '2026-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('61ddfdcc-5451-4a4d-9e8e-474078a6295e', '2026-03', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('1e09b4ee-d18b-4661-a313-3ce8a4e030f9', '2026-03', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('3db6bc43-344a-428a-ba32-9f40cfbafa94', '2026-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('a4cd77bd-90fd-4e33-bfba-3154fa030ef1', '2026-04', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('5c461933-8b79-4236-b542-61059495be0b', '2026-04', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('035ca0c9-2740-4225-be33-3b6f04186e9e', '2026-04', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('020c0f31-5b26-46ad-87dd-acdf11c7573d', '2026-04', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('3af0ffdd-6af4-4bf6-ac12-d4dffd623e8c', '2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('4b7e4e6f-6da3-4602-b881-847457736534', '2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('7fbc0915-2966-42a5-9386-66a5f96cbd7b', '2026-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('0b6151e8-92f0-4e2b-9fcf-3d2df534bdd2', '2026-05', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('d3e89abe-6c97-4db2-9b63-b150b617265c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 0, 3150, 0, 3150),
-('2303c545-f66e-4281-8054-50556c339f5e', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 7125, 0, 7125),
-('959467f4-744a-4411-a8de-9a5ac099a0e0', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 1750, 0, 1750),
-('814bbf38-d47f-40e5-a6ee-08426717c202', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 3500, 0, 3500),
-('dcca4c16-23fa-487d-82a8-ab6e3c72dae3', '2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0),
-('5551e252-e3cb-4a10-a9af-57baf5990027', '2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0),
-('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0),
-('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0),
-('ccf50898-7814-4019-b0f6-100c538d7caa', '2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 25, 100, 2500, 147500, 150000, 0, 150000),
-('717f8429-0f28-4d4e-866f-8733804b1c51', '2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 25, 250, 6250, 143750, 150000, 0, 150000),
-('42d8e95e-52e5-40de-a06e-76f79ad68a01', '2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 15, 250, 3750, 146250, 150000, 0, 150000),
-('c42d5da8-a361-4344-88c1-9aeaedbe1c34', '2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 35, 500, 17500, 132500, 150000, 0, 150000)
+INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, wage_total, deduction_total, payment, is_confirmed) VALUES
+('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-01', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('3042a15f-805d-482e-87e3-5a1b136c4451', '2026-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('7f5f196b-3a6b-4cfa-b7c3-eb329ba4e000', '2026-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('c9c7f1fa-e2b5-4df1-aa6d-a540faaa62ad', '2026-02', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('d6d8557b-7044-4909-9e57-98a17e669536', '2026-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('b9a01407-e335-4434-8931-5e735dc5fe7f', '2026-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('61ddfdcc-5451-4a4d-9e8e-474078a6295e', '2026-03', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('1e09b4ee-d18b-4661-a313-3ce8a4e030f9', '2026-03', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('3db6bc43-344a-428a-ba32-9f40cfbafa94', '2026-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('a4cd77bd-90fd-4e33-bfba-3154fa030ef1', '2026-04', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('5c461933-8b79-4236-b542-61059495be0b', '2026-04', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('035ca0c9-2740-4225-be33-3b6f04186e9e', '2026-04', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('020c0f31-5b26-46ad-87dd-acdf11c7573d', '2026-04', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('3af0ffdd-6af4-4bf6-ac12-d4dffd623e8c', '2026-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('4b7e4e6f-6da3-4602-b881-847457736534', '2026-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('7fbc0915-2966-42a5-9386-66a5f96cbd7b', '2026-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('0b6151e8-92f0-4e2b-9fcf-3d2df534bdd2', '2026-05', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('d3e89abe-6c97-4db2-9b63-b150b617265c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 0, 3150, 0, 3150, true),
+('2303c545-f66e-4281-8054-50556c339f5e', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 7125, 0, 7125, true),
+('959467f4-744a-4411-a8de-9a5ac099a0e0', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 1750, 0, 1750, true),
+('814bbf38-d47f-40e5-a6ee-08426717c202', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 3500, 0, 3500, true),
+('dcca4c16-23fa-487d-82a8-ab6e3c72dae3', '2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
+('5551e252-e3cb-4a10-a9af-57baf5990027', '2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
+('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('ccf50898-7814-4019-b0f6-100c538d7caa', '2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 25, 100, 2500, 147500, 150000, 0, 150000, false),
+('717f8429-0f28-4d4e-866f-8733804b1c51', '2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 25, 250, 6250, 143750, 150000, 0, 150000, false),
+('42d8e95e-52e5-40de-a06e-76f79ad68a01', '2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 15, 250, 3750, 146250, 150000, 0, 150000, false),
+('c42d5da8-a361-4344-88c1-9aeaedbe1c34', '2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 35, 500, 17500, 132500, 150000, 0, 150000, false)
 ON CONFLICT (year_month, member_id) DO NOTHING;
-
--- === SEED MONTHLY WAGE CONFIRMATIONS (<= 2026-07) ===
-INSERT INTO monthly_wage_confirmations (id, year_month) VALUES
-('1d591590-6378-4f5b-b035-e7151f0479dc', '2026-01'),
-('737f0a4c-0369-4c3f-a364-d5f33f06110c', '2026-02'),
-('6c28f9f9-b780-437f-b6d4-a090794415ed', '2026-03'),
-('6f8d7833-30e8-4f2f-8033-2adcb3771267', '2026-04'),
-('1b62fb0e-753e-4959-91d6-168a678f3dc1', '2026-05'),
-('4fd9d573-33bc-40f6-8966-95a6568ff1bc', '2026-06'),
-('bde52205-5d0d-4d5c-a182-dc75d67b438d', '2026-07')
-ON CONFLICT (year_month) DO NOTHING;

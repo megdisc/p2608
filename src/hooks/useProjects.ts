@@ -13,7 +13,7 @@ export function useProjects() {
     try {
       setLoading(true);
       const [clientsRes, skillsRes, skillLevelsRes, projectsRes] = await Promise.all([
-        supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`

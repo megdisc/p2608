@@ -10,7 +10,7 @@ export function useClients() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('clients')
+        .from('partners')
         .select('*')
         .eq('is_deleted', false)
         .order('yomigana', { ascending: true });
@@ -38,7 +38,7 @@ export function useClients() {
       setLoading(true);
       
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('clients').update({ is_deleted: true }).in('id', deletedIds);
+        const { error } = await supabase.from('partners').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
       }
 
@@ -52,7 +52,7 @@ export function useClients() {
       }));
 
       if (upserts.length > 0) {
-        const { error } = await supabase.from('clients').upsert(upserts);
+        const { error } = await supabase.from('partners').upsert(upserts);
         if (error) throw error;
       }
 

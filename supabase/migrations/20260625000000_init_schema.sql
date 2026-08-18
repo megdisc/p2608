@@ -28,8 +28,8 @@ $$ LANGUAGE plpgsql;
 
 -- 3. テーブル定義
 
--- 3.1 base_wages (基本工賃単価マスタ)
-CREATE TABLE IF NOT EXISTS "public"."base_wages" (
+-- 3.1 wage_rates (工賃単価マスタ)
+CREATE TABLE IF NOT EXISTS "public"."wage_rates" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "member_id" UUID,
     "wage" NUMERIC(10,2) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "yomigana" TEXT,
     "role" TEXT DEFAULT '利用者',
     "email" TEXT,
-    "base_wage_id" UUID REFERENCES "public"."base_wages"("id") ON DELETE SET NULL,
+    "wage_rate_id" UUID REFERENCES "public"."wage_rates"("id") ON DELETE SET NULL,
     "contract_status" TEXT DEFAULT 'contracted',
     "contract_type" TEXT DEFAULT 'B型',
     "is_deleted" BOOLEAN DEFAULT false NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.2 staffs (職員基本情報)
+-- 3.3 staffs (職員基本情報)
 CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "code" TEXT,
@@ -69,8 +69,8 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.3 clients (取引先基本情報)
-CREATE TABLE IF NOT EXISTS "public"."clients" (
+-- 3.4 partners (取引先基本情報)
+CREATE TABLE IF NOT EXISTS "public"."partners" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "code" TEXT,
     "name" TEXT NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS "public"."clients" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.4 skills (スキル体系マスタ)
+-- 3.5 skills (スキル体系マスタ)
 CREATE TABLE IF NOT EXISTS "public"."skills" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS "public"."skills" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.5 skill_levels (スキルレベル定義)
+-- 3.6 skill_levels (スキルレベル定義)
 CREATE TABLE IF NOT EXISTS "public"."skill_levels" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "skill_id" UUID REFERENCES "public"."skills"("id") ON DELETE CASCADE,
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_levels" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.6 wage_items (工賃項目マスタ)
+-- 3.7 wage_items (工賃項目マスタ)
 CREATE TABLE IF NOT EXISTS "public"."wage_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS "public"."wage_items" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.7 wage_table_levels (基本工賃単価レベル)
+-- 3.8 wage_table_levels (基本工賃単価レベル)
 CREATE TABLE IF NOT EXISTS "public"."wage_table_levels" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "level" INTEGER NOT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS "public"."wage_table_levels" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.8 member_skill_evaluations (利用者スキル評価)
+-- 3.9 member_skill_evaluations (利用者スキル評価)
 CREATE TABLE IF NOT EXISTS "public"."member_skill_evaluations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
@@ -141,33 +141,22 @@ CREATE TABLE IF NOT EXISTS "public"."member_skill_evaluations" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.9 base_wage_assignments (利用者基本工賃割当)
-CREATE TABLE IF NOT EXISTS "public"."base_wage_assignments" (
+-- 3.10 member_wage_evaluations (利用者工賃単価評価)
+CREATE TABLE IF NOT EXISTS "public"."member_wage_evaluations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "wage_level_id" UUID REFERENCES "public"."wage_table_levels"("id") ON DELETE CASCADE,
-    "assigned_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "wage_rate_id" UUID REFERENCES "public"."wage_rates"("id") ON DELETE CASCADE,
+    "evaluated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.10 base_wages (基本工賃単価マスタ)
-CREATE TABLE IF NOT EXISTS "public"."base_wages" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "wage" NUMERIC(10,2) NOT NULL,
-    "effective_from" DATE DEFAULT CURRENT_DATE NOT NULL,
-    "description" TEXT,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.11 projects (プロジェクト基本情報)
+-- 3.11 projects (案件基本情報)
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "code" TEXT,
     "name" TEXT NOT NULL,
-    "client_id" UUID REFERENCES "public"."clients"("id") ON DELETE SET NULL,
+    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "start_date" VARCHAR(7),
     "end_date" VARCHAR(7),
     "project_type" TEXT DEFAULT 'one-off',
@@ -176,7 +165,7 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.12 project_tasks (プロジェクトタスク)
+-- 3.12 project_tasks (案件タスク)
 CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
@@ -206,13 +195,13 @@ CREATE TABLE IF NOT EXISTS "public"."project_task_assignees" (
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE SET NULL,
     "staff_id" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "client_id" UUID REFERENCES "public"."clients"("id") ON DELETE SET NULL,
+    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "assignee_type" TEXT DEFAULT 'member',
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.15 project_budget_items (プロジェクト予算)
-CREATE TABLE IF NOT EXISTS "public"."project_budget_items" (
+-- 3.15 project_budgets (案件予算)
+CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
@@ -223,27 +212,21 @@ CREATE TABLE IF NOT EXISTS "public"."project_budget_items" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.16 daily_work_records (日次作業記録)
+-- 3.16 daily_work_records (日次作業記録および確定)
 CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "date" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
     "work_time" NUMERIC(4,1) NOT NULL,
+    "is_confirmed" BOOLEAN DEFAULT false NOT NULL,
+    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
+    "confirmed_at" TIMESTAMPTZ,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.17 daily_work_confirmations (日次作業確定)
-CREATE TABLE IF NOT EXISTS "public"."daily_work_confirmations" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "work_date" DATE NOT NULL UNIQUE,
-    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.18 monthly_task_progress (月次タスク進捗)
+-- 3.17 monthly_task_progress (月次タスク進捗)
 CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" TEXT NOT NULL,
@@ -253,15 +236,21 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.19 monthly_settlement_confirmations (月次精算確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_settlement_confirmations" (
+-- 3.18 monthly_settlements (月次精算記録および確定)
+CREATE TABLE IF NOT EXISTS "public"."monthly_settlements" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL UNIQUE,
+    "year_month" VARCHAR(7) NOT NULL,
+    "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
+    "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE SET NULL,
+    "allocation_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "is_confirmed" BOOLEAN DEFAULT false NOT NULL,
     "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+    "confirmed_at" TIMESTAMPTZ,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.20 monthly_wage_records (工賃・控除明細記録)
+-- 3.19 monthly_wage_records (月次工賃記録および確定)
 CREATE TABLE IF NOT EXISTS "public"."monthly_wage_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" TEXT NOT NULL,
@@ -273,24 +262,20 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_wage_records" (
     "wage_total" INTEGER DEFAULT 0 NOT NULL,
     "deduction_total" INTEGER DEFAULT 0 NOT NULL,
     "payment" INTEGER DEFAULT 0 NOT NULL,
+    "is_confirmed" BOOLEAN DEFAULT false NOT NULL,
+    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
+    "confirmed_at" TIMESTAMPTZ,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     CONSTRAINT "monthly_wage_records_year_month_member_id_key" UNIQUE ("year_month", "member_id")
 );
 
--- 3.21 monthly_wage_confirmations (月次工賃確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_wage_confirmations" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" TEXT NOT NULL UNIQUE,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.22 financial_records (収支記録)
+-- 3.20 financial_records (収支記録)
 CREATE TABLE IF NOT EXISTS "public"."financial_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "period" DATE,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
-    "client_id" UUID REFERENCES "public"."clients"("id") ON DELETE SET NULL,
+    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "type" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "amount" NUMERIC(12,2) NOT NULL,

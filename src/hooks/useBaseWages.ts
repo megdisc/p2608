@@ -10,7 +10,7 @@ export function useBaseWages() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('base_wages')
+        .from('wage_rates')
         .select('*')
         .eq('is_deleted', false)
         .order('wage', { ascending: true });
@@ -36,7 +36,7 @@ export function useBaseWages() {
       setLoading(true);
       
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('base_wages').update({ is_deleted: true }).in('id', deletedIds);
+        const { error } = await supabase.from('wage_rates').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
       }
 
@@ -48,7 +48,7 @@ export function useBaseWages() {
       }));
 
       if (upserts.length > 0) {
-        const { error } = await supabase.from('base_wages').upsert(upserts);
+        const { error } = await supabase.from('wage_rates').upsert(upserts);
         if (error) throw error;
       }
 

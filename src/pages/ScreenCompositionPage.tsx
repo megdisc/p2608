@@ -87,6 +87,126 @@ export function ScreenCompositionPage() {
 
   const dbTables = [
     { 
+      physicalName: 'skills', 
+      tableType: 'マスタ',
+      logicalName: 'スキル', 
+      description: 'スキルのマスターデータ',
+      columns: [
+        { name: 'id', desc: 'スキルID' },
+        { name: 'name', desc: 'スキル名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'description', desc: 'スキルの説明' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'skill_levels', 
+      tableType: 'マスタ',
+      logicalName: 'スキルレベル', 
+      description: '各スキルのレベル定義',
+      columns: [
+        { name: 'id', desc: 'スキルレベルID' },
+        { name: 'level_value', desc: 'レベル数値' },
+        { name: 'description', desc: 'レベルの説明' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'wage_rates', 
+      tableType: 'マスタ',
+      logicalName: '工賃単価', 
+      description: '工賃単価のマスターデータ',
+      columns: [
+        { name: 'id', desc: '工賃単価ID' },
+        { name: 'wage', desc: '工賃単価' },
+        { name: 'description', desc: '説明・摘要' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'members', 
+      tableType: 'マスタ',
+      logicalName: '利用者', 
+      description: '案件に参加する利用者情報',
+      columns: [
+        { name: 'id', desc: '利用者ID' },
+        { name: 'name', desc: '利用者名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'role', desc: '権限ロール' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'wage_rate_id', desc: '工賃単価ID' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'member_skill_evaluations', 
+      tableType: 'トランザクション',
+      logicalName: '利用者スキル評価', 
+      description: '利用者の保有スキル評価',
+      columns: [
+        { name: 'id', desc: '評価ID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'skill_id', desc: 'スキルID' },
+        { name: 'skill_level_id', desc: 'スキルレベルID' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'member_wage_evaluations', 
+      tableType: 'トランザクション',
+      logicalName: '利用者工賃単価評価', 
+      description: '利用者の工賃単価評価・割当履歴',
+      columns: [
+        { name: 'id', desc: '評価ID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'wage_rate_id', desc: '工賃単価ID' },
+        { name: 'evaluated_at', desc: '評価日時' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'staffs', 
+      tableType: 'マスタ',
+      logicalName: '職員', 
+      description: 'システムを利用する職員情報',
+      columns: [
+        { name: 'id', desc: '職員ID' },
+        { name: 'name', desc: '職員名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'role', desc: '権限ロール' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'partners', 
+      tableType: 'マスタ',
+      logicalName: '取引先', 
+      description: '取引先情報',
+      columns: [
+        { name: 'id', desc: '取引先ID' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'contact_person', desc: '担当者名' },
+        { name: 'phone', desc: '電話番号' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'projects', 
       tableType: 'トランザクション',
       logicalName: '案件', 
@@ -127,6 +247,22 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      physicalName: 'project_budgets', 
+      tableType: 'トランザクション',
+      logicalName: '案件予算', 
+      description: '案件の予算（売上・原価・予備費）',
+      columns: [
+        { name: 'id', desc: '予算項目ID' },
+        { name: 'project_id', desc: '案件ID' },
+        { name: 'category', desc: '予算カテゴリ（売上/経費/予備費）' },
+        { name: 'subject', desc: '科目・内容' },
+        { name: 'task_id', desc: '関連タスクID' },
+        { name: 'amount', desc: '金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'project_task_skills', 
       tableType: 'トランザクション',
       logicalName: '案件タスクスキル', 
@@ -151,137 +287,15 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'project_budgets', 
+      physicalName: 'monthly_task_progress', 
       tableType: 'トランザクション',
-      logicalName: '案件予算', 
-      description: '案件の予算（売上・原価・予備費）',
+      logicalName: '月次タスク進捗', 
+      description: '月ごとのタスク進捗状況（進捗率など）',
       columns: [
-        { name: 'id', desc: '予算項目ID' },
-        { name: 'project_id', desc: '案件ID' },
-        { name: 'category', desc: '予算カテゴリ（売上/経費/予備費）' },
-        { name: 'subject', desc: '科目・内容' },
-        { name: 'task_id', desc: '関連タスクID' },
-        { name: 'amount', desc: '金額' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'members', 
-      tableType: 'マスタ',
-      logicalName: '利用者', 
-      description: '案件に参加する利用者情報',
-      columns: [
-        { name: 'id', desc: '利用者ID' },
-        { name: 'name', desc: '利用者名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'role', desc: '権限ロール' },
-        { name: 'email', desc: 'メールアドレス' },
-        { name: 'wage_rate_id', desc: '工賃単価ID' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'staffs', 
-      tableType: 'マスタ',
-      logicalName: '職員', 
-      description: 'システムを利用する職員情報',
-      columns: [
-        { name: 'id', desc: '職員ID' },
-        { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'role', desc: '権限ロール' },
-        { name: 'email', desc: 'メールアドレス' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'partners', 
-      tableType: 'マスタ',
-      logicalName: '取引先', 
-      description: '取引先情報',
-      columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'contact_person', desc: '担当者名' },
-        { name: 'phone', desc: '電話番号' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'skills', 
-      tableType: 'マスタ',
-      logicalName: 'スキル', 
-      description: 'スキルのマスターデータ',
-      columns: [
-        { name: 'id', desc: 'スキルID' },
-        { name: 'name', desc: 'スキル名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'description', desc: 'スキルの説明' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'skill_levels', 
-      tableType: 'マスタ',
-      logicalName: 'スキルレベル', 
-      description: '各スキルのレベル定義',
-      columns: [
-        { name: 'id', desc: 'スキルレベルID' },
-        { name: 'level_value', desc: 'レベル数値' },
-        { name: 'description', desc: 'レベルの説明' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'member_skill_evaluations', 
-      tableType: 'トランザクション',
-      logicalName: '利用者スキル評価', 
-      description: '利用者の保有スキル評価',
-      columns: [
-        { name: 'id', desc: '評価ID' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'skill_id', desc: 'スキルID' },
-        { name: 'skill_level_id', desc: 'スキルレベルID' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'wage_rates', 
-      tableType: 'マスタ',
-      logicalName: '工賃単価', 
-      description: '工賃単価のマスターデータ',
-      columns: [
-        { name: 'id', desc: '工賃単価ID' },
-        { name: 'wage', desc: '工賃単価' },
-        { name: 'description', desc: '説明・摘要' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'member_wage_evaluations', 
-      tableType: 'トランザクション',
-      logicalName: '利用者工賃単価評価', 
-      description: '利用者の工賃単価評価・割当履歴',
-      columns: [
-        { name: 'id', desc: '評価ID' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'wage_rate_id', desc: '工賃単価ID' },
-        { name: 'evaluated_at', desc: '評価日時' },
+        { name: 'id', desc: '進捗記録ID' },
+        { name: 'year_month', desc: '対象年月' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'current_progress', desc: '現在の進捗率(%)' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -345,21 +359,6 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    { 
-      physicalName: 'monthly_task_progress', 
-      tableType: 'トランザクション',
-      logicalName: '月次タスク進捗', 
-      description: '月ごとのタスク進捗状況（進捗率など）',
-      columns: [
-        { name: 'id', desc: '進捗記録ID' },
-        { name: 'year_month', desc: '対象年月' },
-        { name: 'task_id', desc: 'タスクID' },
-        { name: 'current_progress', desc: '現在の進捗率(%)' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-
     { 
       physicalName: 'financial_records', 
       tableType: 'トランザクション',

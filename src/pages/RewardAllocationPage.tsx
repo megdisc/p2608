@@ -187,7 +187,7 @@ export function RewardAllocationPage() {
     }
 
     try {
-      await supabase.from('monthly_settlement_confirmations').upsert({ year_month: currentMonth }, { onConflict: 'year_month' });
+      await supabase.from('monthly_settlements').upsert({ year_month: currentMonth, is_confirmed: true });
     } catch {}
 
     setConfirmedMonths(prev => {
@@ -202,7 +202,7 @@ export function RewardAllocationPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_settlement_confirmations').delete().eq('year_month', currentMonth);
+      await supabase.from('monthly_settlements').update({ is_confirmed: false }).eq('year_month', currentMonth);
     } catch {}
 
     setConfirmedMonths(prev => {

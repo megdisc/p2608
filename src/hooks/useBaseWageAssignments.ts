@@ -22,7 +22,7 @@ export function useBaseWageAssignments() {
 
       // Fetch base wages
       const { data: wagesData, error: wagesError } = await supabase
-        .from('base_wages')
+        .from('wage_rates')
         .select('*')
         .eq('is_deleted', false)
         .order('wage', { ascending: true });
@@ -41,7 +41,7 @@ export function useBaseWageAssignments() {
         yomigana: m.yomigana || '',
         role: m.role,
         email: m.email || '',
-        baseWageId: m.base_wage_id || undefined
+        baseWageId: m.wage_rate_id || undefined
       })));
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export function useBaseWageAssignments() {
         yomigana: d.yomigana,
         role: d.role,
         email: d.email,
-        base_wage_id: d.baseWageId || null,
+        wage_rate_id: d.baseWageId || null,
         updated_at: new Date().toISOString()
       })));
 

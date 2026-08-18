@@ -56,15 +56,15 @@ export function useWageSummary() {
         monthlyConfirmRes,
         wageConfirmRes
       ] = await Promise.all([
-        supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('members').select('*, wage_rates(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
-        supabase.from('project_budget_items').select('*').eq('category', 'expense'),
+        supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
-        supabase.from('daily_work_confirmations').select('work_date').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`),
-        supabase.from('monthly_settlement_confirmations').select('year_month').eq('year_month', monthStr),
-        supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr)
+        supabase.from('daily_work_records').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
+        supabase.from('monthly_settlements').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
+        supabase.from('monthly_wage_records').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -104,7 +104,7 @@ export function useWageSummary() {
 
       // Check daily work confirmations for dates with work_time > 0
       const workRecords = workRes.data || [];
-      const confirmedDateSet = new Set((dailyConfirmRes.data || []).map((d: any) => d.work_date));
+      const confirmedDateSet = new Set((dailyConfirmRes.data || []).map((d: any) => d.date));
 
       try {
         const savedDaily = localStorage.getItem('daily_work_confirmations');
@@ -134,8 +134,8 @@ export function useWageSummary() {
         
         let basicWage = null;
         let wageRate = null;
-        if (member.base_wages && typeof member.base_wages.wage === 'number') {
-          wageRate = member.base_wages.wage;
+        if (member.wage_rates && typeof member.wage_rates.wage === 'number') {
+          wageRate = member.wage_rates.wage;
           basicWage = Math.floor(wageRate * totalWorkTime);
         }
 
@@ -271,10 +271,11 @@ export function useWageSummary() {
 
       try {
         await supabase
-          .from('monthly_wage_confirmations')
-          .upsert({ year_month: monthStr }, { onConflict: 'year_month' });
+          .from('monthly_wage_records')
+          .update({ is_confirmed: true })
+          .eq('year_month', monthStr);
       } catch (e) {
-        console.warn('Could not upsert monthly_wage_confirmations:', e);
+        console.warn('Could not update monthly_wage_records confirmation:', e);
       }
 
       try {
@@ -369,10 +370,9 @@ export function useWageSummary() {
       setLoading(true);
 
       try {
-        await supabase.from('monthly_wage_confirmations').delete().eq('year_month', monthStr);
-        await supabase.from('monthly_wage_records').delete().eq('year_month', monthStr);
+        await supabase.from('monthly_wage_records').update({ is_confirmed: false }).eq('year_month', monthStr);
       } catch (e) {
-        console.warn('Could not delete wage confirmation records:', e);
+        console.warn('Could not update wage confirmation records:', e);
       }
 
       try {

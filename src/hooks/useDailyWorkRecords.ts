@@ -290,9 +290,9 @@ export function useDailyWorkRecords() {
 
   const fetchConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('daily_work_confirmations').select('work_date');
+      const { data, error } = await supabase.from('daily_work_records').select('date').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
-        const dbDates = data.map(d => d.work_date);
+        const dbDates = data.map(d => d.date);
         setConfirmedDates(prev => {
           const merged = Array.from(new Set([...prev, ...dbDates]));
           localStorage.setItem('daily_work_confirmations', JSON.stringify(merged));
@@ -312,7 +312,7 @@ export function useDailyWorkRecords() {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').upsert({ work_date: date }, { onConflict: 'work_date' });
+      await supabase.from('daily_work_records').update({ is_confirmed: true }).eq('date', date);
     } catch (err) {
       console.error('Error confirming date:', err);
     }
@@ -325,7 +325,7 @@ export function useDailyWorkRecords() {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').delete().eq('work_date', date);
+      await supabase.from('daily_work_records').update({ is_confirmed: false }).eq('date', date);
     } catch (err) {
       console.error('Error unconfirming date:', err);
     }

@@ -42,7 +42,7 @@ export function AssigneeAllocationPage() {
       setLoading(true);
       const [membersRes, clientsRes, projectsRes, evalsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('clients').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
           id, code, name, project_type, client_id, start_date, end_date,
           project_tasks (

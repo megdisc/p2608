@@ -26,7 +26,7 @@ export function useFinancialRecords(
           id, period, type, subject, amount, remarks, recorded_date, is_limited, activity_category,
           project:projects(id, name),
           staff:staffs(id, name),
-          client:clients(id, name)
+          client:partners(id, name)
         `, { count: 'exact' });
 
       if (currentYear) {
@@ -57,7 +57,7 @@ export function useFinancialRecords(
         query,
         supabase.from('projects').select('id, name, code').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('clients').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
+        supabase.from('partners').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
       ]);
 
       if (recError) throw recError;

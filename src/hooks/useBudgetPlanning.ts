@@ -38,7 +38,7 @@ export function useBudgetPlanning() {
       if (projectsError) throw projectsError;
 
       const { data: budgetsData, error: budgetsError } = await supabase
-        .from('project_budget_items')
+        .from('project_budgets')
         .select('*');
 
       if (budgetsError) throw budgetsError;
@@ -150,11 +150,11 @@ export function useBudgetPlanning() {
 
       for (const payload of upserts) {
         if (payload.id) {
-          const { error } = await supabase.from('project_budget_items').update({ amount: payload.amount }).eq('id', payload.id);
+          const { error } = await supabase.from('project_budgets').update({ amount: payload.amount }).eq('id', payload.id);
           if (error) throw error;
         } else {
           const { id, ...insertPayload } = payload;
-          const { error } = await supabase.from('project_budget_items').insert(insertPayload);
+          const { error } = await supabase.from('project_budgets').insert(insertPayload);
           if (error) throw error;
         }
       }

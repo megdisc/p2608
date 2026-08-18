@@ -9,7 +9,7 @@ export function MainFeaturesPage() {
     },
     { 
       name: '進捗・経費・精算管理機能', 
-      description: '案件タスクの進捗状況記録、材料費・経費の記録、および月次精算の確定を行う機能。', 
+      description: '案件タスクの進捗状況記録、材料費・経費の記録、および月次インセンティブ分配の確定を行う機能。', 
       screen: '案件管理画面' 
     },
     { 

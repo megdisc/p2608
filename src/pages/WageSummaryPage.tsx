@@ -33,7 +33,7 @@ export function WageSummaryPage() {
 
   const handleConfirm = async () => {
     if (!canConfirmWageSummary) {
-      showAlert('当該月の作業記録および案件の月次精算が確定済になった後のみ確定できます。', 'error');
+      showAlert('当該月の作業記録および案件の月次インセンティブ分配が確定済になった後のみ確定できます。', 'error');
       return;
     }
     try {
@@ -232,7 +232,7 @@ export function WageSummaryPage() {
               variant="primary"
               onClick={handleConfirm}
               disabled={!canConfirmWageSummary}
-              title={!canConfirmWageSummary ? '作業記録および月次精算が確定済になった後のみ確定できます' : undefined}
+              title={!canConfirmWageSummary ? '作業記録および月次インセンティブ分配が確定済になった後のみ確定できます' : undefined}
             >
               確定
             </Button>

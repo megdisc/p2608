@@ -77,7 +77,7 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('monthly_settlement_confirmations').select('year_month');
+      const { data, error } = await supabase.from('monthly_incentive_allocations').select('year_month').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
         const dbMonths = data.map(d => d.year_month);
         setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));
@@ -124,11 +124,10 @@ export function RewardAllocationPage() {
 
   const isModified = useMemo(() => {
     if (isConfirmed) return false;
-    for (const f of financialDrafts) {
-      if (isAutoCalculatedSubject(f.subject)) continue;
-      const orig = financials.find(o => o.project_id === f.project_id && o.type === f.type && o.subject === f.subject);
-      const origAmount = orig ? Number(orig.amount) || 0 : 0;
-      if (Number(f.amount) !== origAmount) return true;
+    for (const f of Object.values(financialDrafts)) {
+      const orig = financials.find(o => o.id === f.id);
+      if (!orig) return true;
+      if (f.amount !== orig.amount || f.subject !== orig.subject || f.type !== orig.type) return true;
     }
     for (const r of progressRecords) {
       if (r.userId) {
@@ -141,7 +140,7 @@ export function RewardAllocationPage() {
 
   const handleBatchSave = async () => {
     try {
-      const upsertFin = financialDrafts.filter(f => 
+      const upsertFin = Object.values(financialDrafts).filter(f => 
         !isAutoCalculatedSubject(f.subject) &&
         (!f.id.startsWith('TEMP') || f.amount > 0)
       );
@@ -187,27 +186,27 @@ export function RewardAllocationPage() {
     }
 
     try {
-      await supabase.from('monthly_settlements').upsert({ year_month: currentMonth, is_confirmed: true });
+      await supabase.from('monthly_incentive_allocations').upsert({ year_month: currentMonth, is_confirmed: true });
     } catch {}
 
     setConfirmedMonths(prev => {
       if (prev.includes(currentMonth)) return prev;
       const next = [...prev, currentMonth];
-      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
+      localStorage.setItem('monthly_incentive_allocation_confirmed', JSON.stringify(next));
       return next;
     });
 
-    showAlert(`${currentMonth}の月次精算を確定しました。`, 'success');
+    showAlert(`${currentMonth}の月次インセンティブ分配を確定しました。`, 'success');
   };
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_settlements').update({ is_confirmed: false }).eq('year_month', currentMonth);
+      await supabase.from('monthly_incentive_allocations').update({ is_confirmed: false }).eq('year_month', currentMonth);
     } catch {}
 
     setConfirmedMonths(prev => {
       const next = prev.filter(m => m !== currentMonth);
-      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
+      localStorage.setItem('monthly_incentive_allocation_confirmed', JSON.stringify(next));
       return next;
     });
     showAlert(`${currentMonth}の確定を解除しました。`, 'success');

@@ -153,8 +153,8 @@ export function useProgressRecords() {
       const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
       const [cTaskRes, pTaskRes, workTimeRes] = await Promise.all([
-        supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
+        supabase.from('project_task_progress').select('*').eq('year_month', monthStr),
+        supabase.from('project_task_progress').select('*').eq('year_month', prevMonthStr),
         supabase.from('daily_work_records').select('member_id, task_id, work_time, date').lt('date', endDate)
       ]);
       
@@ -468,7 +468,7 @@ export function useProgressRecords() {
       const promises = [];
 
       if (uniqueTaskUpserts.length > 0) {
-        promises.push(supabase.from('monthly_task_progress').upsert(uniqueTaskUpserts, { onConflict: 'year_month,task_id' }));
+        promises.push(supabase.from('project_task_progress').upsert(uniqueTaskUpserts, { onConflict: 'year_month,task_id' }));
       }
 
       if (projectTaskUpdates.length > 0) {

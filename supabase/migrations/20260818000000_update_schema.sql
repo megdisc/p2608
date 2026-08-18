@@ -28,8 +28,8 @@ ALTER TABLE IF EXISTS "public"."daily_work_records" ADD COLUMN IF NOT EXISTS "co
 ALTER TABLE IF EXISTS "public"."daily_work_records" ADD COLUMN IF NOT EXISTS "confirmed_at" TIMESTAMPTZ;
 DROP TABLE IF EXISTS "public"."daily_work_confirmations";
 
--- 4. Monthly Settlements table & drop separate settlement confirmations
-CREATE TABLE IF NOT EXISTS "public"."monthly_settlements" (
+-- 4. Monthly Incentive Allocations table & drop separate settlement confirmations
+CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_allocations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" VARCHAR(7) NOT NULL,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
@@ -42,6 +42,13 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_settlements" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 DROP TABLE IF EXISTS "public"."monthly_settlement_confirmations";
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'monthly_settlements') THEN
+    ALTER TABLE monthly_settlements RENAME TO monthly_incentive_allocations;
+  END IF;
+END $$;
 
 -- 5. Monthly Wage Records confirmation columns and drop separate wage confirmations
 ALTER TABLE IF EXISTS "public"."monthly_wage_records" ADD COLUMN IF NOT EXISTS "is_confirmed" BOOLEAN DEFAULT false NOT NULL;
@@ -59,10 +66,18 @@ CREATE TABLE IF NOT EXISTS "public"."member_wage_evaluations" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 7. Ensure RLS policies on new tables
-ALTER TABLE IF EXISTS "public"."monthly_settlements" ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Allow all access" ON "public"."monthly_settlements";
-CREATE POLICY "Allow all access" ON "public"."monthly_settlements" FOR ALL USING (true) WITH CHECK (true);
+-- 7. Rename monthly_task_progress to project_task_progress
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'monthly_task_progress') THEN
+    ALTER TABLE monthly_task_progress RENAME TO project_task_progress;
+  END IF;
+END $$;
+
+-- 8. Ensure RLS policies on new tables
+ALTER TABLE IF EXISTS "public"."monthly_incentive_allocations" ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all access" ON "public"."monthly_incentive_allocations";
+CREATE POLICY "Allow all access" ON "public"."monthly_incentive_allocations" FOR ALL USING (true) WITH CHECK (true);
 
 ALTER TABLE IF EXISTS "public"."member_wage_evaluations" ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow all access" ON "public"."member_wage_evaluations";

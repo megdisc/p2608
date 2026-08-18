@@ -81,7 +81,7 @@ export function ScreenCompositionPage() {
     { frequency: '毎月', name: '積立金確定', description: '月間の積立金を確定する。', implemented: false },
     { frequency: '毎月', name: '外注加工費確定', description: '月間の外注加工費を確定する。', implemented: false },
     { frequency: '毎月', name: '月次工賃・控除額確定', description: '各利用者の月次工賃や控除を集計・確定し、収支一覧に自動同期する。', implemented: true },
-    { frequency: '毎月', name: '月次精算確定', description: '各案件のタスク完了状況を確認し、月次精算を確定する。', implemented: true },
+    { frequency: '毎月', name: '月次インセンティブ分配確定', description: '各案件のタスク完了状況を確認し、月次インセンティブ分配を確定する。', implemented: true },
     { frequency: '毎月', name: '事業活動別収支集計', description: '就労支援事業活動および福祉事業活動ごとの月次収支を集計・参照する。', implemented: true },
   ];
 
@@ -287,9 +287,9 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'monthly_task_progress', 
+      physicalName: 'project_task_progress', 
       tableType: 'トランザクション',
-      logicalName: '月次タスク進捗', 
+      logicalName: '案件タスク進捗', 
       description: '月ごとのタスク進捗状況（進捗率など）',
       columns: [
         { name: 'id', desc: '進捗記録ID' },
@@ -319,10 +319,10 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'monthly_settlements', 
+      physicalName: 'monthly_incentive_allocations', 
       tableType: 'トランザクション',
-      logicalName: '月次精算記録', 
-      description: '月次精算（インセンティブ分配・進捗結果）および確定状態',
+      logicalName: '月次インセンティブ分配記録', 
+      description: '月次インセンティブ分配（インセンティブ分配・進捗結果）および確定状態',
       columns: [
         { name: 'id', desc: '精算記録ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },

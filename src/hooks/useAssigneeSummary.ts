@@ -47,7 +47,7 @@ export function useAssigneeSummary() {
           )
         `).eq('is_deleted', false),
         supabase.from('members').select('id, name, yomigana').eq('is_deleted', false),
-        supabase.from('monthly_task_progress').select('task_id, status, year_month')
+        supabase.from('project_task_progress').select('task_id, status, year_month')
       ]);
 
       if (projectsRes.error) throw projectsRes.error;

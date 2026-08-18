@@ -226,8 +226,8 @@ CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.17 monthly_task_progress (月次タスク進捗)
-CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
+-- 3.17 project_task_progress (案件タスク進捗)
+CREATE TABLE IF NOT EXISTS "public"."project_task_progress" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" TEXT NOT NULL,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
@@ -236,8 +236,8 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_task_progress" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.18 monthly_settlements (月次精算記録および確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_settlements" (
+-- 3.18 monthly_incentive_allocations (月次インセンティブ分配記録および確定)
+CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_allocations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" VARCHAR(7) NOT NULL,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,

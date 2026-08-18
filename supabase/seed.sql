@@ -378,39 +378,39 @@ INSERT INTO financial_records (period, project_id, client_id, type, subject, amo
 -- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
 
 -- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'canceled');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'canceled');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'canceled');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-06', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-07', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
-INSERT INTO monthly_task_progress (year_month, task_id, status) VALUES ('2026-08', 'a1234567-89ab-cdef-0123-456789abcdef', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'canceled');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 'canceled');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'canceled');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 'completed');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-06', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-07', 'a1234567-89ab-cdef-0123-456789abcdef', 'in_progress');
+INSERT INTO project_task_progress (year_month, task_id, status) VALUES ('2026-08', 'a1234567-89ab-cdef-0123-456789abcdef', 'completed');
 
 
 -- === GENERATED DAILY WORK RECORDS FOR 2026-08 ===
@@ -458,8 +458,8 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 -- === SEED DAILY WORK CONFIRMATIONS (<= 2026-08-16) ===
 UPDATE daily_work_records SET is_confirmed = true WHERE date <= '2026-08-16';
 
--- === SEED MONTHLY SETTLEMENTS (<= 2026-07) ===
-INSERT INTO monthly_settlements (year_month, is_confirmed) VALUES
+-- === SEED MONTHLY INCENTIVE ALLOCATIONS (<= 2026-07) ===
+INSERT INTO monthly_incentive_allocations (year_month, is_confirmed) VALUES
 ('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true);
 
 -- === SEED MONTHLY WAGE RECORDS ===

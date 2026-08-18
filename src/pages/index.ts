@@ -28,4 +28,5 @@ export * from './ScreenStaffPage';
 export * from './ScreenClientPage';
 export * from './ScreenSkillPage';
 export * from './ScreenWagePage';
+export * from './ScreenDailyWorkPage';
 export * from './DashboardPage';

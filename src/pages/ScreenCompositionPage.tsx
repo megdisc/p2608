@@ -49,12 +49,10 @@ const getFrequencyColor = (freq: string) => {
 };
 
 export function ScreenCompositionPage() {
-  const rows = Object.values(SCREEN_CONFIGS)
-    .filter(config => config.screenName !== PAGE_NAMES.SCREEN_COMPOSITION)
-    .map(config => ({
-      screen: config.screenName,
-      existing: config.tabs.map(t => t.label),
-    }));
+  const rows = Object.values(SCREEN_CONFIGS).map(config => ({
+    screen: config.screenName,
+    existing: config.tabs.map(t => t.label),
+  }));
 
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
@@ -485,9 +483,11 @@ export function ScreenCompositionPage() {
             </thead>
             <tbody>
               {rows.map((row, i) => {
-                const settingsTabs = row.existing.filter(item => getCategoryLabel(item) === SETTINGS_LABEL);
-                const recordingTabs = row.existing.filter(item => getCategoryLabel(item) === RECORDING_LABEL);
-                const aggregationTabs = row.existing.filter(item => getCategoryLabel(item) === AGGREGATION_LABEL);
+                const isNoTabScreen = [PAGE_NAMES.SCREEN_DASHBOARD, 'システム構成（開発用）', PAGE_NAMES.SCREEN_COMPOSITION].includes(row.screen);
+                const activeTabs = isNoTabScreen ? [] : row.existing;
+                const settingsTabs = activeTabs.filter(item => getCategoryLabel(item) === SETTINGS_LABEL);
+                const recordingTabs = activeTabs.filter(item => getCategoryLabel(item) === RECORDING_LABEL);
+                const aggregationTabs = activeTabs.filter(item => getCategoryLabel(item) === AGGREGATION_LABEL);
 
                 return (
                   <tr key={i}>

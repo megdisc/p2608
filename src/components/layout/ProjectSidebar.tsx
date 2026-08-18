@@ -28,10 +28,10 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_DASHBOARD}
           </button>
           <button 
-            className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'welfareFinancialSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('wageSummary')}
+            className={`nav-button ${['screenDailyWork', 'dailyWorkRecord'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dailyWorkRecord')}
           >
-            {PAGE_NAMES.SCREEN_FINANCE}
+            {PAGE_NAMES.SCREEN_DAILY_WORK}
           </button>
           <button 
             className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
@@ -40,8 +40,14 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
-            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'dailyWorkRecord', 'assigneeSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('dailyWorkRecord')}
+            className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'welfareFinancialSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('wageSummary')}
+          >
+            {PAGE_NAMES.SCREEN_FINANCE}
+          </button>
+          <button 
+            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'assigneeSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('assigneeSummary')}
           >
             {PAGE_NAMES.SCREEN_USER}
           </button>

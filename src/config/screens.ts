@@ -12,13 +12,16 @@ export type ScreenConfig = {
 };
 
 export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
-  SCREEN_FINANCE: {
-    screenName: PAGE_NAMES.SCREEN_FINANCE,
+  SCREEN_DASHBOARD: {
+    screenName: PAGE_NAMES.SCREEN_DASHBOARD,
     tabs: [
-      { id: 'financialRecord', label: PAGE_NAMES.FINANCIAL_RECORD },
-      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
-      { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
-      { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
+      { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
+    ],
+  },
+  SCREEN_DAILY_WORK: {
+    screenName: PAGE_NAMES.SCREEN_DAILY_WORK,
+    tabs: [
+      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
     ],
   },
   SCREEN_PROJECT: {
@@ -32,13 +35,21 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
+  SCREEN_FINANCE: {
+    screenName: PAGE_NAMES.SCREEN_FINANCE,
+    tabs: [
+      { id: 'financialRecord', label: PAGE_NAMES.FINANCIAL_RECORD },
+      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
+      { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
+      { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
+    ],
+  },
   SCREEN_USER: {
     screenName: PAGE_NAMES.SCREEN_USER,
     tabs: [
       { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
-      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
       { id: 'assigneeSummary', label: PAGE_NAMES.ASSIGNEE_SUMMARY },
     ],
   },
@@ -68,7 +79,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     ],
   },
   SCREEN_COMPOSITION: {
-    screenName: PAGE_NAMES.SCREEN_COMPOSITION,
+    screenName: 'システム構成（開発用）',
     tabs: [
       { id: 'screenComposition', label: PAGE_NAMES.TAB_SCREEN_COMPOSITION },
       { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },

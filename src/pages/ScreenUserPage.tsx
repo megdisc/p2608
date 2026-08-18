@@ -6,7 +6,6 @@ import { Tabs } from '../components/ui';
 import { ProjectUserPage } from './ProjectUserPage';
 import { SkillEvaluationPage } from './SkillEvaluationPage';
 import { BaseWageAssignmentPage } from './BaseWageAssignmentPage';
-import { DailyWorkRecordPage } from './DailyWorkRecordPage';
 import { AssigneeSummaryPage } from './AssigneeSummaryPage';
 
 export function ScreenUserPage() {
@@ -16,18 +15,16 @@ export function ScreenUserPage() {
 
   const renderContent = () => {
     switch (navContext.activeTab) {
+      case 'assigneeSummary':
+        return <AssigneeSummaryPage />;
       case 'projectUser':
         return <ProjectUserPage />;
       case 'skillEvaluation':
         return <SkillEvaluationPage />;
       case 'baseWageAssignment':
         return <BaseWageAssignmentPage />;
-      case 'dailyWorkRecord':
-        return <DailyWorkRecordPage />;
-      case 'assigneeSummary':
-        return <AssigneeSummaryPage />;
       default:
-        return <ProjectUserPage />;
+        return <AssigneeSummaryPage />;
     }
   };
 

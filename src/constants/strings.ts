@@ -36,7 +36,7 @@ export const WORDS_SYSTEM = {
   BASE_WAGE_ASSIGNMENT: '工賃単価評価',
   PROGRESS_STATUS: '進捗状況',
   REWARD_ALLOCATION: '月次精算',
-  FINANCIAL_SUMMARY: '就労支援事業活動収支',
+  FINANCIAL_SUMMARY: '就労支援事業活動収支（時期別）',
   WELFARE_FINANCIAL_SUMMARY: '福祉事業活動収支',
   WAGE_SUMMARY: '工賃・控除明細',
   SYSTEM_COMPOSITION: 'システム構成',

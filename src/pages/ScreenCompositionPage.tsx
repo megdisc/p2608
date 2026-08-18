@@ -89,17 +89,17 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'projects', 
       tableType: 'トランザクション',
-      logicalName: 'プロジェクト', 
-      description: 'プロジェクト基本情報',
+      logicalName: '案件', 
+      description: '案件基本情報',
       columns: [
-        { name: 'id', desc: 'プロジェクトID' },
+        { name: 'id', desc: '案件ID' },
         { name: 'code', desc: '案件コード' },
-        { name: 'name', desc: 'プロジェクト名' },
+        { name: 'name', desc: '案件名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'client_id', desc: '紐づく顧客ID' },
+        { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'start_date', desc: '開始日' },
         { name: 'end_date', desc: '終了予定日・終了日' },
-        { name: 'project_type', desc: 'プロジェクト種別' },
+        { name: 'project_type', desc: '案件種別' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -108,11 +108,11 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'project_tasks', 
       tableType: 'トランザクション',
-      logicalName: 'プロジェクトタスク', 
-      description: 'プロジェクト内の各タスク情報',
+      logicalName: '案件タスク', 
+      description: '案件内の各タスク情報',
       columns: [
         { name: 'id', desc: 'タスクID' },
-        { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'project_id', desc: '案件ID' },
         { name: 'code', desc: 'タスクコード' },
         { name: 'name', desc: 'タスク名' },
         { name: 'yomigana', desc: 'フリガナ' },
@@ -129,7 +129,7 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'project_task_skills', 
       tableType: 'トランザクション',
-      logicalName: 'プロジェクトタスクスキル', 
+      logicalName: '案件タスクスキル', 
       description: 'タスクに必要なスキルとレベル',
       columns: [
         { name: 'task_id', desc: 'タスクID' },
@@ -140,24 +140,24 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'project_task_assignees', 
       tableType: 'トランザクション',
-      logicalName: 'プロジェクトタスク担当者', 
-      description: 'タスクの割り当てメンバー',
+      logicalName: '案件タスク担当者', 
+      description: 'タスクの割り当て担当者',
       columns: [
         { name: 'id', desc: '割当ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'member_id', desc: '利用者ID' },
-        { name: 'client_id', desc: '顧客ID' },
-        { name: 'staff_id', desc: 'スタッフID' }
+        { name: 'client_id', desc: '取引先ID' },
+        { name: 'staff_id', desc: '職員ID' }
       ]
     },
     { 
-      physicalName: 'project_budget_items', 
+      physicalName: 'project_budgets', 
       tableType: 'トランザクション',
-      logicalName: 'プロジェクト予算項目', 
-      description: 'プロジェクトの予算（売上・原価・予備費）',
+      logicalName: '案件予算', 
+      description: '案件の予算（売上・原価・予備費）',
       columns: [
         { name: 'id', desc: '予算項目ID' },
-        { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'project_id', desc: '案件ID' },
         { name: 'category', desc: '予算カテゴリ（売上/経費/予備費）' },
         { name: 'subject', desc: '科目・内容' },
         { name: 'task_id', desc: '関連タスクID' },
@@ -169,15 +169,15 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'members', 
       tableType: 'マスタ',
-      logicalName: 'メンバー', 
-      description: 'プロジェクトに参加するメンバー情報',
+      logicalName: '利用者', 
+      description: '案件に参加する利用者情報',
       columns: [
         { name: 'id', desc: '利用者ID' },
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'role', desc: '権限ロール' },
         { name: 'email', desc: 'メールアドレス' },
-        { name: 'base_wage_id', desc: '基本給ID' },
+        { name: 'wage_rate_id', desc: '工賃単価ID' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -186,11 +186,11 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'staffs', 
       tableType: 'マスタ',
-      logicalName: 'スタッフ', 
-      description: 'システムを利用するスタッフ情報',
+      logicalName: '職員', 
+      description: 'システムを利用する職員情報',
       columns: [
-        { name: 'id', desc: 'スタッフID' },
-        { name: 'name', desc: 'スタッフ名' },
+        { name: 'id', desc: '職員ID' },
+        { name: 'name', desc: '職員名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'role', desc: '権限ロール' },
         { name: 'email', desc: 'メールアドレス' },
@@ -200,13 +200,13 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'clients', 
+      physicalName: 'partners', 
       tableType: 'マスタ',
-      logicalName: '顧客', 
-      description: '取引先・クライアント情報',
+      logicalName: '取引先', 
+      description: '取引先情報',
       columns: [
-        { name: 'id', desc: '顧客ID' },
-        { name: 'name', desc: '顧客・企業名' },
+        { name: 'id', desc: '取引先ID' },
+        { name: 'name', desc: '取引先・企業名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'contact_person', desc: '担当者名' },
         { name: 'phone', desc: '電話番号' },
@@ -247,8 +247,8 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'member_skill_evaluations', 
       tableType: 'トランザクション',
-      logicalName: 'メンバースキル評価', 
-      description: 'メンバーの保有スキル評価',
+      logicalName: '利用者スキル評価', 
+      description: '利用者の保有スキル評価',
       columns: [
         { name: 'id', desc: '評価ID' },
         { name: 'member_id', desc: '利用者ID' },
@@ -259,15 +259,29 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'base_wages', 
+      physicalName: 'wage_rates', 
       tableType: 'マスタ',
-      logicalName: '基本給', 
-      description: '基本給（標準単価）のマスターデータ',
+      logicalName: '工賃単価', 
+      description: '工賃単価のマスターデータ',
       columns: [
-        { name: 'id', desc: '基本給ID' },
-        { name: 'wage', desc: '基本給額' },
+        { name: 'id', desc: '工賃単価ID' },
+        { name: 'wage', desc: '工賃単価' },
         { name: 'description', desc: '説明・摘要' },
         { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'member_wage_evaluations', 
+      tableType: 'トランザクション',
+      logicalName: '利用者工賃単価評価', 
+      description: '利用者の工賃単価評価・割当履歴',
+      columns: [
+        { name: 'id', desc: '評価ID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'wage_rate_id', desc: '工賃単価ID' },
+        { name: 'evaluated_at', desc: '評価日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -276,39 +290,34 @@ export function ScreenCompositionPage() {
       physicalName: 'daily_work_records', 
       tableType: 'トランザクション',
       logicalName: '日次作業記録', 
-      description: 'メンバーの日々の作業実績（工数）',
+      description: '利用者の日々の作業実績（工数）および確定状態',
       columns: [
         { name: 'id', desc: '記録ID' },
         { name: 'date', desc: '作業日' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'work_time', desc: '作業時間' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'confirmed_at', desc: '確定日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
     { 
-      physicalName: 'daily_work_confirmations', 
+      physicalName: 'monthly_settlements', 
       tableType: 'トランザクション',
-      logicalName: '日次作業確定', 
-      description: '日次作業記録の確定状態管理',
+      logicalName: '月次精算記録', 
+      description: '月次精算（インセンティブ分配・進捗結果）および確定状態',
       columns: [
-        { name: 'id', desc: '確定ID' },
-        { name: 'work_date', desc: '対象作業日(YYYY-MM-DD)' },
-        { name: 'confirmed_by', desc: '確定スタッフID' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'monthly_settlement_confirmations', 
-      tableType: 'トランザクション',
-      logicalName: '月次精算確定', 
-      description: '月次精算（インセンティブ分配）の確定状態管理',
-      columns: [
-        { name: 'id', desc: '確定ID' },
+        { name: 'id', desc: '精算記録ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
-        { name: 'confirmed_by', desc: '確定スタッフID' },
+        { name: 'project_id', desc: '案件ID' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'allocation_amount', desc: '分配金額' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'confirmed_at', desc: '確定日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -316,8 +325,8 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'monthly_wage_records', 
       tableType: 'トランザクション',
-      logicalName: '月次工賃集計記録', 
-      description: '月ごとの各利用者の計算・支給工賃記録',
+      logicalName: '月次工賃記録', 
+      description: '月ごとの各利用者の計算・支給工賃記録および確定状態',
       columns: [
         { name: 'id', desc: '記録ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
@@ -329,19 +338,8 @@ export function ScreenCompositionPage() {
         { name: 'wage_total', desc: '支給工賃合計' },
         { name: 'deduction_total', desc: '控除合計' },
         { name: 'payment', desc: '差引支給額' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'monthly_wage_confirmations', 
-      tableType: 'トランザクション',
-      logicalName: '月次工賃確定', 
-      description: '月次工賃・控除計算の確定状態管理',
-      columns: [
-        { name: 'id', desc: '確定ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
-        { name: 'confirmed_by', desc: '確定スタッフID' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -365,13 +363,13 @@ export function ScreenCompositionPage() {
     { 
       physicalName: 'financial_records', 
       tableType: 'トランザクション',
-      logicalName: '財務記録', 
-      description: '確定した財務データ（売上・費用・積立金）',
+      logicalName: '収支記録', 
+      description: '確定した収支データ（売上・費用・積立金）',
       columns: [
-        { name: 'id', desc: '財務記録ID' },
+        { name: 'id', desc: '収支記録ID' },
         { name: 'period', desc: '対象期間（年月）' },
-        { name: 'project_id', desc: 'プロジェクトID' },
-        { name: 'client_id', desc: '顧客ID' },
+        { name: 'project_id', desc: '案件ID' },
+        { name: 'client_id', desc: '取引先ID' },
         { name: 'type', desc: '収支区分（revenue: 収益 / expense: 費用 / reserve: 積立金）' },
         { name: 'subject', desc: '科目・内容' },
         { name: 'amount', desc: '金額' },

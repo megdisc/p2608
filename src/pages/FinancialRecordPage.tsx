@@ -55,9 +55,9 @@ export function FinancialRecordPage() {
       inputType: 'select',
       options: [
         { label: '生産活動', value: 'production' },
-        { label: '福祉事業', value: 'welfare' }
+        { label: '福祉事業活動', value: 'welfare' }
       ],
-      render: (item) => item.activity_category === 'welfare' ? '福祉事業' : '生産活動'
+      render: (item) => item.activity_category === 'welfare' ? '福祉事業活動' : '生産活動'
     },
     {
       key: 'subject',
@@ -68,7 +68,7 @@ export function FinancialRecordPage() {
           return [
             { label: '', value: '' },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER },
-            { label: WORDS_PROJECT.SUBJECT_EXPENSE_DEDUCTION_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_DEDUCTION_MEMBER },
+            { label: WORDS_PROJECT.SUBJECT_DEDUCTION, value: WORDS_PROJECT.SUBJECT_DEDUCTION },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
@@ -102,7 +102,7 @@ export function FinancialRecordPage() {
       render: (item) => {
         if (
           item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
-          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_DEDUCTION_MEMBER
+          item.subject === WORDS_PROJECT.SUBJECT_DEDUCTION
         ) {
           return '利用者一括';
         }

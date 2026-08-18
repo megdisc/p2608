@@ -328,7 +328,7 @@ export function useWageSummary() {
           .from('financial_records')
           .select('id')
           .eq('period', periodDate)
-          .eq('subject', '控除（利用者工賃）')
+          .eq('subject', '控除')
           .limit(1);
 
         if (existingDedFin && existingDedFin.length > 0) {
@@ -336,7 +336,7 @@ export function useWageSummary() {
             .from('financial_records')
             .update({
               amount: totalDeduction,
-              activity_category: 'production',
+              activity_category: 'welfare',
               updated_at: new Date().toISOString()
             })
             .eq('id', existingDedFin[0].id);
@@ -346,10 +346,10 @@ export function useWageSummary() {
             .insert({
               period: periodDate,
               type: 'expense',
-              subject: '控除（利用者工賃）',
+              subject: '控除',
               amount: totalDeduction,
               recorded_date: new Date().toISOString().split('T')[0],
-              activity_category: 'production',
+              activity_category: 'welfare',
               is_limited: false
             });
         }

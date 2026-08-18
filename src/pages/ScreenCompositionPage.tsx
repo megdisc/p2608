@@ -1,6 +1,6 @@
 
 import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
-import { getScreenConfigForTab } from '../config';
+import { getScreenConfigForTab, SCREEN_CONFIGS } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 import { MainFeaturesPage } from './MainFeaturesPage';
@@ -10,8 +10,24 @@ const RECORDING_LABEL = `${MENU_CATEGORIES.RECORDING}（${MENU_SUBCATEGORIES.REC
 const SETTINGS_LABEL = `${MENU_CATEGORIES.SETTINGS}（${MENU_SUBCATEGORIES.SETTINGS}）`;
 
 const getCategoryLabel = (pageName: string) => {
-  const aggregations = [PAGE_NAMES.ASSIGNEE_SUMMARY, PAGE_NAMES.WAGE_SUMMARY, PAGE_NAMES.FINANCIAL_SUMMARY];
-  const recordings = [PAGE_NAMES.SKILL_EVALUATION, PAGE_NAMES.BASE_WAGE_ASSIGNMENT, PAGE_NAMES.PROJECT_INFO, PAGE_NAMES.BUDGET_PLANNING, PAGE_NAMES.ASSIGNEE_ALLOCATION, PAGE_NAMES.DAILY_WORK_RECORD, PAGE_NAMES.PROGRESS_RECORD, PAGE_NAMES.REWARD_ALLOCATION, PAGE_NAMES.FINANCIAL_RECORD];
+  const aggregations = [
+    PAGE_NAMES.ASSIGNEE_SUMMARY,
+    PAGE_NAMES.WAGE_SUMMARY,
+    PAGE_NAMES.FINANCIAL_SUMMARY,
+    PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY,
+  ];
+  const recordings = [
+    PAGE_NAMES.SKILL_EVALUATION,
+    PAGE_NAMES.BASE_WAGE_ASSIGNMENT,
+    PAGE_NAMES.PROJECT_INFO,
+    PAGE_NAMES.BUDGET_PLANNING,
+    PAGE_NAMES.ASSIGNEE_ALLOCATION,
+    PAGE_NAMES.DAILY_WORK_RECORD,
+    PAGE_NAMES.PROGRESS_RECORD,
+    PAGE_NAMES.PROJECT_FINANCIAL_RECORD,
+    PAGE_NAMES.REWARD_ALLOCATION,
+    PAGE_NAMES.FINANCIAL_RECORD,
+  ];
   
   if (aggregations.includes(pageName)) return AGGREGATION_LABEL;
   if (recordings.includes(pageName)) return RECORDING_LABEL;
@@ -33,48 +49,12 @@ const getFrequencyColor = (freq: string) => {
 };
 
 export function ScreenCompositionPage() {
-  const rows = [
-    {
-      screen: PAGE_NAMES.SCREEN_FINANCE,
-      existing: [PAGE_NAMES.FINANCIAL_RECORD, PAGE_NAMES.FINANCIAL_SUMMARY, PAGE_NAMES.WAGE_SUMMARY],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_PROJECT,
-      existing: [
-        PAGE_NAMES.PROJECT_INFO,
-        PAGE_NAMES.BUDGET_PLANNING,
-        PAGE_NAMES.ASSIGNEE_ALLOCATION,
-        PAGE_NAMES.PROGRESS_RECORD,
-        PAGE_NAMES.REWARD_ALLOCATION,
-      ],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_USER,
-      existing: [
-        PAGE_NAMES.PROJECT_USER,
-        PAGE_NAMES.SKILL_EVALUATION,
-        PAGE_NAMES.BASE_WAGE_ASSIGNMENT,
-        PAGE_NAMES.DAILY_WORK_RECORD,
-        PAGE_NAMES.ASSIGNEE_SUMMARY,
-      ],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_STAFF,
-      existing: [PAGE_NAMES.STAFF],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_CLIENT,
-      existing: [PAGE_NAMES.CLIENT],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_SKILL,
-      existing: [PAGE_NAMES.SKILL, PAGE_NAMES.SKILL_LEVEL],
-    },
-    {
-      screen: PAGE_NAMES.SCREEN_WAGE,
-      existing: [PAGE_NAMES.BASE_WAGE],
-    },
-  ];
+  const rows = Object.values(SCREEN_CONFIGS)
+    .filter(config => config.screenName !== PAGE_NAMES.SCREEN_COMPOSITION)
+    .map(config => ({
+      screen: config.screenName,
+      existing: config.tabs.map(t => t.label),
+    }));
 
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);

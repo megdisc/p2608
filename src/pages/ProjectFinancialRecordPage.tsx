@@ -7,6 +7,11 @@ import { useFinancialRecords } from '../hooks';
 import { getCurrentJSTDateOnly } from '../utils';
 
 export function ProjectFinancialRecordPage() {
+  const expenseSubjects = useMemo(() => [
+    WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL,
+    WORDS_PROJECT.SUBJECT_EXPENSE_OTHER
+  ], []);
+
   const { 
     items, 
     totalCount,
@@ -20,7 +25,11 @@ export function ProjectFinancialRecordPage() {
     loading, 
     fetchRecords, 
     batchSaveRecords 
-  } = useFinancialRecords({ key: 'period', direction: 'desc' });
+  } = useFinancialRecords({ 
+    initialSort: { key: 'period', direction: 'desc' },
+    type: 'expense',
+    subjects: expenseSubjects
+  });
   const { showAlert } = useAlert();
   const { user } = useAuth();
 
@@ -30,15 +39,8 @@ export function ProjectFinancialRecordPage() {
     });
   }, [fetchRecords, showAlert]);
 
-  const filteredItems = useMemo(() => {
-    return items.filter(item => 
-      item.type === 'expense' && 
-      (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER)
-    );
-  }, [items]);
-
   const sortedItems = useMemo(() => {
-    return [...filteredItems].sort((a, b) => {
+    return [...items].sort((a, b) => {
       if (sortConfig.key === 'period') {
         const pA = a.period || '';
         const pB = b.period || '';
@@ -53,7 +55,7 @@ export function ProjectFinancialRecordPage() {
       }
       return 0;
     });
-  }, [filteredItems, projects, sortConfig]);
+  }, [items, projects, sortConfig]);
 
   const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
 

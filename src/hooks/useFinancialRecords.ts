@@ -3,9 +3,14 @@ import { supabase } from '../lib';
 import type { FinancialRecordItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
 
-export function useFinancialRecords(
-  initialSort: { key: string, direction: 'asc' | 'desc' } = { key: 'period', direction: 'desc' }
-) {
+export type UseFinancialRecordsOptions = {
+  initialSort?: { key: string, direction: 'asc' | 'desc' };
+  type?: string;
+  subjects?: string[];
+};
+
+export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
+  const initialSort = options.initialSort || { key: 'period', direction: 'desc' };
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
   const [projects, setProjects] = useState<{id: string, name: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
@@ -31,6 +36,13 @@ export function useFinancialRecords(
 
       if (currentYear) {
         query = query.gte('period', `${currentYear}-01-01`).lte('period', `${currentYear}-12-31`);
+      }
+
+      if (options.type) {
+        query = query.eq('type', options.type);
+      }
+      if (options.subjects && options.subjects.length > 0) {
+        query = query.in('subject', options.subjects);
       }
 
       let dbSortKey = 'period';
@@ -92,7 +104,7 @@ export function useFinancialRecords(
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, sortConfig, currentYear]);
+  }, [page, pageSize, sortConfig, currentYear, options.type, options.subjects]);
 
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();

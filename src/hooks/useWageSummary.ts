@@ -290,6 +290,7 @@ export function useWageSummary() {
       } catch {}
 
       const totalLaborWage = data.reduce((sum, r) => sum + (r.wageTotal || 0), 0);
+      const totalDeduction = data.reduce((sum, r) => sum + (r.dedTotal || 0), 0);
       const periodDate = `${monthStr}-01`;
 
       try {
@@ -317,6 +318,36 @@ export function useWageSummary() {
               type: 'expense',
               subject: '労務費（利用者工賃）',
               amount: totalLaborWage,
+              recorded_date: new Date().toISOString().split('T')[0],
+              activity_category: 'production',
+              is_limited: false
+            });
+        }
+
+        const { data: existingDedFin } = await supabase
+          .from('financial_records')
+          .select('id')
+          .eq('period', periodDate)
+          .eq('subject', '控除（利用者工賃）')
+          .limit(1);
+
+        if (existingDedFin && existingDedFin.length > 0) {
+          await supabase
+            .from('financial_records')
+            .update({
+              amount: totalDeduction,
+              activity_category: 'production',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingDedFin[0].id);
+        } else {
+          await supabase
+            .from('financial_records')
+            .insert({
+              period: periodDate,
+              type: 'expense',
+              subject: '控除（利用者工賃）',
+              amount: totalDeduction,
               recorded_date: new Date().toISOString().split('T')[0],
               activity_category: 'production',
               is_limited: false

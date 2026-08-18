@@ -360,24 +360,7 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    { 
-      physicalName: 'monthly_member_contributions', 
-      tableType: 'トランザクション',
-      logicalName: '月次メンバー貢献度', 
-      description: '月ごとのメンバーの貢献度・報酬分配',
-      columns: [
-        { name: 'id', desc: '貢献度記録ID' },
-        { name: 'year_month', desc: '対象年月' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'task_id', desc: 'タスクID' },
-        { name: 'contribution_ratio', desc: '貢献度・分配率(%)' },
-        { name: 'staff_id', desc: 'スタッフID' },
-        { name: 'client_id', desc: '顧客ID' },
-        { name: 'deduction_amount', desc: '控除額' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
+
     { 
       physicalName: 'financial_records', 
       tableType: 'トランザクション',

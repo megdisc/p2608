@@ -152,27 +152,21 @@ export function useProgressRecords() {
       const nextYear = month === 12 ? year + 1 : year;
       const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
-      const [cTaskRes, pTaskRes, cMemRes, pMemRes, histMemRes, workTimeRes] = await Promise.all([
+      const [cTaskRes, pTaskRes, workTimeRes] = await Promise.all([
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
-        supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_member_contributions').select('*').eq('year_month', prevMonthStr),
-        supabase.from('monthly_member_contributions').select('*').lt('year_month', monthStr),
         supabase.from('daily_work_records').select('member_id, task_id, work_time, date').lt('date', endDate)
       ]);
       
       if (cTaskRes.error) throw cTaskRes.error;
       if (pTaskRes.error) throw pTaskRes.error;
-      if (cMemRes.error) throw cMemRes.error;
-      if (pMemRes.error) throw pMemRes.error;
-      if (histMemRes.error) throw histMemRes.error;
       if (workTimeRes.error) throw workTimeRes.error;
 
       setCurrentMonthTaskRecords(cTaskRes.data || []);
       setPrevMonthTaskRecords(pTaskRes.data || []);
-      setCurrentMonthMemberRecords(cMemRes.data || []);
-      setPrevMonthMemberRecords(pMemRes.data || []);
-      setHistoricalMemberRecords(histMemRes.data || []);
+      setCurrentMonthMemberRecords([]);
+      setPrevMonthMemberRecords([]);
+      setHistoricalMemberRecords([]);
 
       const timeMap: Record<string, number> = {};
       const cumulativeTimeMap: Record<string, number> = {};
@@ -439,9 +433,6 @@ export function useProgressRecords() {
       setLoading(true);
       
       const taskUpserts: any[] = [];
-      const taskDeletes: string[] = [];
-      const memberUpserts: any[] = [];
-      const memberDeletes: string[] = [];
       const projectTaskUpdates: any[] = [];
 
       for (const r of drafts) {
@@ -469,40 +460,15 @@ export function useProgressRecords() {
           }
         }
 
-        if (r.userId && r.taskId) {
-          const [type, id] = r.userId.split('_');
-          
-          if (r.isSaved || Number(r.allocationAmount) > 0) {
-            memberUpserts.push({
-              ...(r.isSaved && !r.id.startsWith('TEMP') && !r.id.startsWith('UNSAVED') ? { id: r.id } : {}),
-              year_month: currentMonth,
-              member_id: type === 'member' ? id : null,
-              staff_id: type === 'staff' ? id : null,
-              client_id: type === 'outsource' ? id : null,
-              task_id: r.taskId,
-              contribution_ratio: 0,
-              deduction_amount: Number(r.allocationAmount) || 0
-            });
-          }
-        }
+
       }
 
       const uniqueTaskUpserts = Array.from(new Map(taskUpserts.map(t => [t.task_id, t])).values());
 
       const promises = [];
 
-      if (taskDeletes.length > 0) {
-        promises.push(supabase.from('monthly_task_progress').delete().in('id', taskDeletes));
-      }
-      if (memberDeletes.length > 0) {
-        promises.push(supabase.from('monthly_member_contributions').delete().in('id', memberDeletes));
-      }
-      
       if (uniqueTaskUpserts.length > 0) {
         promises.push(supabase.from('monthly_task_progress').upsert(uniqueTaskUpserts, { onConflict: 'year_month,task_id' }));
-      }
-      if (memberUpserts.length > 0) {
-        promises.push(supabase.from('monthly_member_contributions').upsert(memberUpserts));
       }
 
       if (projectTaskUpdates.length > 0) {

@@ -51,7 +51,6 @@ export function useWageSummary() {
         budgetsRes,
         cTaskRes,
         pTaskRes,
-        cMemRes,
         workRes,
         dailyConfirmRes,
         monthlyConfirmRes,
@@ -62,7 +61,6 @@ export function useWageSummary() {
         supabase.from('project_budget_items').select('*').eq('category', 'expense'),
         supabase.from('monthly_task_progress').select('*').eq('year_month', monthStr),
         supabase.from('monthly_task_progress').select('*').eq('year_month', prevMonthStr),
-        supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('work_date').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`),
         supabase.from('monthly_settlement_confirmations').select('year_month').eq('year_month', monthStr),
@@ -74,7 +72,6 @@ export function useWageSummary() {
       if (budgetsRes.error) throw budgetsRes.error;
       if (cTaskRes.error) throw cTaskRes.error;
       if (pTaskRes.error) throw pTaskRes.error;
-      if (cMemRes.error) throw cMemRes.error;
       if (workRes.error) throw workRes.error;
 
       // Check monthly wage confirmation
@@ -129,7 +126,7 @@ export function useWageSummary() {
       const members = membersRes.data || [];
       const projects = projectsRes.data || [];
       const cTasks = cTaskRes.data || [];
-      const cMems = cMemRes.data || [];
+      const cMems: any[] = [];
 
       const rows: WageRow[] = members.map((member: any) => {
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];

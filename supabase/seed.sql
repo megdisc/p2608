@@ -63,6 +63,9 @@ INSERT INTO skill_levels (id, level_value, description) VALUES ('9b139db0-a352-4
 
 
 -- Projects
+INSERT INTO projects (id, name, code, project_type) VALUES ('00000000-0000-0000-0000-000000000001', 'その他', 'P-00A000', 'other') ON CONFLICT (id) DO NOTHING;
+INSERT INTO project_tasks (id, project_id, name, code) VALUES ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'その他作業', 'T-00A000') ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO projects (id, name, code, client_id, start_date, end_date) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'P-26A001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '2026-01', '2026-12');
 INSERT INTO project_tasks (id, project_id, name, code, assignee_type) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'T-26A001', 'internal');
 INSERT INTO project_task_skills (task_id, skill_id, skill_level_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb');

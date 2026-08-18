@@ -19,6 +19,7 @@ export * from './BaseWageAssignmentPage';
 export * from './SkillLevelPage';
 export * from './SkillEvaluationPage';
 export * from './FinancialSummaryPage';
+export * from './ProjectFinancialSummaryPage';
 export * from './ScreenCompositionPage';
 export * from './MainFeaturesPage';
 export * from './ScreenFinancePage';

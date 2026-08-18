@@ -456,11 +456,13 @@ export function ScreenCompositionPage() {
             </thead>
             <tbody>
               {dbTables.flatMap((table, i) =>
-                table.columns.map((col, idx) => (
-                  <tr key={`${i}-${idx}`}>
-                    {idx === 0 && (
-                      <>
-                        <td rowSpan={table.columns.length}>
+                table.columns.map((col, idx) => {
+                  const isLastInTable = idx === table.columns.length - 1;
+                  const borderBottomStyle = isLastInTable ? undefined : 'none';
+                  return (
+                    <tr key={`${i}-${idx}`}>
+                      <td style={{ borderBottom: borderBottomStyle }}>
+                        {idx === 0 ? (
                           <span style={{ 
                             display: 'inline-block', 
                             padding: 'var(--space-1) var(--space-2)', 
@@ -471,16 +473,22 @@ export function ScreenCompositionPage() {
                           }}>
                             {table.tableType}
                           </span>
-                        </td>
-                        <td rowSpan={table.columns.length} style={{ fontWeight: 'var(--weight-heading)' }}>{table.physicalName}</td>
-                        <td rowSpan={table.columns.length}>{table.logicalName}</td>
-                        <td rowSpan={table.columns.length}>{table.description}</td>
-                      </>
-                    )}
-                    <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
-                    <td style={{ color: 'var(--color-text-muted)' }}>{col.desc}</td>
-                  </tr>
-                ))
+                        ) : ''}
+                      </td>
+                      <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
+                        {idx === 0 ? table.physicalName : ''}
+                      </td>
+                      <td style={{ borderBottom: borderBottomStyle }}>
+                        {idx === 0 ? table.logicalName : ''}
+                      </td>
+                      <td style={{ borderBottom: borderBottomStyle }}>
+                        {idx === 0 ? table.description : ''}
+                      </td>
+                      <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
+                      <td style={{ color: 'var(--color-text-muted)' }}>{col.desc}</td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

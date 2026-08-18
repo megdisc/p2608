@@ -28,10 +28,13 @@ export function useWageSummary() {
 
   const [isMonthlySettlementConfirmed, setIsMonthlySettlementConfirmed] = useState(false);
   const [hasProvisionalDailyWork, setHasProvisionalDailyWork] = useState(false);
+  const [isWageSummaryConfirmedState, setIsWageSummaryConfirmedState] = useState(false);
 
-  const isWageSummaryConfirmed = useMemo(() => {
+  const canConfirmWageSummary = useMemo(() => {
     return isMonthlySettlementConfirmed && !hasProvisionalDailyWork;
   }, [isMonthlySettlementConfirmed, hasProvisionalDailyWork]);
+
+  const isWageSummaryConfirmed = isWageSummaryConfirmedState;
 
   const fetchWageSummary = useCallback(async (monthStr: string) => {
     try {
@@ -51,7 +54,8 @@ export function useWageSummary() {
         cMemRes,
         workRes,
         dailyConfirmRes,
-        monthlyConfirmRes
+        monthlyConfirmRes,
+        wageConfirmRes
       ] = await Promise.all([
         supabase.from('members').select('*, base_wages(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
@@ -61,7 +65,8 @@ export function useWageSummary() {
         supabase.from('monthly_member_contributions').select('*').eq('year_month', monthStr),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('work_date').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`),
-        supabase.from('monthly_settlement_confirmations').select('year_month').eq('year_month', monthStr)
+        supabase.from('monthly_settlement_confirmations').select('year_month').eq('year_month', monthStr),
+        supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -71,6 +76,19 @@ export function useWageSummary() {
       if (pTaskRes.error) throw pTaskRes.error;
       if (cMemRes.error) throw cMemRes.error;
       if (workRes.error) throw workRes.error;
+
+      // Check monthly wage confirmation
+      let wageConfirmed = false;
+      if (wageConfirmRes.data && wageConfirmRes.data.length > 0) {
+        wageConfirmed = true;
+      } else {
+        try {
+          const savedWage = localStorage.getItem('monthly_wage_confirmations');
+          const listWage = savedWage ? JSON.parse(savedWage) : [];
+          wageConfirmed = listWage.includes(monthStr);
+        } catch {}
+      }
+      setIsWageSummaryConfirmedState(wageConfirmed);
 
       // Check monthly settlement confirmation
       let monthlyConfirmed = false;
@@ -228,6 +246,123 @@ export function useWageSummary() {
     return sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   }, [sortedData, currentPage, pageSize]);
 
+  const confirmWageSummary = useCallback(async (monthStr: string) => {
+    try {
+      setLoading(true);
+
+      const wageRecords = data.map(r => ({
+        year_month: monthStr,
+        member_id: r.id,
+        work_time: r.workTime,
+        wage_rate: r.wageRate,
+        basic_wage: r.basicWage,
+        incentive_total: r.incentiveTotal,
+        wage_total: r.wageTotal,
+        deduction_total: r.dedTotal,
+        payment: r.payment
+      }));
+
+      if (wageRecords.length > 0) {
+        try {
+          await supabase
+            .from('monthly_wage_records')
+            .upsert(wageRecords, { onConflict: 'year_month,member_id' });
+        } catch (e) {
+          console.warn('Could not upsert monthly_wage_records:', e);
+        }
+      }
+
+      try {
+        await supabase
+          .from('monthly_wage_confirmations')
+          .upsert({ year_month: monthStr }, { onConflict: 'year_month' });
+      } catch (e) {
+        console.warn('Could not upsert monthly_wage_confirmations:', e);
+      }
+
+      try {
+        const saved = localStorage.getItem('monthly_wage_confirmations');
+        const list = saved ? JSON.parse(saved) : [];
+        if (!list.includes(monthStr)) {
+          list.push(monthStr);
+          localStorage.setItem('monthly_wage_confirmations', JSON.stringify(list));
+        }
+      } catch {}
+
+      const totalLaborWage = data.reduce((sum, r) => sum + (r.wageTotal || 0), 0);
+      const periodDate = `${monthStr}-01`;
+
+      try {
+        const { data: existingFin } = await supabase
+          .from('financial_records')
+          .select('id')
+          .eq('period', periodDate)
+          .eq('subject', '労務費（利用者工賃）')
+          .limit(1);
+
+        if (existingFin && existingFin.length > 0) {
+          await supabase
+            .from('financial_records')
+            .update({
+              amount: totalLaborWage,
+              activity_category: 'production',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingFin[0].id);
+        } else {
+          await supabase
+            .from('financial_records')
+            .insert({
+              period: periodDate,
+              type: 'expense',
+              subject: '労務費（利用者工賃）',
+              amount: totalLaborWage,
+              recorded_date: new Date().toISOString().split('T')[0],
+              activity_category: 'production',
+              is_limited: false
+            });
+        }
+      } catch (e) {
+        console.warn('Could not sync financial_records:', e);
+      }
+
+      setIsWageSummaryConfirmedState(true);
+    } catch (err) {
+      console.error('Error confirming wage summary:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [data]);
+
+  const cancelWageSummary = useCallback(async (monthStr: string) => {
+    try {
+      setLoading(true);
+
+      try {
+        await supabase.from('monthly_wage_confirmations').delete().eq('year_month', monthStr);
+        await supabase.from('monthly_wage_records').delete().eq('year_month', monthStr);
+      } catch (e) {
+        console.warn('Could not delete wage confirmation records:', e);
+      }
+
+      try {
+        const saved = localStorage.getItem('monthly_wage_confirmations');
+        if (saved) {
+          const list = JSON.parse(saved).filter((m: string) => m !== monthStr);
+          localStorage.setItem('monthly_wage_confirmations', JSON.stringify(list));
+        }
+      } catch {}
+
+      setIsWageSummaryConfirmedState(false);
+    } catch (err) {
+      console.error('Error canceling wage summary:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     data,
     loading,
@@ -238,12 +373,16 @@ export function useWageSummary() {
     sortConfig,
     handleSort,
     fetchWageSummary,
+    confirmWageSummary,
+    cancelWageSummary,
     sortedData,
     totalPages,
     paginatedRows,
     pageSize,
+    canConfirmWageSummary,
     isWageSummaryConfirmed,
     isMonthlySettlementConfirmed,
     hasProvisionalDailyWork
   };
 }
+

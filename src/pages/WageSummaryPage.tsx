@@ -16,8 +16,11 @@ export function WageSummaryPage() {
     sortConfig,
     handleSort,
     fetchWageSummary,
+    confirmWageSummary,
+    cancelWageSummary,
     totalPages,
     paginatedRows,
+    canConfirmWageSummary,
     isWageSummaryConfirmed
   } = useWageSummary();
   const { showAlert } = useAlert();
@@ -27,6 +30,28 @@ export function WageSummaryPage() {
       showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
   }, [currentMonth, fetchWageSummary, showAlert]);
+
+  const handleConfirm = async () => {
+    if (!canConfirmWageSummary) {
+      showAlert('当該月の作業記録および案件の月次精算が確定済になった後のみ確定できます。', 'error');
+      return;
+    }
+    try {
+      await confirmWageSummary(currentMonth);
+      showAlert(MESSAGES.SAVE_SUCCESS || '確定・保存が完了しました。', 'success');
+    } catch {
+      showAlert(MESSAGES.SAVE_ERROR || '確定処理に失敗しました。', 'error');
+    }
+  };
+
+  const handleUnconfirm = async () => {
+    try {
+      await cancelWageSummary(currentMonth);
+      showAlert('確定を解除しました。', 'success');
+    } catch {
+      showAlert('解除処理に失敗しました。', 'error');
+    }
+  };
 
   const headerRows: HeaderCell[][] = [
     [
@@ -200,6 +225,22 @@ export function WageSummaryPage() {
               </span>
             )}
           </div>
+        </div>
+        <div className="action-buttons">
+          {!isWageSummaryConfirmed ? (
+            <Button
+              variant="primary"
+              onClick={handleConfirm}
+              disabled={!canConfirmWageSummary}
+              title={!canConfirmWageSummary ? '作業記録および月次精算が確定済になった後のみ確定できます' : undefined}
+            >
+              確定
+            </Button>
+          ) : (
+            <Button variant="secondary" onClick={handleUnconfirm}>
+              解除
+            </Button>
+          )}
         </div>
         <Pagination
           currentPage={currentPage}

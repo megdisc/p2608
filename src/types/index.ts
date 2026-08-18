@@ -95,7 +95,22 @@ export type FinancialRecordItem = {
   recordedDate: string;
   recordedBy: string;
   isLimited: boolean;
+  activity_category?: 'production' | 'welfare';
 };
+
+export type MonthlyWageRecord = {
+  id: string;
+  yearMonth: string;
+  memberId: string;
+  workTime: number;
+  wageRate: number | null;
+  basicWage: number | null;
+  incentiveTotal: number;
+  wageTotal: number;
+  deductionTotal: number;
+  payment: number;
+};
+
 
 export type BudgetCategory = 'revenue' | 'expense' | 'reserve';
 

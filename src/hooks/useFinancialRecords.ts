@@ -23,7 +23,7 @@ export function useFinancialRecords(
     try {
       setLoading(true);
       let query = supabase.from('financial_records').select(`
-          id, period, type, subject, amount, remarks, recorded_date, is_limited,
+          id, period, type, subject, amount, remarks, recorded_date, is_limited, activity_category,
           project:projects(id, name),
           staff:staffs(id, name),
           client:clients(id, name)
@@ -38,7 +38,7 @@ export function useFinancialRecords(
       else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
       else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
-      else if (['period', 'type', 'subject', 'amount', 'remarks', 'is_limited'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
+      else if (['period', 'type', 'subject', 'amount', 'remarks', 'is_limited', 'activity_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
 
       query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
       if (dbSortKey !== 'recorded_date') {
@@ -77,7 +77,8 @@ export function useFinancialRecords(
           remarks: r.remarks || '',
           recordedDate: r.recorded_date,
           recordedBy: r.staff?.id || '',
-          isLimited: r.is_limited
+          isLimited: r.is_limited,
+          activity_category: r.activity_category || 'production'
         }));
         setItems(mapped);
       }
@@ -108,7 +109,8 @@ export function useFinancialRecords(
       remarks: d.remarks || null,
       recorded_date: d.recordedDate || today,
       recorded_by: d.recordedBy || null,
-      is_limited: d.isLimited || false
+      is_limited: d.isLimited || false,
+      activity_category: d.activity_category || 'production'
     }));
 
     if (upserts.length > 0) {

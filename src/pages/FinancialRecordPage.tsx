@@ -62,6 +62,17 @@ export function FinancialRecordPage() {
       }
     },
     {
+      key: 'activity_category',
+      header: '事業区分',
+      editable: true,
+      inputType: 'select',
+      options: [
+        { label: '生産活動', value: 'production' },
+        { label: '福祉事業', value: 'welfare' }
+      ],
+      render: (item) => item.activity_category === 'welfare' ? '福祉事業' : '生産活動'
+    },
+    {
       key: 'subject',
       header: TABLE_COLUMNS.SUBJECT,
       editable: true,
@@ -181,6 +192,7 @@ export function FinancialRecordPage() {
     projectId: '',
     clientId: '',
     type: 'revenue',
+    activity_category: 'production',
     subject: '',
     amount: 0,
     recordedDate: getCurrentJSTDateOnly(),

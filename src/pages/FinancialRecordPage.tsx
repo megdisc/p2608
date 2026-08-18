@@ -68,7 +68,6 @@ export function FinancialRecordPage() {
           return [
             { label: '', value: '' },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER },
-            { label: WORDS_PROJECT.SUBJECT_DEDUCTION, value: WORDS_PROJECT.SUBJECT_DEDUCTION },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
@@ -83,7 +82,8 @@ export function FinancialRecordPage() {
         }
         return [
           { label: '', value: '' },
-          { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES }
+          { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES },
+          { label: WORDS_PROJECT.SUBJECT_DEDUCTION, value: WORDS_PROJECT.SUBJECT_DEDUCTION }
         ];
       }
     },

@@ -335,6 +335,7 @@ export function useWageSummary() {
           await supabase
             .from('financial_records')
             .update({
+              type: 'revenue',
               amount: totalDeduction,
               activity_category: 'welfare',
               updated_at: new Date().toISOString()
@@ -345,7 +346,7 @@ export function useWageSummary() {
             .from('financial_records')
             .insert({
               period: periodDate,
-              type: 'expense',
+              type: 'revenue',
               subject: '控除',
               amount: totalDeduction,
               recorded_date: new Date().toISOString().split('T')[0],

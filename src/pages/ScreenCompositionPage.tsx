@@ -92,6 +92,7 @@ export function ScreenCompositionPage() {
       description: 'プロジェクト基本情報',
       columns: [
         { name: 'id', desc: 'プロジェクトID' },
+        { name: 'code', desc: '案件コード' },
         { name: 'name', desc: 'プロジェクト名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'client_id', desc: '紐づく顧客ID' },
@@ -111,8 +112,13 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: 'タスクID' },
         { name: 'project_id', desc: 'プロジェクトID' },
+        { name: 'code', desc: 'タスクコード' },
         { name: 'name', desc: 'タスク名' },
         { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'assignee_type', desc: '担当者区分（利用者/職員/外部等）' },
+        { name: 'status', desc: 'ステータス' },
+        { name: 'labor_budget', desc: '人件費予算' },
+        { name: 'completed_at', desc: '完了日時' },
         { name: 'is_canceled', desc: 'キャンセルフラグ' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
@@ -281,6 +287,66 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      physicalName: 'daily_work_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '日次作業確定', 
+      description: '日次作業記録の確定状態管理',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'work_date', desc: '対象作業日(YYYY-MM-DD)' },
+        { name: 'confirmed_by', desc: '確定スタッフID' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_settlement_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '月次精算確定', 
+      description: '月次精算（インセンティブ分配）の確定状態管理',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'confirmed_by', desc: '確定スタッフID' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_wage_records', 
+      tableType: 'トランザクション',
+      logicalName: '月次工賃集計記録', 
+      description: '月ごとの各利用者の計算・支給工賃記録',
+      columns: [
+        { name: 'id', desc: '記録ID' },
+        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'work_time', desc: '総作業時間' },
+        { name: 'wage_rate', desc: '工賃単価' },
+        { name: 'basic_wage', desc: '基本支給額' },
+        { name: 'incentive_total', desc: 'インセンティブ合計' },
+        { name: 'wage_total', desc: '支給工賃合計' },
+        { name: 'deduction_total', desc: '控除合計' },
+        { name: 'payment', desc: '差引支給額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_wage_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '月次工賃確定', 
+      description: '月次工賃・控除計算の確定状態管理',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'confirmed_by', desc: '確定スタッフID' },
+        { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'monthly_task_progress', 
       tableType: 'トランザクション',
       logicalName: '月次タスク進捗', 
@@ -316,17 +382,20 @@ export function ScreenCompositionPage() {
       physicalName: 'financial_records', 
       tableType: 'トランザクション',
       logicalName: '財務記録', 
-      description: '確定した財務データ（売上・経費等）',
+      description: '確定した財務データ（売上・費用・積立金）',
       columns: [
         { name: 'id', desc: '財務記録ID' },
         { name: 'period', desc: '対象期間（年月）' },
         { name: 'project_id', desc: 'プロジェクトID' },
-        { name: 'type', desc: '収支タイプ（収入/支出）' },
+        { name: 'client_id', desc: '顧客ID' },
+        { name: 'type', desc: '収支区分（revenue: 収益 / expense: 費用 / reserve: 積立金）' },
         { name: 'subject', desc: '科目・内容' },
         { name: 'amount', desc: '金額' },
-        { name: 'recorded_date', desc: '計上日' },
+        { name: 'remarks', desc: '備考' },
+        { name: 'recorded_date', desc: '発生日・計上日' },
         { name: 'recorded_by', desc: '記録者ID' },
         { name: 'is_limited', desc: '限定公開フラグ' },
+        { name: 'activity_category', desc: '事業区分（production: 就労支援事業活動 / welfare: 福祉事業活動）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -391,7 +460,7 @@ export function ScreenCompositionPage() {
                   <tr key={`${i}-${idx}`}>
                     {idx === 0 && (
                       <>
-                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>
+                        <td rowSpan={table.columns.length}>
                           <span style={{ 
                             display: 'inline-block', 
                             padding: 'var(--space-1) var(--space-2)', 
@@ -403,13 +472,13 @@ export function ScreenCompositionPage() {
                             {table.tableType}
                           </span>
                         </td>
-                        <td rowSpan={table.columns.length} style={{ fontWeight: 'var(--weight-heading)', verticalAlign: 'top' }}>{table.physicalName}</td>
-                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.logicalName}</td>
-                        <td rowSpan={table.columns.length} style={{ verticalAlign: 'top' }}>{table.description}</td>
+                        <td rowSpan={table.columns.length} style={{ fontWeight: 'var(--weight-heading)' }}>{table.physicalName}</td>
+                        <td rowSpan={table.columns.length}>{table.logicalName}</td>
+                        <td rowSpan={table.columns.length}>{table.description}</td>
                       </>
                     )}
-                    <td style={{ verticalAlign: 'top', color: 'var(--color-text-main)' }}>{col.name}</td>
-                    <td style={{ verticalAlign: 'top', color: 'var(--color-text-muted)' }}>{col.desc}</td>
+                    <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
+                    <td style={{ color: 'var(--color-text-muted)' }}>{col.desc}</td>
                   </tr>
                 ))
               )}
@@ -433,20 +502,20 @@ export function ScreenCompositionPage() {
 
                 return (
                   <tr key={i}>
-                    <td style={{ verticalAlign: 'top', fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
+                    <td style={{ fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
                       {row.screen}
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(SETTINGS_LABEL), color: 'var(--color-text-main)' }}>
+                    <td style={{ backgroundColor: getCategoryColor(SETTINGS_LABEL), color: 'var(--color-text-main)' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {settingsTabs.map(item => <div key={item}>{item}</div>)}
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(RECORDING_LABEL), color: 'var(--color-text-main)' }}>
+                    <td style={{ backgroundColor: getCategoryColor(RECORDING_LABEL), color: 'var(--color-text-main)' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {recordingTabs.map(item => <div key={item}>{item}</div>)}
                       </div>
                     </td>
-                    <td style={{ verticalAlign: 'top', backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: 'var(--color-text-main)' }}>
+                    <td style={{ backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: 'var(--color-text-main)' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                         {aggregationTabs.map(item => <div key={item}>{item}</div>)}
                       </div>

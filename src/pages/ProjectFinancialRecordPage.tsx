@@ -73,7 +73,7 @@ export function ProjectFinancialRecordPage() {
     },
     { 
       key: 'type', 
-      header: TABLE_COLUMNS.TYPE, 
+      header: TABLE_COLUMNS.FINANCIAL_TYPE, 
       editable: false, 
       render: () => WORDS_PROJECT.EXPENSE
     },

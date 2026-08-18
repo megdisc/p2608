@@ -39,25 +39,25 @@ export function FinancialRecordPage() {
       header: TABLE_COLUMNS.PERIOD,
       inputType: 'date'
     },
+    {
+      key: 'activity_category',
+      header: '事業区分',
+      inputType: 'select',
+      options: [
+        { label: '就労支援事業活動', value: 'production' },
+        { label: '福祉事業活動', value: 'welfare' }
+      ],
+      render: (item) => item.activity_category === 'welfare' ? '福祉事業活動' : '就労支援事業活動'
+    },
     { 
       key: 'type', 
-      header: TABLE_COLUMNS.TYPE, 
+      header: TABLE_COLUMNS.FINANCIAL_TYPE, 
       inputType: 'radio',
       options: [
         { label: WORDS_PROJECT.REVENUE, value: 'revenue' },
         { label: WORDS_PROJECT.EXPENSE, value: 'expense' },
         { label: WORDS_PROJECT.RESERVE, value: 'reserve' }
       ]
-    },
-    {
-      key: 'activity_category',
-      header: '事業区分',
-      inputType: 'select',
-      options: [
-        { label: '生産活動', value: 'production' },
-        { label: '福祉事業活動', value: 'welfare' }
-      ],
-      render: (item) => item.activity_category === 'welfare' ? '福祉事業活動' : '生産活動'
     },
     {
       key: 'subject',

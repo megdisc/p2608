@@ -140,6 +140,7 @@ export const WORDS_PROJECT = {
   EXPENSE: '費用',
   RESERVE: '積立金',
   SURPLUS: '余剰',
+  FINANCIAL_TYPE: '収支区分',
   SUBJECT: '科目',
   AMOUNT: '金額',
   TOTAL: '合計',
@@ -304,6 +305,7 @@ export const TABLE_COLUMNS = {
   ASSIGNEE_TYPE: WORDS_PERSON.ASSIGNEE_TYPE,
 
   // 予算・収支
+  FINANCIAL_TYPE: WORDS_PROJECT.FINANCIAL_TYPE,
   REVENUE: '収益　A',
   EXPENSE: '費用　B',
   RESERVE: '積立金　C',

@@ -37,6 +37,6 @@ GRANT ALL ON TABLE "public"."monthly_wage_confirmations" TO "anon";
 GRANT ALL ON TABLE "public"."monthly_wage_confirmations" TO "authenticated";
 GRANT ALL ON TABLE "public"."monthly_wage_confirmations" TO "service_role";
 
--- 3. 収支記録テーブルへの事業区分カラム追加 (production: 生産活動 / welfare: 福祉事業)
+-- 3. 収支記録テーブルへの事業区分カラム追加 (production: 就労支援事業活動 / welfare: 福祉事業活動)
 ALTER TABLE "public"."financial_records" 
 ADD COLUMN IF NOT EXISTS "activity_category" text DEFAULT 'production' NOT NULL CHECK ("activity_category" IN ('production', 'welfare'));

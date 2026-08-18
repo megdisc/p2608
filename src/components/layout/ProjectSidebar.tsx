@@ -46,8 +46,8 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_FINANCE}
           </button>
           <button 
-            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment', 'assigneeSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('assigneeSummary')}
+            className={`nav-button ${['screenUser', 'projectUser', 'skillEvaluation', 'baseWageAssignment'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('projectUser')}
           >
             {PAGE_NAMES.SCREEN_USER}
           </button>

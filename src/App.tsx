@@ -53,7 +53,7 @@ function AppContent() {
             <DashboardPage />
           ) : ['dailyWorkRecord', 'screenDailyWork'].includes(activeTab) ? (
             <ScreenDailyWorkPage />
-          ) : ['projectUser', 'skillEvaluation', 'baseWageAssignment', 'assigneeSummary', 'screenUser'].includes(activeTab) ? (
+          ) : ['projectUser', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (
             <ScreenUserPage />
           ) : ['staff', 'screenStaff'].includes(activeTab) ? (
             <ScreenStaffPage />

@@ -4,9 +4,9 @@ import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useAlert } from '../contexts/AlertContext';
 import { useFinancialSummary } from '../hooks';
 
-export function FinancialSummaryPage() {
+export function FinancialSummaryPage({ activityCategory = 'production' }: { activityCategory?: 'production' | 'welfare' }) {
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
-  const { data, loading, fetchSummary } = useFinancialSummary(currentYear);
+  const { data, loading, fetchSummary } = useFinancialSummary(currentYear, activityCategory);
   const { showAlert } = useAlert();
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'period', direction: 'asc' });
 
@@ -70,7 +70,7 @@ export function FinancialSummaryPage() {
       { label: TABLE_COLUMNS.SURPLUS, rowSpan: 2 },
     ],
     [
-      { label: TABLE_COLUMNS.SUBJECT_REVENUE_SALES },
+      { label: activityCategory === 'welfare' ? TABLE_COLUMNS.SUBJECT_DEDUCTION : TABLE_COLUMNS.SUBJECT_REVENUE_SALES },
       { label: TABLE_COLUMNS.TOTAL },
       { label: TABLE_COLUMNS.SUBJECT_EXPENSE_MATERIAL },
       { label: TABLE_COLUMNS.SUBJECT_EXPENSE_LABOR_MEMBER },

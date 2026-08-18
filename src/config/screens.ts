@@ -15,9 +15,10 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_FINANCE: {
     screenName: PAGE_NAMES.SCREEN_FINANCE,
     tabs: [
-      { id: 'financialRecord', label: PAGE_NAMES.FINANCIAL_RECORD },
       { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
+      { id: 'financialRecord', label: PAGE_NAMES.FINANCIAL_RECORD },
       { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
+      { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
     ],
   },
   SCREEN_PROJECT: {

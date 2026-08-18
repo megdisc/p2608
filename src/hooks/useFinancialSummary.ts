@@ -25,18 +25,26 @@ export type FinancialSummaryRow = {
   resTotal: number;
 };
 
-export function useFinancialSummary(year: string) {
+export function useFinancialSummary(year: string, activityCategory: 'production' | 'welfare' = 'production') {
   const [data, setData] = useState<FinancialSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
 
-    const fetchSummary = useCallback(async () => {
+  const fetchSummary = useCallback(async () => {
     try {
       setLoading(true);
-      const { data: records, error } = await supabase
+      let query = supabase
         .from('financial_records')
-        .select('period, type, subject, amount')
+        .select('period, type, subject, amount, activity_category')
         .gte('period', `${year}-01-01`)
         .lte('period', `${year}-12-31`);
+
+      if (activityCategory === 'welfare') {
+        query = query.eq('activity_category', 'welfare');
+      } else {
+        query = query.or('activity_category.eq.production,activity_category.is.null');
+      }
+
+      const { data: records, error } = await query;
         
       if (error) throw error;
 
@@ -126,7 +134,7 @@ export function useFinancialSummary(year: string) {
     } finally {
       setLoading(false);
     }
-  }, [year]);
+  }, [year, activityCategory]);
 
   return {
     data,

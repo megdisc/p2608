@@ -11,7 +11,6 @@ export function ScreenFinancePage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_FINANCE;
-  const isSummary = navContext.activeTab === 'financialSummary';
 
   return (
     <>
@@ -24,7 +23,15 @@ export function ScreenFinancePage() {
         </div>
       </div>
       
-      {navContext.activeTab === 'wageSummary' ? <WageSummaryPage /> : isSummary ? <FinancialSummaryPage /> : <FinancialRecordPage />}
+      {navContext.activeTab === 'wageSummary' ? (
+        <WageSummaryPage />
+      ) : navContext.activeTab === 'welfareFinancialSummary' ? (
+        <FinancialSummaryPage activityCategory="welfare" />
+      ) : navContext.activeTab === 'financialSummary' ? (
+        <FinancialSummaryPage activityCategory="production" />
+      ) : (
+        <FinancialRecordPage />
+      )}
     </>
   );
 }

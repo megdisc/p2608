@@ -28,8 +28,8 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_DASHBOARD}
           </button>
           <button 
-            className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('financialSummary')}
+            className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'welfareFinancialSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('wageSummary')}
           >
             {PAGE_NAMES.SCREEN_FINANCE}
           </button>

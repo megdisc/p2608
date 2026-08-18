@@ -9,6 +9,7 @@ import { BUTTON_LABELS, TABLE_COLUMNS, MESSAGES } from '../../constants';
 import { formatJSTDateOnly, getCurrentJSTDateOnly, getCurrentJSTMonth, compareValues } from '../../utils';
 
 import { DateInput } from './DateInput';
+import { DateDisplay } from './DateDisplay';
 import { MonthInput } from './MonthInput';
 import { MonthDisplay } from './MonthDisplay';
 import { YearInput } from './YearInput';
@@ -544,8 +545,7 @@ export function DataTable<T extends { id: string }>({
     }
     
     if (col.inputType === 'date' && item[col.key]) {
-      const v = item[col.key];
-      return typeof v === 'string' ? v : '';
+      return <DateDisplay value={item[col.key]} />;
     }
     
     if (col.inputType === 'number') {

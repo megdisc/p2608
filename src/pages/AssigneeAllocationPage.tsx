@@ -253,11 +253,12 @@ export function AssigneeAllocationPage() {
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span>{item.projectName}</span>
-                        {item.isProjectFinished && (
-                          <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
-                            案件終了のため変更不可
-                          </span>
+                        {item.isProjectFinished ? (
+                          <Tooltip text="案件終了のため変更不可" as="span">
+                            <span>{item.projectName}</span>
+                          </Tooltip>
+                        ) : (
+                          <span>{item.projectName}</span>
                         )}
                       </div>
                     ) : ''}

@@ -163,11 +163,12 @@ export function BudgetPlanningPage() {
                       </td>
                       <td>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span>{draft.project.name}</span>
-                          {isFinished && (
-                            <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
-                              案件終了のため変更不可
-                            </span>
+                          {isFinished ? (
+                            <Tooltip text="案件終了のため変更不可" as="span">
+                              <span>{draft.project.name}</span>
+                            </Tooltip>
+                          ) : (
+                            <span>{draft.project.name}</span>
                           )}
                         </div>
                       </td>
@@ -225,11 +226,12 @@ export function BudgetPlanningPage() {
                             <td style={{ borderBottom: 'none' }}>
                               {i === 0 ? (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  <span>{draft.project.name}</span>
-                                  {isFinished && (
-                                    <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
-                                      案件終了のため変更不可
-                                    </span>
+                                  {isFinished ? (
+                                    <Tooltip text="案件終了のため変更不可" as="span">
+                                      <span>{draft.project.name}</span>
+                                    </Tooltip>
+                                  ) : (
+                                    <span>{draft.project.name}</span>
                                   )}
                                 </div>
                               ) : ''}

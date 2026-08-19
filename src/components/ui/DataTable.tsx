@@ -680,7 +680,7 @@ export function DataTable<T extends { id: string }>({
                               <Input 
                                 type="checkbox" 
                                 checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
-                                disabled={deletedIds.has(subItem.id) || isDeleted}
+                                disabled={deletedIds.has(subItem.id) || isDeleted || !isRowEditable || !isRowDeletable}
                                 onChange={() => toggleDelete(subSubItem.id)}
                                 className="custom-checkbox"
                               />

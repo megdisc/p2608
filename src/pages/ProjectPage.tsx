@@ -1,4 +1,4 @@
-import { DataPage, Button, type Column } from '../components';
+import { DataPage, Button, Tooltip, type Column } from '../components';
 import { useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
 import type { ProjectItem } from '../types';
@@ -28,11 +28,12 @@ export function ProjectPage() {
         const finished = isProjectFinished(item);
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>{item.name}</span>
-            {finished && (
-              <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
-                案件終了のため変更不可
-              </span>
+            {finished ? (
+              <Tooltip text="案件終了のため変更不可" as="span">
+                <span>{item.name}</span>
+              </Tooltip>
+            ) : (
+              <span>{item.name}</span>
             )}
           </div>
         );
@@ -167,8 +168,6 @@ export function ProjectPage() {
 
   if (loading) return <div>Loading...</div>;
 
-  const hasFinishedProjects = items.some(isProjectFinished);
-
   return (
     <DataPage 
       title={PAGE_NAMES.PROJECT_INFO}
@@ -188,11 +187,6 @@ export function ProjectPage() {
       canDeleteRow={(item) => !isProjectFinished(item)}
       showRestrictionColumn={true}
       restrictionTooltipText="案件終了のため変更不可"
-      footerLeft={hasFinishedProjects ? (
-        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
-          案件終了のため変更不可
-        </span>
-      ) : undefined}
     />
   );
 }

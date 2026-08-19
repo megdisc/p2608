@@ -44,7 +44,7 @@ export function AssigneeAllocationPage() {
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, client_id, start_date, end_date,
+          id, code, name, project_type, client_id,
           project_tasks (
             id, code, name, is_deleted, assignee_type,
             project_task_assignees ( member_id, client_id, staff_id ),

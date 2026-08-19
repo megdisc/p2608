@@ -27,8 +27,6 @@ export function ProjectPage() {
       render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS,
       rowType: 'main' 
     },
-    { key: 'startDate', header: '開始時期', editable: true, inputType: 'month', rowType: 'main' },
-    { key: 'endDate', header: '終了時期', editable: true, inputType: 'month', rowType: 'main' },
     { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
@@ -125,8 +123,6 @@ export function ProjectPage() {
       name: '',
       projectType: 'ongoing',
       customerId: '',
-      startDate: new Date().toISOString().substring(0, 7),
-      endDate: '',
       tasks: [],
     } as ProjectItem;
   };

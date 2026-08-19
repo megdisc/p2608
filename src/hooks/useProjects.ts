@@ -17,7 +17,7 @@ export function useProjects() {
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, client_id, start_date, end_date,
+          id, code, name, project_type, client_id,
           project_tasks (
             id, name, is_deleted, assignee_type, created_at,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
@@ -43,8 +43,6 @@ export function useProjects() {
         projectType: p.project_type || 'one-off',
         projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
         customerId: p.client_id || '',
-        startDate: p.start_date,
-        endDate: p.end_date || '',
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => {
@@ -101,9 +99,7 @@ export function useProjects() {
           code: p.code,
           name: p.name,
           project_type: p.projectType || 'one-off',
-          client_id: p.customerId || null,
-          start_date: p.startDate,
-          end_date: p.endDate || null
+          client_id: p.customerId || null
         };
 
         const { error: pErr } = await supabase.from('projects').upsert(projData);

@@ -43,7 +43,7 @@ export function useDailyWorkRecords() {
       const [membersRes, projectsRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, start_date, end_date,
+          id, code, name, project_type,
           project_tasks (
             id, code, name, is_deleted,
             project_task_assignees ( member_id )
@@ -61,8 +61,6 @@ export function useDailyWorkRecords() {
         code: p.code || '',
         name: p.name,
         projectType: p.project_type || 'one-off',
-        startDate: p.start_date,
-        endDate: p.end_date,
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => ({
@@ -120,7 +118,7 @@ export function useDailyWorkRecords() {
     if (dbMembers.length === 0) return [];
     
     const isConfirmed = confirmedDates.includes(currentDate);
-    const activeProjects = dbProjects.filter(p => p.startDate <= currentDate && (!p.endDate || currentDate <= p.endDate));
+    const activeProjects = dbProjects;
     const flatRows: DailyFlatRecord[] = [];
 
     const OTHER_PROJECT_ID = '00000000-0000-0000-0000-000000000001';

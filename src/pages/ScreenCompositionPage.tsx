@@ -215,8 +215,6 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '案件名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'client_id', desc: '紐づく取引先ID' },
-        { name: 'start_date', desc: '開始日' },
-        { name: 'end_date', desc: '終了予定日・終了日' },
         { name: 'project_type', desc: '案件種別' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },

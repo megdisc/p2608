@@ -49,8 +49,6 @@ export type ProjectItem = {
   projectType: 'one-off' | 'ongoing' | 'その他';
   projectTypeSortKey?: string;
   customerId?: string;
-  startDate: string;
-  endDate: string | null;
   tasks: ProjectTask[];
 };
 

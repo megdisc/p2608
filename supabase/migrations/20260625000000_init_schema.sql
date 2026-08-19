@@ -157,8 +157,6 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
     "code" TEXT,
     "name" TEXT NOT NULL,
     "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
-    "start_date" VARCHAR(7),
-    "end_date" VARCHAR(7),
     "project_type" TEXT DEFAULT 'one-off',
     "is_deleted" BOOLEAN DEFAULT false NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,

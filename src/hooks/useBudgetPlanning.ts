@@ -96,8 +96,6 @@ export function useBudgetPlanning() {
             code: p.code || '',
             name: p.name,
             projectType: p.project_type,
-            startDate: '',
-            endDate: null,
             tasks: []
           },
           revenues,

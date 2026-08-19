@@ -88,11 +88,6 @@ export function DailyWorkRecordPage() {
         if (!item.isFirstInProject) return '';
         const project = dbProjects.find(p => p.id === item.projectId);
         if (!project) return '';
-        if (project.projectType === 'ongoing') {
-          const date = new Date(currentDate);
-          const month = String(date.getMonth() + 1).padStart(2, '0');
-          return `${project.name}（${date.getFullYear()}年${month}月分）`;
-        }
         return project.name;
       },
       style: (item: any) => ({

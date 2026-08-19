@@ -34,8 +34,7 @@ export function useAssigneeSummary() {
       setLoading(true);
       const [
         projectsRes,
-        membersRes,
-        progressRes
+        membersRes
       ] = await Promise.all([
         supabase.from('projects').select(`
           id, code, name, project_type,
@@ -46,25 +45,16 @@ export function useAssigneeSummary() {
             )
           )
         `).eq('is_deleted', false),
-        supabase.from('members').select('id, name, yomigana').eq('is_deleted', false),
-        supabase.from('project_task_progress').select('task_id, status, year_month')
+        supabase.from('members').select('id, name, yomigana').eq('is_deleted', false)
       ]);
 
       if (projectsRes.error) throw projectsRes.error;
       if (membersRes.error) throw membersRes.error;
-      if (progressRes.error) throw progressRes.error;
 
       const projects = projectsRes.data || [];
       const members = membersRes.data || [];
-      const records = progressRes.data || [];
 
       const memberMap = new Map(members.map(m => [m.id, { name: m.name, yomigana: m.yomigana }]));
-
-      const latestProgressMap = new Map<string, string>();
-      const sortedRecords = [...records].sort((a, b) => a.year_month.localeCompare(b.year_month));
-      for (const r of sortedRecords) {
-        latestProgressMap.set(r.task_id, r.status || 'not_started');
-      }
 
       const tempRows: any[] = [];
 
@@ -73,12 +63,7 @@ export function useAssigneeSummary() {
 
         for (const t of projectTasks) {
           const assignees = t.project_task_assignees || [];
-          let taskStatus = 'not_started';
-          if (p.project_type === 'ongoing') {
-            taskStatus = latestProgressMap.get(t.id) || 'not_started';
-          } else {
-            taskStatus = t.status || 'not_started';
-          }
+          const taskStatus = t.status || 'not_started';
           
           if (assignees.length === 0) {
             // Do not add unassigned tasks to Assignee Summary (担当状況集計)

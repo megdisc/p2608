@@ -9,8 +9,6 @@ export function ProgressRecordPage() {
     displayData,
     dbProjects, 
     loading, 
-    currentMonth, 
-    setCurrentMonth, 
     fetchMasters, 
     fetchRecords, 
     batchSaveProgressRecords 
@@ -25,11 +23,11 @@ export function ProgressRecordPage() {
 
   useEffect(() => {
     if (dbProjects.length > 0) {
-      fetchRecords(currentMonth).catch(() => {
+      fetchRecords().catch(() => {
         showAlert('進捗記録の取得に失敗しました', 'error');
       });
     }
-  }, [currentMonth, dbProjects, fetchRecords, showAlert]);
+  }, [dbProjects, fetchRecords, showAlert]);
 
   const columns: Column<any>[] = [
     {
@@ -57,10 +55,6 @@ export function ProgressRecordPage() {
         if (!item.isFirstInProject) return '';
         const project = dbProjects.find(p => p.id === item.projectId);
         if (!project) return '';
-        if (project.projectType === 'ongoing') {
-          const [year, month] = currentMonth.split('-');
-          return `${project.name}（${year}年${month}月分）`;
-        }
         return project.name;
       },
       style: (item: any) => ({
@@ -178,9 +172,6 @@ export function ProgressRecordPage() {
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_PROGRESS_RECORD}
       onBatchSave={handleBatchSave}
-      showMonthFilter={true}
-      singleMonth={currentMonth}
-      onSingleMonthChange={setCurrentMonth}
       hideDeleteColumn={true}
       highlightInputColumns={true}
       initialSort={{ key: 'projectCode', direction: 'desc' }}

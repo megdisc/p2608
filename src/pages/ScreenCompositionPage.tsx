@@ -288,7 +288,7 @@ export function ScreenCompositionPage() {
       physicalName: 'project_task_progress', 
       tableType: 'トランザクション',
       logicalName: '案件タスク進捗', 
-      description: '月ごとのタスク進捗状況（進捗率など）',
+      description: 'タスク進捗状況（未着手・進行中・完了・中止）',
       columns: [
         { name: 'id', desc: '進捗記録ID' },
         { name: 'year_month', desc: '対象年月' },

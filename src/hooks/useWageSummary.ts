@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
-import { getCurrentJSTMonth, getPreviousMonth, compareValues } from '../utils';
+import { getCurrentJSTMonth, compareValues } from '../utils';
 
 export type WageRow = {
   id: string;
@@ -39,7 +39,6 @@ export function useWageSummary() {
   const fetchWageSummary = useCallback(async (monthStr: string) => {
     try {
       setLoading(true);
-      const prevMonthStr = getPreviousMonth(monthStr);
 
       const nextMonthDate = new Date(monthStr + '-01');
       nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
@@ -49,8 +48,6 @@ export function useWageSummary() {
         membersRes,
         projectsRes,
         budgetsRes,
-        cTaskRes,
-        pTaskRes,
         workRes,
         dailyConfirmRes,
         monthlyConfirmRes,
@@ -59,8 +56,6 @@ export function useWageSummary() {
         supabase.from('members').select('*, wage_rates(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
-        supabase.from('project_task_progress').select('*').eq('year_month', monthStr),
-        supabase.from('project_task_progress').select('*').eq('year_month', prevMonthStr),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_records').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_settlements').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
@@ -70,8 +65,6 @@ export function useWageSummary() {
       if (membersRes.error) throw membersRes.error;
       if (projectsRes.error) throw projectsRes.error;
       if (budgetsRes.error) throw budgetsRes.error;
-      if (cTaskRes.error) throw cTaskRes.error;
-      if (pTaskRes.error) throw pTaskRes.error;
       if (workRes.error) throw workRes.error;
 
       // Check monthly wage confirmation
@@ -125,7 +118,6 @@ export function useWageSummary() {
 
       const members = membersRes.data || [];
       const projects = projectsRes.data || [];
-      const cTasks = cTaskRes.data || [];
       const cMems: any[] = [];
 
       const rows: WageRow[] = members.map((member: any) => {
@@ -155,13 +147,7 @@ export function useWageSummary() {
           if (activeTasks.length === 0) continue;
           
           const allCompleted = activeTasks.every((t: any) => {
-            if (project.project_type === 'ongoing') {
-              const cTask = cTasks.find((r: any) => r.task_id === t.id);
-              const pTask = pTaskRes.data?.find((r: any) => r.task_id === t.id);
-              return cTask?.status === 'completed' && pTask?.status !== 'completed';
-            } else {
-              return t.status === 'completed' && t.completed_at && t.completed_at.startsWith(monthStr);
-            }
+            return t.status === 'completed' && t.completed_at && t.completed_at.startsWith(monthStr);
           });
 
           if (!allCompleted) continue;

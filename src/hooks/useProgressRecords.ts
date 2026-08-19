@@ -1,26 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
 import type { MemberItem, ProjectItem, StaffItem, ClientItem } from '../types';
-import { getCurrentJSTMonth, getPreviousMonth } from '../utils';
-
-export type MonthlyTaskRecord = {
-  id: string;
-  year_month: string;
-  task_id: string;
-  status: string;
-};
-
-export type MonthlyContributionRecord = {
-  id: string;
-  year_month: string;
-  member_id?: string;
-  staff_id?: string;
-  client_id?: string;
-  task_id: string;
-  contribution_ratio?: number;
-  deduction_amount?: number;
-  allocation_amount?: number;
-};
+import { getCurrentJSTMonth } from '../utils';
 
 export type ProgressFlatRecord = {
   id: string;
@@ -59,14 +40,7 @@ export function useProgressRecords() {
   const [dbStaffs, setDbStaffs] = useState<StaffItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
-  
-  const [currentMonthTaskRecords, setCurrentMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
-  const [prevMonthTaskRecords, setPrevMonthTaskRecords] = useState<MonthlyTaskRecord[]>([]);
-  const [currentMonthMemberRecords, setCurrentMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
-  const [prevMonthMemberRecords, setPrevMonthMemberRecords] = useState<MonthlyContributionRecord[]>([]);
-  const [historicalMemberRecords, setHistoricalMemberRecords] = useState<MonthlyContributionRecord[]>([]);
 
-  
   const [workTimeSummary, setWorkTimeSummary] = useState<Record<string, number>>({});
   const [cumulativeWorkTimeSummary, setCumulativeWorkTimeSummary] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(false);
@@ -141,32 +115,22 @@ export function useProgressRecords() {
     }
   }, []);
 
-  const fetchRecords = useCallback(async (monthStr: string) => {
+  const fetchRecords = useCallback(async (monthStr?: string) => {
     try {
       setLoading(true);
-      const prevMonthStr = getPreviousMonth(monthStr);
-
-      const [year, month] = monthStr.split('-').map(Number);
-      const startDate = `${monthStr}-01`;
+      const targetMonth = monthStr || currentMonth;
+      const [year, month] = targetMonth.split('-').map(Number);
+      const startDate = `${targetMonth}-01`;
       const nextMonth = month === 12 ? 1 : month + 1;
       const nextYear = month === 12 ? year + 1 : year;
       const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
-      const [cTaskRes, pTaskRes, workTimeRes] = await Promise.all([
-        supabase.from('project_task_progress').select('*').eq('year_month', monthStr),
-        supabase.from('project_task_progress').select('*').eq('year_month', prevMonthStr),
-        supabase.from('daily_work_records').select('member_id, task_id, work_time, date').lt('date', endDate)
-      ]);
+      const workTimeRes = await supabase
+        .from('daily_work_records')
+        .select('member_id, task_id, work_time, date')
+        .lt('date', endDate);
       
-      if (cTaskRes.error) throw cTaskRes.error;
-      if (pTaskRes.error) throw pTaskRes.error;
       if (workTimeRes.error) throw workTimeRes.error;
-
-      setCurrentMonthTaskRecords(cTaskRes.data || []);
-      setPrevMonthTaskRecords(pTaskRes.data || []);
-      setCurrentMonthMemberRecords([]);
-      setPrevMonthMemberRecords([]);
-      setHistoricalMemberRecords([]);
 
       const timeMap: Record<string, number> = {};
       const cumulativeTimeMap: Record<string, number> = {};
@@ -193,7 +157,7 @@ export function useProgressRecords() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentMonth]);
 
   const displayData = useMemo(() => {
     if (dbProjects.length === 0) return [];
@@ -201,27 +165,13 @@ export function useProgressRecords() {
     const flatRows: ProgressFlatRecord[] = [];
 
     for (const project of dbProjects) {
-      if (project.startDate > currentMonth) continue;
-      if (project.endDate && currentMonth > project.endDate) continue;
-
-      const taskIdsInProject = project.tasks.map(t => t.id);
-      
-      const projectTaskRecords = currentMonthTaskRecords.filter(r => taskIdsInProject.includes(r.task_id));
-      const projectMemberRecords = currentMonthMemberRecords.filter(r => taskIdsInProject.includes(r.task_id));
-      
       let projectStatus = 'not_started';
       if (project.tasks.length > 0) {
         let allNotStarted = true;
         let allCompletedOrCanceled = true;
         
         for (const pt of project.tasks) {
-          let ptStatus = 'not_started';
-          if (project.projectType === 'ongoing') {
-            const ptRecord = currentMonthTaskRecords.find(r => r.task_id === pt.id);
-            ptStatus = ptRecord ? ptRecord.status : 'not_started';
-          } else {
-            ptStatus = pt.status || 'not_started';
-          }
+          const ptStatus = pt.status || 'not_started';
           
           if (ptStatus !== 'not_started') allNotStarted = false;
           if (ptStatus !== 'completed' && ptStatus !== 'canceled') allCompletedOrCanceled = false;
@@ -256,35 +206,8 @@ export function useProgressRecords() {
           }
         }
 
-        const taskMemberRecords = projectMemberRecords.filter(r => r.task_id === t.id);
-        const taskHistoricalRecords = historicalMemberRecords.filter(r => r.task_id === t.id);
-        
-        let pastAllocationAmount = 0;
-        for (const r of taskHistoricalRecords) {
-          pastAllocationAmount += (r.deduction_amount || 0);
-        }
-
-        for (const r of taskMemberRecords) {
-          if (r.member_id) membersToProcess.add(`member_${r.member_id}`);
-          if (r.staff_id) membersToProcess.add(`staff_${r.staff_id}`);
-          if (r.client_id) membersToProcess.add(`outsource_${r.client_id}`);
-        }
-
-        const taskRecord = projectTaskRecords.find(r => r.task_id === t.id);
-        const prevTaskRecord = prevMonthTaskRecords.find(r => r.task_id === t.id);
-        let taskPrevStatus = 'not_started';
-        if (project.projectType === 'ongoing') {
-          taskPrevStatus = prevTaskRecord ? prevTaskRecord.status : 'not_started';
-        } else {
-          taskPrevStatus = t.status || 'not_started';
-        }
-
-        let taskCurrentStatus = 'not_started';
-        if (project.projectType === 'ongoing') {
-          taskCurrentStatus = taskRecord ? taskRecord.status : 'not_started';
-        } else {
-          taskCurrentStatus = t.status || 'not_started';
-        }
+        const taskCurrentStatus = t.status || 'not_started';
+        const taskPrevStatus = t.status || 'not_started';
         
         let hasAssignees = false;
 
@@ -314,17 +237,13 @@ export function useProgressRecords() {
 
         for (const prefixedId of membersToProcess) {
           hasAssignees = true;
-          const [type, id] = prefixedId.split('_');
-          let savedMemberRecord;
-          if (type === 'member') savedMemberRecord = taskMemberRecords.find(r => r.member_id === id);
-          else if (type === 'staff') savedMemberRecord = taskMemberRecords.find(r => r.staff_id === id);
-          else if (type === 'outsource') savedMemberRecord = taskMemberRecords.find(r => r.client_id === id);
+          const [type] = prefixedId.split('_');
 
           const workTime = type === 'member' ? (workTimeSummary[`${prefixedId}_${t.id}`] || 0) : '-';
           const cumulativeWorkTime = type === 'member' ? (cumulativeWorkTimeSummary[`${prefixedId}_${t.id}`] || 0) : '-';
 
           flatRows.push({
-            id: savedMemberRecord ? savedMemberRecord.id : `UNSAVED-${currentMonth}-${prefixedId}-${t.id}`,
+            id: `TASK-${t.id}-${prefixedId}`,
             projectId: project.id,
             projectName: project.name,
             projectCode: project.code || '',
@@ -338,22 +257,22 @@ export function useProgressRecords() {
             taskPrevStatus: taskPrevStatus,
             taskCompletedAt: t.completedAt,
             laborBudget: t.laborBudget || 0,
-            pastAllocationAmount: pastAllocationAmount,
+            pastAllocationAmount: 0,
             userId: prefixedId,
             userName: getUserName(prefixedId),
             assigneeType: getAssigneeType(prefixedId),
             userYomigana: getUserIdYomigana(prefixedId),
             workTime,
             cumulativeWorkTime,
-            allocationAmount: savedMemberRecord ? Number(savedMemberRecord.deduction_amount) : 0,
-            isSaved: !!savedMemberRecord,
+            allocationAmount: 0,
+            isSaved: true,
             isCanceled: t.isCanceled
           });
         }
 
         if (!hasAssignees) {
            flatRows.push({
-             id: taskRecord ? taskRecord.id : `UNSAVED-TASK-${currentMonth}-${t.id}`,
+             id: `TASK-${t.id}`,
              projectId: project.id,
              projectName: project.name,
              projectCode: project.code || '',
@@ -373,7 +292,7 @@ export function useProgressRecords() {
              workTime: '-',
              cumulativeWorkTime: '-',
              allocationAmount: 0,
-             isSaved: !!taskRecord,
+             isSaved: true,
              isCanceled: t.isCanceled
            });
         }
@@ -426,74 +345,46 @@ export function useProgressRecords() {
     });
 
     return finalRows;
-  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, currentMonthTaskRecords, prevMonthTaskRecords, currentMonthMemberRecords, prevMonthMemberRecords, historicalMemberRecords, workTimeSummary, cumulativeWorkTimeSummary]);
+  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, workTimeSummary, cumulativeWorkTimeSummary]);
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {
       setLoading(true);
       
-      const taskUpserts: any[] = [];
-      const projectTaskUpdates: any[] = [];
+      const projectTaskUpdates: { id: string; status: string; is_canceled: boolean }[] = [];
 
       for (const r of drafts) {
         if (deletedIds.includes(r.id)) continue;
 
         if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
-          if (r.projectType === 'ongoing') {
-            taskUpserts.push({
-              year_month: currentMonth,
-              task_id: r.taskId,
-              status: r.taskStatus || 'not_started'
-            });
-          } else {
-            projectTaskUpdates.push({
-              id: r.taskId,
-              status: r.taskStatus || 'not_started',
-              is_canceled: r.taskStatus === 'canceled'
-            });
-          }
-          if (r.isCanceled !== undefined && r.projectType === 'ongoing') {
-            projectTaskUpdates.push({
-              id: r.taskId,
-              is_canceled: r.isCanceled
-            });
-          }
+          projectTaskUpdates.push({
+            id: r.taskId,
+            status: r.taskStatus || 'not_started',
+            is_canceled: r.taskStatus === 'canceled'
+          });
         }
-
-
-      }
-
-      const uniqueTaskUpserts = Array.from(new Map(taskUpserts.map(t => [t.task_id, t])).values());
-
-      const promises = [];
-
-      if (uniqueTaskUpserts.length > 0) {
-        promises.push(supabase.from('project_task_progress').upsert(uniqueTaskUpserts, { onConflict: 'year_month,task_id' }));
       }
 
       if (projectTaskUpdates.length > 0) {
         const uniqueProjectTasks = Array.from(new Map(projectTaskUpdates.map(t => [t.id, t])).values());
-        for (const t of uniqueProjectTasks) {
-          const updateData: any = {};
-          if (t.is_canceled !== undefined) updateData.is_canceled = t.is_canceled;
-          if (t.status !== undefined) {
-             updateData.status = t.status;
-             if (t.status === 'completed') {
-               updateData.completed_at = new Date().toISOString();
-             } else {
-               updateData.completed_at = null;
-             }
+        const promises = uniqueProjectTasks.map(t => {
+          const updateData: any = {
+            status: t.status,
+            is_canceled: t.is_canceled
+          };
+          if (t.status === 'completed') {
+            updateData.completed_at = new Date().toISOString();
+          } else {
+            updateData.completed_at = null;
           }
-          promises.push(supabase.from('project_tasks').update(updateData).eq('id', t.id));
+          return supabase.from('project_tasks').update(updateData).eq('id', t.id);
+        });
+
+        const results = await Promise.all(promises);
+        for (const res of results) {
+          if (res.error) throw res.error;
         }
       }
-
-      const results = await Promise.all(promises);
-      for (const res of results) {
-        if (res.error) throw res.error;
-      }
-
-      // ------------------------------------
 
       await fetchRecords(currentMonth);
       await fetchMasters();
@@ -519,3 +410,4 @@ export function useProgressRecords() {
     batchSaveProgressRecords
   };
 }
+

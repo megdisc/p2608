@@ -23,6 +23,7 @@ export type DailyFlatRecord = {
   taskId: string;
   workTime: number;
   isSaved: boolean;
+  isEmptyRow?: boolean;
   isFirstInUser?: boolean;
   isFirstInProject?: boolean;
   isLastInUser?: boolean;
@@ -101,81 +102,131 @@ export function useDailyWorkRecords() {
     }
   }, []);
 
+  const [confirmedDates, setConfirmedDates] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('daily_work_confirmations');
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return [
+      '2026-06-15', '2026-06-16', '2026-06-17', '2026-06-29', '2026-06-30',
+      '2026-08-01', '2026-08-02', '2026-08-03', '2026-08-04', '2026-08-05',
+      '2026-08-06', '2026-08-07', '2026-08-08', '2026-08-09', '2026-08-10',
+      '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15',
+      '2026-08-16'
+    ];
+  });
+
   const displayData = useMemo(() => {
     if (dbMembers.length === 0) return [];
     
+    const isConfirmed = confirmedDates.includes(currentDate);
     const activeProjects = dbProjects.filter(p => p.startDate <= currentDate && (!p.endDate || currentDate <= p.endDate));
     const flatRows: DailyFlatRecord[] = [];
+
+    const OTHER_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
+    const OTHER_TASK_ID = '00000000-0000-0000-0000-000000000002';
 
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
       const taskMap = new Map<string, DailyFlatRecord>();
 
+      // 1. 作業記録テーブル（daily_work_records）に記録されているデータ
       for (const r of userRecords) {
-        let projectId = '';
-        for (const p of dbProjects) {
-          if (p.tasks.some(t => t.id === r.task_id)) {
-            projectId = p.id;
-            break;
+        if (r.task_id === OTHER_TASK_ID) {
+          taskMap.set(r.task_id, {
+            id: r.id,
+            userId: member.id,
+            userName: member.name,
+            userYomigana: member.yomigana || '',
+            date: currentDate,
+            projectId: OTHER_PROJECT_ID,
+            projectYomigana: 'んんん',
+            projectType: 'その他',
+            taskId: r.task_id,
+            workTime: Number(r.work_time),
+            isSaved: true
+          });
+        } else {
+          let projectId = '';
+          for (const p of dbProjects) {
+            if (p.tasks.some(t => t.id === r.task_id)) {
+              projectId = p.id;
+              break;
+            }
           }
-        }
-        
-        taskMap.set(r.task_id, {
-          id: r.id,
-          userId: member.id,
-          userName: member.name,
-          userYomigana: member.yomigana || '',
-          date: currentDate,
-          projectId,
-          projectYomigana: dbProjects.find(p => p.id === projectId)?.yomigana || '',
-          projectType: dbProjects.find(p => p.id === projectId)?.projectType || 'one-off',
-          taskId: r.task_id,
-          workTime: Number(r.work_time),
-          isSaved: true
-        });
-      }
-
-      for (const p of activeProjects) {
-        for (const t of p.tasks) {
-          if (t.assigneeIds?.includes(member.id) && !taskMap.has(t.id)) {
-            taskMap.set(t.id, {
-              id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
-              userId: member.id,
-              userName: member.name,
-              userYomigana: member.yomigana || '',
-              date: currentDate,
-              projectId: p.id,
-              projectYomigana: p.yomigana || '',
-              projectType: p.projectType || 'one-off',
-              taskId: t.id,
-              workTime: 0,
-              isSaved: false
-            });
-          }
+          const targetProject = dbProjects.find(p => p.id === projectId);
+          taskMap.set(r.task_id, {
+            id: r.id,
+            userId: member.id,
+            userName: member.name,
+            userYomigana: member.yomigana || '',
+            date: currentDate,
+            projectId,
+            projectYomigana: targetProject?.yomigana || '',
+            projectType: targetProject?.projectType || 'one-off',
+            taskId: r.task_id,
+            workTime: Number(r.work_time),
+            isSaved: true
+          });
         }
       }
 
-      const OTHER_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
-      const OTHER_TASK_ID = '00000000-0000-0000-0000-000000000002';
-      
-      if (!taskMap.has(OTHER_TASK_ID)) {
-        taskMap.set(OTHER_TASK_ID, {
-          id: `UNSAVED-${currentDate}-${member.id}-${OTHER_TASK_ID}`,
-          userId: member.id,
-          userName: member.name,
-          userYomigana: member.yomigana || '',
-          date: currentDate,
-          projectId: OTHER_PROJECT_ID,
-          projectYomigana: 'んんん',
-          projectType: 'その他',
-          taskId: OTHER_TASK_ID,
-          workTime: 0,
-          isSaved: false
-        });
+      // 2. 案件タスク担当者テーブルで各利用者毎に割り当てられているタスク（未確定の日のみ表示）
+      if (!isConfirmed) {
+        for (const p of activeProjects) {
+          for (const t of p.tasks) {
+            if (t.assigneeIds?.includes(member.id) && !taskMap.has(t.id)) {
+              taskMap.set(t.id, {
+                id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
+                userId: member.id,
+                userName: member.name,
+                userYomigana: member.yomigana || '',
+                date: currentDate,
+                projectId: p.id,
+                projectYomigana: p.yomigana || '',
+                projectType: p.projectType || 'one-off',
+                taskId: t.id,
+                workTime: 0,
+                isSaved: false
+              });
+            }
+          }
+        }
+
+        // 3. その他（未確定の日のみ追加）
+        if (!taskMap.has(OTHER_TASK_ID)) {
+          taskMap.set(OTHER_TASK_ID, {
+            id: `UNSAVED-${currentDate}-${member.id}-${OTHER_TASK_ID}`,
+            userId: member.id,
+            userName: member.name,
+            userYomigana: member.yomigana || '',
+            date: currentDate,
+            projectId: OTHER_PROJECT_ID,
+            projectYomigana: 'んんん',
+            projectType: 'その他',
+            taskId: OTHER_TASK_ID,
+            workTime: 0,
+            isSaved: false
+          });
+        }
       } else {
-        const otherTask = taskMap.get(OTHER_TASK_ID)!;
-        otherTask.projectType = 'その他';
-        otherTask.projectYomigana = 'んんん';
+        // 確定済の日：記録データが1つも無い利用者は、氏名以外のセルは「-」と表示
+        if (taskMap.size === 0) {
+          taskMap.set('EMPTY_RECORD', {
+            id: `EMPTY-${currentDate}-${member.id}`,
+            userId: member.id,
+            userName: member.name,
+            userYomigana: member.yomigana || '',
+            date: currentDate,
+            projectId: '',
+            projectYomigana: '',
+            projectType: '',
+            taskId: '',
+            workTime: 0,
+            isSaved: false,
+            isEmptyRow: true
+          });
+        }
       }
 
       flatRows.push(...Array.from(taskMap.values()));
@@ -227,7 +278,7 @@ export function useDailyWorkRecords() {
     });
 
     return finalRows;
-  }, [currentDate, dbMembers, dbProjects, records]);
+  }, [currentDate, dbMembers, dbProjects, records, confirmedDates]);
 
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {
@@ -274,19 +325,6 @@ export function useDailyWorkRecords() {
     }
   };
 
-  const [confirmedDates, setConfirmedDates] = useState<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('daily_work_confirmations');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return [
-      '2026-06-15', '2026-06-16', '2026-06-17', '2026-06-29', '2026-06-30',
-      '2026-08-01', '2026-08-02', '2026-08-03', '2026-08-04', '2026-08-05',
-      '2026-08-06', '2026-08-07', '2026-08-08', '2026-08-09', '2026-08-10',
-      '2026-08-11', '2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15',
-      '2026-08-16'
-    ];
-  });
 
   const fetchConfirmations = useCallback(async () => {
     try {

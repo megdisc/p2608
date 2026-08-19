@@ -1,6 +1,6 @@
 import { DataPage, type Column } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useAlert } from '../contexts';
 import { useDailyWorkRecords, type DailyFlatRecord } from '../hooks';
 
@@ -75,21 +75,6 @@ export function DailyWorkRecordPage() {
         borderBottom: item.isLastInUser ? undefined : 'none'
       })
     },
-    {
-      key: 'projectType',
-      header: TABLE_COLUMNS.PROJECT_TYPE,
-      sortable: false,
-      render: (item: any) => {
-        if (!item.isFirstInProject) return '';
-        const project = dbProjects.find(p => p.id === item.projectId);
-        if (!project) return '';
-        if (project.projectType === 'その他') return 'その他';
-        return project.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
-    },
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
@@ -99,6 +84,7 @@ export function DailyWorkRecordPage() {
       inputType: 'select',
       options: [{ label: '選択してください', value: '' }, ...dbProjects.map(p => ({ label: p.name, value: p.id }))],
       render: (item: any) => {
+        if (item.isEmptyRow) return '-';
         if (!item.isFirstInProject) return '';
         const project = dbProjects.find(p => p.id === item.projectId);
         if (!project) return '';
@@ -125,6 +111,7 @@ export function DailyWorkRecordPage() {
         return [{ label: '選択してください', value: '' }, ...taskOptions];
       },
       render: (item: any) => {
+        if (item.isEmptyRow) return '-';
         const project = dbProjects.find(p => p.id === item.projectId);
         const task = project?.tasks.find(t => t.id === item.taskId);
         return task?.task || '';
@@ -134,8 +121,12 @@ export function DailyWorkRecordPage() {
       key: 'workTime', 
       header: TABLE_COLUMNS.WORK_TIME, 
       sortable: false,
-      editable: true,
+      editable: (item: any) => !isConfirmed && !item.isEmptyRow,
       inputType: 'number',
+      render: (item: any) => {
+        if (item.isEmptyRow) return '-';
+        return item.workTime;
+      },
       style: { width: '120px' }
     },
   ];

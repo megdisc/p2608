@@ -4,6 +4,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from
 import type { ProjectItem } from '../types';
 import { useAlert } from '../contexts';
 import { useProjects } from '../hooks';
+import { isProjectFinished } from '../utils';
 
 export function ProjectPage() {
   const { items, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
@@ -17,11 +18,30 @@ export function ProjectPage() {
 
   const columns: Column<ProjectItem>[] = [
     { key: 'code', header: TABLE_COLUMNS.PROJECT_ID, editable: false, inputType: 'text', rowType: 'main' },
-    { key: 'name', header: TABLE_COLUMNS.PROJECT_NAME, editable: true, inputType: 'text', rowType: 'main' },
+    { 
+      key: 'name', 
+      header: TABLE_COLUMNS.PROJECT_NAME, 
+      editable: (item: ProjectItem) => !isProjectFinished(item), 
+      inputType: 'text', 
+      rowType: 'main',
+      render: (item: ProjectItem) => {
+        const finished = isProjectFinished(item);
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>{item.name}</span>
+            {finished && (
+              <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
+                案件終了のため変更不可
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
     { 
       key: 'customerId', 
       header: TABLE_COLUMNS.CUSTOMER, 
-      editable: true, 
+      editable: (item: ProjectItem) => !isProjectFinished(item), 
       inputType: 'select', 
       options: [{ label: WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS, value: '' }, ...dbClients.map(c => ({ label: c.name, value: c.id }))],
       render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS,
@@ -30,13 +50,14 @@ export function ProjectPage() {
     { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
-      editable: true, 
+      editable: (item: any) => !isProjectFinished(item), 
       inputType: 'text', 
       rowType: 'sub',
       sortable: false,
-      mainRender: (_item, addSubRow) => (
+      mainRender: (item, addSubRow) => (
         <Button 
           onClick={addSubRow}
+          disabled={isProjectFinished(item)}
         >
           ＋ タスク追加
         </Button>
@@ -45,7 +66,7 @@ export function ProjectPage() {
     { 
       key: 'assigneeType', 
       header: TABLE_COLUMNS.ASSIGNEE_TYPE, 
-      editable: true, 
+      editable: (item: any) => !isProjectFinished(item), 
       inputType: 'radio', 
       options: OPTIONS.ASSIGNEE_TYPE_OPTIONS,
       rowType: 'sub',
@@ -54,15 +75,15 @@ export function ProjectPage() {
     { 
       key: 'skillId', 
       header: TABLE_COLUMNS.REQUIRED_SKILLS, 
-      editable: true, 
+      editable: (item: any) => !isProjectFinished(item), 
       inputType: 'select', 
       options: [{ label: 'スキルを選択', value: '' }, ...dbSkills.map(s => ({ label: s.name, value: s.id }))],
       rowType: 'sub-sub',
       render: (item: any) => dbSkills.find(s => s.id === item.skillId)?.name || '',
-      mainRender: (_item, addSubSubRow, subItem) => (
+      mainRender: (item, addSubSubRow, subItem) => (
          <Button 
            onClick={addSubSubRow} 
-           disabled={subItem?.assigneeType === 'external'}
+           disabled={subItem?.assigneeType === 'external' || isProjectFinished(item)}
          >
            ＋ スキル追加
          </Button>
@@ -71,7 +92,7 @@ export function ProjectPage() {
     { 
       key: 'levelId', 
       header: 'スキルレベル', 
-      editable: true, 
+      editable: (item: any) => !isProjectFinished(item), 
       inputType: 'select', 
       options: [{ label: 'レベルなし', value: '' }, ...dbSkillLevels.map(l => ({ label: String(l.level_value), value: l.id }))],
       rowType: 'sub-sub',
@@ -146,6 +167,8 @@ export function ProjectPage() {
 
   if (loading) return <div>Loading...</div>;
 
+  const hasFinishedProjects = items.some(isProjectFinished);
+
   return (
     <DataPage 
       title={PAGE_NAMES.PROJECT_INFO}
@@ -161,6 +184,16 @@ export function ProjectPage() {
       onAddSubSubRow={handleAddSubSubRow}
       hideSubSubItems={(subItem) => subItem.assigneeType === 'external'}
       hideHeader={true}
+      canEditRow={(item) => !isProjectFinished(item)}
+      canDeleteRow={(item) => !isProjectFinished(item)}
+      showRestrictionColumn={true}
+      restrictionTooltipText="案件終了のため変更不可"
+      footerLeft={hasFinishedProjects ? (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+          案件終了のため変更不可
+        </span>
+      ) : undefined}
     />
   );
 }
+

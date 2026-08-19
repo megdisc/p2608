@@ -19,7 +19,7 @@ export function useProjects() {
         supabase.from('projects').select(`
           id, code, name, project_type, client_id,
           project_tasks (
-            id, name, is_deleted, assignee_type, created_at,
+            id, name, is_deleted, assignee_type, created_at, status, completed_at, is_canceled,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
@@ -51,6 +51,9 @@ export function useProjects() {
               code: '',
               task: pt.name,
               assigneeType: pt.assignee_type || 'internal',
+              status: pt.status || 'not_started',
+              completedAt: pt.completed_at,
+              isCanceled: pt.is_canceled || false,
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
                 id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(),
                 skillId: pts.skill_id,

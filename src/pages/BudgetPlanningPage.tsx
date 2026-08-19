@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, RadioButton, type HeaderCell } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
+import { isProjectFinished } from '../utils';
 
 import { useAlert } from '../contexts/AlertContext';
 
@@ -95,6 +96,7 @@ export function BudgetPlanningPage() {
       { label: '費用　B', colSpan: 2 },
       { label: '積立金　C', colSpan: 2 },
       { label: '余剰　A-（B+C）', colSpan: 2 },
+      { label: TABLE_COLUMNS.RESTRICTION, rowSpan: 2, width: '60px' },
     ],
     [
       { label: TABLE_COLUMNS.SUBJECT },
@@ -116,12 +118,13 @@ export function BudgetPlanningPage() {
           {paginatedDrafts.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={11} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
+                <td colSpan={12} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
             </tbody>
           ) : (
               paginatedDrafts.map((draft) => {
                 const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
+                const isFinished = isProjectFinished(draft.project);
                 const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length);
                 const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
                 const sumRevenues = sum(draft.revenues);
@@ -139,6 +142,7 @@ export function BudgetPlanningPage() {
                       value="ongoing"
                       checked={draft.project.projectType === 'ongoing'}
                       onChange={() => handleProjectTypeChange(draftIndex, 'ongoing')}
+                      disabled={isFinished}
                     />
                     <RadioButton
                       label="案件終了時"
@@ -146,6 +150,7 @@ export function BudgetPlanningPage() {
                       value="one-off"
                       checked={draft.project.projectType !== 'ongoing'}
                       onChange={() => handleProjectTypeChange(draftIndex, 'one-off')}
+                      disabled={isFinished}
                     />
                   </div>
                 );
@@ -157,7 +162,14 @@ export function BudgetPlanningPage() {
                         {draft.project.code}
                       </td>
                       <td>
-                        {draft.project.name}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>{draft.project.name}</span>
+                          {isFinished && (
+                            <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
+                              案件終了のため変更不可
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="bg-input-highlight">
                         {renderProjectTypeRadio()}
@@ -187,6 +199,16 @@ export function BudgetPlanningPage() {
                           ¥{totalSurplus.toLocaleString()}
                         </strong>
                       </td>
+                      <td className="sticky-right" style={{ textAlign: 'center' }}>
+                        {isFinished && (
+                          <Tooltip text="案件終了のため変更不可">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                          </Tooltip>
+                        )}
+                      </td>
                     </tr>
                   );
                 } else {
@@ -201,7 +223,16 @@ export function BudgetPlanningPage() {
                               {i === 0 ? draft.project.code : ''}
                             </td>
                             <td style={{ borderBottom: 'none' }}>
-                              {i === 0 ? draft.project.name : ''}
+                              {i === 0 ? (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <span>{draft.project.name}</span>
+                                  {isFinished && (
+                                    <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
+                                      案件終了のため変更不可
+                                    </span>
+                                  )}
+                                </div>
+                              ) : ''}
                             </td>
                             <td className="bg-input-highlight" style={{ borderBottom: 'none' }}>
                               {i === 0 ? renderProjectTypeRadio() : ''}
@@ -212,6 +243,7 @@ export function BudgetPlanningPage() {
                             <CurrencyInput
                               value={rev.amount}
                               onChange={(val) => handleChange(draftIndex, 'revenues', i, val)}
+                              disabled={isFinished}
                             />
                           ) : null}
                         </td>
@@ -221,6 +253,7 @@ export function BudgetPlanningPage() {
                             <CurrencyInput
                               value={exp.amount}
                               onChange={(val) => handleChange(draftIndex, 'expenses', i, val)}
+                              disabled={isFinished}
                             />
                           ) : null}
                         </td>
@@ -230,11 +263,22 @@ export function BudgetPlanningPage() {
                             <CurrencyInput
                               value={res.amount}
                               onChange={(val) => handleChange(draftIndex, 'reserves', i, val)}
+                              disabled={isFinished}
                             />
                           ) : null}
                         </td>
                         <td></td>
                         <td></td>
+                        <td className="sticky-right" style={{ textAlign: 'center', borderBottom: 'none' }}>
+                          {i === 0 && isFinished && (
+                            <Tooltip text="案件終了のため変更不可">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            </Tooltip>
+                          )}
+                        </td>
                       </tr>
                     );
                   }
@@ -270,7 +314,16 @@ export function BudgetPlanningPage() {
                           ¥{totalSurplus.toLocaleString()}
                         </strong>
                       </td>
+                      <td className="sticky-right" style={{ textAlign: 'center' }}></td>
                     </tr>
+                  );
+                }
+
+                if (isFinished) {
+                  return (
+                    <Tooltip as="tbody" key={draft.project.id} text="案件終了のため変更不可">
+                      {rows}
+                    </Tooltip>
                   );
                 }
 

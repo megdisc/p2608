@@ -12,9 +12,10 @@ type MultiSelectDropdownProps = {
   value: string[]; // array of selected values
   onChange: (newValue: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
 };
 
-export function MultiSelectDropdown({ options, value, onChange, placeholder = PLACEHOLDERS.SELECT }: MultiSelectDropdownProps) {
+export function MultiSelectDropdown({ options, value, onChange, placeholder = PLACEHOLDERS.SELECT, disabled = false }: MultiSelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -56,6 +57,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
   }, [isOpen]);
 
   const handleToggle = (optionValue: string) => {
+    if (disabled) return;
     if (value.includes(optionValue)) {
       onChange(value.filter(v => v !== optionValue));
     } else {
@@ -64,13 +66,12 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
   };
 
   const selectedOptions = options.filter(opt => value.includes(opt.value));
-  // If there are selected values that are not in the options list, we should still display them (e.g., custom tags if we allowed them, but here we don't).
 
   return (
     <div className="multi-select-container" ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       <div 
         className="multi-select-input" 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         style={{
           minHeight: '24px',
           padding: '2px 4px',
@@ -81,8 +82,9 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
           flexWrap: 'wrap',
           alignItems: 'center',
           gap: '2px',
-          cursor: 'pointer',
-          background: 'var(--color-bg-main)'
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          background: disabled ? 'var(--color-bg-subtle, #f9fafb)' : 'var(--color-bg-main)',
+          opacity: disabled ? 0.8 : 1
         }}
       >
         {selectedOptions.length === 0 && (
@@ -97,7 +99,7 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
               background: 'var(--color-bg-subtle)',
               border: '1px solid var(--color-border)',
               borderRadius: '12px',
-              padding: '0 6px',
+              padding: disabled ? '0 8px' : '0 6px',
               height: '18px',
               lineHeight: '18px',
               fontSize: 'var(--text-caption)',
@@ -107,20 +109,22 @@ export function MultiSelectDropdown({ options, value, onChange, placeholder = PL
             }}
           >
             {opt.label}
-            <button
-              onClick={(e) => { e.stopPropagation(); handleToggle(opt.value); }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '0',
-                fontSize: 'var(--text-caption)',
-                color: 'var(--color-text-muted)',
-                lineHeight: 1
-              }}
-            >
-              ✕
-            </button>
+            {!disabled && (
+              <button
+                onClick={(e) => { e.stopPropagation(); handleToggle(opt.value); }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0',
+                  fontSize: 'var(--text-caption)',
+                  color: 'var(--color-text-muted)',
+                  lineHeight: 1
+                }}
+              >
+                ✕
+              </button>
+            )}
           </span>
         ))}
       </div>

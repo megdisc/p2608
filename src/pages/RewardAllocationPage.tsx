@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
-import { getCurrentJSTMonth } from '../utils/date';
+import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished } from '../utils';
 import { useAlert } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
@@ -277,12 +277,9 @@ export function RewardAllocationPage() {
       };
     });
 
-    // Build labor expenses with staff row at the end of each task group,
-    // and equal allocation per member in thousands, with remainder to staff.
     const laborExpenses: any[] = [];
     const taskBudgetItems = (budgetDraft?.expenses || []).filter(b => b.taskId);
 
-    // Get unique task ids and task names
     const taskMap = new Map<string, { taskId: string, taskName: string, budgetAmount: number }>();
     taskBudgetItems.forEach(b => {
       if (b.taskId) {
@@ -303,7 +300,6 @@ export function RewardAllocationPage() {
       }
     });
 
-    // Also include tasks from projRecords if not in budgetDraft
     projRecords.forEach(r => {
       if (r.taskId && !taskMap.has(r.taskId)) {
         taskMap.set(r.taskId, {
@@ -321,7 +317,6 @@ export function RewardAllocationPage() {
 
       const numMembers = memberRecords.length;
 
-      // Equal allocation in 1000s for members
       const memberPerPerson = numMembers > 0 
         ? Math.floor((budgetAmount / numMembers) / 1000) * 1000 
         : 0;
@@ -330,7 +325,6 @@ export function RewardAllocationPage() {
 
       const subjectName = `労務費（${taskName}）`;
 
-      // 1. Members
       memberRecords.forEach(m => {
         const customVal = allocationDrafts[m.id];
         laborExpenses.push({
@@ -343,7 +337,6 @@ export function RewardAllocationPage() {
         });
       });
 
-      // 2. Outsource (if any)
       outsourceRecords.forEach(o => {
         const customVal = allocationDrafts[o.id];
         laborExpenses.push({
@@ -356,7 +349,6 @@ export function RewardAllocationPage() {
         });
       });
 
-      // 3. Staff row at the end (Exactly 1 row per task, payee is always '職員')
       const staffKey = `STAFF_ALLOC_${pid}_${taskId}`;
       const customStaffVal = allocationDrafts[staffKey];
 
@@ -398,10 +390,23 @@ export function RewardAllocationPage() {
       : firstRec.projectName;
 
     const projectTasks = projRecords.filter(r => r.isFirstInTask);
-    const isFinished = firstRec?.projectStatus === 'completed' || 
-      firstRec?.projectStatus === 'finished' || 
-      firstRec?.projectStatus === WORDS_PROJECT.STATUS_FINISHED ||
-      (projectTasks.length > 0 && projectTasks.every(t => t.taskStatus === 'completed' || t.taskStatus === 'canceled'));
+    const isFinished = projDbInfo 
+      ? checkProjectFinished(projDbInfo) 
+      : (firstRec?.projectStatus === 'completed' || 
+         firstRec?.projectStatus === 'finished' || 
+         firstRec?.projectStatus === WORDS_PROJECT.STATUS_FINISHED ||
+         (projectTasks.length > 0 && projectTasks.every(t => t.taskStatus === 'completed' || t.taskStatus === 'canceled')));
+
+    const finishedMonth = isFinished 
+      ? (projDbInfo ? getProjectFinishedMonth(projDbInfo) : (() => {
+          let maxDate = '';
+          projectTasks.forEach(t => {
+            if (t.taskCompletedAt && t.taskCompletedAt > maxDate) maxDate = t.taskCompletedAt;
+          });
+          const m = maxDate.match(/^(\d{4}-\d{2})/);
+          return m ? m[1] : currentMonth;
+        })())
+      : null;
 
     return {
       id: pid,
@@ -411,11 +416,20 @@ export function RewardAllocationPage() {
       projectTypeSortKey: firstRec.projectTypeSortKey,
       isOngoing,
       isFinished,
+      finishedMonth,
       revenues,
       expenses,
       reserves
     };
-  }).filter(proj => proj.isOngoing || proj.isFinished);
+  }).filter(proj => {
+    if (proj.isOngoing) {
+      if (!proj.isFinished) return true;
+      return proj.finishedMonth ? currentMonth <= proj.finishedMonth : true;
+    } else {
+      if (!proj.isFinished) return false;
+      return proj.finishedMonth ? currentMonth <= proj.finishedMonth : true;
+    }
+  });
 
   displayProjects.sort((a, b) => {
     if (!sortConfig) return 0;

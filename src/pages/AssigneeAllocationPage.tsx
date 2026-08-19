@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Pagination, MultiSelectDropdown, SortIcon } from '../components';
+import { Button, Pagination, MultiSelectDropdown, SortIcon, Tooltip } from '../components';
 import { TABLE_COLUMNS, MESSAGES, OPTIONS, BUTTON_LABELS } from '../constants';
 
 import { supabase } from '../lib';
@@ -17,6 +17,7 @@ type AllocationRow = {
   memberIds: string[];
   clientIds: string[];
   assigneeType: string;
+  isProjectFinished?: boolean;
   isFirstInProject?: boolean;
   isLastInProject?: boolean;
   isFirstInTask?: boolean;
@@ -46,7 +47,7 @@ export function AssigneeAllocationPage() {
         supabase.from('projects').select(`
           id, code, name, project_type, client_id,
           project_tasks (
-            id, code, name, is_deleted, assignee_type,
+            id, code, name, is_deleted, assignee_type, status, completed_at, is_canceled,
             project_task_assignees ( member_id, client_id, staff_id ),
             project_task_skills ( skill_id, skill_levels ( level_value ) )
           )
@@ -78,9 +79,10 @@ export function AssigneeAllocationPage() {
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
         .forEach((p: any) => {
         const projectTypeSortKey = p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1');
-        (p.project_tasks || [])
-          .filter((pt: any) => !pt.is_deleted)
-          .forEach((pt: any) => {
+        const activeTasks = (p.project_tasks || []).filter((pt: any) => !pt.is_deleted);
+        const isFinished = activeTasks.length > 0 && activeTasks.every((pt: any) => pt.status === 'completed' || pt.status === 'canceled' || pt.is_canceled);
+
+        activeTasks.forEach((pt: any) => {
             const assignees = pt.project_task_assignees || [];
             formattedTasks.push({
               id: pt.id,
@@ -91,6 +93,7 @@ export function AssigneeAllocationPage() {
               projectCode: p.code || '',
               task: pt.name,
               assigneeType: pt.assignee_type || 'internal',
+              isProjectFinished: isFinished,
               memberIds: assignees.filter((a: any) => a.member_id).map((a: any) => a.member_id),
               clientIds: assignees.filter((a: any) => a.client_id).map((a: any) => a.client_id),
               requiredSkills: (pt.project_task_skills || []).map((pts: any) => ({
@@ -156,7 +159,6 @@ export function AssigneeAllocationPage() {
     });
   };
 
-  // Compute sorted drafts on the fly
   const displayDrafts = [...drafts].sort((a, b) => {
     if (sortConfig) {
       let aVal = '';
@@ -175,14 +177,12 @@ export function AssigneeAllocationPage() {
       if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
     }
     
-    // Default fallback sorting (projectCode desc)
     const projA = a.projectCode;
     const projB = b.projectCode;
     if (projA !== projB) return projB.localeCompare(projA);
     return 0;
   });
 
-  // Re-apply grouping flags dynamically
   let prevProjectId = '';
   let prevTaskId = '';
   
@@ -215,8 +215,6 @@ export function AssigneeAllocationPage() {
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
-
-
   return (
     <>
       <div className="table-container">
@@ -238,12 +236,13 @@ export function AssigneeAllocationPage() {
               <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
               <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
               <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
+              <th rowSpan={1} style={{ width: '60px', textAlign: 'center' }}>{TABLE_COLUMNS.RESTRICTION}</th>
             </tr>
           </thead>
           <tbody>
             {paginatedDrafts.length === 0 ? (
               <tr>
-                <td colSpan={5} className="empty-message">案件データがありません</td>
+                <td colSpan={6} className="empty-message">案件データがありません</td>
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
@@ -252,7 +251,16 @@ export function AssigneeAllocationPage() {
                     {item.isFirstInProject ? item.projectCode : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
-                    {item.isFirstInProject ? item.projectName : ''}
+                    {item.isFirstInProject ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{item.projectName}</span>
+                        {item.isProjectFinished && (
+                          <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3', whiteSpace: 'nowrap' }}>
+                            案件終了のため変更不可
+                          </span>
+                        )}
+                      </div>
+                    ) : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}
@@ -276,6 +284,7 @@ export function AssigneeAllocationPage() {
                         value={item.memberIds}
                         onChange={(newVal) => handleChange(item.id, 'memberIds', newVal)}
                         placeholder="利用者を選択"
+                        disabled={item.isProjectFinished}
                       />
                     ) : (
                       <MultiSelectDropdown 
@@ -283,7 +292,18 @@ export function AssigneeAllocationPage() {
                         value={item.clientIds}
                         onChange={(newVal) => handleChange(item.id, 'clientIds', newVal)}
                         placeholder="外注先を選択"
+                        disabled={item.isProjectFinished}
                       />
+                    )}
+                  </td>
+                  <td className="sticky-right" style={{ textAlign: 'center', borderBottom: item.isLastInProject ? undefined : 'none' }}>
+                    {item.isFirstInProject && item.isProjectFinished && (
+                      <Tooltip text="案件終了のため変更不可">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                      </Tooltip>
                     )}
                   </td>
                 </tr>

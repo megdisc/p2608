@@ -23,6 +23,7 @@ type AllocationRow = {
   isFirstInTask?: boolean;
   isLastInTask?: boolean;
   requiredSkills: { skillId: string, levelValue: number }[];
+  hasNoTask?: boolean;
 };
 
 export function AssigneeAllocationPage() {
@@ -82,7 +83,24 @@ export function AssigneeAllocationPage() {
         const activeTasks = (p.project_tasks || []).filter((pt: any) => !pt.is_deleted);
         const isFinished = activeTasks.length > 0 && activeTasks.every((pt: any) => pt.status === 'completed' || pt.status === 'canceled' || pt.is_canceled);
 
-        activeTasks.forEach((pt: any) => {
+        if (activeTasks.length === 0) {
+          formattedTasks.push({
+            id: `NO_TASK_${p.id}`,
+            projectId: p.id,
+            projectType: p.project_type || 'one-off',
+            projectTypeSortKey,
+            projectName: p.name,
+            projectCode: p.code || '',
+            task: '-',
+            assigneeType: 'internal',
+            isProjectFinished: false,
+            memberIds: [],
+            clientIds: [],
+            requiredSkills: [],
+            hasNoTask: true
+          });
+        } else {
+          activeTasks.forEach((pt: any) => {
             const assignees = pt.project_task_assignees || [];
             formattedTasks.push({
               id: pt.id,
@@ -102,6 +120,7 @@ export function AssigneeAllocationPage() {
               }))
             });
           });
+        }
       });
 
       setDrafts(formattedTasks);
@@ -123,6 +142,7 @@ export function AssigneeAllocationPage() {
       setLoading(true);
 
       for (const t of drafts) {
+        if (t.hasNoTask) continue;
         await supabase.from('project_task_assignees').delete().eq('task_id', t.id);
         
         const assigneeInserts: any[] = [];
@@ -206,11 +226,15 @@ export function AssigneeAllocationPage() {
   });
 
   const totalPages = Math.ceil(finalDrafts.length / pageSize);
-  const paginatedDrafts = finalDrafts.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((r, i) => {
+  const paginatedDrafts = finalDrafts.slice((currentPage - 1) * pageSize, currentPage * pageSize).map((r, i, arr) => {
+    let item = r;
     if (i === 0) {
-      return { ...r, isFirstInProject: true, isFirstInTask: true };
+      item = { ...item, isFirstInProject: true, isFirstInTask: true };
     }
-    return r;
+    if (i === arr.length - 1) {
+      item = { ...item, isLastInProject: true, isLastInTask: true };
+    }
+    return item;
   });
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
@@ -236,7 +260,7 @@ export function AssigneeAllocationPage() {
               <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
               <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
               <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
-              <th rowSpan={1} style={{ width: '60px', textAlign: 'center' }}>{TABLE_COLUMNS.RESTRICTION}</th>
+              <th className="sticky-right" rowSpan={1} style={{ width: '60px', textAlign: 'center', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>
             </tr>
           </thead>
           <tbody>
@@ -246,31 +270,23 @@ export function AssigneeAllocationPage() {
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
-                <tr key={item.id}>
+                <Tooltip text="案件終了のため変更不可" as="tr" disabled={!item.isProjectFinished} key={item.id}>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectCode : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
-                    {item.isFirstInProject ? (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {item.isProjectFinished ? (
-                          <Tooltip text="案件終了のため変更不可" as="span">
-                            <span>{item.projectName}</span>
-                          </Tooltip>
-                        ) : (
-                          <span>{item.projectName}</span>
-                        )}
-                      </div>
-                    ) : ''}
+                    {item.isFirstInProject ? <span>{item.projectName}</span> : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
-                    {OPTIONS.ASSIGNEE_TYPE_OPTIONS.find(opt => opt.value === item.assigneeType)?.label || item.assigneeType}
+                    {item.hasNoTask ? '-' : (OPTIONS.ASSIGNEE_TYPE_OPTIONS.find(opt => opt.value === item.assigneeType)?.label || item.assigneeType)}
                   </td>
-                  <td className={item.isProjectFinished ? undefined : 'bg-input-highlight'}>
-                    {item.assigneeType === 'internal' ? (
+                  <td className={item.isProjectFinished || item.hasNoTask ? undefined : 'bg-input-highlight'}>
+                    {item.hasNoTask ? (
+                      <span style={{ color: 'var(--color-text-muted)', paddingLeft: '4px' }}>-</span>
+                    ) : item.assigneeType === 'internal' ? (
                       <MultiSelectDropdown 
                         options={dbMembers.filter(u => {
                           const reqSkills = item.requiredSkills || [];
@@ -299,15 +315,13 @@ export function AssigneeAllocationPage() {
                   </td>
                   <td className="sticky-right" style={{ textAlign: 'center', borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject && item.isProjectFinished && (
-                      <Tooltip text="案件終了のため変更不可">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                      </Tooltip>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
                     )}
                   </td>
-                </tr>
+                </Tooltip>
               ))
             )}
           </tbody>

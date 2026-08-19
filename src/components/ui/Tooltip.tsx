@@ -6,12 +6,20 @@ type TooltipProps = {
   text: string;
   children: ReactNode;
   as?: ElementType;
+  style?: React.CSSProperties;
+  disabled?: boolean;
 };
 
-export function Tooltip({ text, children, as: Component = 'div' }: TooltipProps) {
+export function Tooltip({ text, children, as: Component = 'div', style, disabled = false }: TooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
   const childrenRef = useRef<any>(null);
+
+  const computedStyle = style !== undefined ? style : (Component === 'tr' ? undefined : { display: 'contents' });
+
+  if (disabled) {
+    return <Component style={computedStyle}>{children}</Component>;
+  }
 
   const handleMouseEnter = (e: React.MouseEvent) => {
     setIsVisible(true);
@@ -34,7 +42,7 @@ export function Tooltip({ text, children, as: Component = 'div' }: TooltipProps)
       onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ display: 'contents' }}
+      style={computedStyle}
     >
       {children}
       {isVisible && createPortal(

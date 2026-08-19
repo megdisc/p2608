@@ -268,7 +268,7 @@ export function AssigneeAllocationPage() {
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {OPTIONS.ASSIGNEE_TYPE_OPTIONS.find(opt => opt.value === item.assigneeType)?.label || item.assigneeType}
                   </td>
-                  <td className="bg-input-highlight">
+                  <td className={item.isProjectFinished ? undefined : 'bg-input-highlight'}>
                     {item.assigneeType === 'internal' ? (
                       <MultiSelectDropdown 
                         options={dbMembers.filter(u => {

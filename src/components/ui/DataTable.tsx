@@ -414,10 +414,12 @@ export function DataTable<T extends { id: string }>({
     setOriginalNewRows([]);
   };
 
-  const renderCellContent = (col: Column<T>, item: any, isSubItem: boolean = false, parentId?: string, isSubSubItem: boolean = false, subParentId?: string) => {
+  const renderCellContent = (col: Column<T>, item: any, isSubItem: boolean = false, parentId?: string, isSubSubItem: boolean = false, subParentId?: string, mainItem?: T) => {
     const isDeleted = deletedIds.has(item.id);
-    const isRowEditable = canEditRow && !isSubItem && !isSubSubItem ? canEditRow(item) : true;
-    const isEditable = !isDeleted && isRowEditable && !!onBatchSave && (typeof col.editable === 'function' ? col.editable(item) : col.editable !== false) && col.inputType;
+    const parentMainItem = mainItem || item;
+    const isRowEditable = canEditRow ? canEditRow(parentMainItem) : true;
+    const isColEditable = typeof col.editable === 'function' ? col.editable(parentMainItem) : col.editable !== false;
+    const isEditable = !isDeleted && isRowEditable && !!onBatchSave && isColEditable && col.inputType;
     
     if (isEditable) {
       const value = item[col.key] ?? '';
@@ -448,6 +450,7 @@ export function DataTable<T extends { id: string }>({
                 name={`${item.id}-${col.key}`}
                 value={opt.value}
                 checked={String(value) === String(opt.value)}
+                disabled={!isEditable}
                 onChange={(e) => handleCellChange(item.id, col.key, e.target.value, col, isSubItem, parentId, isSubSubItem, subParentId)}
               />
             ))}
@@ -534,7 +537,26 @@ export function DataTable<T extends { id: string }>({
     // Default render for non-editable state
     if (col.render) return col.render(item, draftData, setDraftData);
     
-    if (col.inputType === 'select' || col.inputType === 'radio') {
+    if (col.inputType === 'radio') {
+      const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
+      const value = item[col.key] ?? '';
+      return (
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          {opts.map(opt => (
+            <RadioButton
+              key={opt.value}
+              label={opt.label}
+              name={`${item.id}-${col.key}`}
+              value={opt.value}
+              checked={String(value) === String(opt.value)}
+              disabled={true}
+            />
+          ))}
+        </div>
+      );
+    }
+    
+    if (col.inputType === 'select') {
       const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
       const option = opts.find(o => o.value === item[col.key]);
       return option ? option.label : item[col.key];
@@ -618,55 +640,58 @@ export function DataTable<T extends { id: string }>({
               const renderSubSubRows = (subItem: any) => {
                 if (hideSubSubItems && hideSubSubItems(subItem)) return null;
                 const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
+                const isLastSubItem = subItem === subItems[subItems.length - 1];
                 return (
                   <React.Fragment key={`${subItem.id}-skills`}>
-                    {subSubItems.map(subSubItem => (
-                      <tr key={subSubItem.id} className={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted ? 'deleted-row' : ''}>
-                        {columns.map((col, idx) => {
-                          const isMainCol = col.rowType === 'main' || !col.rowType;
-                          const isSubCol = col.rowType === 'sub';
-                          let borderBottomStyle: string | undefined;
-                          if (isMainCol) {
-                            const isLastSubItem = subItem === subItems[subItems.length - 1];
-                            const isLastSubSubItem = subSubItem === subSubItems[subSubItems.length - 1];
-                            if (!isLastSubItem || !isLastSubSubItem) {
-                              borderBottomStyle = 'none';
+                    {subSubItems.map(subSubItem => {
+                      const isLastSubSubItem = subSubItem === subSubItems[subSubItems.length - 1];
+                      return (
+                        <tr key={subSubItem.id} className={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted ? 'deleted-row' : ''}>
+                          {columns.map((col, idx) => {
+                            const isMainCol = col.rowType === 'main' || !col.rowType;
+                            const isSubCol = col.rowType === 'sub';
+                            let borderBottomStyle: string | undefined;
+                            if (isMainCol) {
+                              if (!isLastSubItem || !isLastSubSubItem) {
+                                borderBottomStyle = 'none';
+                              }
+                            } else if (isSubCol) {
+                              if (!isLastSubSubItem) {
+                                borderBottomStyle = 'none';
+                              }
                             }
-                          } else if (isSubCol) {
-                            const isLastSubSubItem = subSubItem === subSubItems[subSubItems.length - 1];
-                            if (!isLastSubSubItem) {
-                              borderBottomStyle = 'none';
-                            }
-                          }
-                          
-                          const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
-                          
-                          const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
-                          const customStyle = {
-                            ...baseStyle,
-                            ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
-                          };
-                          
-                          return (
-                            <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                              {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id) : null}
+                            
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                            
+                            const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
+                            const customStyle = {
+                              ...baseStyle,
+                              ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
+                            };
+                            
+                            return (
+                              <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
+                                {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id, item) : null}
+                              </td>
+                            );
+                          })}
+                          {showDeleteCol && (
+                            <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                              <Input 
+                                type="checkbox" 
+                                checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
+                                disabled={deletedIds.has(subItem.id) || isDeleted}
+                                onChange={() => toggleDelete(subSubItem.id)}
+                                className="custom-checkbox"
+                              />
                             </td>
-                          );
-                        })}
-                        {showDeleteCol && (
-                          <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                            <Input 
-                              type="checkbox" 
-                              checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
-                              disabled={deletedIds.has(subItem.id) || isDeleted}
-                              onChange={() => toggleDelete(subSubItem.id)}
-                              className="custom-checkbox"
-                            />
-                          </td>
-                        )}
-                        {showRestrictionColumn && <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}></td>}
-                      </tr>
-                    ))}
+                          )}
+                          {showRestrictionColumn && (
+                            <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...((!isLastSubItem || !isLastSubSubItem) ? { borderBottom: 'none' } : {}) }}></td>
+                          )}
+                        </tr>
+                      );
+                    })}
                   </React.Fragment>
                 );
               };
@@ -726,7 +751,7 @@ export function DataTable<T extends { id: string }>({
                             gap: '8px',
                             justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : 'flex-start'
                           }}>
-                            {renderCellContent(col, item, false)}
+                            {renderCellContent(col, item, false, undefined, false, undefined, item)}
                           </div>
                         </td>
                       );
@@ -744,7 +769,7 @@ export function DataTable<T extends { id: string }>({
                       </td>
                     )}
                     {showRestrictionColumn && (
-                      <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
+                      <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...(subItems.length > 0 ? { borderBottom: 'none' } : {}) }}>
                         {!isRowEditable && (
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -757,16 +782,16 @@ export function DataTable<T extends { id: string }>({
 
                   {subItems.map(subItem => {
                     const isSubDeleted = deletedIds.has(subItem.id);
+                    const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
+                    const isSubSubHidden = hideSubSubItems && hideSubSubItems(subItem);
+                    const isLastSubItem = subItem === subItems[subItems.length - 1];
                     return (
                       <React.Fragment key={subItem.id}>
                         <tr className={isSubDeleted || isDeleted ? 'deleted-row' : ''}>
                           {columns.map((col, idx) => {
                             const isMainCol = col.rowType === 'main' || !col.rowType;
                             let borderBottomStyle: string | undefined;
-                            const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
-                            const isSubSubHidden = hideSubSubItems && hideSubSubItems(subItem);
                             if (isMainCol) {
-                              const isLastSubItem = subItem === subItems[subItems.length - 1];
                               if (!isLastSubItem || (!isSubSubHidden && subSubItems.length > 0)) {
                                 borderBottomStyle = 'none';
                               }
@@ -793,7 +818,7 @@ export function DataTable<T extends { id: string }>({
                             }
                             return (
                               <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id) : null}
+                                {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null}
                               </td>
                             );
                           })}
@@ -809,7 +834,7 @@ export function DataTable<T extends { id: string }>({
                             </td>
                           )}
                           {showRestrictionColumn && (
-                            <td className="sticky-right" style={{ textAlign: 'center', right: '0' }}>
+                            <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...((!isLastSubItem || (!isSubSubHidden && subSubItems.length > 0)) ? { borderBottom: 'none' } : {}) }}>
                             </td>
                           )}
                         </tr>

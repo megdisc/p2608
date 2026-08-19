@@ -171,7 +171,7 @@ export function BudgetPlanningPage() {
                           )}
                         </div>
                       </td>
-                      <td className="bg-input-highlight">
+                      <td className={isFinished ? undefined : "bg-input-highlight"}>
                         {renderProjectTypeRadio()}
                       </td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
@@ -234,11 +234,11 @@ export function BudgetPlanningPage() {
                                 </div>
                               ) : ''}
                             </td>
-                            <td className="bg-input-highlight" style={{ borderBottom: 'none' }}>
+                            <td className={isFinished ? undefined : "bg-input-highlight"} style={{ borderBottom: 'none' }}>
                               {i === 0 ? renderProjectTypeRadio() : ''}
                             </td>
                         <td>{rev?.subject || ''}</td>
-                        <td className={rev ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                        <td className={rev ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
                           {rev ? (
                             <CurrencyInput
                               value={rev.amount}
@@ -248,7 +248,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{exp?.subject || ''}</td>
-                        <td className={exp ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                        <td className={exp ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
                           {exp ? (
                             <CurrencyInput
                               value={exp.amount}
@@ -258,7 +258,7 @@ export function BudgetPlanningPage() {
                           ) : null}
                         </td>
                         <td>{res?.subject || ''}</td>
-                        <td className={res ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined}>
+                        <td className={res ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
                           {res ? (
                             <CurrencyInput
                               value={res.amount}
@@ -288,7 +288,7 @@ export function BudgetPlanningPage() {
                     <tr key={`${draft.project.id}-total`}>
                       <td></td>
                       <td></td>
-                      <td className="bg-input-highlight"></td>
+                      <td className={isFinished ? undefined : "bg-input-highlight"}></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         <strong>¥{sumRevenues.toLocaleString()}</strong>

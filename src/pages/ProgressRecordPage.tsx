@@ -91,6 +91,24 @@ export function ProgressRecordPage() {
         borderBottom: item.isLastInProject ? undefined : 'none'
       })
     },
+    {
+      key: 'projectType',
+      header: TABLE_COLUMNS.PROJECT_TYPE,
+      sortable: false,
+      editable: false,
+      render: (item: any) => {
+        if (!item.isFirstInProject) return '';
+        const project = dbProjects.find(p => p.id === item.projectId);
+        const type = project?.projectType || item.projectType;
+        if (type === 'その他') return 'その他';
+        return type === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
+      },
+      style: (item: any) => ({
+        width: '100px',
+        textAlign: 'center',
+        borderBottom: item.isLastInProject ? undefined : 'none'
+      })
+    },
     { 
       key: 'taskId',  
       header: TABLE_COLUMNS.TASK, 

@@ -227,7 +227,6 @@ export function RewardAllocationPage() {
     [
       { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px', sortKey: 'projectCode' },
       { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'projectName' },
-      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '80px', sortKey: 'projectType' },
       { label: '収益　A', colSpan: 3 },
       { label: '費用　B', colSpan: 3 },
       { label: '積立金　C', colSpan: 2 },
@@ -439,7 +438,7 @@ export function RewardAllocationPage() {
         <table className="inventory-table">
           <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           {displayProjects.length === 0 ? (
-            <tbody><tr><td colSpan={13} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
+            <tbody><tr><td colSpan={12} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
           ) : (
             displayProjects.map(proj => {
               const maxRows = Math.max(1, proj.revenues.length, proj.expenses.length, proj.reserves.length);
@@ -459,9 +458,6 @@ export function RewardAllocationPage() {
                     </td>
                     <td style={{ borderBottom: 'none' }}>
                       {proj.name}
-                    </td>
-                    <td style={{ borderBottom: 'none' }}>
-                      {proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)}
                     </td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>
@@ -503,9 +499,6 @@ export function RewardAllocationPage() {
                     </td>
                     <td style={{ borderBottom: 'none' }}>
                       {i === 0 ? proj.name : ''}
-                    </td>
-                    <td style={{ borderBottom: 'none' }}>
-                      {i === 0 ? (proj.projectType === 'その他' ? 'その他' : (proj.projectType === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF)) : ''}
                     </td>
                       
                       {/* Revenue */}
@@ -550,7 +543,6 @@ export function RewardAllocationPage() {
                 // Add a total row just like BudgetPlanning
                 rows.push(
                   <tr key={`proj-${proj.id}-total`}>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>

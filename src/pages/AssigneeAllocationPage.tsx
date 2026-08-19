@@ -235,12 +235,6 @@ export function AssigneeAllocationPage() {
                   <SortIcon active={sortConfig?.key === 'name'} direction={sortConfig?.direction || 'asc'} />
                 </div>
               </th>
-              <th rowSpan={1} style={{ width: '120px', cursor: 'pointer', userSelect: 'none' }} onClick={() => handleSort('projectType')}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {TABLE_COLUMNS.PROJECT_TYPE}
-                  <SortIcon active={sortConfig?.key === 'projectType'} direction={sortConfig?.direction || 'asc'} />
-                </div>
-              </th>
               <th rowSpan={1} style={{ width: '200px' }}>{TABLE_COLUMNS.TASK}</th>
               <th rowSpan={1} style={{ width: '120px' }}>{TABLE_COLUMNS.ASSIGNEE_TYPE}</th>
               <th rowSpan={1} style={{ textAlign: 'left' }}>{TABLE_COLUMNS.ASSIGNEE}</th>
@@ -249,7 +243,7 @@ export function AssigneeAllocationPage() {
           <tbody>
             {paginatedDrafts.length === 0 ? (
               <tr>
-                <td colSpan={6} className="empty-message">案件データがありません</td>
+                <td colSpan={5} className="empty-message">案件データがありません</td>
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
@@ -259,9 +253,6 @@ export function AssigneeAllocationPage() {
                   </td>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectName : ''}
-                  </td>
-                  <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
-                    {item.isFirstInProject ? (OPTIONS.PROJECT_TYPE_OPTIONS.find(o => o.value === item.projectType)?.label || '') : ''}
                   </td>
                   <td style={{ borderBottom: item.isLastInTask ? undefined : 'none' }}>
                     {item.isFirstInTask ? item.task : ''}

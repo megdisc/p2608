@@ -32,6 +32,8 @@ export type ProgressFlatRecord = {
   isLastInProject?: boolean;
   isLastInTask?: boolean;
   isCanceled?: boolean;
+  isTaskCompleted?: boolean;
+  hasWorkTime?: boolean;
   deductionAmount?: number;
 };
 
@@ -43,6 +45,7 @@ export function useProgressRecords() {
 
   const [workTimeSummary, setWorkTimeSummary] = useState<Record<string, number>>({});
   const [cumulativeWorkTimeSummary, setCumulativeWorkTimeSummary] = useState<Record<string, number>>({});
+  const [taskHasWorkSummary, setTaskHasWorkSummary] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
 
@@ -132,8 +135,12 @@ export function useProgressRecords() {
 
       const timeMap: Record<string, number> = {};
       const cumulativeTimeMap: Record<string, number> = {};
-      
+      const taskHasWorkMap: Record<string, boolean> = {};
+
       (workTimeRes.data || []).forEach((r: any) => {
+        if (r.task_id && Number(r.work_time) > 0) {
+          taskHasWorkMap[r.task_id] = true;
+        }
         if (r.member_id) {
           const key = `member_${r.member_id}_${r.task_id}`;
           const t = Number(r.work_time);
@@ -148,6 +155,7 @@ export function useProgressRecords() {
       
       setWorkTimeSummary(timeMap);
       setCumulativeWorkTimeSummary(cumulativeTimeMap);
+      setTaskHasWorkSummary(taskHasWorkMap);
 
     } catch (error) {
       console.error('Error fetching records:', error);
@@ -204,7 +212,18 @@ export function useProgressRecords() {
           }
         }
 
-        const taskCurrentStatus = t.status || 'not_started';
+        const hasWorkTime = Boolean(taskHasWorkSummary[t.id]);
+        const isTaskCompleted = t.status === 'completed' || t.status === 'canceled';
+
+        let taskCurrentStatus = 'not_started';
+        if (isTaskCompleted) {
+          taskCurrentStatus = 'completed';
+        } else if (hasWorkTime) {
+          taskCurrentStatus = 'in_progress';
+        } else {
+          taskCurrentStatus = 'not_started';
+        }
+
         const taskPrevStatus = t.status || 'not_started';
         
         let hasAssignees = false;
@@ -264,7 +283,9 @@ export function useProgressRecords() {
             cumulativeWorkTime,
             allocationAmount: 0,
             isSaved: true,
-            isCanceled: t.isCanceled
+            isCanceled: t.isCanceled,
+            isTaskCompleted,
+            hasWorkTime
           });
         }
 
@@ -291,7 +312,9 @@ export function useProgressRecords() {
              cumulativeWorkTime: '-',
              allocationAmount: 0,
              isSaved: true,
-             isCanceled: t.isCanceled
+             isCanceled: t.isCanceled,
+             isTaskCompleted,
+             hasWorkTime
            });
         }
       }
@@ -343,7 +366,7 @@ export function useProgressRecords() {
     });
 
     return finalRows;
-  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, workTimeSummary, cumulativeWorkTimeSummary]);
+  }, [currentMonth, dbMembers, dbStaffs, dbClients, dbProjects, workTimeSummary, cumulativeWorkTimeSummary, taskHasWorkSummary]);
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {
@@ -355,10 +378,15 @@ export function useProgressRecords() {
         if (deletedIds.includes(r.id)) continue;
 
         if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
+          const isCompleted = Boolean(r.isTaskCompleted || r.taskStatus === 'completed');
+          const newStatus = isCompleted
+            ? 'completed'
+            : (r.hasWorkTime ? 'in_progress' : 'not_started');
+
           projectTaskUpdates.push({
             id: r.taskId,
-            status: r.taskStatus || 'not_started',
-            is_canceled: r.taskStatus === 'canceled'
+            status: newStatus,
+            is_canceled: false
           });
         }
       }

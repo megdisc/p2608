@@ -110,26 +110,39 @@ export function ProgressRecordPage() {
       key: 'taskStatus', 
       header: TABLE_COLUMNS.TASK_STATUS, 
       sortable: false,
-      editable: (item: any) => item.isFirstInTask,
-      inputType: 'radio',
-      options: [
-        { label: '未着手', value: 'not_started' },
-        { label: '進行中', value: 'in_progress' },
-        { label: '完了', value: 'completed' },
-        { label: '中止', value: 'canceled' }
-      ],
+      editable: false,
       render: (item: any) => {
          if (!item.isFirstInTask) return '';
          const v = item.taskStatus;
-         if (v === 'not_started') return '未着手';
+         if (v === 'completed' || item.isTaskCompleted) return '終了';
          if (v === 'in_progress') return '進行中';
-         if (v === 'completed') return '完了';
-         if (v === 'canceled') return '中止';
-         return '';
+         return '未着手';
       },
       style: (item: any) => ({
         borderBottom: item.isLastInTask ? undefined : 'none',
-        minWidth: '280px'
+        width: '120px',
+        textAlign: 'center'
+      })
+    },
+    {
+      key: 'isTaskCompleted',
+      header: 'タスク終了',
+      sortable: false,
+      editable: (item: any) => item.isFirstInTask,
+      inputType: 'checkbox',
+      onCellChange: (checked: boolean, item: any) => {
+        const newStatus = checked
+          ? 'completed'
+          : (item.hasWorkTime ? 'in_progress' : 'not_started');
+        return {
+          isTaskCompleted: checked,
+          taskStatus: newStatus
+        };
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInTask ? undefined : 'none',
+        width: '100px',
+        textAlign: 'center'
       })
     },
   ];

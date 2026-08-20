@@ -127,6 +127,7 @@ export const WORDS_PROJECT = {
   PROJECT_TYPE_ONGOING_VALUE: 'ongoing',
   PROJECT_TYPE_OTHER: 'その他',
   PROJECT_TYPE_OTHER_VALUE: 'その他',
+  FINAL_SETTLEMENT: '（最終精算）',
   TASK: 'タスク',
   SKILL: 'スキル',
   REQUIRED_SKILLS: 'スキル',

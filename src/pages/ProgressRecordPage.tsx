@@ -168,14 +168,19 @@ export function ProgressRecordPage() {
           const project = dbProjects.find(p => p.id === item.projectId);
           const defaultMonth = getProjectFinishedMonth(project) || getCurrentJSTMonth();
           const val = item.settlementYearMonth || defaultMonth;
+          const type = project?.projectType || item.projectType;
+          const isOngoing = type === 'ongoing';
 
           return (
-            <MonthInput
-              value={val}
-              onChange={(newVal) => {
-                setDrafts(drafts.map(d => d.projectId === item.projectId ? { ...d, settlementYearMonth: newVal } : d));
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
+              <MonthInput
+                value={val}
+                onChange={(newVal) => {
+                  setDrafts(drafts.map(d => d.projectId === item.projectId ? { ...d, settlementYearMonth: newVal } : d));
+                }}
+              />
+              {isOngoing && <span>{WORDS_PROJECT.FINAL_SETTLEMENT}</span>}
+            </div>
           );
         }
 
@@ -195,8 +200,12 @@ export function ProgressRecordPage() {
           }
         }
 
+        const project = dbProjects.find(p => p.id === item.projectId);
+        const type = project?.projectType || item.projectType;
+        const isOngoing = type === 'ongoing';
+
         return {
-          width: isFinished ? '140px' : '100px',
+          width: isFinished ? (isOngoing ? '210px' : '140px') : '100px',
           textAlign: 'center',
           backgroundColor: isFinished ? 'var(--color-bg-input-highlight)' : undefined,
           borderBottom: item.isLastInProject ? undefined : 'none'

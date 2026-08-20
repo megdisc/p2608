@@ -47,6 +47,7 @@ export type ProjectItem = {
   name: string;
   yomigana?: string;
   projectType: 'one-off' | 'ongoing' | 'その他';
+  settlementYearMonth?: string;
   projectTypeSortKey?: string;
   customerId?: string;
   tasks: ProjectTask[];

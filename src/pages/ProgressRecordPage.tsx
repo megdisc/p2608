@@ -1,8 +1,9 @@
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, MonthInput } from '../components';
 import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import { useAlert } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
+import { getProjectFinishedMonth, getCurrentJSTMonth } from '../utils';
 
 export function ProgressRecordPage() {
   const { 
@@ -150,18 +151,57 @@ export function ProgressRecordPage() {
       header: TABLE_COLUMNS.PROJECT_TYPE,
       sortable: false,
       editable: false,
-      render: (item: any) => {
+      render: (item: any, drafts: any[], setDrafts: (newData: any[]) => void) => {
         if (!item.isFirstInProject) return '';
+
+        const projectTasks = (drafts || []).filter(d => d.projectId === item.projectId && d.isFirstInTask);
+        let isFinished = projectTasks.length > 0;
+        for (const t of projectTasks) {
+          const status = t.taskStatus || 'not_started';
+          if (status !== 'completed' && status !== 'canceled') {
+            isFinished = false;
+            break;
+          }
+        }
+
+        if (isFinished) {
+          const project = dbProjects.find(p => p.id === item.projectId);
+          const defaultMonth = getProjectFinishedMonth(project) || getCurrentJSTMonth();
+          const val = item.settlementYearMonth || defaultMonth;
+
+          return (
+            <MonthInput
+              value={val}
+              onChange={(newVal) => {
+                setDrafts(drafts.map(d => d.projectId === item.projectId ? { ...d, settlementYearMonth: newVal } : d));
+              }}
+            />
+          );
+        }
+
         const project = dbProjects.find(p => p.id === item.projectId);
         const type = project?.projectType || item.projectType;
         if (type === 'その他') return 'その他';
         return type === 'ongoing' ? WORDS_PROJECT.PROJECT_TYPE_ONGOING : WORDS_PROJECT.PROJECT_TYPE_ONE_OFF;
       },
-      style: (item: any) => ({
-        width: '100px',
-        textAlign: 'center',
-        borderBottom: item.isLastInProject ? undefined : 'none'
-      })
+      style: (item: any, drafts?: any[]) => {
+        const projectTasks = (drafts || []).filter(d => d.projectId === item.projectId && d.isFirstInTask);
+        let isFinished = projectTasks.length > 0;
+        for (const t of projectTasks) {
+          const status = t.taskStatus || 'not_started';
+          if (status !== 'completed' && status !== 'canceled') {
+            isFinished = false;
+            break;
+          }
+        }
+
+        return {
+          width: isFinished ? '140px' : '100px',
+          textAlign: 'center',
+          backgroundColor: (isFinished && item.isFirstInProject) ? 'var(--color-bg-input-highlight)' : undefined,
+          borderBottom: item.isLastInProject ? undefined : 'none'
+        };
+      }
     },
   ];
 

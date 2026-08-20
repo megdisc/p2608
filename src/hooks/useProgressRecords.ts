@@ -10,6 +10,7 @@ export type ProgressFlatRecord = {
   projectCode: string;
   projectType: string;
   projectTypeSortKey: string;
+  settlementYearMonth?: string;
   yearMonth: string;
   taskId: string;
   taskName: string;
@@ -58,7 +59,7 @@ export function useProgressRecords() {
         supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
-          id, code, name, project_type, client_id,
+          id, code, name, project_type, settlement_year_month, client_id,
           project_tasks (
             id, code, name, is_deleted, is_canceled, status, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
@@ -85,6 +86,7 @@ export function useProgressRecords() {
         code: p.code || '',
         name: p.name,
         projectType: p.project_type || 'one-off',
+        settlementYearMonth: p.settlement_year_month || undefined,
         customerId: p.client_id,
         tasks: (p.project_tasks || [])
           .filter((pt: any) => !pt.is_deleted)
@@ -192,6 +194,8 @@ export function useProgressRecords() {
         }
       }
       
+      const settlementYearMonth = project.settlementYearMonth;
+
       for (const t of project.tasks) {
         const membersToProcess = new Set<string>();
         
@@ -266,6 +270,7 @@ export function useProgressRecords() {
             projectCode: project.code || '',
             projectType: project.projectType || 'one-off',
             projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
+            settlementYearMonth,
             projectStatus: projectStatus,
             yearMonth: currentMonth,
             taskId: t.id,
@@ -297,6 +302,7 @@ export function useProgressRecords() {
              projectCode: project.code || '',
              projectType: project.projectType || 'one-off',
              projectTypeSortKey: project.projectType === 'ongoing' ? '0' : (project.projectType === 'その他' ? '2' : '1'),
+             settlementYearMonth,
              projectStatus: projectStatus,
              yearMonth: currentMonth,
              taskId: t.id,
@@ -373,9 +379,14 @@ export function useProgressRecords() {
       setLoading(true);
       
       const projectTaskUpdates: { id: string; status: string; is_canceled: boolean }[] = [];
+      const projectSettlementMonthUpdates = new Map<string, string>();
 
       for (const r of drafts) {
         if (deletedIds.includes(r.id)) continue;
+
+        if (r.projectId && r.isFirstInProject && r.settlementYearMonth !== undefined) {
+          projectSettlementMonthUpdates.set(r.projectId, r.settlementYearMonth);
+        }
 
         if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
           const isCompleted = Boolean(r.isTaskCompleted || r.taskStatus === 'completed');
@@ -408,6 +419,16 @@ export function useProgressRecords() {
 
         const results = await Promise.all(promises);
         for (const res of results) {
+          if (res.error) throw res.error;
+        }
+      }
+
+      if (projectSettlementMonthUpdates.size > 0) {
+        const pPromises = Array.from(projectSettlementMonthUpdates.entries()).map(([pId, sMonth]) => {
+          return supabase.from('projects').update({ settlement_year_month: sMonth || null }).eq('id', pId);
+        });
+        const pResults = await Promise.all(pPromises);
+        for (const res of pResults) {
           if (res.error) throw res.error;
         }
       }

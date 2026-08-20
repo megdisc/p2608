@@ -28,7 +28,7 @@ export type Column<T> = {
   mainRender?: (item: T, addSubRow?: () => void, subItem?: any) => React.ReactNode;
   rowType?: 'main' | 'sub' | 'sub-sub';
   className?: string;
-  style?: React.CSSProperties | ((item: T) => React.CSSProperties);
+  style?: React.CSSProperties | ((item: T, draftData?: T[]) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
   inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'month' | 'datetime-local' | 'email' | 'password' | 'checkbox';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
@@ -663,7 +663,7 @@ export function DataTable<T extends { id: string }>({
                             
                             const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                             
-                            const baseStyle = typeof col.style === 'function' ? col.style(subSubItem) : col.style;
+                            const baseStyle = typeof col.style === 'function' ? col.style(subSubItem, draftData) : col.style;
                             const customStyle = {
                               ...baseStyle,
                               ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
@@ -723,7 +723,7 @@ export function DataTable<T extends { id: string }>({
                       
                       const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                       
-                      const baseStyle = typeof col.style === 'function' ? col.style(item) : col.style;
+                      const baseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
                       const customStyle = {
                         ...baseStyle,
                         ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
@@ -803,7 +803,7 @@ export function DataTable<T extends { id: string }>({
                             
                             const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
                             
-                            const baseStyle = typeof col.style === 'function' ? col.style(subItem) : col.style;
+                            const baseStyle = typeof col.style === 'function' ? col.style(subItem, draftData) : col.style;
                             const customStyle = {
                               ...baseStyle,
                               ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})

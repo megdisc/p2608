@@ -397,7 +397,7 @@ export function RewardAllocationPage() {
          firstRec?.projectStatus === WORDS_PROJECT.STATUS_FINISHED ||
          (projectTasks.length > 0 && projectTasks.every(t => t.taskStatus === 'completed' || t.taskStatus === 'canceled')));
 
-    const finishedMonth = isFinished 
+    const finishedMonth = projDbInfo?.settlementYearMonth || (isFinished 
       ? (projDbInfo ? getProjectFinishedMonth(projDbInfo) : (() => {
           let maxDate = '';
           projectTasks.forEach(t => {
@@ -406,28 +406,38 @@ export function RewardAllocationPage() {
           const m = maxDate.match(/^(\d{4}-\d{2})/);
           return m ? m[1] : currentMonth;
         })())
-      : null;
+      : null);
+
+    const createdAtMonth = projDbInfo?.createdAt ? projDbInfo.createdAt.slice(0, 7) : undefined;
 
     return {
       id: pid,
       name: formattedProjectName,
-      code: firstRec.projectCode,
-      projectType: firstRec.projectType,
-      projectTypeSortKey: firstRec.projectTypeSortKey,
+      code: firstRec?.projectCode || projDbInfo?.code,
+      projectType: firstRec?.projectType || projDbInfo?.projectType,
+      projectTypeSortKey: firstRec?.projectTypeSortKey || projDbInfo?.projectTypeSortKey,
       isOngoing,
       isFinished,
       finishedMonth,
+      createdAtMonth,
       revenues,
       expenses,
       reserves
     };
   }).filter(proj => {
     if (proj.isOngoing) {
-      if (!proj.isFinished) return true;
-      return proj.finishedMonth ? currentMonth <= proj.finishedMonth : true;
+      if (proj.createdAtMonth && currentMonth < proj.createdAtMonth) {
+        return false;
+      }
+      if (proj.isFinished && proj.finishedMonth) {
+        return currentMonth <= proj.finishedMonth;
+      }
+      return true;
     } else {
-      if (!proj.isFinished) return false;
-      return proj.finishedMonth ? currentMonth <= proj.finishedMonth : true;
+      if (!proj.isFinished || !proj.finishedMonth) {
+        return false;
+      }
+      return currentMonth === proj.finishedMonth;
     }
   });
 

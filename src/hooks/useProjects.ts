@@ -17,7 +17,7 @@ export function useProjects() {
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, settlement_year_month, client_id,
+          id, code, name, project_type, settlement_year_month, created_at, client_id,
           project_tasks (
             id, name, is_deleted, assignee_type, created_at, status, completed_at, is_canceled,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
@@ -42,6 +42,7 @@ export function useProjects() {
         name: p.name,
         projectType: p.project_type || 'one-off',
         settlementYearMonth: p.settlement_year_month || undefined,
+        createdAt: p.created_at || undefined,
         projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
         customerId: p.client_id || '',
         tasks: (p.project_tasks || [])

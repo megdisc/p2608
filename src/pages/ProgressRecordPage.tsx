@@ -198,7 +198,7 @@ export function ProgressRecordPage() {
         return {
           width: isFinished ? '140px' : '100px',
           textAlign: 'center',
-          backgroundColor: (isFinished && item.isFirstInProject) ? 'var(--color-bg-input-highlight)' : undefined,
+          backgroundColor: isFinished ? 'var(--color-bg-input-highlight)' : undefined,
           borderBottom: item.isLastInProject ? undefined : 'none'
         };
       }

@@ -4,14 +4,22 @@ import type { StaffItem } from '../types';
 
 export function useStaffs() {
   const [items, setItems] = useState<StaffItem[]>([]);
+  const [lastDbCode, setLastDbCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchStaffs = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true });
-      if (error) throw error;
-      if (data) setItems(data);
+      const [staffsRes, allCodesRes] = await Promise.all([
+        supabase.from('staffs').select('*').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('staffs').select('code, created_at').order('created_at', { ascending: false })
+      ]);
+      if (staffsRes.error) throw staffsRes.error;
+      if (staffsRes.data) setItems(staffsRes.data);
+
+      const rawCodes = allCodesRes.data || [];
+      const latestCode = rawCodes.find((p: any) => p.code && p.code.trim() !== '')?.code || null;
+      setLastDbCode(latestCode);
     } catch (error) {
       console.error('Error fetching staffs:', error);
       throw error;
@@ -33,22 +41,33 @@ export function useStaffs() {
         if (!deletedIds.includes(item.id)) {
           const cleanName = item.name.replace(/[\s　]+/g, '');
           if (item.id.startsWith('STF-')) {
-            const { error } = await supabase.rpc('create_staff_user', {
-              email: item.email || '',
-              password: item.password || '',
+            const { error } = await supabase.from('staffs').insert({
+              code: item.code?.trim() || null,
               name: cleanName,
               yomigana: item.yomigana || '',
-              role: item.role
+              email: item.email || null,
+              role: item.role || '職員'
             });
-            if (error) throw error;
+            if (error) {
+              if (error.code === '23505' || error.message?.includes('duplicate key') || error.details?.includes('code')) {
+                throw new Error(`職員ID「${item.code}」は既に使用されています（削除済み含む）。別のIDを指定してください。`);
+              }
+              throw error;
+            }
           } else {
             const { error: staffError } = await supabase.from('staffs').update({
+              code: item.code?.trim() || null,
               name: cleanName,
               yomigana: item.yomigana || '',
-              email: item.email,
+              email: item.email || null,
               role: item.role
             }).eq('id', item.id);
-            if (staffError) throw staffError;
+            if (staffError) {
+              if (staffError.code === '23505' || staffError.message?.includes('duplicate key') || staffError.details?.includes('code')) {
+                throw new Error(`職員ID「${item.code}」は既に使用されています（削除済み含む）。別のIDを指定してください。`);
+              }
+              throw staffError;
+            }
 
             if (item.password) {
               const { error: passError } = await supabase.rpc('update_staff_password', {
@@ -72,6 +91,7 @@ export function useStaffs() {
 
   return {
     items,
+    lastDbCode,
     loading,
     fetchStaffs,
     batchSaveStaffs

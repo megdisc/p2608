@@ -4,9 +4,10 @@ import type { StaffItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
 import { useStaffs } from '../hooks';
+import { generateNextCode } from '../utils';
 
 export function StaffPage() {
-  const { items, loading, fetchStaffs, batchSaveStaffs } = useStaffs();
+  const { items, lastDbCode, loading, fetchStaffs, batchSaveStaffs } = useStaffs();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export function StaffPage() {
   }, [fetchStaffs, showAlert]);
 
   const columns: Column<StaffItem>[] = [
+    { key: 'code', header: TABLE_COLUMNS.STAFF_ID, sortKey: 'code', editable: true, inputType: 'text' },
     { key: 'name', header: TABLE_COLUMNS.NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
     { key: 'role', header: TABLE_COLUMNS.ROLE, editable: true, inputType: 'radio', options: STAFF_ROLE_OPTIONS },
@@ -28,13 +30,25 @@ export function StaffPage() {
       await batchSaveStaffs(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      showAlert(MESSAGES.SAVE_ERROR, 'error');
+      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = (currentDrafts?: StaffItem[]) => {
+    let lastDraftCode: string | null = null;
+    if (currentDrafts && currentDrafts.length > 0) {
+      for (let i = currentDrafts.length - 1; i >= 0; i--) {
+        if (currentDrafts[i].code && currentDrafts[i].code!.trim() !== '') {
+          lastDraftCode = currentDrafts[i].code!.trim();
+          break;
+        }
+      }
+    }
+    const baseCode = lastDraftCode || lastDbCode;
+
     return {
-      id: `STF-${Date.now()}`,
+      id: `STF-${Date.now()}-${Math.random()}`,
+      code: generateNextCode(baseCode, 'S-'),
       name: '',
       yomigana: '',
       email: '',
@@ -51,7 +65,7 @@ export function StaffPage() {
       data={items}
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_STAFF}
-      initialSort={{ key: 'name', direction: 'asc' }}
+      initialSort={{ key: 'code', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       hideHeader={true}

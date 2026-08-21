@@ -5,6 +5,7 @@ import type { ProjectItem, ClientItem, SkillItem } from '../types';
 export function useProjects() {
   const [items, setItems] = useState<ProjectItem[]>([]);
   const [allCodes, setAllCodes] = useState<string[]>([]);
+  const [lastDbCode, setLastDbCode] = useState<string | null>(null);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
   const [dbSkillLevels, setDbSkillLevels] = useState<any[]>([]);
@@ -24,7 +25,7 @@ export function useProjects() {
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
         `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001'),
-        supabase.from('projects').select('code').neq('id', '00000000-0000-0000-0000-000000000001')
+        supabase.from('projects').select('code, created_at').neq('id', '00000000-0000-0000-0000-000000000001').order('created_at', { ascending: false })
       ]);
 
       if (clientsRes.error) throw clientsRes.error;
@@ -35,7 +36,11 @@ export function useProjects() {
       setDbClients(clientsRes.data || []);
       setDbSkills(skillsRes.data || []);
       setDbSkillLevels(skillLevelsRes.data || []);
-      setAllCodes((allProjectsCodesRes.data || []).map((p: any) => p.code).filter(Boolean));
+      
+      const rawCodes = allProjectsCodesRes.data || [];
+      setAllCodes(rawCodes.map((p: any) => p.code).filter(Boolean));
+      const latestCode = rawCodes.find((p: any) => p.code && p.code.trim() !== '')?.code || null;
+      setLastDbCode(latestCode);
 
       const formattedProjects: ProjectItem[] = (projectsRes.data || [])
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
@@ -161,6 +166,7 @@ export function useProjects() {
   return {
     items,
     allCodes,
+    lastDbCode,
     dbClients,
     dbSkills,
     dbSkillLevels,

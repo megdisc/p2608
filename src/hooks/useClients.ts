@@ -4,27 +4,32 @@ import type { ClientItem } from '../types';
 
 export function useClients() {
   const [items, setItems] = useState<ClientItem[]>([]);
+  const [lastDbCode, setLastDbCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('partners')
-        .select('*')
-        .eq('is_deleted', false)
-        .order('yomigana', { ascending: true });
-      
-      if (error) throw error;
-      
-      const formatted = (data || []).map(d => ({
+      const [partnersRes, allCodesRes] = await Promise.all([
+        supabase.from('partners').select('*').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('partners').select('code, created_at').order('created_at', { ascending: false })
+      ]);
+
+      if (partnersRes.error) throw partnersRes.error;
+
+      const formatted = (partnersRes.data || []).map(d => ({
         id: d.id,
+        code: d.code || '',
         name: d.name,
         yomigana: d.yomigana || '',
         contactPerson: d.contact_person || '',
         phone: d.phone || ''
       }));
       setItems(formatted);
+
+      const rawCodes = allCodesRes.data || [];
+      const latestCode = rawCodes.find((p: any) => p.code && p.code.trim() !== '')?.code || null;
+      setLastDbCode(latestCode);
     } catch (error) {
       console.error(error);
       throw error;
@@ -36,24 +41,31 @@ export function useClients() {
   const batchSaveClients = async (drafts: ClientItem[], deletedIds: string[]) => {
     try {
       setLoading(true);
-      
+
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('partners').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
-        id: item.id.startsWith('CLI-') ? undefined : item.id,
-        name: item.name,
-        yomigana: item.yomigana,
-        contact_person: item.contactPerson,
-        phone: item.phone
-      }));
-
-      if (upserts.length > 0) {
-        const { error } = await supabase.from('partners').upsert(upserts);
-        if (error) throw error;
+      for (const item of activeItems) {
+        const upsertData: any = {
+          code: item.code?.trim() || null,
+          name: item.name,
+          yomigana: item.yomigana,
+          contact_person: item.contactPerson,
+          phone: item.phone
+        };
+        if (!item.id.startsWith('CLI-')) {
+          upsertData.id = item.id;
+        }
+        const { error } = await supabase.from('partners').upsert(upsertData);
+        if (error) {
+          if (error.code === '23505' || error.message?.includes('duplicate key') || error.details?.includes('code')) {
+            throw new Error(`取引先ID「${item.code}」は既に使用されています（削除済み含む）。別のIDを指定してください。`);
+          }
+          throw error;
+        }
       }
 
       await fetchClients();
@@ -67,6 +79,7 @@ export function useClients() {
 
   return {
     items,
+    lastDbCode,
     loading,
     fetchClients,
     batchSaveClients

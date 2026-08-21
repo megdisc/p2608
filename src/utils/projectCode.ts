@@ -21,20 +21,19 @@ export function incrementAlphabet(str: string): string {
   return (isLower ? 'a' : 'A') + chars.join('');
 }
 
-export function generateNextProjectCode(existingCodes: string[]): string {
-  if (!existingCodes || existingCodes.length === 0) {
-    return 'P-000001';
+/**
+ * 最終登録コードを元に、次回のIDを自動生成する。
+ * 最終レコードが存在しない（1件も無い）場合は "${defaultPrefix}000001" をデフォルトとする。
+ */
+export function generateNextCode(lastCode?: string | null, defaultPrefix: string = 'P-'): string {
+  if (!lastCode || lastCode.trim() === '') {
+    return `${defaultPrefix}000001`;
   }
 
-  const validCodes = existingCodes.filter(c => c && c.trim() !== '');
-  if (validCodes.length === 0) return 'P-000001';
+  const code = lastCode.trim();
 
-  // Sort descending by natural alphanumeric sorting
-  validCodes.sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
-  const lastCode = validCodes[0];
-
-  // 1. If ends with numbers: e.g. "P-000001", "P-26A001", "PRJ-99"
-  const numMatch = lastCode.match(/^(.*?)(\d+)$/);
+  // 1. 末尾が数字の場合: 例 "P-000001" -> "P-000002", "M-000001" -> "M-000002", "PRJ-99" -> "PRJ-100"
+  const numMatch = code.match(/^(.*?)(\d+)$/);
   if (numMatch) {
     const prefix = numMatch[1];
     const numStr = numMatch[2];
@@ -42,13 +41,17 @@ export function generateNextProjectCode(existingCodes: string[]): string {
     return `${prefix}${nextNum}`;
   }
 
-  // 2. If ends with alphabets: e.g. "P-0001A", "PRJ-Z"
-  const alphaMatch = lastCode.match(/^(.*?)([a-zA-Z]+)$/);
+  // 2. 末尾がアルファベットの場合: 例 "M-0001A" -> "M-0001B", "PRJ-Z" -> "PRJ-AA"
+  const alphaMatch = code.match(/^(.*?)([a-zA-Z]+)$/);
   if (alphaMatch) {
     const prefix = alphaMatch[1];
     const alphaStr = alphaMatch[2];
     return `${prefix}${incrementAlphabet(alphaStr)}`;
   }
 
-  return `${lastCode}-1`;
+  return `${code}-1`;
+}
+
+export function generateNextProjectCode(lastCode?: string | null): string {
+  return generateNextCode(lastCode, 'P-');
 }

@@ -4,9 +4,10 @@ import type { ClientItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useClients } from '../hooks';
+import { generateNextCode } from '../utils';
 
 export function ClientPage() {
-  const { items, loading, fetchClients, batchSaveClients } = useClients();
+  const { items, lastDbCode, loading, fetchClients, batchSaveClients } = useClients();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export function ClientPage() {
   }, [fetchClients, showAlert]);
 
   const columns: Column<ClientItem>[] = [
+    { key: 'code', header: TABLE_COLUMNS.CLIENT_ID, sortKey: 'code', editable: true, inputType: 'text' },
     { key: 'name', header: TABLE_COLUMNS.CLIENT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
     { key: 'contactPerson', header: TABLE_COLUMNS.CONTACT_PERSON, editable: true, inputType: 'text' },
@@ -27,13 +29,25 @@ export function ClientPage() {
       await batchSaveClients(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      showAlert(MESSAGES.SAVE_ERROR, 'error');
+      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
     }
   };
 
-  const handleAdd = () => {
+  const handleAdd = (currentDrafts?: ClientItem[]) => {
+    let lastDraftCode: string | null = null;
+    if (currentDrafts && currentDrafts.length > 0) {
+      for (let i = currentDrafts.length - 1; i >= 0; i--) {
+        if (currentDrafts[i].code && currentDrafts[i].code!.trim() !== '') {
+          lastDraftCode = currentDrafts[i].code!.trim();
+          break;
+        }
+      }
+    }
+    const baseCode = lastDraftCode || lastDbCode;
+
     return {
-      id: `CLI-${Date.now()}`,
+      id: `CLI-${Date.now()}-${Math.random()}`,
+      code: generateNextCode(baseCode, 'C-'),
       name: '',
       yomigana: '',
       contactPerson: '',
@@ -49,7 +63,7 @@ export function ClientPage() {
       data={items} 
       columns={columns} 
       emptyMessage={MESSAGES.EMPTY_CLIENT} 
-      initialSort={{ key: 'name', direction: 'asc' }}
+      initialSort={{ key: 'code', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       hideHeader={true}

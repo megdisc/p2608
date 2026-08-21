@@ -7,7 +7,7 @@ import { useProjects } from '../hooks';
 import { isProjectFinished, generateNextProjectCode } from '../utils';
 
 export function ProjectPage() {
-  const { items, allCodes, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
+  const { items, lastDbCode, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -129,12 +129,21 @@ export function ProjectPage() {
   };
 
   const handleAdd = (currentDrafts?: ProjectItem[]) => {
-    const draftCodes = (currentDrafts || []).map(p => p.code).filter(Boolean) as string[];
-    const combinedCodes = Array.from(new Set([...allCodes, ...draftCodes]));
+    let lastDraftCode: string | null = null;
+    if (currentDrafts && currentDrafts.length > 0) {
+      for (let i = currentDrafts.length - 1; i >= 0; i--) {
+        if (currentDrafts[i].code && currentDrafts[i].code.trim() !== '') {
+          lastDraftCode = currentDrafts[i].code.trim();
+          break;
+        }
+      }
+    }
+
+    const baseCode = lastDraftCode || lastDbCode;
 
     return {
       id: generateId(),
-      code: generateNextProjectCode(combinedCodes),
+      code: generateNextProjectCode(baseCode),
       name: '',
       projectType: 'ongoing',
       customerId: '',

@@ -8,9 +8,9 @@ INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, e
 INSERT INTO auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, recovery_sent_at, last_sign_in_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at, confirmation_token, email_change, email_change_token_new, recovery_token) VALUES ('00000000-0000-0000-0000-000000000000', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'authenticated', 'authenticated', 'member-004@example.com', '', NOW(), NULL, NOW(), '{"provider":"email","providers":["email"]}', '{}', NOW(), NOW(), '', '', '', '');
 
 -- Staffs
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '相澤翔太', 'あいざわしょうた', 'staff-001@example.com', 'システム管理者');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', '井上結衣', 'いのうえゆい', 'staff-002@example.com', '職員');
-INSERT INTO staffs (id, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '上田拓海', 'うえだたくみ', 'staff-003@example.com', '職員');
+INSERT INTO staffs (id, code, name, yomigana, email, role) VALUES ('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'S-000001', '相澤翔太', 'あいざわしょうた', 'staff-001@example.com', 'システム管理者');
+INSERT INTO staffs (id, code, name, yomigana, email, role) VALUES ('de2d336b-254d-4af7-8e49-5acbda340e67', 'S-000002', '井上結衣', 'いのうえゆい', 'staff-002@example.com', '職員');
+INSERT INTO staffs (id, code, name, yomigana, email, role) VALUES ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'S-000003', '上田拓海', 'うえだたくみ', 'staff-003@example.com', '職員');
 
 -- Wage Rates
 INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000001', 100, '新人レベル');
@@ -30,15 +30,15 @@ INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-
 -- Stocktakings
 
 -- Members
-INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com', 'a1b2c3d4-0000-0000-0000-000000000001');
-INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
-INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
-INSERT INTO members (id, name, yomigana, role, email, wage_rate_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com', 'a1b2c3d4-0000-0000-0000-000000000003');
+INSERT INTO members (id, code, name, yomigana, role, email, wage_rate_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'M-000001', '江口春奈', 'えぐちはるな', '利用者', 'member-001@example.com', 'a1b2c3d4-0000-0000-0000-000000000001');
+INSERT INTO members (id, code, name, yomigana, role, email, wage_rate_id) VALUES ('e98c7634-1eb3-4e42-b062-841f39c043e0', 'M-000002', '大西智也', 'おおにしともや', '利用者', 'member-002@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, code, name, yomigana, role, email, wage_rate_id) VALUES ('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'M-000003', '佐藤健太', 'さとうけんた', '利用者', 'member-003@example.com', 'a1b2c3d4-0000-0000-0000-000000000002');
+INSERT INTO members (id, code, name, yomigana, role, email, wage_rate_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'M-000004', '高橋結衣', 'たかはしゆい', '利用者', 'member-004@example.com', 'a1b2c3d4-0000-0000-0000-000000000003');
 
 -- Partners
-INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
-INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', '清水蒼', '0698765432');
-INSERT INTO partners (id, name, yomigana, contact_person, phone) VALUES ('0ff5f11e-b752-4b06-aaab-86984a67eec7', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', '05011112222');
+INSERT INTO partners (id, code, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');
+INSERT INTO partners (id, code, name, yomigana, contact_person, phone) VALUES ('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', '清水蒼', '0698765432');
+INSERT INTO partners (id, code, name, yomigana, contact_person, phone) VALUES ('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', '05011112222');
 
 -- Skills
 INSERT INTO skills (id, name, yomigana, description) VALUES ('ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'ネットワーク設計', 'ねっとわーくせっけい', 'ネットワーク構成の設計・構築');

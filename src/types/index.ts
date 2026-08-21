@@ -1,6 +1,7 @@
 
 export type StaffItem = {
   id: string;
+  code?: string;
   name: string;
   yomigana: string;
   email?: string;
@@ -11,6 +12,7 @@ export type StaffItem = {
 
 export interface MemberItem {
   id: string;
+  code?: string;
   name: string;
   yomigana?: string;
   role: string;
@@ -75,6 +77,7 @@ export type BaseWageItem = {
 
 export type ClientItem = {
   id: string;
+  code?: string;
   name: string;
   yomigana: string;
   contactPerson: string;

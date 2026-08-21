@@ -11,6 +11,7 @@ const SETTINGS_LABEL = `${MENU_CATEGORIES.SETTINGS}（${MENU_SUBCATEGORIES.SETTI
 
 const getCategoryLabel = (pageName: string) => {
   const aggregations = [
+    PAGE_NAMES.FINANCIAL_RECORD,
     PAGE_NAMES.WAGE_SUMMARY,
     PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY,
     PAGE_NAMES.FINANCIAL_SUMMARY,
@@ -26,7 +27,6 @@ const getCategoryLabel = (pageName: string) => {
     PAGE_NAMES.PROJECT_FINANCIAL_RECORD,
     PAGE_NAMES.PROGRESS_RECORD,
     PAGE_NAMES.REWARD_ALLOCATION,
-    PAGE_NAMES.FINANCIAL_RECORD,
   ];
   
   if (aggregations.includes(pageName)) return AGGREGATION_LABEL;

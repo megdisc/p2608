@@ -67,9 +67,9 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         { data: clientData, error: clientError },
       ] = await Promise.all([
         query,
-        supabase.from('projects').select('id, name, code').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('staffs').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('partners').select('id, name, yomigana').eq('is_deleted', false).order('yomigana', { ascending: true })
+        supabase.from('projects').select('id, name, code, is_deleted').order('code', { ascending: true }),
+        supabase.from('staffs').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true }),
+        supabase.from('partners').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true })
       ]);
 
       if (recError) throw recError;
@@ -95,9 +95,9 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         setItems(mapped);
       }
       if (count !== null) setTotalCount(count);
-      if (projData) setProjects(projData);
-      if (staffData) setStaffs(staffData);
-      if (clientData) setClients(clientData);
+      if (projData) setProjects(projData.map((p: any) => ({ id: p.id, name: p.is_deleted ? `${p.name} (削除済)` : p.name })));
+      if (staffData) setStaffs(staffData.map((s: any) => ({ id: s.id, name: s.is_deleted ? `${s.name} (削除済)` : s.name })));
+      if (clientData) setClients(clientData.map((c: any) => ({ id: c.id, name: c.is_deleted ? `${c.name} (削除済)` : c.name })));
     } catch (error) {
       console.error('Error fetching financial records:', error);
       throw error;

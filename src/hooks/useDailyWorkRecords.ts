@@ -41,32 +41,38 @@ export function useDailyWorkRecords() {
     try {
       setLoading(true);
       const [membersRes, projectsRes] = await Promise.all([
-        supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type,
+          id, code, name, project_type, is_deleted,
           project_tasks (
             id, code, name, is_deleted,
             project_task_assignees ( member_id )
           )
-        `).eq('is_deleted', false).order('code', { ascending: true }),
+        `).order('code', { ascending: true }),
       ]);
 
       if (membersRes.error) throw membersRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
-      setDbMembers(membersRes.data || []);
+      const membersData = (membersRes.data || []).map((m: any) => ({
+        ...m,
+        name: m.is_deleted ? `${m.name} (削除済)` : m.name
+      }));
+
+      setDbMembers(membersData);
       
       const formattedProjects = (projectsRes.data || []).map((p: any) => ({
         id: p.id,
         code: p.code || '',
-        name: p.name,
+        name: p.is_deleted ? `${p.name} (削除済)` : p.name,
+        is_deleted: p.is_deleted,
         projectType: p.project_type || 'one-off',
         tasks: (p.project_tasks || [])
-          .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => ({
             id: pt.id,
             code: pt.code || '',
-            task: pt.name,
+            task: pt.is_deleted ? `${pt.name} (削除済)` : pt.name,
+            is_deleted: pt.is_deleted,
             assigneeIds: (pt.project_task_assignees || [])
               .map((pta: any) => pta.member_id)
               .filter(Boolean)
@@ -126,6 +132,7 @@ export function useDailyWorkRecords() {
 
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
+      if (member.is_deleted && userRecords.length === 0) continue;
       const taskMap = new Map<string, DailyFlatRecord>();
 
       // 1. 作業記録テーブル（daily_work_records）に記録されているデータ
@@ -172,7 +179,9 @@ export function useDailyWorkRecords() {
       // 2. 案件タスク担当者テーブルで各利用者毎に割り当てられているタスク（未確定の日のみ表示）
       if (!isConfirmed) {
         for (const p of activeProjects) {
+          if (p.is_deleted) continue;
           for (const t of p.tasks) {
+            if (t.is_deleted) continue;
             if (t.assigneeIds?.includes(member.id) && !taskMap.has(t.id)) {
               taskMap.set(t.id, {
                 id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
@@ -305,6 +314,9 @@ export function useDailyWorkRecords() {
       }
 
       if (deletes.length > 0) {
+        if (confirmedDates.includes(currentDate)) {
+          throw new Error('確定済みの日の作業記録は削除できません。');
+        }
         const { error } = await supabase.from('daily_work_records').delete().in('id', deletes);
         if (error) throw error;
       }

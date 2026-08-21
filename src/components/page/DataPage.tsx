@@ -10,7 +10,7 @@ type DataPageProps<T> = {
   emptyMessage: string;
   initialSort?: { key: string; direction: 'asc' | 'desc' };
   onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
-  onAddRow?: () => T;
+  onAddRow?: (currentData: T[]) => T;
   headerRight?: React.ReactNode;
   footerLeft?: React.ReactNode;
   showDateFilter?: boolean;

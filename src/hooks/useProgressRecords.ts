@@ -55,17 +55,17 @@ export function useProgressRecords() {
     try {
       setLoading(true);
       const [membersRes, staffsRes, clientsRes, budgetsRes, projectsRes] = await Promise.all([
-        supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('staffs').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
-        supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('members').select('*').order('yomigana', { ascending: true }),
+        supabase.from('staffs').select('*').order('yomigana', { ascending: true }),
+        supabase.from('partners').select('*').order('yomigana', { ascending: true }),
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
-          id, code, name, project_type, settlement_year_month, created_at, client_id,
+          id, code, name, project_type, settlement_year_month, created_at, client_id, is_deleted,
           project_tasks (
             id, code, name, is_deleted, is_canceled, status, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
           )
-        `).eq('is_deleted', false).order('code', { ascending: true }),
+        `).order('code', { ascending: true }),
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -74,9 +74,9 @@ export function useProgressRecords() {
       if (budgetsRes.error) throw budgetsRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
-      setDbMembers(membersRes.data || []);
-      setDbStaffs(staffsRes.data || []);
-      setDbClients(clientsRes.data || []);
+      setDbMembers((membersRes.data || []).map((m: any) => ({ ...m, name: m.is_deleted ? `${m.name} (削除済)` : m.name })));
+      setDbStaffs((staffsRes.data || []).map((s: any) => ({ ...s, name: s.is_deleted ? `${s.name} (削除済)` : s.name })));
+      setDbClients((clientsRes.data || []).map((c: any) => ({ ...c, name: c.is_deleted ? `${c.name} (削除済)` : c.name })));
       
       const budgetItems = budgetsRes.data || [];
       
@@ -85,17 +85,18 @@ export function useProgressRecords() {
         .map((p: any) => ({
         id: p.id,
         code: p.code || '',
-        name: p.name,
+        name: p.is_deleted ? `${p.name} (削除済)` : p.name,
+        is_deleted: p.is_deleted,
         projectType: p.project_type || 'one-off',
         settlementYearMonth: p.settlement_year_month || undefined,
         createdAt: p.created_at || undefined,
         customerId: p.client_id,
         tasks: (p.project_tasks || [])
-          .filter((pt: any) => !pt.is_deleted)
           .map((pt: any) => ({
             id: pt.id,
             code: pt.code || '',
-            task: pt.name,
+            task: pt.is_deleted ? `${pt.name} (削除済)` : pt.name,
+            is_deleted: pt.is_deleted,
             assigneeIds: (pt.project_task_assignees || [])
               .flatMap((pta: any) => {
                 const res = [];

@@ -39,6 +39,7 @@ export function useSkills() {
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('skills').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
+        await supabase.from('skill_levels').update({ is_deleted: true }).in('skill_id', deletedIds);
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));

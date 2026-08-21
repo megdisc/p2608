@@ -6,6 +6,7 @@ export type StaffItem = {
   email?: string;
   password?: string;
   role: string;
+  is_deleted?: boolean;
 };
 
 export interface MemberItem {
@@ -16,6 +17,7 @@ export interface MemberItem {
   email?: string;
   password?: string;
   baseWageId?: string;
+  is_deleted?: boolean;
 };
 
 
@@ -39,6 +41,7 @@ export type ProjectTask = {
   status?: string;
   completedAt?: string;
   laborBudget?: number;
+  is_deleted?: boolean;
 };
 
 export type ProjectItem = {
@@ -52,6 +55,7 @@ export type ProjectItem = {
   projectTypeSortKey?: string;
   customerId?: string;
   tasks: ProjectTask[];
+  is_deleted?: boolean;
 };
 
 export type SkillItem = {
@@ -59,12 +63,14 @@ export type SkillItem = {
   name: string;
   yomigana: string;
   description: string;
+  is_deleted?: boolean;
 };
 
 export type BaseWageItem = {
   id: string;
   wage: number;
   description: string;
+  is_deleted?: boolean;
 };
 
 export type ClientItem = {
@@ -73,6 +79,7 @@ export type ClientItem = {
   yomigana: string;
   contactPerson: string;
   phone: string;
+  is_deleted?: boolean;
 };
 
 export type DailyWorkRecordItem = {

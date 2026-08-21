@@ -53,7 +53,7 @@ export function useWageSummary() {
         monthlyConfirmRes,
         wageConfirmRes
       ] = await Promise.all([
-        supabase.from('members').select('*, wage_rates(wage)').eq('is_deleted', false).order('yomigana', { ascending: true }),
+        supabase.from('members').select('*, wage_rates(wage)').order('yomigana', { ascending: true }),
         supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
@@ -116,9 +116,19 @@ export function useWageSummary() {
       }
       setHasProvisionalDailyWork(provisionalDaily);
 
-      const members = membersRes.data || [];
+      const allMembers = membersRes.data || [];
       const projects = projectsRes.data || [];
       const cMems: any[] = [];
+
+      const members = allMembers.filter((m: any) => {
+        if (!m.is_deleted) return true;
+        const memberWorks = workRes.data?.filter((w: any) => w.member_id === m.id) || [];
+        const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
+        return totalWorkTime > 0;
+      }).map((m: any) => ({
+        ...m,
+        name: m.is_deleted ? `${m.name} (削除済)` : m.name
+      }));
 
       const rows: WageRow[] = members.map((member: any) => {
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];

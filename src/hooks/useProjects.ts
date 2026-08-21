@@ -4,6 +4,7 @@ import type { ProjectItem, ClientItem, SkillItem } from '../types';
 
 export function useProjects() {
   const [items, setItems] = useState<ProjectItem[]>([]);
+  const [allCodes, setAllCodes] = useState<string[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
   const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
   const [dbSkillLevels, setDbSkillLevels] = useState<any[]>([]);
@@ -12,7 +13,7 @@ export function useProjects() {
   const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
-      const [clientsRes, skillsRes, skillLevelsRes, projectsRes] = await Promise.all([
+      const [clientsRes, skillsRes, skillLevelsRes, projectsRes, allProjectsCodesRes] = await Promise.all([
         supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skills').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
@@ -22,7 +23,8 @@ export function useProjects() {
             id, name, is_deleted, assignee_type, created_at, status, completed_at, is_canceled,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
           )
-        `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001')
+        `).eq('is_deleted', false).neq('id', '00000000-0000-0000-0000-000000000001'),
+        supabase.from('projects').select('code').neq('id', '00000000-0000-0000-0000-000000000001')
       ]);
 
       if (clientsRes.error) throw clientsRes.error;
@@ -33,6 +35,7 @@ export function useProjects() {
       setDbClients(clientsRes.data || []);
       setDbSkills(skillsRes.data || []);
       setDbSkillLevels(skillLevelsRes.data || []);
+      setAllCodes((allProjectsCodesRes.data || []).map((p: any) => p.code).filter(Boolean));
 
       const formattedProjects: ProjectItem[] = (projectsRes.data || [])
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
@@ -90,6 +93,7 @@ export function useProjects() {
 
         if (pIdsToDelete.length > 0) {
           await supabase.from('projects').update({ is_deleted: true }).in('id', pIdsToDelete);
+          await supabase.from('project_tasks').update({ is_deleted: true }).in('project_id', pIdsToDelete);
         }
         if (tIdsToDelete.length > 0) {
           await supabase.from('project_tasks').update({ is_deleted: true }).in('id', tIdsToDelete);
@@ -101,17 +105,22 @@ export function useProjects() {
       for (const p of activeProjects) {
         const projData: any = {
           id: p.id,
-          code: p.code,
+          code: p.code?.trim() || null,
           name: p.name,
           project_type: p.projectType || 'one-off',
-          client_id: p.customerId || null
+          client_id: p.customerId || null,
         };
         if (p.settlementYearMonth !== undefined) {
           projData.settlement_year_month = p.settlementYearMonth || null;
         }
 
         const { error: pErr } = await supabase.from('projects').upsert(projData);
-        if (pErr) throw pErr;
+        if (pErr) {
+          if (pErr.code === '23505' || pErr.message?.includes('duplicate key') || pErr.details?.includes('code')) {
+            throw new Error(`案件ID「${p.code}」は既に使用されています（削除済み案件含む）。別のIDを指定してください。`);
+          }
+          throw pErr;
+        }
 
         for (const t of p.tasks) {
           if (deletedIds.includes(t.id)) continue;
@@ -151,6 +160,7 @@ export function useProjects() {
 
   return {
     items,
+    allCodes,
     dbClients,
     dbSkills,
     dbSkillLevels,

@@ -4,10 +4,10 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from
 import type { ProjectItem } from '../types';
 import { useAlert } from '../contexts';
 import { useProjects } from '../hooks';
-import { isProjectFinished } from '../utils';
+import { isProjectFinished, generateNextProjectCode } from '../utils';
 
 export function ProjectPage() {
-  const { items, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
+  const { items, allCodes, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -17,7 +17,13 @@ export function ProjectPage() {
   }, [fetchProjects, showAlert]);
 
   const columns: Column<ProjectItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.PROJECT_ID, editable: false, inputType: 'text', rowType: 'main' },
+    { 
+      key: 'code', 
+      header: TABLE_COLUMNS.PROJECT_ID, 
+      editable: (item: ProjectItem) => !isProjectFinished(item), 
+      inputType: 'text', 
+      rowType: 'main'
+    },
     { 
       key: 'name', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
@@ -109,7 +115,7 @@ export function ProjectPage() {
       await batchSaveProjects(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      showAlert(MESSAGES.SAVE_ERROR, 'error');
+      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
     }
   };
 
@@ -122,26 +128,13 @@ export function ProjectPage() {
         });
   };
 
-  const generateNextProjectCode = (existingItems: ProjectItem[]) => {
-    const now = new Date();
-    const yy = String(now.getFullYear()).slice(-2);
-    const monthChar = String.fromCharCode(65 + now.getMonth());
-    const prefix = `P-${yy}${monthChar}`;
+  const handleAdd = (currentDrafts?: ProjectItem[]) => {
+    const draftCodes = (currentDrafts || []).map(p => p.code).filter(Boolean) as string[];
+    const combinedCodes = Array.from(new Set([...allCodes, ...draftCodes]));
 
-    let maxSeq = 0;
-    existingItems.forEach(item => {
-      if (item.code && item.code.startsWith(prefix)) {
-        const seqNum = parseInt(item.code.slice(prefix.length), 10);
-        if (!isNaN(seqNum) && seqNum > maxSeq) maxSeq = seqNum;
-      }
-    });
-    return `${prefix}${String(maxSeq + 1).padStart(3, '0')}`;
-  };
-
-  const handleAdd = () => {
     return {
       id: generateId(),
-      code: generateNextProjectCode(items),
+      code: generateNextProjectCode(combinedCodes),
       name: '',
       projectType: 'ongoing',
       customerId: '',

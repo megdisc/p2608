@@ -316,13 +316,11 @@ INSERT INTO financial_records (period, project_id, client_id, type, subject, amo
 ('2026-05-01', NULL, NULL, 'reserve', '工賃変動積立金', 120000, '2026-05-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '5月分積立確定', 'production'),
 
 -- 2026-06
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3300000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202606-01', 'production'),
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 50000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202606-20 (作業手袋・保護具)', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 450000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202606-01', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202606-20 (製菓材料類)', 'production'),
 ('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 15525, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '6月分工賃一括振込', 'production'),
 ('2026-06-01', NULL, NULL, 'revenue', '控除', 0, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '6月分控除一括', 'welfare'),
 ('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '外部講習講師謝礼', 'production'),
-('2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '外注加工費', 200000, '2026-06-30', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202606-05', 'production'),
-('2026-06-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 100000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202606-28 (事業所光熱費分担)', 'production'),
 
 -- 2026-07
 -- (No separate manual financial records for 2026-07; see ongoing project seed section below)

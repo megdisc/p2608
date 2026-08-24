@@ -177,9 +177,24 @@ export function useWageSummary() {
               if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
                 taskExpenseAmt = Number(dbAlloc.allocation_amount);
               } else {
+                const pureTaskName = (task.name || '')
+                  .replace(/^労務費（利用者工賃）/, '')
+                  .replace(/^労務費（利用者工賃以外）/, '')
+                  .replace(/^労務費・外注加工費/, '')
+                  .replace(/^労務費/, '')
+                  .replace(/^外注加工費/, '')
+                  .replace(/^[（\(]/, '')
+                  .replace(/[）\)]+$/, '')
+                  .trim();
+
                 const finRecord = (budgetsRes.data || []).find((f: any) => 
                   f.project_id === project.id && 
-                  (f.subject?.includes(task.name) || f.subject?.includes('労務費'))
+                  f.type === 'expense' &&
+                  (
+                    f.task_id === task.id || 
+                    f.subject === `労務費（${pureTaskName}）` || 
+                    f.subject === `労務費（${task.name}）`
+                  )
                 );
                 if (finRecord && Number(finRecord.amount) > 0) {
                   taskExpenseAmt = Number(finRecord.amount);
@@ -229,10 +244,20 @@ export function useWageSummary() {
         const finalWorkTime = dbRecord?.work_time !== undefined && dbRecord?.work_time !== null ? Number(dbRecord.work_time) : totalWorkTime;
         const finalWageRate = dbRecord?.wage_rate !== undefined && dbRecord?.wage_rate !== null ? Number(dbRecord.wage_rate) : wageRate;
         const finalBasicWage = dbRecord?.basic_wage !== undefined && dbRecord?.basic_wage !== null ? Number(dbRecord.basic_wage) : basicWage;
-        const finalIncentiveTotal = dbRecord?.incentive_total !== undefined && dbRecord?.incentive_total !== null ? Number(dbRecord.incentive_total) : safeIncentive;
-        const finalWageTotal = dbRecord?.wage_total !== undefined && dbRecord?.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal;
+        
+        const finalIncentiveTotal = (sumRewardUnitPrice > 0 || !dbRecord) 
+          ? safeIncentive 
+          : (dbRecord.incentive_total !== undefined && dbRecord.incentive_total !== null ? Number(dbRecord.incentive_total) : safeIncentive);
+          
+        const finalWageTotal = (sumRewardUnitPrice > 0 || !dbRecord) 
+          ? ((finalBasicWage || 0) + finalIncentiveTotal) 
+          : (dbRecord.wage_total !== undefined && dbRecord.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal);
+          
         const finalDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : computedDedTotal;
-        const finalPayment = dbRecord?.payment !== undefined && dbRecord?.payment !== null ? Number(dbRecord.payment) : computedPayment;
+        
+        const finalPayment = (sumRewardUnitPrice > 0 || !dbRecord) 
+          ? (finalWageTotal - finalDedTotal) 
+          : (dbRecord.payment !== undefined && dbRecord.payment !== null ? Number(dbRecord.payment) : computedPayment);
 
         return {
           id: member.id,

@@ -40,8 +40,6 @@ export function useClients() {
 
   const batchSaveClients = async (drafts: ClientItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('partners').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
@@ -72,8 +70,6 @@ export function useClients() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

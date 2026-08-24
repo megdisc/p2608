@@ -289,8 +289,6 @@ export function useDailyWorkRecords() {
 
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-      
       const upserts: any[] = [];
       const deletes: string[] = [];
 
@@ -330,8 +328,6 @@ export function useDailyWorkRecords() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

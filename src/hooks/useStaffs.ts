@@ -30,8 +30,6 @@ export function useStaffs() {
 
   const batchSaveStaffs = async (drafts: StaffItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('staffs').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
@@ -84,8 +82,6 @@ export function useStaffs() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

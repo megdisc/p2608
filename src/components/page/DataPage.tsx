@@ -9,7 +9,7 @@ type DataPageProps<T> = {
   columns: Column<T>[];
   emptyMessage: string;
   initialSort?: { key: string; direction: 'asc' | 'desc' };
-  onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
+  onBatchSave?: (drafts: T[], deletedIds: string[]) => Promise<void> | void;
   onAddRow?: (currentData: T[]) => T;
   headerRight?: React.ReactNode;
   footerLeft?: React.ReactNode;

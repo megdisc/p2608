@@ -26,32 +26,62 @@ export function incrementAlphabet(str: string): string {
  * 最終レコードが存在しない（1件も無い）場合は "${defaultPrefix}000001" をデフォルトとする。
  */
 export function generateNextCode(lastCode?: string | null, defaultPrefix: string = 'P-'): string {
-  if (!lastCode || lastCode.trim() === '') {
-    return `${defaultPrefix}000001`;
-  }
-
-  const code = lastCode.trim();
-
-  // 1. 末尾が数字の場合: 例 "P-000001" -> "P-000002", "M-000001" -> "M-000002", "PRJ-99" -> "PRJ-100"
-  const numMatch = code.match(/^(.*?)(\d+)$/);
-  if (numMatch) {
-    const prefix = numMatch[1];
-    const numStr = numMatch[2];
-    const nextNum = (parseInt(numStr, 10) + 1).toString().padStart(numStr.length, '0');
-    return `${prefix}${nextNum}`;
-  }
-
-  // 2. 末尾がアルファベットの場合: 例 "M-0001A" -> "M-0001B", "PRJ-Z" -> "PRJ-AA"
-  const alphaMatch = code.match(/^(.*?)([a-zA-Z]+)$/);
-  if (alphaMatch) {
-    const prefix = alphaMatch[1];
-    const alphaStr = alphaMatch[2];
-    return `${prefix}${incrementAlphabet(alphaStr)}`;
-  }
-
-  return `${code}-1`;
+  return generateNextUnifiedCode(lastCode ? [lastCode] : [], defaultPrefix);
 }
 
 export function generateNextProjectCode(lastCode?: string | null): string {
   return generateNextCode(lastCode, 'P-');
 }
+
+/**
+ * 採番ロジック（案件、利用者、職員、取引先などで統一）
+ * 既存レコード（DBのデータ＋現在編集中のドラフト行）のすべてのID/コードの中から
+ * 該当プレフィックスに基づく「最新/最大」の数値IDを特定し、その数値 + 1 のIDをデフォルトとする。
+ * 生成したIDがレコード内に既に存在する場合は、存在しなくなるまでさらに + 1 を加算する。
+ */
+export function generateNextUnifiedCode(
+  existingCodes: (string | null | undefined)[],
+  defaultPrefix: string = 'P-'
+): string {
+  const codeSet = new Set<string>();
+  let maxNum = 0;
+  let maxDigits = 6;
+  let targetPrefix = defaultPrefix;
+
+  for (const c of existingCodes) {
+    if (!c || typeof c !== 'string') continue;
+    const trimmed = c.trim();
+    if (!trimmed) continue;
+    codeSet.add(trimmed);
+
+    // 末尾が数字のパターン (例: "P-000007" -> prefix: "P-", num: "000007")
+    const match = trimmed.match(/^(.*?)(\d+)$/);
+    if (match) {
+      const p = match[1];
+      const numStr = match[2];
+      const val = parseInt(numStr, 10);
+
+      // 指定されたプレフィックスと致する場合 (または接頭辞を問わず最大数値を取得)
+      if (!p || p.toUpperCase() === defaultPrefix.toUpperCase()) {
+        if (p) targetPrefix = p;
+        if (val > maxNum) {
+          maxNum = val;
+        }
+        if (numStr.length > maxDigits) {
+          maxDigits = numStr.length;
+        }
+      }
+    }
+  }
+
+  let candidateNum = maxNum + 1;
+  let candidateCode = `${targetPrefix}${candidateNum.toString().padStart(maxDigits, '0')}`;
+
+  while (codeSet.has(candidateCode)) {
+    candidateNum++;
+    candidateCode = `${targetPrefix}${candidateNum.toString().padStart(maxDigits, '0')}`;
+  }
+
+  return candidateCode;
+}
+

@@ -4,10 +4,10 @@ import type { MemberItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, MEMBER_ROLE_OPTIONS } from '../constants';
 import { useMembers } from '../hooks';
-import { generateNextCode } from '../utils';
+import { generateNextUnifiedCode } from '../utils';
 
 export function ProjectUserPage() {
-  const { items, lastDbCode, loading, fetchMembers, batchSaveMembers } = useMembers();
+  const { items, loading, fetchMembers, batchSaveMembers } = useMembers();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -31,24 +31,19 @@ export function ProjectUserPage() {
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
+      throw err;
     }
   };
 
   const handleAdd = (currentDrafts?: MemberItem[]) => {
-    let lastDraftCode: string | null = null;
-    if (currentDrafts && currentDrafts.length > 0) {
-      for (let i = currentDrafts.length - 1; i >= 0; i--) {
-        if (currentDrafts[i].code && currentDrafts[i].code!.trim() !== '') {
-          lastDraftCode = currentDrafts[i].code!.trim();
-          break;
-        }
-      }
-    }
-    const baseCode = lastDraftCode || lastDbCode;
+    const existingCodes = [
+      ...items.map(i => i.code),
+      ...(currentDrafts || []).map(i => i.code)
+    ];
 
     return {
       id: `MBR-${Date.now()}-${Math.random()}`,
-      code: generateNextCode(baseCode, 'M-'),
+      code: generateNextUnifiedCode(existingCodes, 'M-'),
       name: '',
       yomigana: '',
       email: '',

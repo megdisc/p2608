@@ -30,7 +30,6 @@ export function useMembers() {
 
   const batchSaveMembers = async (drafts: MemberItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('members').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
@@ -83,8 +82,6 @@ export function useMembers() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

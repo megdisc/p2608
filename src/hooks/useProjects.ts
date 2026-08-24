@@ -90,8 +90,6 @@ export function useProjects() {
 
   const batchSaveProjects = async (drafts: ProjectItem[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-
       if (deletedIds.length > 0) {
         const pIdsToDelete = deletedIds.filter(id => !id.includes('TASK'));
         const tIdsToDelete = deletedIds.filter(id => id.includes('TASK'));
@@ -158,8 +156,6 @@ export function useProjects() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

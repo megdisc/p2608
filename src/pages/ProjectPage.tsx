@@ -4,10 +4,10 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from
 import type { ProjectItem } from '../types';
 import { useAlert } from '../contexts';
 import { useProjects } from '../hooks';
-import { isProjectFinished, generateNextProjectCode } from '../utils';
+import { isProjectFinished, generateNextUnifiedCode } from '../utils';
 
 export function ProjectPage() {
-  const { items, lastDbCode, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
+  const { items, allCodes, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -116,6 +116,7 @@ export function ProjectPage() {
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
+      throw err;
     }
   };
 
@@ -129,22 +130,15 @@ export function ProjectPage() {
   };
 
   const handleAdd = (currentDrafts?: ProjectItem[]) => {
-    let lastDraftCode: string | null = null;
-    if (currentDrafts && currentDrafts.length > 0) {
-      for (let i = currentDrafts.length - 1; i >= 0; i--) {
-        const item = currentDrafts[i];
-        if (item && item.code && item.code.trim() !== '') {
-          lastDraftCode = item.code.trim();
-          break;
-        }
-      }
-    }
-
-    const baseCode = lastDraftCode || lastDbCode;
+    const existingCodes = [
+      ...allCodes,
+      ...items.map(i => i.code),
+      ...(currentDrafts || []).map(i => i.code)
+    ];
 
     return {
       id: generateId(),
-      code: generateNextProjectCode(baseCode),
+      code: generateNextUnifiedCode(existingCodes, 'P-'),
       name: '',
       projectType: 'ongoing',
       customerId: '',

@@ -4,10 +4,10 @@ import type { ClientItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useClients } from '../hooks';
-import { generateNextCode } from '../utils';
+import { generateNextUnifiedCode } from '../utils';
 
 export function ClientPage() {
-  const { items, lastDbCode, loading, fetchClients, batchSaveClients } = useClients();
+  const { items, loading, fetchClients, batchSaveClients } = useClients();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -30,24 +30,19 @@ export function ClientPage() {
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
+      throw err;
     }
   };
 
   const handleAdd = (currentDrafts?: ClientItem[]) => {
-    let lastDraftCode: string | null = null;
-    if (currentDrafts && currentDrafts.length > 0) {
-      for (let i = currentDrafts.length - 1; i >= 0; i--) {
-        if (currentDrafts[i].code && currentDrafts[i].code!.trim() !== '') {
-          lastDraftCode = currentDrafts[i].code!.trim();
-          break;
-        }
-      }
-    }
-    const baseCode = lastDraftCode || lastDbCode;
+    const existingCodes = [
+      ...items.map(i => i.code),
+      ...(currentDrafts || []).map(i => i.code)
+    ];
 
     return {
       id: `CLI-${Date.now()}-${Math.random()}`,
-      code: generateNextCode(baseCode, 'C-'),
+      code: generateNextUnifiedCode(existingCodes, 'C-'),
       name: '',
       yomigana: '',
       contactPerson: '',

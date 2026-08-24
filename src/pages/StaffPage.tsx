@@ -4,10 +4,10 @@ import type { StaffItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
 import { useStaffs } from '../hooks';
-import { generateNextCode } from '../utils';
+import { generateNextUnifiedCode } from '../utils';
 
 export function StaffPage() {
-  const { items, lastDbCode, loading, fetchStaffs, batchSaveStaffs } = useStaffs();
+  const { items, loading, fetchStaffs, batchSaveStaffs } = useStaffs();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -31,24 +31,19 @@ export function StaffPage() {
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
+      throw err;
     }
   };
 
   const handleAdd = (currentDrafts?: StaffItem[]) => {
-    let lastDraftCode: string | null = null;
-    if (currentDrafts && currentDrafts.length > 0) {
-      for (let i = currentDrafts.length - 1; i >= 0; i--) {
-        if (currentDrafts[i].code && currentDrafts[i].code!.trim() !== '') {
-          lastDraftCode = currentDrafts[i].code!.trim();
-          break;
-        }
-      }
-    }
-    const baseCode = lastDraftCode || lastDbCode;
+    const existingCodes = [
+      ...items.map(i => i.code),
+      ...(currentDrafts || []).map(i => i.code)
+    ];
 
     return {
       id: `STF-${Date.now()}-${Math.random()}`,
-      code: generateNextCode(baseCode, 'S-'),
+      code: generateNextUnifiedCode(existingCodes, 'S-'),
       name: '',
       yomigana: '',
       email: '',

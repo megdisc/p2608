@@ -43,7 +43,7 @@ type DataTableProps<T> = {
   columns: Column<T>[];
   emptyMessage: string;
   initialSort?: SortConfig;
-  onBatchSave?: (drafts: T[], deletedIds: string[]) => void;
+  onBatchSave?: (drafts: T[], deletedIds: string[]) => Promise<void> | void;
   onAddRow?: (currentData: T[]) => T;
   showDateFilter?: boolean;
   dateFilterKey?: string;
@@ -142,6 +142,7 @@ export function DataTable<T extends { id: string }>({
   const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
   const [newRowIds, setNewRowIds] = useState<Set<string>>(new Set());
   const [originalNewRows, setOriginalNewRows] = useState<T[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [startDate, setStartDate] = useState(() => {
     // 2ヶ月前の日付をJSTで取得
@@ -370,40 +371,47 @@ export function DataTable<T extends { id: string }>({
     }));
   };
 
-  const handleSaveClick = () => {
-    if (onBatchSave) {
-      const sanitizedDrafts = draftData
-        .filter(item => {
-          if (newRowIds.has(item.id)) {
-            const original = originalNewRows.find(r => r.id === item.id);
-            if (original && JSON.stringify(original) === JSON.stringify(item)) {
-              return false;
+  const handleSaveClick = async () => {
+    if (onBatchSave && !isSaving) {
+      setIsSaving(true);
+      try {
+        const sanitizedDrafts = draftData
+          .filter(item => {
+            if (newRowIds.has(item.id)) {
+              const original = originalNewRows.find(r => r.id === item.id);
+              if (original && JSON.stringify(original) === JSON.stringify(item)) {
+                return false;
+              }
             }
-          }
-          return true;
-        })
-        .map(item => {
-          const newItem = { ...item };
-          if (subItemsKey && (newItem as any)[subItemsKey]) {
-            (newItem as any)[subItemsKey] = ((newItem as any)[subItemsKey] as any[])
-              .filter(sub => !deletedIds.has(sub.id))
-              .map(sub => {
-                const newSub = { ...sub };
-                if (subSubItemsKey && newSub[subSubItemsKey]) {
-                  newSub[subSubItemsKey] = (newSub[subSubItemsKey] as any[]).filter(ssub => !deletedIds.has(ssub.id));
-                }
-                return newSub;
-              });
-          }
-          columns.forEach(col => {
-            if ((col.inputType === 'number' || col.inputType === 'currency') && (newItem as any)[col.key] === '') {
-              (newItem as any)[col.key] = 0;
+            return true;
+          })
+          .map(item => {
+            const newItem = { ...item };
+            if (subItemsKey && (newItem as any)[subItemsKey]) {
+              (newItem as any)[subItemsKey] = ((newItem as any)[subItemsKey] as any[])
+                .filter(sub => !deletedIds.has(sub.id))
+                .map(sub => {
+                  const newSub = { ...sub };
+                  if (subSubItemsKey && newSub[subSubItemsKey]) {
+                    newSub[subSubItemsKey] = (newSub[subSubItemsKey] as any[]).filter(ssub => !deletedIds.has(ssub.id));
+                  }
+                  return newSub;
+                });
             }
+            columns.forEach(col => {
+              if ((col.inputType === 'number' || col.inputType === 'currency') && (newItem as any)[col.key] === '') {
+                (newItem as any)[col.key] = 0;
+              }
+            });
+            return newItem;
           });
-          return newItem;
-        });
-      onBatchSave(sanitizedDrafts, Array.from(deletedIds));
-      setDraftData(sanitizedDrafts);
+        await onBatchSave(sanitizedDrafts, Array.from(deletedIds));
+        setDraftData(sanitizedDrafts);
+      } catch (err) {
+        console.error('Batch save failed in DataTable:', err);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -1037,8 +1045,8 @@ export function DataTable<T extends { id: string }>({
             <Button onClick={handleCancelClick} disabled={isConfirmed || !canCancel}>
               {BUTTON_LABELS.CANCEL}
             </Button>
-            <Button variant="primary" onClick={handleSaveClick} disabled={isConfirmed || !canSave}>
-              {BUTTON_LABELS.SAVE}
+            <Button variant="primary" onClick={handleSaveClick} disabled={isConfirmed || !canSave || isSaving}>
+              {isSaving ? '保存中...' : BUTTON_LABELS.SAVE}
             </Button>
             {!isConfirmed ? (
               onConfirm ? (

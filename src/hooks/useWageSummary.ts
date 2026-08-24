@@ -58,8 +58,8 @@ export function useWageSummary() {
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_records').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
-        supabase.from('monthly_settlements').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
-        supabase.from('monthly_wage_records').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
+        supabase.from('monthly_incentive_allocations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
+        supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -67,11 +67,11 @@ export function useWageSummary() {
       if (budgetsRes.error) throw budgetsRes.error;
       if (workRes.error) throw workRes.error;
 
+      const dbWageRecordMap = new Map((wageConfirmRes.data || []).map((r: any) => [r.member_id, r]));
+
       // Check monthly wage confirmation
-      let wageConfirmed = false;
-      if (wageConfirmRes.data && wageConfirmRes.data.length > 0) {
-        wageConfirmed = true;
-      } else {
+      let wageConfirmed = (wageConfirmRes.data || []).some((r: any) => r.is_confirmed);
+      if (!wageConfirmed) {
         try {
           const savedWage = localStorage.getItem('monthly_wage_confirmations');
           const listWage = savedWage ? JSON.parse(savedWage) : [];
@@ -87,10 +87,10 @@ export function useWageSummary() {
       } else {
         try {
           const saved = localStorage.getItem('monthly_settlement_confirmed');
-          const list = saved ? JSON.parse(saved) : ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
+          const list = saved ? JSON.parse(saved) : ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2027-07'];
           monthlyConfirmed = list.includes(monthStr);
         } catch {
-          monthlyConfirmed = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'].includes(monthStr);
+          monthlyConfirmed = ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2027-07'].includes(monthStr);
         }
       }
       setIsMonthlySettlementConfirmed(monthlyConfirmed);
@@ -131,6 +131,7 @@ export function useWageSummary() {
       }));
 
       const rows: WageRow[] = members.map((member: any) => {
+        const dbRecord = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
         
@@ -180,24 +181,32 @@ export function useWageSummary() {
         const dedA = null;
         const dedB = null;
 
-        const wageTotal = (basicWage || 0) + safeIncentive;
-        const dedTotal = 0;
-        const payment = wageTotal - dedTotal;
+        const computedWageTotal = (basicWage || 0) + safeIncentive;
+        const computedDedTotal = 0;
+        const computedPayment = computedWageTotal - computedDedTotal;
+
+        const finalWorkTime = dbRecord?.work_time !== undefined && dbRecord?.work_time !== null ? Number(dbRecord.work_time) : totalWorkTime;
+        const finalWageRate = dbRecord?.wage_rate !== undefined && dbRecord?.wage_rate !== null ? Number(dbRecord.wage_rate) : wageRate;
+        const finalBasicWage = dbRecord?.basic_wage !== undefined && dbRecord?.basic_wage !== null ? Number(dbRecord.basic_wage) : basicWage;
+        const finalIncentiveTotal = dbRecord?.incentive_total !== undefined && dbRecord?.incentive_total !== null ? Number(dbRecord.incentive_total) : safeIncentive;
+        const finalWageTotal = dbRecord?.wage_total !== undefined && dbRecord?.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal;
+        const finalDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : computedDedTotal;
+        const finalPayment = dbRecord?.payment !== undefined && dbRecord?.payment !== null ? Number(dbRecord.payment) : computedPayment;
 
         return {
           id: member.id,
           name: member.name,
           yomigana: member.yomigana || '',
-          wageRate,
-          workTime: totalWorkTime,
-          basicWage,
+          wageRate: finalWageRate,
+          workTime: finalWorkTime,
+          basicWage: finalBasicWage,
           taskIncentives,
-          incentiveTotal: safeIncentive,
-          wageTotal,
+          incentiveTotal: finalIncentiveTotal,
+          wageTotal: finalWageTotal,
           dedA,
           dedB,
-          dedTotal,
-          payment
+          dedTotal: finalDedTotal,
+          payment: finalPayment
         };
       });
 

@@ -196,27 +196,27 @@ INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('c12
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃）（保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
 
 -- Add daily work records for 2026-06-29
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 4) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 1) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 4);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 1);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 5) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '00000000-0000-0000-0000-000000000002', 2) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 5);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '00000000-0000-0000-0000-000000000002', 2);
 
 -- Add daily work records for 2026-06-30
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1.5) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1.5);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 0.5) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 0.5);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5) ON CONFLICT DO NOTHING;
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2) ON CONFLICT DO NOTHING;
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5);
+INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2);
 
 -- Member Skill Evaluations
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: ネットワーク設計 (1.初級)
@@ -458,9 +458,144 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('20
 -- === SEED DAILY WORK CONFIRMATIONS (<= 2026-08-16) ===
 UPDATE daily_work_records SET is_confirmed = true WHERE date <= '2026-08-16';
 
--- === SEED MONTHLY INCENTIVE ALLOCATIONS (<= 2026-07) ===
+-- === SEED DATA FOR 2027-07 (MOCKUP SAMPLE) ===
+INSERT INTO projects (id, name, code, client_id, project_type, settlement_year_month, created_at) VALUES 
+('77777777-7777-4777-a777-777777777777', '次世代AI基盤システム開発', 'P-000008', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'one-off', '2027-07', '2027-07-01 09:00:00+09')
+ON CONFLICT (id) DO UPDATE SET settlement_year_month = '2027-07';
+
+INSERT INTO project_tasks (id, project_id, name, code, assignee_type, status, completed_at) VALUES 
+('77777777-7777-4777-a777-777777770001', '77777777-7777-4777-a777-777777777777', '要件定義・AIモデル選定', 'T-27G001', 'internal', 'completed', '2027-07-15 18:00:00+09'),
+('77777777-7777-4777-a777-777777770002', '77777777-7777-4777-a777-777777777777', '学習データ作成・パイプライン構築', 'T-27G002', 'internal', 'completed', '2027-07-28 18:00:00+09'),
+('77777777-7777-4777-a777-777777770003', '77777777-7777-4777-a777-777777777777', 'インフラ環境構築', 'T-27G003', 'external', 'completed', '2027-07-30 18:00:00+09')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO project_task_assignees (task_id, member_id, staff_id, client_id) VALUES
+('77777777-7777-4777-a777-777777770001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', NULL, NULL),
+('77777777-7777-4777-a777-777777770001', 'e98c7634-1eb3-4e42-b062-841f39c043e0', NULL, NULL),
+('77777777-7777-4777-a777-777777770001', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', NULL),
+('77777777-7777-4777-a777-777777770002', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', NULL, NULL),
+('77777777-7777-4777-a777-777777770002', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', NULL, NULL),
+('77777777-7777-4777-a777-777777770002', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', NULL),
+('77777777-7777-4777-a777-777777770003', NULL, NULL, 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8');
+
+INSERT INTO project_budgets (project_id, category, subject, amount, task_id) VALUES
+('77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, NULL),
+('77777777-7777-4777-a777-777777777777', 'expense', '労務費（要件定義・AIモデル選定）', 600000, '77777777-7777-4777-a777-777777770001'),
+('77777777-7777-4777-a777-777777777777', 'expense', '労務費（学習データ作成・パイプライン構築）', 800000, '77777777-7777-4777-a777-777777770002'),
+('77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, '77777777-7777-4777-a777-777777770003'),
+('77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, NULL),
+('77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, NULL),
+('77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, NULL);
+
+INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（要件定義・AIモデル選定）', 600000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（学習データ作成・パイプライン構築）', 800000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, '2027-07-31', 'production');
+
+INSERT INTO daily_work_records (date, member_id, task_id, work_time, is_confirmed) VALUES
+('2027-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-01', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-02', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-05', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-09', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-09', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-09', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-09', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-12', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-12', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-12', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-12', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-13', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-13', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-13', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-13', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-14', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-14', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-14', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-14', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3, true),
+('2027-07-15', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4, true),
+('2027-07-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4, true);
+
+UPDATE daily_work_records SET is_confirmed = true WHERE date >= '2027-07-01' AND date <= '2027-07-31';
+
+-- === SEED MONTHLY INCENTIVE ALLOCATIONS (<= 2027-07) ===
 INSERT INTO monthly_incentive_allocations (year_month, is_confirmed) VALUES
-('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true);
+('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true), ('2027-07', true);
+
+-- === SEED DATA FOR 2026-07 ONGOING PROJECTS ===
+INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000, '2026-07-31', 'production'),
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（製造業務）', 200000, '2026-07-31', 'production'),
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（販売・接客業務）', 300000, '2026-07-31', 'production'),
+('2026-07-01', 'c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '就労支援事業収益', 600000, '2026-07-31', 'production'),
+('2026-07-01', 'c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（保守運用業務）', 500000, '2026-07-31', 'production');
+
+INSERT INTO monthly_incentive_allocations (year_month, project_id, task_id, allocation_amount, is_confirmed) VALUES
+('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000, true),
+('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000, true),
+('2026-07', 'c1234567-89ab-cdef-0123-456789abcdef', 'a1234567-89ab-cdef-0123-456789abcdef', 500000, true);
+
+INSERT INTO daily_work_records (date, member_id, task_id, work_time, is_confirmed) VALUES
+('2026-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-01', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-02', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-03', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-03', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-09', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-09', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-09', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-09', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-10', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
+('2026-07-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
+('2026-07-10', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
+('2026-07-10', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true);
+
+UPDATE daily_work_records SET is_confirmed = true WHERE date >= '2026-07-01' AND date <= '2026-07-31';
 
 -- === SEED MONTHLY WAGE RECORDS ===
 INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, wage_total, deduction_total, payment, is_confirmed) VALUES
@@ -488,12 +623,16 @@ INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rat
 ('2303c545-f66e-4281-8054-50556c339f5e', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 7125, 0, 7125, true),
 ('959467f4-744a-4411-a8de-9a5ac099a0e0', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 1750, 0, 1750, true),
 ('814bbf38-d47f-40e5-a6ee-08426717c202', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 3500, 0, 3500, true),
-('dcca4c16-23fa-487d-82a8-ab6e3c72dae3', '2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, true),
-('5551e252-e3cb-4a10-a9af-57baf5990027', '2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, true),
-('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
-('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
+('dcca4c16-23fa-487d-82a8-ab6e3c72dae3', '2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 24, 100, 2400, 147600, 150000, 0, 150000, true),
+('5551e252-e3cb-4a10-a9af-57baf5990027', '2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 24, 250, 6000, 219000, 225000, 0, 225000, true),
+('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 32, 250, 8000, 192000, 200000, 0, 200000, true),
+('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 32, 500, 16000, 184000, 200000, 0, 200000, true),
 ('ccf50898-7814-4019-b0f6-100c538d7caa', '2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 25, 100, 2500, 147500, 150000, 0, 150000, false),
 ('717f8429-0f28-4d4e-866f-8733804b1c51', '2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 25, 250, 6250, 143750, 150000, 0, 150000, false),
 ('42d8e95e-52e5-40de-a06e-76f79ad68a01', '2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 15, 250, 3750, 146250, 150000, 0, 150000, false),
-('c42d5da8-a361-4344-88c1-9aeaedbe1c34', '2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 35, 500, 17500, 132500, 150000, 0, 150000, false)
+('c42d5da8-a361-4344-88c1-9aeaedbe1c34', '2026-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 35, 500, 17500, 132500, 150000, 0, 150000, false),
+('77777777-7777-4777-a777-777777779001', '2027-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 36, 100, 3600, 296400, 300000, 0, 300000, true),
+('77777777-7777-4777-a777-777777779002', '2027-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 36, 250, 9000, 291000, 300000, 0, 300000, true),
+('77777777-7777-4777-a777-777777779003', '2027-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 48, 250, 12000, 388000, 400000, 0, 400000, true),
+('77777777-7777-4777-a777-777777779004', '2027-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 48, 500, 24000, 376000, 400000, 0, 400000, true)
 ON CONFLICT (year_month, member_id) DO NOTHING;

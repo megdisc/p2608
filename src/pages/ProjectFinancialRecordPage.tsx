@@ -108,7 +108,7 @@ export function ProjectFinancialRecordPage() {
       const saved = localStorage.getItem('monthly_incentive_allocation_confirmed') || localStorage.getItem('monthly_settlement_confirmed');
       if (saved) return JSON.parse(saved);
     } catch {}
-    return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07'];
+    return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2027-07'];
   }, [items]);
 
   const isConfirmedMonth = (item: FinancialRecordItem) => {

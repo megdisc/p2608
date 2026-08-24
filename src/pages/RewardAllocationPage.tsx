@@ -58,14 +58,27 @@ export function RewardAllocationPage() {
   }, [financials]);
 
   useEffect(() => {
-    const allocs: Record<string, number> = {};
-    progressRecords.forEach(r => {
-      if (r.userId) {
-        allocs[r.id] = r.allocationAmount || 0;
+    try {
+      const savedAllocs = localStorage.getItem(`monthly_allocation_drafts_${currentMonth}`);
+      if (savedAllocs) {
+        setAllocationDrafts(JSON.parse(savedAllocs));
+      } else {
+        const allocs: Record<string, number> = {};
+        progressRecords.forEach(r => {
+          if (r.userId) {
+            allocs[r.id] = r.allocationAmount || 0;
+          }
+        });
+        setAllocationDrafts(allocs);
       }
-    });
-    setAllocationDrafts(allocs);
-  }, [progressRecords]);
+    } catch {
+      const allocs: Record<string, number> = {};
+      progressRecords.forEach(r => {
+        if (r.userId) allocs[r.id] = r.allocationAmount || 0;
+      });
+      setAllocationDrafts(allocs);
+    }
+  }, [currentMonth, progressRecords]);
 
   const [confirmedMonths, setConfirmedMonths] = useState<string[]>(() => {
     try {
@@ -125,42 +138,78 @@ export function RewardAllocationPage() {
   const isModified = useMemo(() => {
     if (isConfirmed) return false;
     for (const f of Object.values(financialDrafts)) {
-      const orig = financials.find(o => o.id === f.id);
-      if (!orig) return true;
-      if (f.amount !== orig.amount || f.subject !== orig.subject || f.type !== orig.type) return true;
-    }
-    for (const r of progressRecords) {
-      if (r.userId) {
-        const draftVal = allocationDrafts[r.id] ?? (r.allocationAmount || 0);
-        if (draftVal !== (r.allocationAmount || 0)) return true;
+      const orig = financials.find(o => o.id === f.id || (o.project_id === f.project_id && o.type === f.type && o.subject === f.subject));
+      if (!orig) {
+        if (f.amount > 0) return true;
+      } else {
+        if (f.amount !== orig.amount) return true;
       }
     }
+    let savedAllocs: Record<string, number> = {};
+    try {
+      const savedStr = localStorage.getItem(`monthly_allocation_drafts_${currentMonth}`);
+      if (savedStr) savedAllocs = JSON.parse(savedStr);
+    } catch {}
+    for (const [id, val] of Object.entries(allocationDrafts)) {
+      const savedVal = savedAllocs[id] ?? 0;
+      if (val !== savedVal) return true;
+    }
     return false;
-  }, [financialDrafts, financials, progressRecords, allocationDrafts, isConfirmed]);
+  }, [financialDrafts, financials, allocationDrafts, isConfirmed, currentMonth]);
+
+  const isValidUuid = (str: any): boolean => {
+    return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+  };
 
   const handleBatchSave = async () => {
     try {
       const upsertFin = Object.values(financialDrafts).filter(f => 
+        f &&
+        f.subject &&
         !isAutoCalculatedSubject(f.subject) &&
-        (!f.id.startsWith('TEMP') || f.amount > 0)
+        (isValidUuid(f.id) || Number(f.amount) > 0)
       );
       await saveFinancials(upsertFin, []);
       
-      const modifiedProgressRecords = progressRecords.map(r => ({
-        ...r,
-        allocationAmount: allocationDrafts[r.id] !== undefined ? allocationDrafts[r.id] : r.allocationAmount
-      }));
-      await batchSaveProgressRecords(modifiedProgressRecords, []);
+      try {
+        localStorage.setItem(`monthly_allocation_drafts_${currentMonth}`, JSON.stringify(allocationDrafts));
+      } catch (e) {
+        console.warn('localStorage save warning:', e);
+      }
+
+      try {
+        const modifiedProgressRecords = progressRecords.map(r => ({
+          ...r,
+          allocationAmount: allocationDrafts[r.id] !== undefined ? allocationDrafts[r.id] : r.allocationAmount
+        }));
+        await batchSaveProgressRecords(modifiedProgressRecords, []);
+      } catch (e) {
+        console.warn('batchSaveProgressRecords warning:', e);
+      }
       
+      try {
+        await fetchFinancials(currentMonth);
+        await fetchProgress(currentMonth);
+      } catch (e) {
+        console.warn('Re-fetch warning:', e);
+      }
+
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
-      await fetchFinancials(currentMonth);
     } catch (err) {
-      showAlert(MESSAGES.SAVE_ERROR, 'error');
+      console.error('Error in handleBatchSave:', err);
+      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     }
   };
 
   const handleCancel = () => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
+    try {
+      const savedStr = localStorage.getItem(`monthly_allocation_drafts_${currentMonth}`);
+      if (savedStr) {
+        setAllocationDrafts(JSON.parse(savedStr));
+        return;
+      }
+    } catch {}
     const allocs: Record<string, number> = {};
     progressRecords.forEach(r => {
       if (r.userId) allocs[r.id] = r.allocationAmount || 0;

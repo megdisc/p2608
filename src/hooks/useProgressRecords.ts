@@ -381,8 +381,6 @@ export function useProgressRecords() {
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {
-      setLoading(true);
-      
       const projectTaskUpdates: { id: string; status: string; is_canceled: boolean }[] = [];
       const projectSettlementMonthUpdates = new Map<string, string>();
 
@@ -393,7 +391,7 @@ export function useProgressRecords() {
           projectSettlementMonthUpdates.set(r.projectId, r.settlementYearMonth);
         }
 
-        if (r.taskId && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
+        if (r.taskId && r.taskId !== '00000000-0000-0000-0000-000000000002' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(r.taskId) && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
           const isCompleted = Boolean(r.isTaskCompleted || r.taskStatus === 'completed');
           const newStatus = isCompleted
             ? 'completed'
@@ -443,8 +441,6 @@ export function useProgressRecords() {
     } catch (err) {
       console.error(err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 

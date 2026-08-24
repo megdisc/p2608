@@ -132,8 +132,9 @@ export function ProjectPage() {
     let lastDraftCode: string | null = null;
     if (currentDrafts && currentDrafts.length > 0) {
       for (let i = currentDrafts.length - 1; i >= 0; i--) {
-        if (currentDrafts[i].code && currentDrafts[i].code.trim() !== '') {
-          lastDraftCode = currentDrafts[i].code.trim();
+        const item = currentDrafts[i];
+        if (item && item.code && item.code.trim() !== '') {
+          lastDraftCode = item.code.trim();
           break;
         }
       }

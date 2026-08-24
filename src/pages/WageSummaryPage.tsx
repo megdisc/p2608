@@ -91,7 +91,7 @@ export function WageSummaryPage() {
                   ? [
                       ...row.taskIncentives.map((t, i) => ({ 
                         subject: 'インセンティブ', 
-                        content: `${t.projectName}：${t.taskName}`, 
+                        content: `${t.projectName}（${t.taskName}）`, 
                         amount: t.amount, 
                         isBold: false,
                         rowSpan: i === 0 ? row.taskIncentives.length + 2 : undefined,

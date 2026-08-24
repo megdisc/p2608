@@ -54,11 +54,17 @@ export function useWageSummary() {
         wageConfirmRes
       ] = await Promise.all([
         supabase.from('members').select('*, wage_rates(wage)').order('yomigana', { ascending: true }),
-        supabase.from('projects').select('id, name, project_type, project_tasks(id, name, is_deleted, is_canceled, status, completed_at)').eq('is_deleted', false),
-        supabase.from('project_budgets').select('*').eq('category', 'expense'),
-        supabase.from('daily_work_records').select('date, member_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
+        supabase.from('projects').select(`
+          id, name, code, project_type,
+          project_tasks (
+            id, name, code, is_deleted, is_canceled, status, completed_at,
+            project_task_assignees ( member_id, staff_id )
+          )
+        `).eq('is_deleted', false),
+        supabase.from('financial_records').select('*').gte('period', `${monthStr}-01`).lt('period', `${nextMonthStr}-01`).eq('type', 'expense'),
+        supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_records').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_allocations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
+        supabase.from('monthly_incentive_allocations').select('*').eq('year_month', monthStr),
         supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr)
       ]);
 
@@ -118,7 +124,6 @@ export function useWageSummary() {
 
       const allMembers = membersRes.data || [];
       const projects = projectsRes.data || [];
-      const cMems: any[] = [];
 
       const members = allMembers.filter((m: any) => {
         if (!m.is_deleted) return true;
@@ -131,7 +136,7 @@ export function useWageSummary() {
       }));
 
       const rows: WageRow[] = members.map((member: any) => {
-        const dbRecord = dbWageRecordMap.get(member.id);
+        const dbRecord: any = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
         
@@ -143,36 +148,72 @@ export function useWageSummary() {
         }
 
         let sumRewardUnitPrice = 0;
-        const memberContribs = cMems.filter((r: any) => r.member_id === member.id);
+        let savedAllocationDrafts: Record<string, number> = {};
+        try {
+          const savedStr = localStorage.getItem(`monthly_allocation_drafts_${monthStr}`);
+          if (savedStr) savedAllocationDrafts = JSON.parse(savedStr);
+        } catch {}
+
         const taskIncentives: { projectName: string; taskName: string; amount: number }[] = [];
 
-        for (const contrib of memberContribs) {
-          if (!contrib.task_id || !contrib.contribution_ratio) continue;
+        for (const project of projects) {
+          const projectTasks = (project as any).project_tasks || [];
+          for (const task of projectTasks) {
+            if (task.is_deleted || task.is_canceled) continue;
 
-          const project = projects.find((p: any) => (p.project_tasks || []).some((t: any) => t.id === contrib.task_id));
-          if (!project) continue;
+            const assignees = task.project_task_assignees || [];
+            const isAssigned = assignees.some((a: any) => a.member_id === member.id);
+            const memberWorksOnTask = (workRes.data || []).some((w: any) => w.member_id === member.id && w.task_id === task.id && Number(w.work_time) > 0);
 
-          const projectTasks = project.project_tasks || [];
-          const activeTasks = projectTasks.filter((t: any) => !t.is_deleted && !t.is_canceled);
-          
-          if (activeTasks.length === 0) continue;
-          
-          const allCompleted = activeTasks.every((t: any) => {
-            return t.status === 'completed' && t.completed_at && t.completed_at.startsWith(monthStr);
-          });
+            if (!isAssigned && !memberWorksOnTask) continue;
 
-          if (!allCompleted) continue;
+            let allocatedAmount = 0;
+            const draftKey = `TASK-${task.id}-member_${member.id}`;
+            if (savedAllocationDrafts[draftKey] !== undefined && Number(savedAllocationDrafts[draftKey]) > 0) {
+              allocatedAmount = Number(savedAllocationDrafts[draftKey]);
+            } else {
+              let taskExpenseAmt = 0;
+              const dbAlloc = (monthlyConfirmRes.data || []).find((a: any) => a.task_id === task.id && a.project_id === project.id);
+              if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
+                taskExpenseAmt = Number(dbAlloc.allocation_amount);
+              } else {
+                const finRecord = (budgetsRes.data || []).find((f: any) => 
+                  f.project_id === project.id && 
+                  (f.subject?.includes(task.name) || f.subject?.includes('労務費'))
+                );
+                if (finRecord && Number(finRecord.amount) > 0) {
+                  taskExpenseAmt = Number(finRecord.amount);
+                }
+              }
 
-          const unitPrice = Number(contrib.deduction_amount) || 0;
+              if (taskExpenseAmt > 0) {
+                const memberAssignees = assignees.filter((a: any) => a.member_id);
+                const numMems = memberAssignees.length || 1;
+                const hasStaff = assignees.some((a: any) => a.staff_id);
+                const ratio = (numMems > 0 && hasStaff) ? 0.75 : 1.0;
+                allocatedAmount = Math.floor(((taskExpenseAmt * ratio) / numMems) / 1000) * 1000;
+              }
+            }
 
-          sumRewardUnitPrice += unitPrice;
-          
-          const task = activeTasks.find((t: any) => t.id === contrib.task_id);
-          taskIncentives.push({
-            projectName: project.name || '',
-            taskName: task ? task.name : '',
-            amount: unitPrice
-          });
+            if (allocatedAmount > 0) {
+              sumRewardUnitPrice += allocatedAmount;
+              const pureTaskName = (task.name || '')
+                .replace(/^労務費（利用者工賃）/, '')
+                .replace(/^労務費（利用者工賃以外）/, '')
+                .replace(/^労務費・外注加工費/, '')
+                .replace(/^労務費/, '')
+                .replace(/^外注加工費/, '')
+                .replace(/^[（\(]/, '')
+                .replace(/[）\)]+$/, '')
+                .trim();
+
+              taskIncentives.push({
+                projectName: project.name || '',
+                taskName: pureTaskName || task.name || '',
+                amount: allocatedAmount
+              });
+            }
+          }
         }
 
         const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
@@ -210,7 +251,8 @@ export function useWageSummary() {
         };
       });
 
-      setData(rows);
+      const activeRows = rows.filter(r => (r.workTime || 0) > 0 || (r.wageTotal || 0) > 0 || (r.payment || 0) > 0);
+      setData(activeRows);
       setCurrentPage(1);
 
     } catch (err) {

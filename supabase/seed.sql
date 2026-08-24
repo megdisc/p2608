@@ -325,12 +325,8 @@ INSERT INTO financial_records (period, project_id, client_id, type, subject, amo
 ('2026-06-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 100000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202606-28 (事業所光熱費分担)', 'production'),
 
 -- 2026-07
-('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 1500000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '中間納品分 請求書No. INV-202607-02', 'production'),
-('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 80000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202607-09 (ハンダ・ケーブル類)', 'production'),
-('2026-07-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-07-15', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '7月中間分工賃', 'production'),
-('2026-07-01', NULL, NULL, 'revenue', '控除', 0, '2026-07-15', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '7月中間分控除', 'welfare'),
-('2026-07-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 300000, '2026-07-15', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202607-11', 'production'),
-('2026-07-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '経費', 50000, '2026-07-15', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202607-14 (配送・送料費用)', 'production'),
+-- (No separate manual financial records for 2026-07; see ongoing project seed section below)
+
 
 -- 2026-08
 ('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 1000000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202608-01', 'production'),
@@ -552,48 +548,29 @@ INSERT INTO monthly_incentive_allocations (year_month, is_confirmed) VALUES
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000, '2026-07-31', 'production'),
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（製造業務）', 200000, '2026-07-31', 'production'),
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（販売・接客業務）', 300000, '2026-07-31', 'production'),
-('2026-07-01', 'c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '就労支援事業収益', 600000, '2026-07-31', 'production'),
-('2026-07-01', 'c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（保守運用業務）', 500000, '2026-07-31', 'production');
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（販売・接客業務）', 300000, '2026-07-31', 'production');
 
 INSERT INTO monthly_incentive_allocations (year_month, project_id, task_id, allocation_amount, is_confirmed) VALUES
 ('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000, true),
-('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000, true),
-('2026-07', 'c1234567-89ab-cdef-0123-456789abcdef', 'a1234567-89ab-cdef-0123-456789abcdef', 500000, true);
+('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000, true);
 
 INSERT INTO daily_work_records (date, member_id, task_id, work_time, is_confirmed) VALUES
 ('2026-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-01', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-02', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-03', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-03', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-08', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-09', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
 ('2026-07-09', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-09', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-09', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
 ('2026-07-10', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3, true),
-('2026-07-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true),
-('2026-07-10', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true),
-('2026-07-10', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4, true);
+('2026-07-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3, true);
 
 UPDATE daily_work_records SET is_confirmed = true WHERE date >= '2026-07-01' AND date <= '2026-07-31';
 
@@ -625,8 +602,8 @@ INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rat
 ('814bbf38-d47f-40e5-a6ee-08426717c202', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 3500, 0, 3500, true),
 ('dcca4c16-23fa-487d-82a8-ab6e3c72dae3', '2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 24, 100, 2400, 147600, 150000, 0, 150000, true),
 ('5551e252-e3cb-4a10-a9af-57baf5990027', '2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 24, 250, 6000, 219000, 225000, 0, 225000, true),
-('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 32, 250, 8000, 192000, 200000, 0, 200000, true),
-('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 32, 500, 16000, 184000, 200000, 0, 200000, true),
+('53b517ad-52ee-47e4-b909-d68cd9156950', '2026-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, true),
+('af1a428b-560b-477d-b6fa-50e466cfebbb', '2026-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 0, 500, 0, 0, 0, 0, 0, true),
 ('ccf50898-7814-4019-b0f6-100c538d7caa', '2026-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 25, 100, 2500, 147500, 150000, 0, 150000, false),
 ('717f8429-0f28-4d4e-866f-8733804b1c51', '2026-08', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 25, 250, 6250, 143750, 150000, 0, 150000, false),
 ('42d8e95e-52e5-40de-a06e-76f79ad68a01', '2026-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 15, 250, 3750, 146250, 150000, 0, 150000, false),

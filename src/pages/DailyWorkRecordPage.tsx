@@ -131,7 +131,8 @@ export function DailyWorkRecordPage() {
       await batchSaveDailyWorkRecords(drafts, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
-      showAlert(MESSAGES.SAVE_ERROR, 'error');
+      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
+      throw err;
     }
   };
 

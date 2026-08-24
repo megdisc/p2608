@@ -290,24 +290,37 @@ export function useDailyWorkRecords() {
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {
       const upserts: any[] = [];
+      const inserts: any[] = [];
       const deletes: string[] = [];
 
       for (const r of drafts) {
+        const isRealRecord = r.isSaved || (!r.id.startsWith('UNSAVED-') && !r.id.startsWith('EMPTY-'));
         if (deletedIds.includes(r.id)) {
-          if (r.isSaved) deletes.push(r.id);
+          if (isRealRecord) deletes.push(r.id);
           continue;
         }
 
-        if (r.projectId && r.taskId && r.workTime > 0) {
-          upserts.push({
-            ...(r.isSaved ? { id: r.id } : {}),
-            date: currentDate,
-            member_id: r.userId,
-            task_id: r.taskId,
-            work_time: r.workTime
-          });
-        } else if (r.isSaved && r.workTime === 0) {
-           deletes.push(r.id);
+        const workTimeNum = Number(r.workTime) || 0;
+
+        if (r.projectId && r.taskId && workTimeNum > 0) {
+          if (isRealRecord) {
+            upserts.push({
+              id: r.id,
+              date: currentDate,
+              member_id: r.userId,
+              task_id: r.taskId,
+              work_time: workTimeNum
+            });
+          } else {
+            inserts.push({
+              date: currentDate,
+              member_id: r.userId,
+              task_id: r.taskId,
+              work_time: workTimeNum
+            });
+          }
+        } else if (isRealRecord && workTimeNum === 0) {
+          deletes.push(r.id);
         }
       }
 
@@ -320,7 +333,12 @@ export function useDailyWorkRecords() {
       }
       
       if (upserts.length > 0) {
-        const { error } = await supabase.from('daily_work_records').upsert(upserts, { onConflict: 'date,member_id,task_id' });
+        const { error } = await supabase.from('daily_work_records').upsert(upserts);
+        if (error) throw error;
+      }
+
+      if (inserts.length > 0) {
+        const { error } = await supabase.from('daily_work_records').insert(inserts);
         if (error) throw error;
       }
 

@@ -23,10 +23,10 @@ export function ScreenProjectPage() {
         return <BudgetPlanningPage />;
       case 'assigneeAllocation':
         return <AssigneeAllocationPage />;
-      case 'projectFinancialRecord':
-        return <ProjectFinancialRecordPage />;
       case 'progressRecord':
         return <ProgressRecordPage />;
+      case 'projectFinancialRecord':
+        return <ProjectFinancialRecordPage />;
       case 'rewardAllocation':
         return <RewardAllocationPage />;
       default:

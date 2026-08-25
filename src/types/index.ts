@@ -192,5 +192,17 @@ export type ProjectFinancialSummaryRow = {
   records: ProjectFinancialRecordSubRow[];
 };
 
+export type ReserveSettingItem = {
+  id: string;
+  reserveType: string;       // 積立金種別
+  method: string;            // 積立計算方式
+  calculationBase: string;   // 積立基準・計算式 (率/金額)
+  targetAmount?: number;     // 積立目標・上限額
+  autoExecution: boolean;    // 自動積立実行フラグ
+  description: string;       // 目的・用途
+  is_deleted?: boolean;
+};
+
 export type Tab = 
-  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage';
+  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve';
+

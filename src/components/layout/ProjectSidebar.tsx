@@ -76,6 +76,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_WAGE}
           </button>
           <button 
+            className={`nav-button ${['screenReserve', 'reserveSetting', 'reserve'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('reserveSetting')}
+          >
+            {PAGE_NAMES.SCREEN_RESERVE}
+          </button>
+          <button 
             className={`nav-button ${['screenComposition', 'tableComposition', 'mainFeatures', 'workflow'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('screenComposition')}
           >

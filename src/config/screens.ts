@@ -78,6 +78,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'baseWage', label: PAGE_NAMES.BASE_WAGE },
     ],
   },
+  SCREEN_RESERVE: {
+    screenName: PAGE_NAMES.SCREEN_RESERVE,
+    tabs: [
+      { id: 'reserveSetting', label: PAGE_NAMES.TAB_RESERVE_SETTING },
+    ],
+  },
   SCREEN_COMPOSITION: {
     screenName: 'システム構成（開発用）',
     tabs: [

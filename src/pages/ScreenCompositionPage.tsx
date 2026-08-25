@@ -68,6 +68,7 @@ export function ScreenCompositionPage() {
     { frequency: '随時', name: '取引先情報登録', description: '取引先・顧客の基本情報を管理・更新する。', implemented: true },
     { frequency: '随時', name: 'スキル体系登録', description: '業務に必要なスキル体系およびスキルレベルを定義する。', implemented: true },
     { frequency: '随時', name: '工賃体系登録', description: '基本工賃単価のマスターデータを定義する。', implemented: true },
+    { frequency: '随時', name: '積立金設定登録', description: '積立金の種別、計算基準・率・上限額等を定義する。', implemented: true },
     { frequency: '随時', name: '利用者情報登録', description: '利用者の基本情報を管理・更新する。', implemented: true },
     { frequency: '随時', name: '利用者スキル評価', description: '利用者のスキルレベルを評価する。', implemented: true },
     { frequency: '随時', name: '利用者工賃単価評価', description: '利用者の基本工賃単価を評価・決定する。', implemented: true },

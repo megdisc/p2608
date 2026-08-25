@@ -33,4 +33,5 @@ export * from './ScreenReservePage';
 export * from './ReserveSettingPage';
 export * from './ScreenDailyWorkPage';
 export * from './DashboardPage';
+export * from './AverageWagePage';
 

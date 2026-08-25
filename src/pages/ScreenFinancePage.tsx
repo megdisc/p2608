@@ -7,6 +7,7 @@ import { FinancialRecordPage } from './FinancialRecordPage';
 import { FinancialSummaryPage } from './FinancialSummaryPage';
 import { WageSummaryPage } from './WageSummaryPage';
 import { ProjectFinancialSummaryPage } from './ProjectFinancialSummaryPage';
+import { AverageWagePage } from './AverageWagePage';
 
 export function ScreenFinancePage() {
   const navContext = useNavigation();
@@ -26,6 +27,8 @@ export function ScreenFinancePage() {
       
       {navContext.activeTab === 'wageSummary' ? (
         <WageSummaryPage />
+      ) : navContext.activeTab === 'averageWage' ? (
+        <AverageWagePage />
       ) : navContext.activeTab === 'projectFinancialSummary' ? (
         <ProjectFinancialSummaryPage />
       ) : navContext.activeTab === 'welfareFinancialSummary' ? (

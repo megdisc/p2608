@@ -53,6 +53,8 @@ type DataTableProps<T> = {
   canEditRow?: (item: T) => boolean;
   canDeleteRow?: (item: T) => boolean;
   hideDeleteColumn?: boolean;
+  hideCancelButton?: boolean;
+  hideAddButton?: boolean;
   showRestrictionColumn?: boolean;
   footerLeft?: React.ReactNode;
   subItemsKey?: keyof T;
@@ -98,6 +100,8 @@ export function DataTable<T extends { id: string }>({
   canEditRow,
   canDeleteRow,
   hideDeleteColumn,
+  hideCancelButton,
+  hideAddButton,
   showRestrictionColumn,
   footerLeft,
   subItemsKey,
@@ -1037,14 +1041,16 @@ export function DataTable<T extends { id: string }>({
 
         {isEditingEnabled ? (
           <div className="action-buttons">
-            {onAddRow && (
+            {onAddRow && !hideAddButton && (
               <Button onClick={handleAddClick} disabled={isConfirmed || disableAddButton}>
                 {BUTTON_LABELS.ADD}
               </Button>
             )}
-            <Button onClick={handleCancelClick} disabled={isConfirmed || !canCancel}>
-              {BUTTON_LABELS.CANCEL}
-            </Button>
+            {!hideCancelButton && (
+              <Button onClick={handleCancelClick} disabled={isConfirmed || !canCancel}>
+                {BUTTON_LABELS.CANCEL}
+              </Button>
+            )}
             <Button variant="primary" onClick={handleSaveClick} disabled={isConfirmed || !canSave || isSaving}>
               {isSaving ? '保存中...' : BUTTON_LABELS.SAVE}
             </Button>

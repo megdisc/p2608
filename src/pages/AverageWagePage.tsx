@@ -42,13 +42,12 @@ export function AverageWagePage() {
             <th style={{ textAlign: 'right' }}>開所日数</th>
             <th style={{ textAlign: 'right' }}>延べ利用人数</th>
             <th style={{ textAlign: 'right' }}>1日平均利用人数</th>
-            <th style={{ textAlign: 'right' }}>総作業時間</th>
           </tr>
         </thead>
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={7} className="empty-message">表示するデータがありません</td>
+              <td colSpan={6} className="empty-message">表示するデータがありません</td>
             </tr>
           ) : (
             data.map(annualRow => {
@@ -94,9 +93,6 @@ export function AverageWagePage() {
                     <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                       {annualRow.avgMembersPerDay.toFixed(1)}
                     </td>
-                    <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      {annualRow.totalWorkHours.toLocaleString()}
-                    </td>
                   </tr>
 
                   {/* Monthly Detail Rows (Accordion Expansion) */}
@@ -120,9 +116,6 @@ export function AverageWagePage() {
                       </td>
                       <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         {monthDetail.avgMembersPerDay.toFixed(1)}
-                      </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        {monthDetail.totalWorkHours.toLocaleString()}
                       </td>
                     </tr>
                   ))}

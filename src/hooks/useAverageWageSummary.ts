@@ -5,13 +5,11 @@ export type MonthlyAverageWageDetail = {
   month: string;              // '2026-01'
   monthLabel: string;         // '2026年01月'
   totalWage: number;          // 工賃支払総額
-  operatingDays: number;      // 開所日数
-  totalUtilization: number;   // 延べ利用人数 (人日)
+  operatingDays: number;      // 開所日数 (作業時間が0でない日数)
+  totalUtilization: number;   // 延べ利用人数 (作業時間が0でない人日)
   avgMembersPerDay: number;   // 1日平均利用人数
   avgMonthlyWage: number;     // 平均工賃（月額）
   avgDailyWage: number;       // 平均工賃（日額）
-  totalWorkHours: number;     // 総作業時間 (h)
-  avgHourlyWage: number;      // 平均工賃（時給）
 };
 
 export type AnnualAverageWageRow = {
@@ -23,8 +21,6 @@ export type AnnualAverageWageRow = {
   avgMembersPerDay: number;   // 1日平均利用人数
   avgMonthlyWage: number;     // 平均工賃（月額）
   avgDailyWage: number;       // 平均工賃（日額）
-  totalWorkHours: number;     // 年間総作業時間 (h)
-  avgHourlyWage: number;      // 平均工賃（時給）
   monthlyDetails: MonthlyAverageWageDetail[];
 };
 
@@ -75,19 +71,16 @@ export function useAverageWageSummary() {
         for (let m = 1; m <= 12; m++) {
           const monthStr = `${year}-${m.toString().padStart(2, '0')}`;
           
-          // Filter work records for this month
-          const monthWork = (workRecords || []).filter(r => r.date && r.date.startsWith(monthStr));
+          // Filter work records for this month where work_time > 0
+          const monthWork = (workRecords || []).filter(r => r.date && r.date.startsWith(monthStr) && Number(r.work_time) > 0);
           
-          // Operating days = unique dates worked
+          // 開所日数: 作業記録の作業時間が0でない日数 (unique dates)
           const uniqueDates = new Set(monthWork.map(r => r.date));
-          const operatingDays = uniqueDates.size > 0 ? uniqueDates.size : 0;
+          const operatingDays = uniqueDates.size;
 
-          // Utilization = unique (date, member_id) combinations
+          // 延べ利用者数: 日付ごとの作業時間が0でない利用者の数 (unique date_member pairs)
           const dateMemberPairs = new Set(monthWork.map(r => `${r.date}_${r.member_id}`));
           const totalUtilization = dateMemberPairs.size;
-
-          // Total work hours
-          const totalWorkHours = monthWork.reduce((sum, r) => sum + (Number(r.work_time) || 0), 0);
 
           // Total wage paid
           const monthWages = (wageRecords || []).filter(r => r.year_month === monthStr);
@@ -103,7 +96,6 @@ export function useAverageWageSummary() {
           const avgMembersPerDay = operatingDays > 0 ? totalUtilization / operatingDays : 0;
           const avgDailyWage = totalUtilization > 0 ? totalWage / totalUtilization : 0;
           const avgMonthlyWage = avgMembersPerDay > 0 ? totalWage / avgMembersPerDay : 0;
-          const avgHourlyWage = totalWorkHours > 0 ? totalWage / totalWorkHours : 0;
 
           monthlyDetails.push({
             month: monthStr,
@@ -113,9 +105,7 @@ export function useAverageWageSummary() {
             totalUtilization,
             avgMembersPerDay,
             avgMonthlyWage,
-            avgDailyWage,
-            totalWorkHours,
-            avgHourlyWage
+            avgDailyWage
           });
         }
 
@@ -123,7 +113,6 @@ export function useAverageWageSummary() {
         const annualTotalWage = monthlyDetails.reduce((sum, d) => sum + d.totalWage, 0);
         const annualOperatingDays = monthlyDetails.reduce((sum, d) => sum + d.operatingDays, 0);
         const annualTotalUtilization = monthlyDetails.reduce((sum, d) => sum + d.totalUtilization, 0);
-        const annualTotalWorkHours = monthlyDetails.reduce((sum, d) => sum + d.totalWorkHours, 0);
 
         const annualAvgMembersPerDay = annualOperatingDays > 0 ? annualTotalUtilization / annualOperatingDays : 0;
         
@@ -134,7 +123,6 @@ export function useAverageWageSummary() {
           : 0;
 
         const annualAvgDailyWage = annualTotalUtilization > 0 ? annualTotalWage / annualTotalUtilization : 0;
-        const annualAvgHourlyWage = annualTotalWorkHours > 0 ? annualTotalWage / annualTotalWorkHours : 0;
 
         return {
           year,
@@ -145,8 +133,6 @@ export function useAverageWageSummary() {
           avgMembersPerDay: annualAvgMembersPerDay,
           avgMonthlyWage: annualAvgMonthlyWage,
           avgDailyWage: annualAvgDailyWage,
-          totalWorkHours: annualTotalWorkHours,
-          avgHourlyWage: annualAvgHourlyWage,
           monthlyDetails
         };
       });

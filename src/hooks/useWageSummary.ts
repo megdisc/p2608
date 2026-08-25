@@ -178,6 +178,7 @@ export function useWageSummary() {
                 taskExpenseAmt = Number(dbAlloc.allocation_amount);
               } else {
                 const pureTaskName = (task.name || '')
+                  .replace(/^労務費（利用者工賃・/, '')
                   .replace(/^労務費（利用者工賃）/, '')
                   .replace(/^労務費（利用者工賃以外）/, '')
                   .replace(/^労務費・外注加工費/, '')
@@ -192,6 +193,7 @@ export function useWageSummary() {
                   f.type === 'expense' &&
                   (
                     f.task_id === task.id || 
+                    f.subject === `労務費（利用者工賃・${pureTaskName}）` || 
                     f.subject === `労務費（${pureTaskName}）` || 
                     f.subject === `労務費（${task.name}）`
                   )
@@ -213,6 +215,7 @@ export function useWageSummary() {
             if (allocatedAmount > 0) {
               sumRewardUnitPrice += allocatedAmount;
               const pureTaskName = (task.name || '')
+                .replace(/^労務費（利用者工賃・/, '')
                 .replace(/^労務費（利用者工賃）/, '')
                 .replace(/^労務費（利用者工賃以外）/, '')
                 .replace(/^労務費・外注加工費/, '')

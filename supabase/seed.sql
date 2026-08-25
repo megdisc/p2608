@@ -158,9 +158,9 @@ INSERT INTO project_task_assignees (task_id, staff_id) VALUES ('a1234567-89ab-cd
 
 -- Project Budgets
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'revenue', '就労支援事業収益', 3300000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費・外注加工費（構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃・要件定義）', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 1500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃・基本・詳細設計）', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃・構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 
 -- 完了案件の収支記録のシード
 INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', false, '2026-06-30');
@@ -172,8 +172,8 @@ INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('525
 
 -- 新規サービスLP制作
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'revenue', '就労支援事業収益', 1000000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費・外注加工費（フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃・UI/UXデザイン）', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 600000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃・フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
 -- 完了案件の収支記録のシード (新規Webサービス開発支援)
 INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', false, '2026-06-30');
@@ -184,16 +184,16 @@ INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VAL
 
 -- パンの販売・カフェ運営
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（製造業務）', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃）（販売・接客業務）', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
 -- 社内業務マニュアル作成
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'revenue', '就労支援事業収益', 100000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費（利用者工賃）（マニュアル作成）', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('b2f5d91c-1234-4567-89ab-cdef01234567', 'expense', '労務費（利用者工賃・マニュアル作成）', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 100000);
 
 -- 基幹システム保守運用
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'revenue', '就労支援事業収益', 500000);
-INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃）（保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
+INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃・保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
 
 -- Add daily work records for 2026-06-29
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
@@ -474,8 +474,8 @@ INSERT INTO project_task_assignees (task_id, member_id, staff_id, client_id) VAL
 
 INSERT INTO project_budgets (project_id, category, subject, amount, task_id) VALUES
 ('77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, NULL),
-('77777777-7777-4777-a777-777777777777', 'expense', '労務費（要件定義・AIモデル選定）', 600000, '77777777-7777-4777-a777-777777770001'),
-('77777777-7777-4777-a777-777777777777', 'expense', '労務費（学習データ作成・パイプライン構築）', 800000, '77777777-7777-4777-a777-777777770002'),
+('77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・要件定義・AIモデル選定）', 600000, '77777777-7777-4777-a777-777777770001'),
+('77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・学習データ作成・パイプライン構築）', 800000, '77777777-7777-4777-a777-777777770002'),
 ('77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, '77777777-7777-4777-a777-777777770003'),
 ('77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, NULL),
 ('77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, NULL),
@@ -483,8 +483,8 @@ INSERT INTO project_budgets (project_id, category, subject, amount, task_id) VAL
 
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（要件定義・AIモデル選定）', 600000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（学習データ作成・パイプライン構築）', 800000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・要件定義・AIモデル選定）', 600000, '2027-07-31', 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・学習データ作成・パイプライン構築）', 800000, '2027-07-31', 'production'),
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, '2027-07-31', 'production'),
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, '2027-07-31', 'production'),
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, '2027-07-31', 'production'),
@@ -545,8 +545,8 @@ INSERT INTO monthly_incentive_allocations (year_month, is_confirmed) VALUES
 -- === SEED DATA FOR 2026-07 ONGOING PROJECTS ===
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000, '2026-07-31', 'production'),
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（製造業務）', 200000, '2026-07-31', 'production'),
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（販売・接客業務）', 300000, '2026-07-31', 'production');
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 200000, '2026-07-31', 'production'),
+('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', 300000, '2026-07-31', 'production');
 
 INSERT INTO monthly_incentive_allocations (year_month, project_id, task_id, allocation_amount, is_confirmed) VALUES
 ('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000, true),

@@ -65,7 +65,7 @@ export function useBudgetPlanning() {
         const externalTasks = activeTasks.filter((t: any) => t.assignee_type === 'external');
 
         internalTasks.forEach((t: any) => {
-          expSubjects.push({ subject: `労務費（${t.name}）`, taskId: t.id });
+          expSubjects.push({ subject: `労務費（利用者工賃・${t.name}）`, taskId: t.id });
         });
 
         externalTasks.forEach((t: any) => {

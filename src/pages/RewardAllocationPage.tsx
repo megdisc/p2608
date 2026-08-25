@@ -333,6 +333,7 @@ export function RewardAllocationPage() {
     taskBudgetItems.forEach(b => {
       if (b.taskId) {
         const pureTaskName = b.subject
+          .replace(/^労務費（利用者工賃・/, '')
           .replace(/^労務費（利用者工賃）/, '')
           .replace(/^労務費（利用者工賃以外）/, '')
           .replace(/^労務費・外注加工費/, '')
@@ -353,6 +354,7 @@ export function RewardAllocationPage() {
     projRecords.forEach(r => {
       if (r.taskId && !taskMap.has(r.taskId)) {
         const pureTaskName = r.taskName
+          .replace(/^労務費（利用者工賃・/, '')
           .replace(/^労務費（利用者工賃）/, '')
           .replace(/^労務費（利用者工賃以外）/, '')
           .replace(/^労務費・外注加工費/, '')
@@ -370,6 +372,9 @@ export function RewardAllocationPage() {
       }
     });
 
+    let totalProjectStaffAlloc = 0;
+    let hasInternalTasks = false;
+
     taskMap.forEach(({ taskId, taskName, budgetAmount }) => {
       const taskRecords = projRecords.filter(r => r.taskId === taskId);
       const memberRecords = taskRecords.filter(r => r.assigneeType === '利用者');
@@ -386,9 +391,15 @@ export function RewardAllocationPage() {
         ? Math.floor(((budgetAmount * memberRatio) / numMembers) / 1000) * 1000 
         : 0;
       const totalMemberAlloc = memberPerPerson * numMembers;
-      const staffAlloc = isOutsourceTask ? 0 : (budgetAmount - totalMemberAlloc);
+      
+      if (!isOutsourceTask) {
+        hasInternalTasks = true;
+        const staffAlloc = budgetAmount - totalMemberAlloc;
+        totalProjectStaffAlloc += staffAlloc;
+      }
 
       const cleanTaskName = taskName
+        .replace(/^労務費（利用者工賃・/, '')
         .replace(/^労務費（利用者工賃）/, '')
         .replace(/^労務費（利用者工賃以外）/, '')
         .replace(/^労務費・外注加工費/, '')
@@ -398,7 +409,7 @@ export function RewardAllocationPage() {
         .replace(/[）\)]+$/, '')
         .trim();
 
-      const subjectName = `労務費（${cleanTaskName}）`;
+      const subjectName = `労務費（利用者工賃・${cleanTaskName}）`;
 
       memberRecords.forEach(m => {
         const customVal = allocationDrafts[m.id];
@@ -423,21 +434,21 @@ export function RewardAllocationPage() {
           isAutoCalculated: false
         });
       });
-
-      if (!isOutsourceTask) {
-        const staffKey = `STAFF_ALLOC_${pid}_${taskId}`;
-        const customStaffVal = allocationDrafts[staffKey];
-
-        laborExpenses.push({
-          id: staffKey,
-          subject: subjectName,
-          payee: '（職員等）',
-          amount: customStaffVal !== undefined ? customStaffVal : staffAlloc,
-          type: 'labor',
-          isAutoCalculated: false
-        });
-      }
     });
+
+    if (hasInternalTasks || totalProjectStaffAlloc > 0 || allocationDrafts[`STAFF_ALLOC_${pid}`] !== undefined) {
+      const staffKey = `STAFF_ALLOC_${pid}`;
+      const customStaffVal = allocationDrafts[staffKey];
+
+      laborExpenses.push({
+        id: staffKey,
+        subject: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER,
+        payee: '（職員等）',
+        amount: customStaffVal !== undefined ? customStaffVal : totalProjectStaffAlloc,
+        type: 'labor',
+        isAutoCalculated: false
+      });
+    }
 
     const materialExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL);
     const otherExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);

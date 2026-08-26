@@ -37,7 +37,6 @@ export function useSkillEvaluations() {
         .from('members')
         .select('*')
         .eq('is_deleted', false)
-        .eq('role', '利用者')
         .order('yomigana');
       if (membersError) throw membersError;
 

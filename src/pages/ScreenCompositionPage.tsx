@@ -129,16 +129,30 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      physicalName: 'users', 
+      tableType: 'マスタ',
+      logicalName: '認証ユーザー', 
+      description: 'Supabase Authと連携するシステム全ユーザーのアカウント認証情報',
+      columns: [
+        { name: 'id', desc: 'ユーザーID' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'role', desc: '権限ロール' },
+        { name: 'user_type', desc: 'ユーザー種別（staff/member）' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'members', 
       tableType: 'マスタ',
       logicalName: '利用者', 
       description: '案件に参加する利用者情報',
       columns: [
         { name: 'id', desc: '利用者ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'role', desc: '権限ロール' },
-        { name: 'email', desc: 'メールアドレス' },
         { name: 'wage_rate_id', desc: '工賃単価ID' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
@@ -180,10 +194,9 @@ export function ScreenCompositionPage() {
       description: 'システムを利用する職員情報',
       columns: [
         { name: 'id', desc: '職員ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
         { name: 'name', desc: '職員名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'role', desc: '権限ロール' },
-        { name: 'email', desc: 'メールアドレス' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -410,7 +423,7 @@ export function ScreenCompositionPage() {
             <tbody>
               {workflows.map((wf, index) => (
                 <tr key={index}>
-                  <td style={{ textAlign: 'center', fontWeight: 'var(--weight-heading)', color: wf.implemented ? 'var(--color-success)' : 'inherit' }}>
+                  <td style={{ textAlign: 'center', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
                     {wf.implemented ? '済' : ''}
                   </td>
                   <td style={{ backgroundColor: getFrequencyColor(wf.frequency), textAlign: 'center', color: 'var(--color-text-main)' }}>
@@ -465,7 +478,7 @@ export function ScreenCompositionPage() {
                         {idx === 0 ? table.description : ''}
                       </td>
                       <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
-                      <td style={{ color: 'var(--color-text-muted)' }}>{col.desc}</td>
+                      <td style={{ color: 'var(--color-text-main)' }}>{col.desc}</td>
                     </tr>
                   );
                 })

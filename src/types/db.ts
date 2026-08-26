@@ -67,11 +67,21 @@ export type TransactionTableItem = {
   created_at?: string;
 };
 
+export type UserTableItem = {
+  id: string; // UUID
+  email?: string;
+  role: string;
+  user_type: 'staff' | 'member';
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type StaffTableItem = {
   id: string; // UUID
+  user_id?: string; // UUID
   name: string;
   yomigana: string;
-  role: string;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;

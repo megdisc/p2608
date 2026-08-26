@@ -2,7 +2,7 @@ import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { MemberItem } from '../types';
 import { useAlert } from '../contexts';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, MEMBER_ROLE_OPTIONS } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, MEMBER_ROLE_OPTIONS, WORDS_PERSON } from '../constants';
 import { useMembers } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -48,7 +48,7 @@ export function ProjectUserPage() {
       yomigana: '',
       email: '',
       password: '',
-      role: '利用者'
+      role: WORDS_PERSON.ROLE_MEMBER
     } as MemberItem;
   };
 

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { MemberItem, BaseWageItem } from '../types';
+import { WORDS_PERSON } from '../constants';
 
 export function useBaseWageAssignments() {
   const [items, setItems] = useState<MemberItem[]>([]);
@@ -10,12 +11,11 @@ export function useBaseWageAssignments() {
   const fetchAssignments = useCallback(async () => {
     try {
       setLoading(true);
-      // Fetch members (role='利用者')
+      // Fetch members
       const { data: membersData, error: membersError } = await supabase
         .from('members')
-        .select('*')
+        .select('*, users(email, role)')
         .eq('is_deleted', false)
-        .eq('role', '利用者')
         .order('yomigana', { ascending: true });
 
       if (membersError) throw membersError;
@@ -35,12 +35,13 @@ export function useBaseWageAssignments() {
         description: w.description || ''
       })));
 
-      setItems((membersData || []).map(m => ({
+      setItems((membersData || []).map((m: any) => ({
         id: m.id,
+        user_id: m.user_id,
         name: m.name,
         yomigana: m.yomigana || '',
-        role: m.role,
-        email: m.email || '',
+        role: m.users?.role === 'Member' ? WORDS_PERSON.ROLE_MEMBER : m.users?.role || WORDS_PERSON.ROLE_MEMBER,
+        email: m.users?.email || '',
         baseWageId: m.wage_rate_id || undefined
       })));
     } finally {
@@ -49,19 +50,17 @@ export function useBaseWageAssignments() {
   }, []);
 
   const batchSaveAssignments = async (drafts: MemberItem[]) => {
-    const { error } = await supabase
-      .from('members')
-      .upsert(drafts.map(d => ({
-        id: d.id,
-        name: d.name,
-        yomigana: d.yomigana,
-        role: d.role,
-        email: d.email,
-        wage_rate_id: d.baseWageId || null,
-        updated_at: new Date().toISOString()
-      })));
+    for (const d of drafts) {
+      const { error } = await supabase
+        .from('members')
+        .update({
+          wage_rate_id: d.baseWageId || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', d.id);
 
-    if (error) throw error;
+      if (error) throw error;
+    }
     await fetchAssignments();
   };
 

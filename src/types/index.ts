@@ -1,6 +1,17 @@
 
+export interface UserItem {
+  id: string;
+  email?: string;
+  role: string;
+  user_type: 'staff' | 'member';
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export type StaffItem = {
   id: string;
+  user_id?: string;
   code?: string;
   name: string;
   yomigana: string;
@@ -12,6 +23,7 @@ export type StaffItem = {
 
 export interface MemberItem {
   id: string;
+  user_id?: string;
   code?: string;
   name: string;
   yomigana?: string;
@@ -21,6 +33,7 @@ export interface MemberItem {
   baseWageId?: string;
   is_deleted?: boolean;
 };
+
 
 
 export type TaskSkill = {

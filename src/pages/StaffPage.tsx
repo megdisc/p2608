@@ -2,7 +2,7 @@ import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { StaffItem } from '../types';
 import { useAlert } from '../contexts';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, STAFF_ROLE_OPTIONS, WORDS_PERSON } from '../constants';
 import { useStaffs } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -48,7 +48,7 @@ export function StaffPage() {
       yomigana: '',
       email: '',
       password: '',
-      role: '職員'
+      role: WORDS_PERSON.ROLE_STAFF
     } as unknown as StaffItem;
   };
 

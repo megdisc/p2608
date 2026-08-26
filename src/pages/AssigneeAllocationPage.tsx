@@ -64,7 +64,17 @@ export function AssigneeAllocationPage() {
       if (evalsRes.error) throw evalsRes.error;
 
       setDbMembers(membersRes.data || []);
-      setDbClients(clientsRes.data || []);
+      setDbClients((clientsRes.data || []).map((c: any) => ({
+        id: c.id,
+        code: c.code || '',
+        name: c.name,
+        yomigana: c.yomigana || '',
+        contactPerson: c.contact_person || '',
+        phone: c.phone || '',
+        isCustomer: c.is_customer ?? true,
+        isSubcontractor: c.is_subcontractor ?? true,
+        is_deleted: c.is_deleted
+      })));
 
       const evals = evalsRes.data || [];
       const skillMap: Record<string, Record<string, number>> = {};
@@ -305,7 +315,9 @@ export function AssigneeAllocationPage() {
                       />
                     ) : (
                       <MultiSelectDropdown 
-                        options={dbClients.map(c => ({ value: c.id, label: c.name }))}
+                        options={dbClients
+                          .filter(c => c.isSubcontractor !== false || (item.clientIds && item.clientIds.includes(c.id)))
+                          .map(c => ({ value: c.id, label: c.name }))}
                         value={item.clientIds}
                         onChange={(newVal) => handleChange(item.id, 'clientIds', newVal)}
                         placeholder="外注先を選択"

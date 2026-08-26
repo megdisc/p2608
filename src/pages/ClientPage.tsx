@@ -20,6 +20,8 @@ export function ClientPage() {
     { key: 'code', header: TABLE_COLUMNS.CLIENT_ID, sortKey: 'code', editable: true, inputType: 'text' },
     { key: 'name', header: TABLE_COLUMNS.CLIENT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
     { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
+    { key: 'isCustomer', header: TABLE_COLUMNS.IS_CUSTOMER, editable: true, inputType: 'checkbox' },
+    { key: 'isSubcontractor', header: TABLE_COLUMNS.IS_SUBCONTRACTOR, editable: true, inputType: 'checkbox' },
     { key: 'contactPerson', header: TABLE_COLUMNS.CONTACT_PERSON, editable: true, inputType: 'text' },
     { key: 'phone', header: TABLE_COLUMNS.PHONE, editable: true, inputType: 'text' },
   ];
@@ -45,6 +47,8 @@ export function ClientPage() {
       code: generateNextUnifiedCode(existingCodes, 'C-'),
       name: '',
       yomigana: '',
+      isCustomer: true,
+      isSubcontractor: true,
       contactPerson: '',
       phone: ''
     } as ClientItem;

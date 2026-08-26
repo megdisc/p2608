@@ -33,7 +33,17 @@ export function useProjects() {
       if (skillLevelsRes.error) throw skillLevelsRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
-      setDbClients(clientsRes.data || []);
+      setDbClients((clientsRes.data || []).map((c: any) => ({
+        id: c.id,
+        code: c.code || '',
+        name: c.name,
+        yomigana: c.yomigana || '',
+        contactPerson: c.contact_person || '',
+        phone: c.phone || '',
+        isCustomer: c.is_customer ?? true,
+        isSubcontractor: c.is_subcontractor ?? true,
+        is_deleted: c.is_deleted
+      })));
       setDbSkills(skillsRes.data || []);
       setDbSkillLevels(skillLevelsRes.data || []);
       

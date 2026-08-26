@@ -82,6 +82,8 @@ export type ClientItem = {
   yomigana: string;
   contactPerson: string;
   phone: string;
+  isCustomer?: boolean;
+  isSubcontractor?: boolean;
   is_deleted?: boolean;
 };
 

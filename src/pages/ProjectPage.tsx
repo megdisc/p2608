@@ -50,7 +50,12 @@ export function ProjectPage() {
       header: TABLE_COLUMNS.CUSTOMER, 
       editable: (item: ProjectItem) => !isProjectFinished(item), 
       inputType: 'select', 
-      options: [{ label: WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS, value: '' }, ...dbClients.map(c => ({ label: c.name, value: c.id }))],
+      options: (item: ProjectItem) => [
+        { label: WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS, value: '' },
+        ...dbClients
+          .filter(c => c.isCustomer !== false || c.id === item.customerId)
+          .map(c => ({ label: c.name, value: c.id }))
+      ],
       render: (item: any) => dbClients.find(c => c.id === item.customerId)?.name || WORDS_ORG_LOCATION.CLIENT_INTERNAL_BUSINESS,
       rowType: 'main' 
     },

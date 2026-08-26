@@ -271,6 +271,8 @@ export const TABLE_COLUMNS = {
 
   // 取引先
   CLIENT_NAME: WORDS_ORG_LOCATION.CLIENT, // 統合
+  IS_CUSTOMER: '顧客',
+  IS_SUBCONTRACTOR: '外注先',
 
   // アカウント
   ROLE: WORDS_PERSON.ROLE,

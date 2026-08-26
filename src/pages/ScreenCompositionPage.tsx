@@ -198,6 +198,8 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '取引先ID' },
         { name: 'name', desc: '取引先・企業名' },
         { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
         { name: 'contact_person', desc: '担当者名' },
         { name: 'phone', desc: '電話番号' },
         { name: 'is_deleted', desc: '削除フラグ' },

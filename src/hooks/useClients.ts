@@ -22,6 +22,8 @@ export function useClients() {
         code: d.code || '',
         name: d.name,
         yomigana: d.yomigana || '',
+        isCustomer: d.is_customer ?? true,
+        isSubcontractor: d.is_subcontractor ?? true,
         contactPerson: d.contact_person || '',
         phone: d.phone || ''
       }));
@@ -51,6 +53,8 @@ export function useClients() {
           code: item.code?.trim() || null,
           name: item.name,
           yomigana: item.yomigana,
+          is_customer: item.isCustomer ?? true,
+          is_subcontractor: item.isSubcontractor ?? true,
           contact_person: item.contactPerson,
           phone: item.phone
         };

@@ -95,6 +95,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: 'スキル名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'description', desc: 'スキルの説明' },
+        { name: 'sort_order', desc: 'ソート順' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -107,7 +108,10 @@ export function ScreenCompositionPage() {
       description: '各スキルのレベル定義',
       columns: [
         { name: 'id', desc: 'スキルレベルID' },
+        { name: 'skill_id', desc: 'スキルID' },
+        { name: 'level', desc: 'レベル段階' },
         { name: 'level_value', desc: 'レベル数値' },
+        { name: 'name', desc: 'レベル名' },
         { name: 'description', desc: 'レベルの説明' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
@@ -121,13 +125,31 @@ export function ScreenCompositionPage() {
       description: '工賃単価のマスターデータ',
       columns: [
         { name: 'id', desc: '工賃単価ID' },
+        { name: 'member_id', desc: '対象利用者ID' },
         { name: 'wage', desc: '工賃単価' },
+        { name: 'effective_from', desc: '適用開始日' },
         { name: 'description', desc: '説明・摘要' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
+    { 
+      physicalName: 'wage_items', 
+      tableType: 'マスタ',
+      logicalName: '工賃項目', 
+      description: '工賃項目のマスターデータ',
+      columns: [
+        { name: 'id', desc: '工賃項目ID' },
+        { name: 'name', desc: '項目名' },
+        { name: 'unit', desc: '単位（例: 円/時）' },
+        { name: 'sort_order', desc: 'ソート順' },
+        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+
     { 
       physicalName: 'users', 
       tableType: 'マスタ',
@@ -151,9 +173,11 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '利用者ID' },
         { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '利用者コード' },
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'wage_rate_id', desc: '工賃単価ID' },
+        { name: 'contract_status', desc: '契約ステータス' },
+        { name: 'contract_type', desc: '契約種別' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -169,6 +193,7 @@ export function ScreenCompositionPage() {
         { name: 'member_id', desc: '利用者ID' },
         { name: 'skill_id', desc: 'スキルID' },
         { name: 'skill_level_id', desc: 'スキルレベルID' },
+        { name: 'evaluated_at', desc: '評価日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -195,6 +220,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '職員ID' },
         { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '職員コード' },
         { name: 'name', desc: '職員名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'is_deleted', desc: '削除フラグ' },
@@ -209,6 +235,7 @@ export function ScreenCompositionPage() {
       description: '取引先情報',
       columns: [
         { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
         { name: 'name', desc: '取引先・企業名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'is_customer', desc: '顧客フラグ' },
@@ -229,9 +256,9 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '案件ID' },
         { name: 'code', desc: '案件コード' },
         { name: 'name', desc: '案件名' },
-        { name: 'yomigana', desc: 'フリガナ' },
         { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'project_type', desc: '案件種別' },
+        { name: 'settlement_year_month', desc: '精算年月' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -247,11 +274,9 @@ export function ScreenCompositionPage() {
         { name: 'project_id', desc: '案件ID' },
         { name: 'code', desc: 'タスクコード' },
         { name: 'name', desc: 'タスク名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'assignee_type', desc: '担当者区分（利用者/職員/外部等）' },
         { name: 'status', desc: 'ステータス' },
-        { name: 'labor_budget', desc: '人件費予算' },
         { name: 'completed_at', desc: '完了日時' },
+        { name: 'assignee_type', desc: '担当者区分（内部/外部等）' },
         { name: 'is_canceled', desc: 'キャンセルフラグ' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
@@ -266,9 +291,9 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '予算項目ID' },
         { name: 'project_id', desc: '案件ID' },
+        { name: 'task_id', desc: '関連タスクID' },
         { name: 'category', desc: '予算カテゴリ（売上/経費/予備費）' },
         { name: 'subject', desc: '科目・内容' },
-        { name: 'task_id', desc: '関連タスクID' },
         { name: 'amount', desc: '金額' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -280,9 +305,11 @@ export function ScreenCompositionPage() {
       logicalName: '案件タスクスキル', 
       description: 'タスクに必要なスキルとレベル',
       columns: [
+        { name: 'id', desc: 'ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'skill_id', desc: '要求スキルID' },
-        { name: 'skill_level_id', desc: '要求スキルレベルID' }
+        { name: 'skill_level_id', desc: '要求スキルレベルID' },
+        { name: 'created_at', desc: '作成日時' }
       ]
     },
     { 
@@ -294,8 +321,10 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '割当ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'member_id', desc: '利用者ID' },
+        { name: 'staff_id', desc: '職員ID' },
         { name: 'client_id', desc: '取引先ID' },
-        { name: 'staff_id', desc: '職員ID' }
+        { name: 'assignee_type', desc: '担当者区分' },
+        { name: 'created_at', desc: '作成日時' }
       ]
     },
     { 
@@ -307,7 +336,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '進捗記録ID' },
         { name: 'year_month', desc: '対象年月' },
         { name: 'task_id', desc: 'タスクID' },
-        { name: 'current_progress', desc: '現在の進捗率(%)' },
+        { name: 'status', desc: 'ステータス' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

@@ -40,17 +40,23 @@ INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-
 INSERT INTO wage_rates (id, wage, description) VALUES ('a1b2c3d4-0000-0000-0000-000000000003', 500, 'ベテランレベル') ON CONFLICT (id) DO NOTHING;
 
 -- Members
-INSERT INTO members (id, user_id, code, name, yomigana, wage_rate_id) VALUES
-('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'M-000001', '江口春奈', 'えぐちはるな', 'a1b2c3d4-0000-0000-0000-000000000001'),
-('e98c7634-1eb3-4e42-b062-841f39c043e0', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'M-000002', '大西智也', 'おおにしともや', 'a1b2c3d4-0000-0000-0000-000000000002'),
-('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'M-000003', '佐藤健太', 'さとうけんた', 'a1b2c3d4-0000-0000-0000-000000000002'),
-('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'M-000004', '高橋結衣', 'たかはしゆい', 'a1b2c3d4-0000-0000-0000-000000000003')
+INSERT INTO members (id, user_id, code, name, yomigana) VALUES
+('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'M-000001', '江口春奈', 'えぐちはるな'),
+('e98c7634-1eb3-4e42-b062-841f39c043e0', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'M-000002', '大西智也', 'おおにしともや'),
+('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'M-000003', '佐藤健太', 'さとうけんた'),
+('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'M-000004', '高橋結衣', 'たかはしゆい')
 ON CONFLICT (id) DO UPDATE SET
   user_id = EXCLUDED.user_id,
   code = EXCLUDED.code,
   name = EXCLUDED.name,
-  yomigana = EXCLUDED.yomigana,
-  wage_rate_id = EXCLUDED.wage_rate_id;
+  yomigana = EXCLUDED.yomigana;
+
+-- Member Wage Evaluations
+INSERT INTO member_wage_evaluations (member_id, wage_rate_id) VALUES
+('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'a1b2c3d4-0000-0000-0000-000000000001'),
+('e98c7634-1eb3-4e42-b062-841f39c043e0', 'a1b2c3d4-0000-0000-0000-000000000002'),
+('a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1b2c3d4-0000-0000-0000-000000000002'),
+('f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1b2c3d4-0000-0000-0000-000000000003');
 
 -- Partners
 INSERT INTO partners (id, code, name, yomigana, contact_person, phone) VALUES ('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', '0312345678');

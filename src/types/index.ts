@@ -46,14 +46,12 @@ export type TaskSkill = {
 
 export type ProjectTask = {
   id: string;
-  code?: string;
   task: string;
   taskYomigana?: string;
   requiredSkills: TaskSkill[];
   assigneeIds?: string[];
-  isCanceled?: boolean;
   assigneeType?: string;
-  status?: string;
+  isCompleted?: boolean;
   completedAt?: string;
   laborBudget?: number;
   is_deleted?: boolean;

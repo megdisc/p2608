@@ -87,7 +87,7 @@ export function ScreenCompositionPage() {
   const dbTables = [
     { 
       physicalName: 'skills', 
-      tableType: 'マスタ',
+      tableType: '独立マスタ',
       logicalName: 'スキル', 
       description: 'スキルのマスターデータ',
       columns: [
@@ -101,7 +101,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'skill_levels', 
-      tableType: 'マスタ',
+      tableType: '独立マスタ',
       logicalName: 'スキルレベル', 
       description: 'スキルレベルの汎用定義',
       columns: [
@@ -115,7 +115,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'wage_rates', 
-      tableType: 'マスタ',
+      tableType: '独立マスタ',
       logicalName: '工賃単価', 
       description: '工賃単価のマスターデータ',
       columns: [
@@ -130,7 +130,7 @@ export function ScreenCompositionPage() {
 
     { 
       physicalName: 'users', 
-      tableType: 'マスタ',
+      tableType: '独立マスタ',
       logicalName: '認証ユーザー', 
       description: 'Supabase Authと連携するシステム全ユーザーのアカウント認証情報',
       columns: [
@@ -145,7 +145,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'members', 
-      tableType: 'マスタ',
+      tableType: '従属マスタ',
       logicalName: '利用者', 
       description: '案件に参加する利用者情報',
       columns: [
@@ -188,7 +188,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'staffs', 
-      tableType: 'マスタ',
+      tableType: '従属マスタ',
       logicalName: '職員', 
       description: 'システムを利用する職員情報',
       columns: [
@@ -204,7 +204,7 @@ export function ScreenCompositionPage() {
     },
     { 
       physicalName: 'partners', 
-      tableType: 'マスタ',
+      tableType: '独立マスタ',
       logicalName: '取引先', 
       description: '取引先情報',
       columns: [
@@ -246,12 +246,10 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: 'タスクID' },
         { name: 'project_id', desc: '案件ID' },
-        { name: 'code', desc: 'タスクコード' },
         { name: 'name', desc: 'タスク名' },
-        { name: 'status', desc: 'ステータス' },
-        { name: 'completed_at', desc: '完了日時' },
         { name: 'assignee_type', desc: '担当者区分（内部/外部等）' },
-        { name: 'is_canceled', desc: 'キャンセルフラグ' },
+        { name: 'is_completed', desc: '完了フラグ' },
+        { name: 'completed_at', desc: '完了日時' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -283,7 +281,8 @@ export function ScreenCompositionPage() {
         { name: 'task_id', desc: 'タスクID' },
         { name: 'skill_id', desc: '要求スキルID' },
         { name: 'skill_level_id', desc: '要求スキルレベルID' },
-        { name: 'created_at', desc: '作成日時' }
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
       ]
     },
     { 
@@ -298,19 +297,6 @@ export function ScreenCompositionPage() {
         { name: 'staff_id', desc: '職員ID' },
         { name: 'client_id', desc: '取引先ID' },
         { name: 'assignee_type', desc: '担当者区分' },
-        { name: 'created_at', desc: '作成日時' }
-      ]
-    },
-    { 
-      physicalName: 'project_task_progress', 
-      tableType: 'トランザクション',
-      logicalName: '案件タスク進捗', 
-      description: 'タスク進捗状況（未着手・進行中・完了・中止）',
-      columns: [
-        { name: 'id', desc: '進捗記録ID' },
-        { name: 'year_month', desc: '対象年月' },
-        { name: 'task_id', desc: 'タスクID' },
-        { name: 'status', desc: 'ステータス' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -464,7 +450,7 @@ export function ScreenCompositionPage() {
                             padding: 'var(--space-1) var(--space-2)', 
                             borderRadius: 'var(--radius-sm)', 
                             fontSize: 'var(--text-caption)',
-                            backgroundColor: table.tableType === 'マスタ' ? 'var(--palette-bluegreen-300)' : 'var(--palette-yellow-300)',
+                            backgroundColor: table.tableType === '独立マスタ' ? 'var(--palette-bluegreen-300)' : (table.tableType === '従属マスタ' ? 'var(--palette-bluegreen-200)' : 'var(--palette-yellow-300)'),
                             color: 'var(--color-text-main)'
                           }}>
                             {table.tableType}

@@ -1,9 +1,8 @@
 import { getCurrentJSTMonth } from './date';
 
 export type TaskStatusItem = {
-  status?: string;
-  isCanceled?: boolean;
-  is_canceled?: boolean;
+  isCompleted?: boolean;
+  is_completed?: boolean;
   completedAt?: string;
   completed_at?: string;
 };
@@ -13,17 +12,13 @@ export type ProjectStatusInfo = {
 };
 
 /**
- * 当該案件のすべてのタスクが「終了」（completed または canceled）になっているか判定する
+ * 当該案件のすべてのタスクが「完了」（isCompleted）になっているか判定する
  */
 export function isProjectFinished(project: ProjectStatusInfo | null | undefined): boolean {
   if (!project || !project.tasks || project.tasks.length === 0) {
     return false;
   }
-  return project.tasks.every(t => {
-    const status = t.status || 'not_started';
-    const isCanceled = t.isCanceled || t.is_canceled;
-    return status === 'completed' || status === 'canceled' || Boolean(isCanceled);
-  });
+  return project.tasks.every(t => Boolean(t.isCompleted || t.is_completed));
 }
 
 /**

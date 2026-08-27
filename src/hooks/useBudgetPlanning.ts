@@ -30,7 +30,7 @@ export function useBudgetPlanning() {
         .from('projects')
         .select(`
           id, code, name, project_type,
-          project_tasks(id, code, name, is_deleted, assignee_type, status, completed_at, is_canceled)
+          project_tasks(id, name, is_deleted, assignee_type, is_completed, completed_at)
         `)
         .eq('is_deleted', false)
         .order('code');
@@ -98,11 +98,9 @@ export function useBudgetPlanning() {
             projectType: p.project_type,
             tasks: activeTasks.map((t: any) => ({
               id: t.id,
-              code: t.code || '',
               task: t.name,
-              status: t.status || 'not_started',
+              isCompleted: t.is_completed || false,
               completedAt: t.completed_at,
-              isCanceled: t.is_canceled || false,
               requiredSkills: []
             }))
           },

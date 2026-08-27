@@ -39,7 +39,7 @@ export function useAssigneeSummary() {
         supabase.from('projects').select(`
           id, code, name, project_type,
           project_tasks (
-            id, code, name, is_deleted, status,
+            id, name, is_deleted, is_completed,
             project_task_assignees (
               id, member_id, client_id, staff_id
             )
@@ -63,7 +63,7 @@ export function useAssigneeSummary() {
 
         for (const t of projectTasks) {
           const assignees = t.project_task_assignees || [];
-          const taskStatus = t.status || 'not_started';
+          const taskStatus = t.is_completed ? 'completed' : 'not_started';
           
           if (assignees.length === 0) {
             // Do not add unassigned tasks to Assignee Summary (担当状況集計)
@@ -89,7 +89,7 @@ export function useAssigneeSummary() {
                 projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
                 taskId: t.id,
                 taskName: t.name,
-                taskCode: t.code || '',
+                taskCode: '',
                 taskStatus,
               });
             }

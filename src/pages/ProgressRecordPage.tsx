@@ -114,10 +114,7 @@ export function ProgressRecordPage() {
       editable: false,
       render: (item: any) => {
          if (!item.isFirstInTask) return '';
-         const v = item.taskStatus;
-         if (v === 'completed' || item.isTaskCompleted) return '終了';
-         if (v === 'in_progress') return '進行中';
-         return '未着手';
+         return item.isTaskCompleted ? '終了' : (item.taskStatus === 'in_progress' ? '進行中' : '未着手');
       },
       style: (item: any) => ({
         borderBottom: item.isLastInTask ? undefined : 'none',
@@ -126,19 +123,26 @@ export function ProgressRecordPage() {
       })
     },
     {
-      key: 'isTaskCompleted',
-      header: 'タスク終了',
+      key: 'taskCompleted',
+      header: 'タスク完了',
       sortable: false,
-      editable: (item: any) => item.isFirstInTask,
-      inputType: 'checkbox',
-      onCellChange: (checked: boolean, item: any) => {
-        const newStatus = checked
-          ? 'completed'
-          : (item.hasWorkTime ? 'in_progress' : 'not_started');
-        return {
-          isTaskCompleted: checked,
-          taskStatus: newStatus
-        };
+      editable: false,
+      render: (item: any, drafts: any[], setDrafts: (newData: any[]) => void) => {
+        if (!item.isFirstInTask) return '';
+
+        const isChecked = Boolean(item.isTaskCompleted);
+
+        return (
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              const newStatus = checked ? 'completed' : 'not_started';
+              setDrafts(drafts.map(d => d.taskId === item.taskId ? { ...d, isTaskCompleted: checked, taskStatus: newStatus } : d));
+            }}
+          />
+        );
       },
       style: (item: any) => ({
         borderBottom: item.isLastInTask ? undefined : 'none',
@@ -155,14 +159,7 @@ export function ProgressRecordPage() {
         if (!item.isFirstInProject) return '';
 
         const projectTasks = (drafts || []).filter(d => d.projectId === item.projectId && d.isFirstInTask);
-        let isFinished = projectTasks.length > 0;
-        for (const t of projectTasks) {
-          const status = t.taskStatus || 'not_started';
-          if (status !== 'completed' && status !== 'canceled') {
-            isFinished = false;
-            break;
-          }
-        }
+        let isFinished = projectTasks.length > 0 && projectTasks.every(t => t.isTaskCompleted);
 
         if (isFinished) {
           const project = dbProjects.find(p => p.id === item.projectId);

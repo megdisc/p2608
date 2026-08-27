@@ -57,7 +57,7 @@ export function useWageSummary() {
         supabase.from('projects').select(`
           id, name, code, project_type,
           project_tasks (
-            id, name, code, is_deleted, is_canceled, status, completed_at,
+            id, name, is_deleted, is_completed, completed_at,
             project_task_assignees ( member_id, staff_id )
           )
         `).eq('is_deleted', false),

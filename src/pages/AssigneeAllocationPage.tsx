@@ -48,7 +48,7 @@ export function AssigneeAllocationPage() {
         supabase.from('projects').select(`
           id, code, name, project_type, client_id,
           project_tasks (
-            id, code, name, is_deleted, assignee_type, status, completed_at, is_canceled,
+            id, name, is_deleted, assignee_type, is_completed, completed_at,
             project_task_assignees ( member_id, client_id, staff_id ),
             project_task_skills ( skill_id, skill_levels ( level_value ) )
           )
@@ -91,7 +91,7 @@ export function AssigneeAllocationPage() {
         .forEach((p: any) => {
         const projectTypeSortKey = p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1');
         const activeTasks = (p.project_tasks || []).filter((pt: any) => !pt.is_deleted);
-        const isFinished = activeTasks.length > 0 && activeTasks.every((pt: any) => pt.status === 'completed' || pt.status === 'canceled' || pt.is_canceled);
+        const isFinished = activeTasks.length > 0 && activeTasks.every((pt: any) => pt.is_completed);
 
         if (activeTasks.length === 0) {
           formattedTasks.push({

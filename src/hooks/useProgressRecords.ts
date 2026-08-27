@@ -62,7 +62,7 @@ export function useProgressRecords() {
         supabase.from('projects').select(`
           id, code, name, project_type, settlement_year_month, created_at, client_id, is_deleted,
           project_tasks (
-            id, code, name, is_deleted, is_canceled, status, completed_at,
+            id, name, is_deleted, is_completed, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
           )
         `).order('code', { ascending: true }),
@@ -94,7 +94,6 @@ export function useProgressRecords() {
         tasks: (p.project_tasks || [])
           .map((pt: any) => ({
             id: pt.id,
-            code: pt.code || '',
             task: pt.is_deleted ? `${pt.name} (削除済)` : pt.name,
             is_deleted: pt.is_deleted,
             assigneeIds: (pt.project_task_assignees || [])
@@ -105,8 +104,7 @@ export function useProgressRecords() {
                 if (pta.client_id) res.push(`outsource_${pta.client_id}`);
                 return res;
               }),
-            isCanceled: pt.is_canceled || false,
-            status: pt.status || 'not_started',
+            isCompleted: pt.is_completed || false,
             completedAt: pt.completed_at,
             laborBudget: budgetItems.find((b: any) => b.task_id === pt.id && b.category === 'expense')?.amount || 0
           }))
@@ -182,10 +180,11 @@ export function useProgressRecords() {
         let allCompletedOrCanceled = true;
         
         for (const pt of project.tasks) {
-          const ptStatus = pt.status || 'not_started';
-          
-          if (ptStatus !== 'not_started') allNotStarted = false;
-          if (ptStatus !== 'completed' && ptStatus !== 'canceled') allCompletedOrCanceled = false;
+          if (pt.isCompleted) {
+            allNotStarted = false;
+          } else {
+            allCompletedOrCanceled = false;
+          }
         }
         
         if (allNotStarted) {
@@ -220,7 +219,7 @@ export function useProgressRecords() {
         }
 
         const hasWorkTime = Boolean(taskHasWorkSummary[t.id]);
-        const isTaskCompleted = t.status === 'completed' || t.status === 'canceled';
+        const isTaskCompleted = Boolean(t.isCompleted);
 
         let taskCurrentStatus = 'not_started';
         if (isTaskCompleted) {
@@ -231,7 +230,7 @@ export function useProgressRecords() {
           taskCurrentStatus = 'not_started';
         }
 
-        const taskPrevStatus = t.status || 'not_started';
+        const taskPrevStatus = isTaskCompleted ? 'completed' : 'not_started';
         
         let hasAssignees = false;
 
@@ -292,7 +291,7 @@ export function useProgressRecords() {
             cumulativeWorkTime,
             allocationAmount: 0,
             isSaved: true,
-            isCanceled: t.isCanceled,
+            isCanceled: false,
             isTaskCompleted,
             hasWorkTime
           });
@@ -323,7 +322,7 @@ export function useProgressRecords() {
              cumulativeWorkTime: '-',
              allocationAmount: 0,
              isSaved: true,
-             isCanceled: t.isCanceled,
+             isCanceled: false,
              isTaskCompleted,
              hasWorkTime
            });
@@ -335,10 +334,6 @@ export function useProgressRecords() {
       const pA = dbProjects.find(p => p.id === a.projectId)?.code || '';
       const pB = dbProjects.find(p => p.id === b.projectId)?.code || '';
       if (pA !== pB) return pB.localeCompare(pA);
-
-      const tA = dbProjects.flatMap(p => p.tasks).find(t => t.id === a.taskId)?.code || '';
-      const tB = dbProjects.flatMap(p => p.tasks).find(t => t.id === b.taskId)?.code || '';
-      if (tA !== tB) return tA.localeCompare(tB);
       
       const getTypePrio = (userId: string) => {
         if (userId.startsWith('staff_')) return 1;
@@ -381,7 +376,7 @@ export function useProgressRecords() {
 
   const batchSaveProgressRecords = async (drafts: ProgressFlatRecord[], deletedIds: string[]) => {
     try {
-      const projectTaskUpdates: { id: string; status: string; is_canceled: boolean }[] = [];
+      const projectTaskUpdates: { id: string; is_completed: boolean }[] = [];
       const projectSettlementMonthUpdates = new Map<string, string>();
 
       for (const r of drafts) {
@@ -393,14 +388,10 @@ export function useProgressRecords() {
 
         if (r.taskId && r.taskId !== '00000000-0000-0000-0000-000000000002' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(r.taskId) && r.isFirstInTask && !deletedIds.includes(`TASK-${r.taskId}`)) {
           const isCompleted = Boolean(r.isTaskCompleted || r.taskStatus === 'completed');
-          const newStatus = isCompleted
-            ? 'completed'
-            : (r.hasWorkTime ? 'in_progress' : 'not_started');
 
           projectTaskUpdates.push({
             id: r.taskId,
-            status: newStatus,
-            is_canceled: false
+            is_completed: isCompleted
           });
         }
       }
@@ -409,14 +400,9 @@ export function useProgressRecords() {
         const uniqueProjectTasks = Array.from(new Map(projectTaskUpdates.map(t => [t.id, t])).values());
         const promises = uniqueProjectTasks.map(t => {
           const updateData: any = {
-            status: t.status,
-            is_canceled: t.is_canceled
+            is_completed: t.is_completed,
+            completed_at: t.is_completed ? new Date().toISOString() : null
           };
-          if (t.status === 'completed') {
-            updateData.completed_at = new Date().toISOString();
-          } else {
-            updateData.completed_at = null;
-          }
           return supabase.from('project_tasks').update(updateData).eq('id', t.id);
         });
 

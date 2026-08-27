@@ -28,8 +28,6 @@ export function useMembers() {
           yomigana: m.yomigana,
           email: m.users?.email || '',
           role: roleVal,
-          contract_status: m.contract_status,
-          contract_type: m.contract_type,
           is_deleted: m.is_deleted,
         };
       });

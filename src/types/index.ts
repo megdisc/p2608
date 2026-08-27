@@ -76,7 +76,7 @@ export type ProjectItem = {
 export type SkillItem = {
   id: string;
   name: string;
-  yomigana: string;
+  yomigana?: string;
   description: string;
   is_deleted?: boolean;
 };

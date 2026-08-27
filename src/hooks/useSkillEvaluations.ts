@@ -16,7 +16,7 @@ export function useSkillEvaluations() {
         .from('skills')
         .select('*')
         .eq('is_deleted', false)
-        .order('yomigana');
+        .order('name');
       if (skillsError) throw skillsError;
       setSkills(skillsData as SkillItem[]);
 

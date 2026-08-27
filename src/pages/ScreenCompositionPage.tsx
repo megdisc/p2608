@@ -93,9 +93,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: 'スキルID' },
         { name: 'name', desc: 'スキル名' },
-        { name: 'yomigana', desc: 'フリガナ' },
         { name: 'description', desc: 'スキルの説明' },
-        { name: 'sort_order', desc: 'ソート順' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -105,13 +103,10 @@ export function ScreenCompositionPage() {
       physicalName: 'skill_levels', 
       tableType: 'マスタ',
       logicalName: 'スキルレベル', 
-      description: '各スキルのレベル定義',
+      description: 'スキルレベルの汎用定義',
       columns: [
         { name: 'id', desc: 'スキルレベルID' },
-        { name: 'skill_id', desc: 'スキルID' },
-        { name: 'level', desc: 'レベル段階' },
         { name: 'level_value', desc: 'レベル数値' },
-        { name: 'name', desc: 'レベル名' },
         { name: 'description', desc: 'レベルの説明' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
@@ -125,25 +120,8 @@ export function ScreenCompositionPage() {
       description: '工賃単価のマスターデータ',
       columns: [
         { name: 'id', desc: '工賃単価ID' },
-        { name: 'member_id', desc: '対象利用者ID' },
         { name: 'wage', desc: '工賃単価' },
-        { name: 'effective_from', desc: '適用開始日' },
         { name: 'description', desc: '説明・摘要' },
-        { name: 'is_deleted', desc: '削除フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      physicalName: 'wage_items', 
-      tableType: 'マスタ',
-      logicalName: '工賃項目', 
-      description: '工賃項目のマスターデータ',
-      columns: [
-        { name: 'id', desc: '工賃項目ID' },
-        { name: 'name', desc: '項目名' },
-        { name: 'unit', desc: '単位（例: 円/時）' },
-        { name: 'sort_order', desc: 'ソート順' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -176,8 +154,6 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '利用者コード' },
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'contract_status', desc: '契約ステータス' },
-        { name: 'contract_type', desc: '契約種別' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -193,7 +169,6 @@ export function ScreenCompositionPage() {
         { name: 'member_id', desc: '利用者ID' },
         { name: 'skill_id', desc: 'スキルID' },
         { name: 'skill_level_id', desc: 'スキルレベルID' },
-        { name: 'evaluated_at', desc: '評価日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -207,7 +182,6 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '評価ID' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'wage_rate_id', desc: '工賃単価ID' },
-        { name: 'evaluated_at', desc: '評価日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

@@ -13,14 +13,13 @@ export function useSkills() {
         .from('skills')
         .select('*')
         .eq('is_deleted', false)
-        .order('yomigana', { ascending: true });
+        .order('name', { ascending: true });
       
       if (error) throw error;
       
       const formatted = (data || []).map(d => ({
         id: d.id,
         name: d.name,
-        yomigana: d.yomigana || '',
         description: d.description || ''
       }));
       setItems(formatted);
@@ -39,14 +38,12 @@ export function useSkills() {
       if (deletedIds.length > 0) {
         const { error } = await supabase.from('skills').update({ is_deleted: true }).in('id', deletedIds);
         if (error) throw error;
-        await supabase.from('skill_levels').update({ is_deleted: true }).in('skill_id', deletedIds);
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       const upserts = activeItems.map(item => ({
         id: item.id.startsWith('SKL-') ? undefined : item.id,
         name: item.name,
-        yomigana: item.yomigana,
         description: item.description
       }));
 

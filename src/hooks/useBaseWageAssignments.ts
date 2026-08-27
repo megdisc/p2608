@@ -33,7 +33,7 @@ export function useBaseWageAssignments() {
       const { data: evaluationsData, error: evaluationsError } = await supabase
         .from('member_wage_evaluations')
         .select('*')
-        .order('evaluated_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (evaluationsError) throw evaluationsError;
 
@@ -72,7 +72,7 @@ export function useBaseWageAssignments() {
           .from('member_wage_evaluations')
           .select('id')
           .eq('member_id', d.id)
-          .order('evaluated_at', { ascending: false })
+          .order('created_at', { ascending: false })
           .limit(1);
 
         if (existing && existing.length > 0) {

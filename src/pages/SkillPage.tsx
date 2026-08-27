@@ -16,8 +16,7 @@ export function SkillPage() {
   }, [fetchSkills, showAlert]);
 
   const columns: Column<SkillItem>[] = [
-    { key: 'name', header: TABLE_COLUMNS.SKILL_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SKILL_NAME, editable: true, inputType: 'text' },
     { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text' },
   ];
 
@@ -34,7 +33,6 @@ export function SkillPage() {
     return {
       id: `SKL-${Date.now()}`,
       name: '',
-      yomigana: '',
       description: '',
     } as SkillItem;
   };

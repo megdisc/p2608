@@ -153,6 +153,7 @@ export type MonthlyWageRecord = {
   wageRate: number | null;
   basicWage: number | null;
   incentiveTotal: number;
+  otherAllowanceTotal: number;
   wageTotal: number;
   deductionTotal: number;
   payment: number;

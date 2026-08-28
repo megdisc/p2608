@@ -374,6 +374,7 @@ export function ScreenCompositionPage() {
         { name: 'wage_rate', desc: '工賃単価' },
         { name: 'basic_wage', desc: '基本支給額' },
         { name: 'incentive_total', desc: 'インセンティブ合計' },
+        { name: 'other_allowance_total', desc: 'その他加算手当合計' },
         { name: 'wage_total', desc: '支給工賃合計' },
         { name: 'deduction_total', desc: '控除合計' },
         { name: 'payment', desc: '差引支給額' },

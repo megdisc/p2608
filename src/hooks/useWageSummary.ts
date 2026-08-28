@@ -11,6 +11,7 @@ export type WageRow = {
   basicWage: number | null;
   taskIncentives: { projectName: string; taskName: string; amount: number }[];
   incentiveTotal: number;
+  otherAllowanceTotal: number;
   wageTotal: number;
   dedA: number | null;
   dedB: number | null;
@@ -236,13 +237,15 @@ export function useWageSummary() {
           }
         }
 
+        const finalOtherAllowanceTotal = dbRecord?.other_allowance_total !== undefined && dbRecord?.other_allowance_total !== null ? Number(dbRecord.other_allowance_total) : 0;
+
         const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
         const safeIncentive = Math.floor(Math.max(0, calculatedIncentive));
 
         const dedA = null;
         const dedB = null;
 
-        const computedWageTotal = (basicWage || 0) + safeIncentive;
+        const computedWageTotal = (basicWage || 0) + safeIncentive + finalOtherAllowanceTotal;
         const computedDedTotal = 0;
         const computedPayment = computedWageTotal - computedDedTotal;
 
@@ -255,7 +258,7 @@ export function useWageSummary() {
           : (dbRecord.incentive_total !== undefined && dbRecord.incentive_total !== null ? Number(dbRecord.incentive_total) : safeIncentive);
           
         const finalWageTotal = (sumRewardUnitPrice > 0 || !dbRecord) 
-          ? ((finalBasicWage || 0) + finalIncentiveTotal) 
+          ? ((finalBasicWage || 0) + finalIncentiveTotal + finalOtherAllowanceTotal) 
           : (dbRecord.wage_total !== undefined && dbRecord.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal);
           
         const finalDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : computedDedTotal;
@@ -273,6 +276,7 @@ export function useWageSummary() {
           basicWage: finalBasicWage,
           taskIncentives,
           incentiveTotal: finalIncentiveTotal,
+          otherAllowanceTotal: finalOtherAllowanceTotal,
           wageTotal: finalWageTotal,
           dedA,
           dedB,
@@ -331,6 +335,7 @@ export function useWageSummary() {
         wage_rate: r.wageRate,
         basic_wage: r.basicWage,
         incentive_total: r.incentiveTotal,
+        other_allowance_total: r.otherAllowanceTotal || 0,
         wage_total: r.wageTotal,
         deduction_total: r.dedTotal,
         payment: r.payment

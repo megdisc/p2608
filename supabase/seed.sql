@@ -186,7 +186,7 @@ INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VAL
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃・構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 
 -- 完了案件の収支記録のシード
-INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', false, '2026-06-30');
+INSERT INTO financial_records (period, type, subject, amount, project_id, cost_category, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'manufacturing', '2026-06-30');
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '就労支援事業収益', 350000);
@@ -199,7 +199,7 @@ INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VAL
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃・フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
 -- 完了案件の収支記録のシード (新規Webサービス開発支援)
-INSERT INTO financial_records (period, type, subject, amount, project_id, is_limited, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', false, '2026-06-30');
+INSERT INTO financial_records (period, type, subject, amount, project_id, cost_category, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'manufacturing', '2026-06-30');
 
 -- 社内基幹システム移行
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '就労支援事業収益', 1200000);
@@ -297,100 +297,101 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('f0e9d8c7-b6a5-4321-0987-6543210fedc2', '074ce5ed-005a-4a3d-8681-a9eed17c4986', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'); -- 高橋次郎: セキュリティ監査 (2.中級)
 
 -- Financial Records (Manually Input Seed Data - ~60 records)
-INSERT INTO financial_records (period, project_id, client_id, type, subject, amount, recorded_date, recorded_by, is_limited, remarks, activity_category) VALUES
+-- Financial Records (Manually Input Seed Data - ~60 records)
+INSERT INTO financial_records (period, project_id, client_id, type, subject, amount, recorded_date, recorded_by, cost_category, remarks, activity_category) VALUES
 -- 2026-01
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 2800000, '2026-01-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202601-01', 'production'),
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 60000, '2026-01-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202601-05 (木材・接着剤)', 'production'),
-('2026-01-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '1月分工賃一括振込', 'production'),
-('2026-01-01', NULL, NULL, 'revenue', '控除', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '1月分控除一括', 'welfare'),
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '外注加工費', 150000, '2026-01-29', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202601-10', 'production'),
-('2026-01-01', NULL, NULL, 'reserve', '工賃変動積立金', 80000, '2026-01-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '1月分積立確定', 'production'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 2800000, '2026-01-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202601-01', 'production'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 60000, '2026-01-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202601-05 (木材・接着剤)', 'production'),
+('2026-01-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分工賃一括振込', 'production'),
+('2026-01-01', NULL, NULL, 'revenue', '控除', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分控除一括', 'welfare'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '外注加工費', 150000, '2026-01-29', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202601-10', 'production'),
+('2026-01-01', NULL, NULL, 'reserve', '工賃変動積立金', 80000, '2026-01-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '1月分積立確定', 'production'),
 
 -- 2026-02
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3100000, '2026-02-24', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202602-02', 'production'),
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 75000, '2026-02-25', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '領収書No. R-202602-12 (梱包資材・ダンボール)', 'production'),
-('2026-02-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '2月分工賃一括振込', 'production'),
-('2026-02-01', NULL, NULL, 'revenue', '控除', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '2月分控除一括', 'welfare'),
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '経費', 90000, '2026-02-27', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '領収書No. R-202602-18 (事務用品・印刷費)', 'production'),
-('2026-02-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-02-28', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '2月分修繕積立', 'production'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3100000, '2026-02-24', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202602-02', 'production'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 75000, '2026-02-25', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202602-12 (梱包資材・ダンボール)', 'production'),
+('2026-02-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分工賃一括振込', 'production'),
+('2026-02-01', NULL, NULL, 'revenue', '控除', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分控除一括', 'welfare'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '経費', 90000, '2026-02-27', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202602-18 (事務用品・印刷費)', 'production'),
+('2026-02-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-02-28', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '2月分修繕積立', 'production'),
 
 -- 2026-03
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2500000, '2026-03-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202603-03', 'production'),
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 120000, '2026-03-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202603-08 (電装部品・基板)', 'production'),
-('2026-03-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '3月分工賃一括振込', 'production'),
-('2026-03-01', NULL, NULL, 'revenue', '控除', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '3月分控除一括', 'welfare'),
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 100000, '2026-03-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202603-02', 'production'),
-('2026-03-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-03-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '3月分積立確定', 'production'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2500000, '2026-03-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202603-03', 'production'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 120000, '2026-03-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202603-08 (電装部品・基板)', 'production'),
+('2026-03-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分工賃一括振込', 'production'),
+('2026-03-01', NULL, NULL, 'revenue', '控除', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分控除一括', 'welfare'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 100000, '2026-03-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202603-02', 'production'),
+('2026-03-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-03-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '3月分積立確定', 'production'),
 
 -- 2026-04
-('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3000000, '2026-04-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202604-01', 'production'),
-('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 55000, '2026-04-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '領収書No. R-202604-15 (塗料・工具類)', 'production'),
-('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '4月分工賃一括振込', 'production'),
-('2026-04-01', NULL, NULL, 'revenue', '控除', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '4月分控除一括', 'welfare'),
-('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 250000, '2026-04-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '臨時指導員給与', 'production'),
-('2026-04-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 60000, '2026-04-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '4月分修繕積立', 'production'),
+('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3000000, '2026-04-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202604-01', 'production'),
+('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 55000, '2026-04-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202604-15 (塗料・工具類)', 'production'),
+('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分工賃一括振込', 'production'),
+('2026-04-01', NULL, NULL, 'revenue', '控除', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分控除一括', 'welfare'),
+('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 250000, '2026-04-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '臨時指導員給与', 'production'),
+('2026-04-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 60000, '2026-04-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '4月分修繕積立', 'production'),
 
 -- 2026-05
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3400000, '2026-05-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202605-02', 'production'),
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 68000, '2026-05-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202605-03 (アクリル板・ネジ)', 'production'),
-('2026-05-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '5月分工賃一括振込', 'production'),
-('2026-05-01', NULL, NULL, 'revenue', '控除', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '5月分控除一括', 'welfare'),
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 220000, '2026-05-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202605-08', 'production'),
-('2026-05-01', NULL, NULL, 'reserve', '工賃変動積立金', 120000, '2026-05-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '5月分積立確定', 'production'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3400000, '2026-05-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202605-02', 'production'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 68000, '2026-05-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202605-03 (アクリル板・ネジ)', 'production'),
+('2026-05-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分工賃一括振込', 'production'),
+('2026-05-01', NULL, NULL, 'revenue', '控除', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分控除一括', 'welfare'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 220000, '2026-05-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202605-08', 'production'),
+('2026-05-01', NULL, NULL, 'reserve', '工賃変動積立金', 120000, '2026-05-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '5月分積立確定', 'production'),
 
 -- 2026-06
-('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 450000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202606-01', 'production'),
-('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202606-20 (製菓材料類)', 'production'),
-('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 15525, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '6月分工賃一括振込', 'production'),
-('2026-06-01', NULL, NULL, 'revenue', '控除', 0, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '6月分控除一括', 'welfare'),
-('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '外部講習講師謝礼', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 450000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202606-01', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202606-20 (製菓材料類)', 'production'),
+('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 15525, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分工賃一括振込', 'production'),
+('2026-06-01', NULL, NULL, 'revenue', '控除', 0, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分控除一括', 'welfare'),
+('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '外部講習講師謝礼', 'production'),
 
 -- 2026-07
 -- (No separate manual financial records for 2026-07; see ongoing project seed section below)
 
 
 -- 2026-08
-('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 1000000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202608-01', 'production'),
-('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202608-01 (清掃用具・洗浄液)', 'production'),
-('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 600000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '8月概算工賃', 'production'),
-('2026-08-01', NULL, NULL, 'revenue', '控除', 0, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '8月概算控除', 'welfare'),
-('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '専門指導員手当', 'production'),
-('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '領収書No. R-202608-04 (消耗品代)', 'production'),
-('2026-08-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '8月分積立予定', 'production'),
-('2026-08-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '8月分修繕積立予定', 'production'),
+('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 1000000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202608-01', 'production'),
+('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202608-01 (清掃用具・洗浄液)', 'production'),
+('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 600000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算工賃', 'production'),
+('2026-08-01', NULL, NULL, 'revenue', '控除', 0, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算控除', 'welfare'),
+('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '専門指導員手当', 'production'),
+('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202608-04 (消耗品代)', 'production'),
+('2026-08-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '8月分積立予定', 'production'),
+('2026-08-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月分修繕積立予定', 'production'),
 
 -- 2026-09
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2900000, '2026-09-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202609-03', 'production'),
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 85000, '2026-09-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202609-10 (特殊塗料・溶剤)', 'production'),
-('2026-09-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '9月分工賃一括振込', 'production'),
-('2026-09-01', NULL, NULL, 'revenue', '控除', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '9月分控除一括', 'welfare'),
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 180000, '2026-09-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202609-04', 'production'),
-('2026-09-01', NULL, NULL, 'reserve', '工賃変動積立金', 90000, '2026-09-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '9月分積立確定', 'production'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2900000, '2026-09-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202609-03', 'production'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 85000, '2026-09-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202609-10 (特殊塗料・溶剤)', 'production'),
+('2026-09-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分工賃一括振込', 'production'),
+('2026-09-01', NULL, NULL, 'revenue', '控除', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分控除一括', 'welfare'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 180000, '2026-09-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202609-04', 'production'),
+('2026-09-01', NULL, NULL, 'reserve', '工賃変動積立金', 90000, '2026-09-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '9月分積立確定', 'production'),
 
 -- 2026-10
-('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3200000, '2026-10-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202610-01', 'production'),
-('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 62000, '2026-10-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '領収書No. R-202610-07 (配線材・端子)', 'production'),
-('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '10月分工賃一括振込', 'production'),
-('2026-10-01', NULL, NULL, 'revenue', '控除', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '10月分控除一括', 'welfare'),
-('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 220000, '2026-10-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '専門員派遣費用', 'production'),
-('2026-10-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 70000, '2026-10-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '10月分修繕積立', 'production'),
+('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3200000, '2026-10-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202610-01', 'production'),
+('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 62000, '2026-10-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202610-07 (配線材・端子)', 'production'),
+('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分工賃一括振込', 'production'),
+('2026-10-01', NULL, NULL, 'revenue', '控除', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分控除一括', 'welfare'),
+('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 220000, '2026-10-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '専門員派遣費用', 'production'),
+('2026-10-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 70000, '2026-10-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '10月分修繕積立', 'production'),
 
 -- 2026-11
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3500000, '2026-11-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202611-02', 'production'),
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 70000, '2026-11-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202611-19 (梱包テープ・緩衝材)', 'production'),
-('2026-11-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '11月分工賃一括振込', 'production'),
-('2026-11-01', NULL, NULL, 'revenue', '控除', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '11月分控除一括', 'welfare'),
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 250000, '2026-11-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '請求書No. EXT-202611-09', 'production'),
-('2026-11-01', NULL, NULL, 'reserve', '工賃変動積立金', 150000, '2026-11-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '11月分積立確定', 'production'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3500000, '2026-11-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202611-02', 'production'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 70000, '2026-11-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202611-19 (梱包テープ・緩衝材)', 'production'),
+('2026-11-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分工賃一括振込', 'production'),
+('2026-11-01', NULL, NULL, 'revenue', '控除', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分控除一括', 'welfare'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 250000, '2026-11-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202611-09', 'production'),
+('2026-11-01', NULL, NULL, 'reserve', '工賃変動積立金', 150000, '2026-11-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '11月分積立確定', 'production'),
 
 -- 2026-12
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 3800000, '2026-12-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '請求書No. INV-202612-03', 'production'),
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 95000, '2026-12-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '領収書No. R-202612-22 (年末備品・工具)', 'production'),
-('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '12月分工賃一括振込', 'production'),
-('2026-12-01', NULL, NULL, 'revenue', '控除', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', false, '12月分控除一括', 'welfare'),
-('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 350000, '2026-12-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false, '年末特別手当', 'production'),
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 120000, '2026-12-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '領収書No. R-202612-30 (年物消耗品・文具)', 'production'),
-('2026-12-01', NULL, NULL, 'reserve', '工賃変動積立金', 200000, '2026-12-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false, '12月分積立確定', 'production');
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 3800000, '2026-12-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202612-03', 'production'),
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 95000, '2026-12-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202612-22 (年末備品・工具)', 'production'),
+('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分工賃一括振込', 'production'),
+('2026-12-01', NULL, NULL, 'revenue', '控除', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分控除一括', 'welfare'),
+('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 350000, '2026-12-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '年末特別手当', 'production'),
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 120000, '2026-12-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'sga', '領収書No. R-202612-30 (年物消耗品・文具)', 'production'),
+('2026-12-01', NULL, NULL, 'reserve', '工賃変動積立金', 200000, '2026-12-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '12月分積立確定', 'production');
 
 -- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
 

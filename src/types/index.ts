@@ -141,8 +141,8 @@ export type FinancialRecordItem = {
   remarks?: string;
   recordedDate: string;
   recordedBy: string;
-  isLimited: boolean;
   activity_category?: 'production' | 'welfare';
+  costCategory?: 'manufacturing' | 'sga';
 };
 
 export type MonthlyWageRecord = {

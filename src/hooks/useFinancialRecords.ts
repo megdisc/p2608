@@ -28,7 +28,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     try {
       setLoading(true);
       let query = supabase.from('financial_records').select(`
-          id, period, type, subject, amount, remarks, recorded_date, is_limited, activity_category,
+          id, period, type, subject, amount, remarks, recorded_date, activity_category, cost_category,
           project:projects(id, name),
           staff:staffs(id, name),
           client:partners(id, name)
@@ -50,7 +50,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
       else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
-      else if (['period', 'type', 'subject', 'amount', 'remarks', 'is_limited', 'activity_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
+      else if (['period', 'type', 'subject', 'amount', 'remarks', 'activity_category', 'cost_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
 
       query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
       if (dbSortKey !== 'recorded_date') {
@@ -89,8 +89,8 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
           remarks: r.remarks || '',
           recordedDate: r.recorded_date,
           recordedBy: r.staff?.id || '',
-          isLimited: r.is_limited,
-          activity_category: r.activity_category || 'production'
+          activity_category: r.activity_category || 'production',
+          costCategory: r.cost_category || 'manufacturing'
         }));
         setItems(mapped);
       }
@@ -121,8 +121,8 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       remarks: d.remarks || null,
       recorded_date: d.recordedDate || today,
       recorded_by: d.recordedBy || null,
-      is_limited: d.isLimited || false,
-      activity_category: d.activity_category || 'production'
+      activity_category: d.activity_category || 'production',
+      cost_category: d.costCategory || 'manufacturing'
     }));
 
     if (upserts.length > 0) {

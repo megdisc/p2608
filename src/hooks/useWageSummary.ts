@@ -393,7 +393,7 @@ export function useWageSummary() {
               amount: totalLaborWage,
               recorded_date: new Date().toISOString().split('T')[0],
               activity_category: 'production',
-              is_limited: false
+              cost_category: 'manufacturing'
             });
         }
 
@@ -411,6 +411,7 @@ export function useWageSummary() {
               type: 'revenue',
               amount: totalDeduction,
               activity_category: 'welfare',
+              cost_category: 'manufacturing',
               updated_at: new Date().toISOString()
             })
             .eq('id', existingDedFin[0].id);
@@ -424,7 +425,7 @@ export function useWageSummary() {
               amount: totalDeduction,
               recorded_date: new Date().toISOString().split('T')[0],
               activity_category: 'welfare',
-              is_limited: false
+              cost_category: 'manufacturing'
             });
         }
       } catch (e) {

@@ -392,16 +392,16 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '収支記録ID' },
         { name: 'period', desc: '対象期間（年月）' },
+        { name: 'recorded_date', desc: '発生日・計上日' },
         { name: 'project_id', desc: '案件ID' },
         { name: 'client_id', desc: '取引先ID' },
+        { name: 'recorded_by', desc: '計上職員ID' },
         { name: 'type', desc: '収支区分（revenue: 収益 / expense: 費用 / reserve: 積立金）' },
+        { name: 'activity_category', desc: '事業区分（production: 就労支援事業活動 / welfare: 福祉事業活動）' },
+        { name: 'cost_category', desc: '費用区分（manufacturing: 製造原価 / sga: 販売費及び一般管理費）' },
         { name: 'subject', desc: '科目・内容' },
         { name: 'amount', desc: '金額' },
         { name: 'remarks', desc: '備考' },
-        { name: 'recorded_date', desc: '発生日・計上日' },
-        { name: 'recorded_by', desc: '記録者ID' },
-        { name: 'is_limited', desc: '限定公開フラグ' },
-        { name: 'activity_category', desc: '事業区分（production: 就労支援事業活動 / welfare: 福祉事業活動）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

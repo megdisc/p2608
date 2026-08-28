@@ -302,19 +302,31 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      physicalName: 'daily_work_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '日次作業確定', 
+      description: '作業日ごとの確定状態および確定履歴',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'date', desc: '作業日' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'daily_work_records', 
       tableType: 'トランザクション',
       logicalName: '日次作業記録', 
-      description: '利用者の日々の作業実績（工数）および確定状態',
+      description: '利用者の日々の作業実績（工数）',
       columns: [
         { name: 'id', desc: '記録ID' },
         { name: 'date', desc: '作業日' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'work_time', desc: '作業時間' },
-        { name: 'is_confirmed', desc: '確定フラグ' },
-        { name: 'confirmed_by', desc: '確定職員ID' },
-        { name: 'confirmed_at', desc: '確定日時' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

@@ -106,6 +106,14 @@ export type DailyWorkRecordItem = {
   workTime: number;
 };
 
+export type DailyWorkConfirmationItem = {
+  id: string;
+  date: string;
+  isConfirmed: boolean;
+  confirmedBy?: string;
+  confirmedAt?: string;
+};
+
 export type FinancialRecordItem = {
   id: string;
   period: string;

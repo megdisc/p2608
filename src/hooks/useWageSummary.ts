@@ -63,7 +63,7 @@ export function useWageSummary() {
         `).eq('is_deleted', false),
         supabase.from('financial_records').select('*').gte('period', `${monthStr}-01`).lt('period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
-        supabase.from('daily_work_records').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
+        supabase.from('daily_work_confirmations').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_incentive_allocations').select('*').eq('year_month', monthStr),
         supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr)
       ]);

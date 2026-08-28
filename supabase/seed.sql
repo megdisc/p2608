@@ -541,9 +541,10 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
 ('2027-07-15', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4),
 ('2027-07-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4);
 
--- === SEED MONTHLY INCENTIVE ALLOCATIONS (<= 2027-07) ===
-INSERT INTO monthly_incentive_allocations (year_month, is_confirmed) VALUES
-('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true), ('2027-07', true);
+-- === SEED MONTHLY INCENTIVE CONFIRMATIONS (<= 2027-07) ===
+INSERT INTO monthly_incentive_confirmations (year_month, is_confirmed) VALUES
+('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true), ('2027-07', true)
+ON CONFLICT (year_month) DO NOTHING;
 
 -- === SEED DATA FOR 2026-07 ONGOING PROJECTS ===
 INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
@@ -551,9 +552,9 @@ INSERT INTO financial_records (period, project_id, type, subject, amount, record
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 200000, '2026-07-31', 'production'),
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', 300000, '2026-07-31', 'production');
 
-INSERT INTO monthly_incentive_allocations (year_month, project_id, task_id, allocation_amount, is_confirmed) VALUES
-('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000, true),
-('2026-07', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000, true);
+INSERT INTO monthly_incentive_allocations (year_month, member_id, task_id, allocation_amount) VALUES
+('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000),
+('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
 INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
 ('2026-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3),

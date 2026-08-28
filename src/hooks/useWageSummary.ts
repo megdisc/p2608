@@ -173,7 +173,7 @@ export function useWageSummary() {
               allocatedAmount = Number(savedAllocationDrafts[draftKey]);
             } else {
               let taskExpenseAmt = 0;
-              const dbAlloc = (monthlyConfirmRes.data || []).find((a: any) => a.task_id === task.id && a.project_id === project.id);
+              const dbAlloc = (monthlyConfirmRes.data || []).find((a: any) => a.task_id === task.id && (!a.member_id || a.member_id === member.id));
               if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
                 taskExpenseAmt = Number(dbAlloc.allocation_amount);
               } else {

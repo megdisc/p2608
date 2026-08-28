@@ -302,21 +302,6 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'daily_work_confirmations', 
-      tableType: 'トランザクション',
-      logicalName: '日次作業確定', 
-      description: '作業日ごとの確定状態および確定履歴',
-      columns: [
-        { name: 'id', desc: '確定ID' },
-        { name: 'date', desc: '作業日' },
-        { name: 'is_confirmed', desc: '確定フラグ' },
-        { name: 'confirmed_by', desc: '確定職員ID' },
-        { name: 'confirmed_at', desc: '確定日時' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
       physicalName: 'daily_work_records', 
       tableType: 'トランザクション',
       logicalName: '日次作業記録', 
@@ -332,16 +317,43 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      physicalName: 'daily_work_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '日次作業確定', 
+      description: '作業日ごとの確定状態および確定履歴',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'date', desc: '作業日' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'monthly_incentive_allocations', 
       tableType: 'トランザクション',
       logicalName: '月次インセンティブ分配記録', 
-      description: '月次インセンティブ分配（インセンティブ分配・進捗結果）および確定状態',
+      description: '利用者・タスクごとの月次インセンティブ分配実績',
       columns: [
-        { name: 'id', desc: '精算記録ID' },
+        { name: 'id', desc: '分配記録ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
-        { name: 'project_id', desc: '案件ID' },
+        { name: 'member_id', desc: '分配先利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_incentive_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '月次インセンティブ分配確定', 
+      description: '対象年月ごとのインセンティブ分配確定状態および確定履歴',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
         { name: 'is_confirmed', desc: '確定フラグ' },
         { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'confirmed_at', desc: '確定日時' },

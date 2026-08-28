@@ -114,6 +114,22 @@ export type DailyWorkConfirmationItem = {
   confirmedAt?: string;
 };
 
+export type MonthlyIncentiveConfirmationItem = {
+  id: string;
+  yearMonth: string;
+  isConfirmed: boolean;
+  confirmedBy?: string;
+  confirmedAt?: string;
+};
+
+export type MonthlyIncentiveAllocationItem = {
+  id: string;
+  yearMonth: string;
+  memberId?: string;
+  taskId?: string;
+  allocationAmount: number;
+};
+
 export type FinancialRecordItem = {
   id: string;
   period: string;

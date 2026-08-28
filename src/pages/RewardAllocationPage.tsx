@@ -235,7 +235,10 @@ export function RewardAllocationPage() {
     }
 
     try {
-      await supabase.from('monthly_incentive_allocations').upsert({ year_month: currentMonth, is_confirmed: true });
+      await supabase.from('monthly_incentive_confirmations').upsert(
+        { year_month: currentMonth, is_confirmed: true, confirmed_at: new Date().toISOString() },
+        { onConflict: 'year_month' }
+      );
     } catch {}
 
     setConfirmedMonths(prev => {
@@ -250,7 +253,7 @@ export function RewardAllocationPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_incentive_allocations').update({ is_confirmed: false }).eq('year_month', currentMonth);
+      await supabase.from('monthly_incentive_confirmations').delete().eq('year_month', currentMonth);
     } catch {}
 
     setConfirmedMonths(prev => {

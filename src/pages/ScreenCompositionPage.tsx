@@ -212,10 +212,10 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '取引先コード' },
         { name: 'name', desc: '取引先・企業名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
         { name: 'contact_person', desc: '担当者名' },
         { name: 'phone', desc: '電話番号' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -228,11 +228,11 @@ export function ScreenCompositionPage() {
       description: '案件基本情報',
       columns: [
         { name: 'id', desc: '案件ID' },
+        { name: 'settlement_year_month', desc: '精算年月' },
+        { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'code', desc: '案件コード' },
         { name: 'name', desc: '案件名' },
-        { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'project_type', desc: '案件種別' },
-        { name: 'settlement_year_month', desc: '精算年月' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -245,11 +245,11 @@ export function ScreenCompositionPage() {
       description: '案件内の各タスク情報',
       columns: [
         { name: 'id', desc: 'タスクID' },
+        { name: 'completed_at', desc: '完了日時' },
         { name: 'project_id', desc: '案件ID' },
         { name: 'name', desc: 'タスク名' },
         { name: 'assignee_type', desc: '担当者区分（内部/外部等）' },
         { name: 'is_completed', desc: '完了フラグ' },
-        { name: 'completed_at', desc: '完了日時' },
         { name: 'is_deleted', desc: '削除フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -324,9 +324,9 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '確定ID' },
         { name: 'date', desc: '作業日' },
-        { name: 'is_confirmed', desc: '確定フラグ' },
-        { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -354,9 +354,9 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '確定ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
-        { name: 'is_confirmed', desc: '確定フラグ' },
-        { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -365,7 +365,7 @@ export function ScreenCompositionPage() {
       physicalName: 'monthly_wage_records', 
       tableType: 'トランザクション',
       logicalName: '月次工賃記録', 
-      description: '月ごとの各利用者の計算・支給工賃記録および確定状態',
+      description: '月ごとの各利用者の計算・支給工賃記録',
       columns: [
         { name: 'id', desc: '記録ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
@@ -377,9 +377,21 @@ export function ScreenCompositionPage() {
         { name: 'wage_total', desc: '支給工賃合計' },
         { name: 'deduction_total', desc: '控除合計' },
         { name: 'payment', desc: '差引支給額' },
-        { name: 'is_confirmed', desc: '確定フラグ' },
-        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_wage_confirmations', 
+      tableType: 'トランザクション',
+      logicalName: '月次工賃確定', 
+      description: '対象年月ごとの工賃計算確定状態および確定履歴',
+      columns: [
+        { name: 'id', desc: '確定ID' },
+        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
         { name: 'confirmed_at', desc: '確定日時' },
+        { name: 'confirmed_by', desc: '確定職員ID' },
+        { name: 'is_confirmed', desc: '確定フラグ' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

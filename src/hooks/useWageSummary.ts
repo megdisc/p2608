@@ -51,7 +51,8 @@ export function useWageSummary() {
         workRes,
         dailyConfirmRes,
         monthlyConfirmRes,
-        wageConfirmRes
+        wageConfirmRes,
+        wageHeaderConfirmRes
       ] = await Promise.all([
         supabase.from('members').select('*, wage_rates(wage)').order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
@@ -65,7 +66,8 @@ export function useWageSummary() {
         supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_incentive_allocations').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr)
+        supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr),
+        supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -76,7 +78,7 @@ export function useWageSummary() {
       const dbWageRecordMap = new Map((wageConfirmRes.data || []).map((r: any) => [r.member_id, r]));
 
       // Check monthly wage confirmation
-      let wageConfirmed = (wageConfirmRes.data || []).some((r: any) => r.is_confirmed);
+      let wageConfirmed = (wageHeaderConfirmRes.data && wageHeaderConfirmRes.data.length > 0);
       if (!wageConfirmed) {
         try {
           const savedWage = localStorage.getItem('monthly_wage_confirmations');
@@ -346,11 +348,10 @@ export function useWageSummary() {
 
       try {
         await supabase
-          .from('monthly_wage_records')
-          .update({ is_confirmed: true })
-          .eq('year_month', monthStr);
+          .from('monthly_wage_confirmations')
+          .upsert({ year_month: monthStr, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'year_month' });
       } catch (e) {
-        console.warn('Could not update monthly_wage_records confirmation:', e);
+        console.warn('Could not update monthly_wage_confirmations:', e);
       }
 
       try {
@@ -446,7 +447,7 @@ export function useWageSummary() {
       setLoading(true);
 
       try {
-        await supabase.from('monthly_wage_records').update({ is_confirmed: false }).eq('year_month', monthStr);
+        await supabase.from('monthly_wage_confirmations').delete().eq('year_month', monthStr);
       } catch (e) {
         console.warn('Could not update wage confirmation records:', e);
       }

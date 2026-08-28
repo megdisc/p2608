@@ -158,6 +158,14 @@ export type MonthlyWageRecord = {
   payment: number;
 };
 
+export type MonthlyWageConfirmationItem = {
+  id: string;
+  yearMonth: string;
+  isConfirmed: boolean;
+  confirmedBy?: string;
+  confirmedAt?: string;
+};
+
 
 export type BudgetCategory = 'revenue' | 'expense' | 'reserve';
 

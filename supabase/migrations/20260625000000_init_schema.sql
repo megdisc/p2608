@@ -250,7 +250,7 @@ CREATE TABLE IF NOT EXISTS "public"."daily_deduction_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.20 daily_work_confirmations (日次作業記録確定)
+-- 3.20 daily_work_confirmations (日次作業確定)
 CREATE TABLE IF NOT EXISTS "public"."daily_work_confirmations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "date" DATE NOT NULL UNIQUE,

@@ -397,7 +397,7 @@ export function ScreenCompositionPage() {
       layer: '2. 日次・随時記録層',
       physicalName: 'daily_work_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '日次作業記録確定', 
+      logicalName: '日次作業確定', 
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -461,9 +461,9 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_wage_summaries', 
+      physicalName: 'wage_summary_snapshots', 
       tableType: 'トランザクション',
-      logicalName: '月次工賃・控除概要', 
+      logicalName: '工賃・控除概要スナップショット', 
       description: '月ごとの各利用者の計算・支給工賃記録および控除概要（基幹親テーブル）',
       columns: [
         { name: 'id', desc: '概要ID' },
@@ -483,10 +483,10 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_incentive_details', 
+      physicalName: 'incentive_detail_snapshots', 
       tableType: 'トランザクション',
-      logicalName: '月次インセンティブ明細', 
-      description: '月次工賃確定時点のインセンティブ分配内訳スナップショット',
+      logicalName: 'インセンティブ明細スナップショット', 
+      description: '工賃確定時点のインセンティブ分配内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除概要ID' },
@@ -498,10 +498,10 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_allowance_details', 
+      physicalName: 'allowance_detail_snapshots', 
       tableType: 'トランザクション',
-      logicalName: '月次その他加算手当明細', 
-      description: '月次工賃確定時点のその他加算手当内訳スナップショット',
+      logicalName: 'その他加算手当明細スナップショット', 
+      description: '工賃確定時点のその他加算手当内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除概要ID' },
@@ -516,10 +516,10 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_deduction_details', 
+      physicalName: 'deduction_detail_snapshots', 
       tableType: 'トランザクション',
-      logicalName: '月次控除明細', 
-      description: '月次工賃確定時点の控除内訳スナップショット',
+      logicalName: '控除明細スナップショット', 
+      description: '工賃確定時点の控除内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除概要ID' },
@@ -534,9 +534,9 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_wage_confirmations', 
+      physicalName: 'wage_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '月次工賃・控除確定', 
+      logicalName: '工賃・控除確定', 
       description: '対象年月ごとの工賃計算確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -550,10 +550,10 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_confirmation_details', 
+      physicalName: 'confirmation_detail_snapshots', 
       tableType: 'トランザクション',
-      logicalName: '月次収支明細', 
-      description: '月次締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
+      logicalName: '収支明細スナップショット', 
+      description: '締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
@@ -573,9 +573,9 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '4. スナップショット層',
-      physicalName: 'monthly_financial_confirmations', 
+      physicalName: 'financial_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '月次収支確定', 
+      logicalName: '収支確定', 
       description: '対象年月ごとの事業活動収支の締め確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -656,7 +656,7 @@ export function ScreenCompositionPage() {
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#f0fff4', borderRadius: '6px', borderLeft: '4px solid #38a169' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#276749' }}>4. スナップショット層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>利用者工賃明細・月次収支明細 ＋ 工賃/収支締め確定の不変保存 ➔ [月次締め]</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>利用者工賃明細・収支明細スナップショット ＋ 工賃/収支締め確定の不変保存 ➔ [月次締め]</div>
                 </div>
               </div>
             </div>

@@ -47,15 +47,20 @@ export function useWageSummary() {
 
       const [
         membersRes,
+        wageRatesRes,
+        wageEvalsRes,
         projectsRes,
         budgetsRes,
         workRes,
         dailyConfirmRes,
-        monthlyConfirmRes,
+        monthlyIncentiveConfirmRes,
+        monthlyIncentiveRecordsRes,
         wageConfirmRes,
         wageHeaderConfirmRes
       ] = await Promise.all([
-        supabase.from('members').select('*, wage_rates(wage)').order('yomigana', { ascending: true }),
+        supabase.from('members').select('*').order('yomigana', { ascending: true }),
+        supabase.from('wage_rates').select('*').eq('is_deleted', false),
+        supabase.from('member_wage_evaluations').select('*').order('created_at', { ascending: false }),
         supabase.from('projects').select(`
           id, name, code, project_type,
           project_tasks (
@@ -66,6 +71,7 @@ export function useWageSummary() {
         supabase.from('financial_records').select('*').gte('period', `${monthStr}-01`).lt('period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
+        supabase.from('monthly_incentive_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
         supabase.from('monthly_incentive_records').select('*').eq('year_month', monthStr),
         supabase.from('monthly_wage_summaries').select('*').eq('year_month', monthStr),
         supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
@@ -79,7 +85,7 @@ export function useWageSummary() {
       const dbWageRecordMap = new Map((wageConfirmRes.data || []).map((r: any) => [r.member_id, r]));
 
       // Check monthly wage confirmation
-      let wageConfirmed = (wageHeaderConfirmRes.data && wageHeaderConfirmRes.data.length > 0);
+      let wageConfirmed = Boolean(wageHeaderConfirmRes.data && wageHeaderConfirmRes.data.length > 0);
       if (!wageConfirmed) {
         try {
           const savedWage = localStorage.getItem('monthly_wage_confirmations');
@@ -91,7 +97,7 @@ export function useWageSummary() {
 
       // Check monthly settlement confirmation
       let monthlyConfirmed = false;
-      if (monthlyConfirmRes.data && monthlyConfirmRes.data.length > 0) {
+      if (monthlyIncentiveConfirmRes.data && monthlyIncentiveConfirmRes.data.length > 0) {
         monthlyConfirmed = true;
       } else {
         try {
@@ -138,15 +144,23 @@ export function useWageSummary() {
         name: m.is_deleted ? `${m.name} (削除済)` : m.name
       }));
 
+      const wageRateMap = new Map((wageRatesRes.data || []).map((w: any) => [w.id, Number(w.wage)]));
+      const memberWageMap = new Map<string, number>();
+      (wageEvalsRes.data || []).forEach((ev: any) => {
+        if (!memberWageMap.has(ev.member_id)) {
+          const w = wageRateMap.get(ev.wage_rate_id);
+          if (w !== undefined) memberWageMap.set(ev.member_id, w);
+        }
+      });
+
       const rows: WageRow[] = members.map((member: any) => {
         const dbRecord: any = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
         
         let basicWage = null;
-        let wageRate = null;
-        if (member.wage_rates && typeof member.wage_rates.wage === 'number') {
-          wageRate = member.wage_rates.wage;
+        let wageRate: number | null = memberWageMap.get(member.id) ?? null;
+        if (wageRate !== null) {
           basicWage = Math.floor(wageRate * totalWorkTime);
         }
 
@@ -176,7 +190,7 @@ export function useWageSummary() {
               allocatedAmount = Number(savedAllocationDrafts[draftKey]);
             } else {
               let taskExpenseAmt = 0;
-              const dbAlloc = (monthlyConfirmRes.data || []).find((a: any) => a.task_id === task.id && (!a.member_id || a.member_id === member.id));
+              const dbAlloc = (monthlyIncentiveRecordsRes.data || []).find((a: any) => a.task_id === task.id && (!a.member_id || a.member_id === member.id));
               if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
                 taskExpenseAmt = Number(dbAlloc.allocation_amount);
               } else {
@@ -285,8 +299,7 @@ export function useWageSummary() {
         };
       });
 
-      const activeRows = rows.filter(r => (r.workTime || 0) > 0 || (r.wageTotal || 0) > 0 || (r.payment || 0) > 0);
-      setData(activeRows);
+      setData(rows);
       setCurrentPage(1);
 
     } catch (err) {

@@ -30,7 +30,7 @@ export function ScreenProjectPage() {
       case 'rewardAllocation':
         return <RewardAllocationPage />;
       default:
-        return <ProgressRecordPage />;
+        return <ProjectPage />;
     }
   };
 

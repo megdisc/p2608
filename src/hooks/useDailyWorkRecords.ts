@@ -45,7 +45,7 @@ export function useDailyWorkRecords() {
         supabase.from('projects').select(`
           id, code, name, project_type, is_deleted,
           project_tasks (
-            id, code, name, is_deleted,
+            id, name, is_deleted,
             project_task_assignees ( member_id )
           )
         `).order('code', { ascending: true }),

@@ -138,12 +138,30 @@ export type MonthlyIncentiveConfirmationItem = {
   confirmedAt?: string;
 };
 
-export type MonthlyIncentiveAllocationItem = {
+export type MonthlyIncentiveRecordItem = {
   id: string;
   yearMonth: string;
   memberId?: string;
   taskId?: string;
   allocationAmount: number;
+};
+
+export type MonthlyIncentiveAllocationItem = MonthlyIncentiveRecordItem;
+
+export type DailyAllowanceRecordItem = {
+  id: string;
+  workRecordId: string;
+  allowanceId: string;
+  quantity: number;
+  unitPrice: number;
+};
+
+export type DailyDeductionRecordItem = {
+  id: string;
+  workRecordId: string;
+  deductionId: string;
+  quantity: number;
+  unitPrice: number;
 };
 
 export type FinancialRecordItem = {
@@ -159,9 +177,10 @@ export type FinancialRecordItem = {
   recordedBy: string;
   activity_category?: 'production' | 'welfare';
   costCategory?: 'manufacturing' | 'sga';
+  isLimited?: boolean;
 };
 
-export type MonthlyWageRecord = {
+export type MonthlyWageSummaryItem = {
   id: string;
   yearMonth: string;
   memberId: string;
@@ -173,6 +192,35 @@ export type MonthlyWageRecord = {
   wageTotal: number;
   deductionTotal: number;
   payment: number;
+};
+
+export type MonthlyWageRecord = MonthlyWageSummaryItem;
+
+export type MonthlyIncentiveDetailItem = {
+  id: string;
+  summaryId: string;
+  taskId?: string;
+  allocationAmount: number;
+};
+
+export type MonthlyAllowanceDetailItem = {
+  id: string;
+  summaryId: string;
+  allowanceId?: string;
+  allowanceName: string;
+  unitPrice: number;
+  quantity: number;
+  amount: number;
+};
+
+export type MonthlyDeductionDetailItem = {
+  id: string;
+  summaryId: string;
+  deductionId?: string;
+  deductionName: string;
+  unitPrice: number;
+  quantity: number;
+  amount: number;
 };
 
 export type MonthlyWageConfirmationItem = {

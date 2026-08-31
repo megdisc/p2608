@@ -90,7 +90,7 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('monthly_incentive_records').select('year_month').eq('is_confirmed', true);
+      const { data, error } = await supabase.from('monthly_incentive_confirmations').select('year_month').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
         const dbMonths = data.map(d => d.year_month);
         setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));

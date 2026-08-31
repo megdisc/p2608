@@ -30,12 +30,10 @@ export function DailyWorkRecordPage() {
   }, [fetchMasters, fetchConfirmations, showAlert]);
 
   useEffect(() => {
-    if (dbMembers.length > 0) {
-      fetchRecords(currentDate).catch(() => {
-        showAlert('作業記録の取得に失敗しました', 'error');
-      });
-    }
-  }, [currentDate, dbMembers, fetchRecords, showAlert]);
+    fetchRecords(currentDate).catch(() => {
+      showAlert('作業記録の取得に失敗しました', 'error');
+    });
+  }, [currentDate, fetchRecords, showAlert]);
 
   const isConfirmed = useMemo(() => {
     return confirmedDates.includes(currentDate);

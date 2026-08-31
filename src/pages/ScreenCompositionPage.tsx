@@ -73,19 +73,20 @@ export function ScreenCompositionPage() {
     { frequency: '随時', name: '利用者スキル評価', description: '利用者のスキルレベルを評価する。', implemented: true },
     { frequency: '随時', name: '利用者工賃単価評価', description: '利用者の基本工賃単価を評価・決定する。', implemented: true },
     { frequency: '随時', name: '案件情報登録・予算編成・担当者割当', description: '案件の基本情報登録、予算計画の策定、およびタスク担当者を割り当てる。', implemented: true },
-    { frequency: '毎日', name: '作業記録・日次確定', description: '利用者の日々の作業時間を記録し、日単位で確定する。', implemented: true },
+    { frequency: '毎日', name: '作業実績記録・作業実績確定', description: '利用者の日々の作業時間を記録し、日単位で確定する。', implemented: true },
     { frequency: '随時', name: '材料費／経費記録', description: '案件ごとの材料費や経費などを記録する。', implemented: true },
     { frequency: '毎月', name: '材料費／経費確定', description: '月間の材料費や経費を確定する。', implemented: false },
     { frequency: '毎月', name: '収益確定', description: '月間の収益を確定する。', implemented: false },
     { frequency: '毎月', name: '積立金確定', description: '月間の積立金を確定する。', implemented: false },
     { frequency: '毎月', name: '外注加工費確定', description: '月間の外注加工費を確定する。', implemented: false },
-    { frequency: '毎月', name: '月次工賃・控除額確定', description: '各利用者の月次工賃や控除を集計・確定し、収支一覧に自動同期する。', implemented: true },
-    { frequency: '毎月', name: '月次インセンティブ分配確定', description: '各案件のタスク完了状況を確認し、月次インセンティブ分配を確定する。', implemented: true },
+    { frequency: '毎月', name: '工賃・控除確定', description: '各利用者の月次工賃や加算・控除を集計・確定し、収支一覧に自動同期する。', implemented: true },
+    { frequency: '毎月', name: 'インセンティブ確定', description: '各案件のタスク完了状況を確認し、月次インセンティブ分配を確定する。', implemented: true },
     { frequency: '毎月', name: '事業活動別収支集計', description: '就労支援事業活動および福祉事業活動ごとの月次収支を集計・参照する。', implemented: true },
   ];
 
   const dbTables = [
     { 
+      layer: '1. マスタ層',
       physicalName: 'skills', 
       tableType: '独立マスタ',
       logicalName: 'スキル', 
@@ -100,6 +101,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'skill_levels', 
       tableType: '独立マスタ',
       logicalName: 'スキルレベル', 
@@ -114,6 +116,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'wage_rates', 
       tableType: '独立マスタ',
       logicalName: '工賃単価', 
@@ -127,8 +130,8 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-
     { 
+      layer: '1. マスタ層',
       physicalName: 'users', 
       tableType: '独立マスタ',
       logicalName: '認証ユーザー', 
@@ -144,6 +147,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'members', 
       tableType: '従属マスタ',
       logicalName: '利用者', 
@@ -160,6 +164,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'member_skill_evaluations', 
       tableType: 'トランザクション',
       logicalName: '利用者スキル評価', 
@@ -174,6 +179,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'member_wage_evaluations', 
       tableType: 'トランザクション',
       logicalName: '利用者工賃単価評価', 
@@ -187,6 +193,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'staffs', 
       tableType: '従属マスタ',
       logicalName: '職員', 
@@ -203,6 +210,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'partners', 
       tableType: '独立マスタ',
       logicalName: '取引先', 
@@ -222,6 +230,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'projects', 
       tableType: 'トランザクション',
       logicalName: '案件', 
@@ -239,6 +248,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'project_tasks', 
       tableType: 'トランザクション',
       logicalName: '案件タスク', 
@@ -256,6 +266,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
       physicalName: 'project_budgets', 
       tableType: 'トランザクション',
       logicalName: '案件予算', 
@@ -272,6 +283,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '5. 案件・財務トランザクション',
       physicalName: 'project_task_skills', 
       tableType: 'トランザクション',
       logicalName: '案件タスクスキル', 
@@ -286,6 +298,7 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '5. 案件・財務トランザクション',
       physicalName: 'project_task_assignees', 
       tableType: 'トランザクション',
       logicalName: '案件タスク担当者', 
@@ -302,12 +315,45 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '1. マスタ層',
+      physicalName: 'allowances', 
+      tableType: '独立マスタ',
+      logicalName: 'その他加算手当', 
+      description: '加算手当のマスターデータ（送迎加算、皆勤手当、資格手当など）',
+      columns: [
+        { name: 'id', desc: '手当ID' },
+        { name: 'name', desc: '手当名' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'default_unit_price', desc: '標準単価' },
+        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '1. マスタ層',
+      physicalName: 'deductions', 
+      tableType: '独立マスタ',
+      logicalName: '控除', 
+      description: '控除のマスターデータ（昼食代、積立金、物品購入費など）',
+      columns: [
+        { name: 'id', desc: '控除ID' },
+        { name: 'name', desc: '控除名' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'default_unit_price', desc: '標準単価' },
+        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '2. 日次実績層',
       physicalName: 'daily_work_records', 
       tableType: 'トランザクション',
-      logicalName: '日次作業記録', 
-      description: '利用者の日々の作業実績（工数）',
+      logicalName: '作業実績', 
+      description: '利用者の日々の作業実績（作業時間）',
       columns: [
-        { name: 'id', desc: '記録ID' },
+        { name: 'id', desc: '作業実績ID' },
         { name: 'date', desc: '作業日' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
@@ -317,9 +363,42 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '2. 日次実績層',
+      physicalName: 'daily_allowance_records', 
+      tableType: 'トランザクション',
+      logicalName: 'その他加算手当実績', 
+      description: '作業実績に紐付く日次発生の加算手当実績（例: 送迎利用等）',
+      columns: [
+        { name: 'id', desc: '実績ID' },
+        { name: 'work_record_id', desc: '作業実績ID' },
+        { name: 'allowance_id', desc: '手当ID' },
+        { name: 'quantity', desc: '数量・回数' },
+        { name: 'unit_price', desc: '発生時単価' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '2. 日次実績層',
+      physicalName: 'daily_deduction_records', 
+      tableType: 'トランザクション',
+      logicalName: '控除実績', 
+      description: '作業実績に紐付く日次発生の控除実績（例: 昼食利用等）',
+      columns: [
+        { name: 'id', desc: '実績ID' },
+        { name: 'work_record_id', desc: '作業実績ID' },
+        { name: 'deduction_id', desc: '控除ID' },
+        { name: 'quantity', desc: '数量・回数' },
+        { name: 'unit_price', desc: '発生時単価' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '2. 日次実績層',
       physicalName: 'daily_work_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '日次作業確定', 
+      logicalName: '作業実績確定', 
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -332,12 +411,13 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'monthly_incentive_allocations', 
+      layer: '3. 月次実績層',
+      physicalName: 'monthly_incentive_records', 
       tableType: 'トランザクション',
-      logicalName: '月次インセンティブ分配記録', 
-      description: '利用者・タスクごとの月次インセンティブ分配実績',
+      logicalName: 'インセンティブ実績', 
+      description: '案件タスクの成果・貢献度に応じた各利用者の月次分配実績',
       columns: [
-        { name: 'id', desc: '分配記録ID' },
+        { name: 'id', desc: '実績ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
         { name: 'member_id', desc: '分配先利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
@@ -347,9 +427,10 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '3. 月次実績層',
       physicalName: 'monthly_incentive_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '月次インセンティブ分配確定', 
+      logicalName: 'インセンティブ確定', 
       description: '対象年月ごとのインセンティブ分配確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -362,12 +443,13 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
-      physicalName: 'monthly_wage_records', 
+      layer: '4. 月次確定・スナップショット層',
+      physicalName: 'monthly_wage_summaries', 
       tableType: 'トランザクション',
-      logicalName: '月次工賃記録', 
-      description: '月ごとの各利用者の計算・支給工賃記録',
+      logicalName: '工賃・控除概要', 
+      description: '月ごとの各利用者の計算・支給工賃記録および控除概要（基幹親テーブル）',
       columns: [
-        { name: 'id', desc: '記録ID' },
+        { name: 'id', desc: '概要ID' },
         { name: 'year_month', desc: '対象年月(YYYY-MM)' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'work_time', desc: '総作業時間' },
@@ -375,7 +457,7 @@ export function ScreenCompositionPage() {
         { name: 'basic_wage', desc: '基本支給額' },
         { name: 'incentive_total', desc: 'インセンティブ合計' },
         { name: 'other_allowance_total', desc: 'その他加算手当合計' },
-        { name: 'wage_total', desc: '支給工賃合計' },
+        { name: 'wage_total', desc: '工賃合計' },
         { name: 'deduction_total', desc: '控除合計' },
         { name: 'payment', desc: '差引支給額' },
         { name: 'created_at', desc: '作成日時' },
@@ -383,9 +465,58 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '4. 月次確定・スナップショット層',
+      physicalName: 'monthly_incentive_details', 
+      tableType: 'トランザクション',
+      logicalName: 'インセンティブ明細', 
+      description: '月次工賃確定時点のインセンティブ分配内訳スナップショット',
+      columns: [
+        { name: 'id', desc: '明細ID' },
+        { name: 'summary_id', desc: '工賃・控除概要ID' },
+        { name: 'task_id', desc: 'タスクID' },
+        { name: 'allocation_amount', desc: '分配金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_allowance_details', 
+      tableType: 'トランザクション',
+      logicalName: 'その他加算手当明細', 
+      description: '月次工賃確定時点のその他加算手当内訳スナップショット',
+      columns: [
+        { name: 'id', desc: '明細ID' },
+        { name: 'summary_id', desc: '工賃・控除概要ID' },
+        { name: 'allowance_id', desc: '手当ID' },
+        { name: 'allowance_name', desc: '手当名' },
+        { name: 'unit_price', desc: '単価' },
+        { name: 'quantity', desc: '数量・日数' },
+        { name: 'amount', desc: '金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      physicalName: 'monthly_deduction_details', 
+      tableType: 'トランザクション',
+      logicalName: '控除明細', 
+      description: '月次工賃確定時点の控除内訳スナップショット',
+      columns: [
+        { name: 'id', desc: '明細ID' },
+        { name: 'summary_id', desc: '工賃・控除概要ID' },
+        { name: 'deduction_id', desc: '控除ID' },
+        { name: 'deduction_name', desc: '控除名' },
+        { name: 'unit_price', desc: '単価' },
+        { name: 'quantity', desc: '数量・日数' },
+        { name: 'amount', desc: '金額' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
       physicalName: 'monthly_wage_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '月次工賃確定', 
+      logicalName: '工賃・控除確定', 
       description: '対象年月ごとの工賃計算確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -462,55 +593,137 @@ export function ScreenCompositionPage() {
             </tbody>
           </table>
         ) : isTableComposition ? (
-          <table className="inventory-table">
-            <thead>
-              <tr>
-                <th>区分 (Type)</th>
-                <th>物理名 (Table Name)</th>
-                <th>論理名 (Logical Name)</th>
-                <th>説明 (Description)</th>
-                <th>カラム名 (Column Name)</th>
-                <th>カラム説明 (Column Description)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dbTables.flatMap((table, i) =>
-                table.columns.map((col, idx) => {
-                  const isLastInTable = idx === table.columns.length - 1;
-                  const borderBottomStyle = isLastInTable ? undefined : 'none';
-                  return (
-                    <tr key={`${i}-${idx}`}>
-                      <td style={{ borderBottom: borderBottomStyle }}>
-                        {idx === 0 ? (
-                          <span style={{ 
-                            display: 'inline-block', 
-                            padding: 'var(--space-1) var(--space-2)', 
-                            borderRadius: 'var(--radius-sm)', 
-                            fontSize: 'var(--text-caption)',
-                            backgroundColor: table.tableType === '独立マスタ' ? 'var(--palette-bluegreen-300)' : (table.tableType === '従属マスタ' ? 'var(--palette-bluegreen-200)' : 'var(--palette-yellow-300)'),
-                            color: 'var(--color-text-main)'
-                          }}>
-                            {table.tableType}
-                          </span>
-                        ) : ''}
-                      </td>
-                      <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
-                        {idx === 0 ? table.physicalName : ''}
-                      </td>
-                      <td style={{ borderBottom: borderBottomStyle }}>
-                        {idx === 0 ? table.logicalName : ''}
-                      </td>
-                      <td style={{ borderBottom: borderBottomStyle }}>
-                        {idx === 0 ? table.description : ''}
-                      </td>
-                      <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
-                      <td style={{ color: 'var(--color-text-main)' }}>{col.desc}</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+          <div>
+            {/* 4層アーキテクチャ概要ガイド */}
+            <div style={{ 
+              marginBottom: '20px', 
+              padding: '16px', 
+              backgroundColor: 'var(--color-bg-subtle)', 
+              borderRadius: 'var(--radius-md)', 
+              border: '1px solid var(--color-border-subtle)' 
+            }}>
+              <h4 style={{ margin: '0 0 12px 0', fontSize: 'var(--text-body-bold)', color: 'var(--color-text-main)' }}>
+                工賃・インセンティブデータ構造アーキテクチャ（4層パイプライン構造）
+              </h4>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                <div style={{ padding: '10px 12px', backgroundColor: '#ebf8ff', borderRadius: '6px', borderLeft: '4px solid #3182ce' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#2b6cb0' }}>1. マスタ層</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>手当・控除・単価・利用者・スキルの基本定義</div>
+                </div>
+                <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>作業時間・日次加算/控除の実績 ➔ [日報確定]</div>
+                </div>
+                <div style={{ padding: '10px 12px', backgroundColor: '#faf5ff', borderRadius: '6px', borderLeft: '4px solid #805ad5' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#6b46c1' }}>3. 月次実績層</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>案件貢献度インセンティブ分配 ➔ [インセンティブ確定]</div>
+                </div>
+                <div style={{ padding: '10px 12px', backgroundColor: '#f0fff4', borderRadius: '6px', borderLeft: '4px solid #38a169' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#276749' }}>4. 月次確定・スナップショット層</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>工賃・控除概要 ＋ 各明細の不変保存 ➔ [工賃・控除確定]</div>
+                </div>
+              </div>
+            </div>
+
+            <table className="inventory-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '13%' }}>アーキテクチャ層</th>
+                  <th style={{ width: '9%' }}>区分 (Type)</th>
+                  <th style={{ width: '14%' }}>物理名 (Table Name)</th>
+                  <th style={{ width: '13%' }}>論理名 (Logical Name)</th>
+                  <th style={{ width: '23%' }}>説明 (Description)</th>
+                  <th style={{ width: '13%' }}>カラム名</th>
+                  <th style={{ width: '15%' }}>カラム説明</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(() => {
+                  let currentLayer = '';
+                  return dbTables.flatMap((table, i) => {
+                    const isNewLayer = table.layer !== currentLayer;
+                    if (isNewLayer) {
+                      currentLayer = table.layer || '';
+                    }
+
+                    const layerBgColor = 
+                      table.layer === '1. マスタ層' ? '#ebf8ff' :
+                      table.layer === '2. 日次実績層' ? '#fffaf0' :
+                      table.layer === '3. 月次実績層' ? '#faf5ff' :
+                      table.layer === '4. 月次確定・スナップショット層' ? '#f0fff4' : '#f7fafc';
+
+                    const layerTextColor = 
+                      table.layer === '1. マスタ層' ? '#2b6cb0' :
+                      table.layer === '2. 日次実績層' ? '#c05621' :
+                      table.layer === '3. 月次実績層' ? '#6b46c1' :
+                      table.layer === '4. 月次確定・スナップショット層' ? '#276749' : '#4a5568';
+
+                    const tableRows = table.columns.map((col, idx) => {
+                      const isLastInTable = idx === table.columns.length - 1;
+                      const borderBottomStyle = isLastInTable ? undefined : 'none';
+                      return (
+                        <tr key={`${i}-${idx}`}>
+                          <td style={{ borderBottom: borderBottomStyle }}>
+                            {idx === 0 ? (
+                              <span style={{ 
+                                display: 'inline-block', 
+                                padding: '2px 6px', 
+                                borderRadius: '4px', 
+                                fontSize: '11px',
+                                fontWeight: 'bold',
+                                backgroundColor: layerBgColor,
+                                color: layerTextColor,
+                                border: `1px solid ${layerTextColor}40`
+                              }}>
+                                {table.layer}
+                              </span>
+                            ) : ''}
+                          </td>
+                          <td style={{ borderBottom: borderBottomStyle }}>
+                            {idx === 0 ? (
+                              <span style={{ 
+                                display: 'inline-block', 
+                                padding: 'var(--space-1) var(--space-2)', 
+                                borderRadius: 'var(--radius-sm)', 
+                                fontSize: 'var(--text-caption)',
+                                backgroundColor: table.tableType === '独立マスタ' ? 'var(--palette-bluegreen-300)' : (table.tableType === '従属マスタ' ? 'var(--palette-bluegreen-200)' : 'var(--palette-yellow-300)'),
+                                color: 'var(--color-text-main)'
+                              }}>
+                                {table.tableType}
+                              </span>
+                            ) : ''}
+                          </td>
+                          <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
+                            {idx === 0 ? table.physicalName : ''}
+                          </td>
+                          <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
+                            {idx === 0 ? table.logicalName : ''}
+                          </td>
+                          <td style={{ borderBottom: borderBottomStyle }}>
+                            {idx === 0 ? table.description : ''}
+                          </td>
+                          <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
+                          <td style={{ color: 'var(--color-text-main)' }}>{col.desc}</td>
+                        </tr>
+                      );
+                    });
+
+                    if (isNewLayer) {
+                      return [
+                        <tr key={`layer-hdr-${i}`} style={{ backgroundColor: layerBgColor }}>
+                          <td colSpan={7} style={{ padding: '8px 12px', fontWeight: 'bold', color: layerTextColor, borderTop: '2px solid var(--color-border-subtle)' }}>
+                            ■ {table.layer}
+                          </td>
+                        </tr>,
+                        ...tableRows
+                      ];
+                    }
+                    return tableRows;
+                  });
+                })()}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <table className="inventory-table">
             <thead>

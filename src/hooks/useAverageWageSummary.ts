@@ -38,7 +38,7 @@ export function useAverageWageSummary() {
         { data: finRecords, error: finError }
       ] = await Promise.all([
         supabase.from('daily_work_records').select('date, member_id, work_time'),
-        supabase.from('monthly_wage_records').select('year_month, payment, wage_total, member_id'),
+        supabase.from('monthly_wage_summaries').select('year_month, payment, wage_total, member_id'),
         supabase.from('financial_records').select('period, type, subject, amount').eq('type', 'expense')
       ]);
 

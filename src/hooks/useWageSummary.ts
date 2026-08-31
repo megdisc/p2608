@@ -66,8 +66,8 @@ export function useWageSummary() {
         supabase.from('financial_records').select('*').gte('period', `${monthStr}-01`).lt('period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_allocations').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_wage_records').select('*').eq('year_month', monthStr),
+        supabase.from('monthly_incentive_records').select('*').eq('year_month', monthStr),
+        supabase.from('monthly_wage_summaries').select('*').eq('year_month', monthStr),
         supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
       ]);
 
@@ -344,10 +344,10 @@ export function useWageSummary() {
       if (wageRecords.length > 0) {
         try {
           await supabase
-            .from('monthly_wage_records')
+            .from('monthly_wage_summaries')
             .upsert(wageRecords, { onConflict: 'year_month,member_id' });
         } catch (e) {
-          console.warn('Could not upsert monthly_wage_records:', e);
+          console.warn('Could not upsert monthly_wage_summaries:', e);
         }
       }
 

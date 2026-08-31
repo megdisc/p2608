@@ -132,6 +132,38 @@ export function ScreenCompositionPage() {
     },
     { 
       layer: '1. マスタ層',
+      physicalName: 'allowances', 
+      tableType: '独立マスタ',
+      logicalName: 'その他加算手当', 
+      description: '加算手当のマスターデータ（送迎加算、皆勤手当、資格手当など）',
+      columns: [
+        { name: 'id', desc: '手当ID' },
+        { name: 'name', desc: '手当名' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'default_unit_price', desc: '標準単価' },
+        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '1. マスタ層',
+      physicalName: 'deductions', 
+      tableType: '独立マスタ',
+      logicalName: '控除', 
+      description: '控除のマスターデータ（昼食代、積立金、物品購入費など）',
+      columns: [
+        { name: 'id', desc: '控除ID' },
+        { name: 'name', desc: '控除名' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'default_unit_price', desc: '標準単価' },
+        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    { 
+      layer: '1. マスタ層',
       physicalName: 'users', 
       tableType: '独立マスタ',
       logicalName: '認証ユーザー', 
@@ -314,38 +346,7 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    { 
-      layer: '1. マスタ層',
-      physicalName: 'allowances', 
-      tableType: '独立マスタ',
-      logicalName: 'その他加算手当', 
-      description: '加算手当のマスターデータ（送迎加算、皆勤手当、資格手当など）',
-      columns: [
-        { name: 'id', desc: '手当ID' },
-        { name: 'name', desc: '手当名' },
-        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
-        { name: 'default_unit_price', desc: '標準単価' },
-        { name: 'is_active', desc: '有効フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    { 
-      layer: '1. マスタ層',
-      physicalName: 'deductions', 
-      tableType: '独立マスタ',
-      logicalName: '控除', 
-      description: '控除のマスターデータ（昼食代、積立金、物品購入費など）',
-      columns: [
-        { name: 'id', desc: '控除ID' },
-        { name: 'name', desc: '控除名' },
-        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
-        { name: 'default_unit_price', desc: '標準単価' },
-        { name: 'is_active', desc: '有効フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
+
     { 
       layer: '2. 日次実績層',
       physicalName: 'daily_work_records', 

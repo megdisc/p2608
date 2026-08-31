@@ -67,7 +67,7 @@ export function ScreenCompositionPage() {
     { frequency: '随時', name: '職員情報登録', description: '職員の基本情報を管理・更新する。', implemented: true },
     { frequency: '随時', name: '取引先情報登録', description: '取引先・顧客の基本情報を管理・更新する。', implemented: true },
     { frequency: '随時', name: 'スキル体系登録', description: '業務に必要なスキル体系およびスキルレベルを定義する。', implemented: true },
-    { frequency: '随時', name: '工賃体系登録', description: '基本工賃単価のマスターデータを定義する。', implemented: true },
+    { frequency: '随時', name: '工賃・控除体系登録', description: '基本工賃単価、その他加算手当、および控除のマスターデータを定義する。', implemented: true },
     { frequency: '随時', name: '積立金設定登録', description: '積立金の種別、計算基準・率・上限額等を定義する。', implemented: true },
     { frequency: '随時', name: '利用者情報登録', description: '利用者の基本情報を管理・更新する。', implemented: true },
     { frequency: '随時', name: '利用者スキル評価', description: '利用者のスキルレベルを評価する。', implemented: true },
@@ -351,7 +351,7 @@ export function ScreenCompositionPage() {
       layer: '2. 日次実績層',
       physicalName: 'daily_work_records', 
       tableType: 'トランザクション',
-      logicalName: '作業実績', 
+      logicalName: '日次作業実績', 
       description: '利用者の日々の作業実績（作業時間）',
       columns: [
         { name: 'id', desc: '作業実績ID' },
@@ -367,7 +367,7 @@ export function ScreenCompositionPage() {
       layer: '2. 日次実績層',
       physicalName: 'daily_allowance_records', 
       tableType: 'トランザクション',
-      logicalName: 'その他加算手当実績', 
+      logicalName: '日次その他加算手当実績', 
       description: '作業実績に紐付く日次発生の加算手当実績（例: 送迎利用等）',
       columns: [
         { name: 'id', desc: '実績ID' },
@@ -383,7 +383,7 @@ export function ScreenCompositionPage() {
       layer: '2. 日次実績層',
       physicalName: 'daily_deduction_records', 
       tableType: 'トランザクション',
-      logicalName: '控除実績', 
+      logicalName: '日次控除実績', 
       description: '作業実績に紐付く日次発生の控除実績（例: 昼食利用等）',
       columns: [
         { name: 'id', desc: '実績ID' },
@@ -399,7 +399,7 @@ export function ScreenCompositionPage() {
       layer: '2. 日次実績層',
       physicalName: 'daily_work_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '作業実績確定', 
+      logicalName: '日次作業実績確定', 
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -415,7 +415,7 @@ export function ScreenCompositionPage() {
       layer: '3. 月次実績層',
       physicalName: 'monthly_incentive_records', 
       tableType: 'トランザクション',
-      logicalName: 'インセンティブ実績', 
+      logicalName: '月次インセンティブ実績', 
       description: '案件タスクの成果・貢献度に応じた各利用者の月次分配実績',
       columns: [
         { name: 'id', desc: '実績ID' },
@@ -431,7 +431,7 @@ export function ScreenCompositionPage() {
       layer: '3. 月次実績層',
       physicalName: 'monthly_incentive_confirmations', 
       tableType: 'トランザクション',
-      logicalName: 'インセンティブ確定', 
+      logicalName: '月次インセンティブ確定', 
       description: '対象年月ごとのインセンティブ分配確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -447,7 +447,7 @@ export function ScreenCompositionPage() {
       layer: '4. 月次確定・スナップショット層',
       physicalName: 'monthly_wage_summaries', 
       tableType: 'トランザクション',
-      logicalName: '工賃・控除概要', 
+      logicalName: '月次工賃・控除概要', 
       description: '月ごとの各利用者の計算・支給工賃記録および控除概要（基幹親テーブル）',
       columns: [
         { name: 'id', desc: '概要ID' },
@@ -469,7 +469,7 @@ export function ScreenCompositionPage() {
       layer: '4. 月次確定・スナップショット層',
       physicalName: 'monthly_incentive_details', 
       tableType: 'トランザクション',
-      logicalName: 'インセンティブ明細', 
+      logicalName: '月次インセンティブ明細', 
       description: '月次工賃確定時点のインセンティブ分配内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
@@ -481,9 +481,10 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '4. 月次確定・スナップショット層',
       physicalName: 'monthly_allowance_details', 
       tableType: 'トランザクション',
-      logicalName: 'その他加算手当明細', 
+      logicalName: '月次その他加算手当明細', 
       description: '月次工賃確定時点のその他加算手当内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
@@ -498,9 +499,10 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '4. 月次確定・スナップショット層',
       physicalName: 'monthly_deduction_details', 
       tableType: 'トランザクション',
-      logicalName: '控除明細', 
+      logicalName: '月次控除明細', 
       description: '月次工賃確定時点の控除内訳スナップショット',
       columns: [
         { name: 'id', desc: '明細ID' },
@@ -515,9 +517,10 @@ export function ScreenCompositionPage() {
       ]
     },
     { 
+      layer: '4. 月次確定・スナップショット層',
       physicalName: 'monthly_wage_confirmations', 
       tableType: 'トランザクション',
-      logicalName: '工賃・控除確定', 
+      logicalName: '月次工賃・控除確定', 
       description: '対象年月ごとの工賃計算確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },

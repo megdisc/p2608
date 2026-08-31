@@ -15,6 +15,8 @@ export * from './RewardAllocationPage';
 export * from './ProjectFinancialRecordPage';
 export * from './WageSummaryPage';
 export * from './BaseWagePage';
+export * from './AllowancePage';
+export * from './DeductionPage';
 export * from './BaseWageAssignmentPage';
 export * from './SkillLevelPage';
 export * from './SkillEvaluationPage';

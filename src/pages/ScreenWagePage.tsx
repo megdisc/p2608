@@ -4,6 +4,8 @@ import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
 import { BaseWagePage } from './BaseWagePage';
+import { AllowancePage } from './AllowancePage';
+import { DeductionPage } from './DeductionPage';
 
 export function ScreenWagePage() {
   const navContext = useNavigation();
@@ -14,6 +16,10 @@ export function ScreenWagePage() {
     switch (navContext.activeTab) {
       case 'baseWage':
         return <BaseWagePage />;
+      case 'allowance':
+        return <AllowancePage />;
+      case 'deduction':
+        return <DeductionPage />;
       default:
         return <BaseWagePage />;
     }

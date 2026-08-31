@@ -62,7 +62,7 @@ function AppContent() {
             <ScreenClientPage />
           ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
             <ScreenSkillPage />
-          ) : ['baseWage', 'screenWage'].includes(activeTab) ? (
+          ) : ['baseWage', 'allowance', 'deduction', 'screenWage'].includes(activeTab) ? (
             <ScreenWagePage />
           ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
             <ScreenReservePage />

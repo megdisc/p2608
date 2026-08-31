@@ -86,6 +86,22 @@ export type BaseWageItem = {
   is_deleted?: boolean;
 };
 
+export type AllowanceItem = {
+  id: string;
+  name: string;
+  occurrence_type: 'daily' | 'monthly';
+  default_unit_price: number;
+  is_active: boolean;
+};
+
+export type DeductionItem = {
+  id: string;
+  name: string;
+  occurrence_type: 'daily' | 'monthly';
+  default_unit_price: number;
+  is_active: boolean;
+};
+
 export type ClientItem = {
   id: string;
   code?: string;
@@ -250,5 +266,5 @@ export type ReserveSettingItem = {
 };
 
 export type Tab = 
-  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve';
+  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve';
 

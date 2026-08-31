@@ -553,7 +553,7 @@ INSERT INTO financial_records (period, project_id, type, subject, amount, record
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 200000, '2026-07-31', 'production'),
 ('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', 300000, '2026-07-31', 'production');
 
-INSERT INTO monthly_incentive_allocations (year_month, member_id, task_id, allocation_amount) VALUES
+INSERT INTO monthly_incentive_records (year_month, member_id, task_id, allocation_amount) VALUES
 ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000),
 ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
@@ -581,7 +581,7 @@ INSERT INTO monthly_wage_confirmations (year_month, is_confirmed) VALUES
 ON CONFLICT (year_month) DO NOTHING;
 
 -- === SEED MONTHLY WAGE RECORDS ===
-INSERT INTO monthly_wage_records (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
+INSERT INTO monthly_wage_summaries (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
 ('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, 0),
 ('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, 0),
 ('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, 0),

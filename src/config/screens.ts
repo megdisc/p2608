@@ -99,6 +99,17 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 };
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
+  if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
+  if (tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_WORK;
+  if (tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_FINANCE;
+  if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
+  if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
+  if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;
+  if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;
+  if (tabId === 'screenWage') return SCREEN_CONFIGS.SCREEN_WAGE;
+  if (tabId === 'screenReserve') return SCREEN_CONFIGS.SCREEN_RESERVE;
+  if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_COMPOSITION;
+
   for (const config of Object.values(SCREEN_CONFIGS)) {
     if (config.tabs.some(t => t.id === tabId)) {
       return config;

@@ -26,10 +26,66 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 3. テーブル定義
+-- 3. テーブル定義（4層アーキテクチャ）
 
--- 3.1 users (認証ユーザー)
-CREATE TABLE IF NOT EXISTS "public"."users" (
+-- ==========================================
+-- 1. マスタ層
+-- ==========================================
+
+-- 1.1 skill_items (スキル項目)
+CREATE TABLE IF NOT EXISTS "public"."skill_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.2 skill_level_items (スキルレベル項目)
+CREATE TABLE IF NOT EXISTS "public"."skill_level_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "level_value" INTEGER NOT NULL,
+    "description" TEXT,
+    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.3 wage_rate_items (工賃単価項目)
+CREATE TABLE IF NOT EXISTS "public"."wage_rate_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "wage" NUMERIC(12,2) NOT NULL,
+    "description" TEXT,
+    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.4 allowance_items (加算手当項目)
+CREATE TABLE IF NOT EXISTS "public"."allowance_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
+    "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.5 deduction_items (控除項目)
+CREATE TABLE IF NOT EXISTS "public"."deduction_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
+    "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.6 auth_users (認証ユーザー)
+CREATE TABLE IF NOT EXISTS "public"."auth_users" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "email" TEXT UNIQUE,
     "role" TEXT DEFAULT '職員' NOT NULL,
@@ -39,35 +95,41 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.2 wage_rates (工賃単価マスタ)
-CREATE TABLE IF NOT EXISTS "public"."wage_rates" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "wage" NUMERIC(10,2) NOT NULL,
-    "effective_from" DATE DEFAULT CURRENT_DATE NOT NULL,
-    "description" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.3 members (利用者基本情報)
+-- 1.7 members (利用者)
 CREATE TABLE IF NOT EXISTS "public"."members" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "user_id" UUID REFERENCES "public"."users"("id") ON DELETE CASCADE,
+    "user_id" UUID REFERENCES "public"."auth_users"("id") ON DELETE CASCADE,
     "code" TEXT,
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
-    "contract_status" TEXT DEFAULT 'contracted',
-    "contract_type" TEXT DEFAULT 'B型',
     "is_deleted" BOOLEAN DEFAULT false NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.4 staffs (職員基本情報)
+-- 1.8 member_skill_settings (利用者スキル割当)
+CREATE TABLE IF NOT EXISTS "public"."member_skill_settings" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    "skill_id" UUID REFERENCES "public"."skill_items"("id") ON DELETE CASCADE,
+    "skill_level_id" UUID REFERENCES "public"."skill_level_items"("id") ON DELETE CASCADE,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.9 member_wage_settings (利用者工賃単価割当)
+CREATE TABLE IF NOT EXISTS "public"."member_wage_settings" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    "wage_rate_id" UUID REFERENCES "public"."wage_rate_items"("id") ON DELETE CASCADE,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.10 staffs (職員)
 CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "user_id" UUID REFERENCES "public"."users"("id") ON DELETE CASCADE,
+    "user_id" UUID REFERENCES "public"."auth_users"("id") ON DELETE CASCADE,
     "code" TEXT,
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
@@ -76,7 +138,7 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.5 partners (取引先基本情報)
+-- 1.11 partners (取引先)
 CREATE TABLE IF NOT EXISTS "public"."partners" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "code" TEXT,
@@ -91,91 +153,25 @@ CREATE TABLE IF NOT EXISTS "public"."partners" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.6 skills (スキル体系マスタ)
-CREATE TABLE IF NOT EXISTS "public"."skills" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "description" TEXT,
-    "sort_order" INTEGER DEFAULT 0 NOT NULL,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.7 skill_levels (スキルレベル定義)
-CREATE TABLE IF NOT EXISTS "public"."skill_levels" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "skill_id" UUID REFERENCES "public"."skills"("id") ON DELETE CASCADE,
-    "level_value" INTEGER,
-    "description" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.8 allowances (その他加算手当マスタ)
-CREATE TABLE IF NOT EXISTS "public"."allowances" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
-    "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.9 deductions (控除マスタ)
-CREATE TABLE IF NOT EXISTS "public"."deductions" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "name" TEXT NOT NULL,
-    "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
-    "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.10 member_skill_evaluations (利用者スキル評価)
-CREATE TABLE IF NOT EXISTS "public"."member_skill_evaluations" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "skill_id" UUID REFERENCES "public"."skills"("id") ON DELETE CASCADE,
-    "skill_level_id" UUID REFERENCES "public"."skill_levels"("id") ON DELETE CASCADE,
-    "evaluated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.11 member_wage_evaluations (利用者工賃単価評価)
-CREATE TABLE IF NOT EXISTS "public"."member_wage_evaluations" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "wage_rate_id" UUID REFERENCES "public"."wage_rates"("id") ON DELETE CASCADE,
-    "evaluated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.12 projects (案件基本情報)
+-- 1.12 projects (案件)
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "settlement_year_month" VARCHAR(7),
+    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "code" TEXT,
     "name" TEXT NOT NULL,
-    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "project_type" TEXT DEFAULT 'one-off',
-    "settlement_year_month" VARCHAR(7),
-    "sequence" INTEGER,
     "is_deleted" BOOLEAN DEFAULT false NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.13 project_tasks (案件タスク)
+-- 1.13 project_tasks (案件タスク)
 CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "completed_at" TIMESTAMPTZ,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
     "name" TEXT NOT NULL,
-    "completed_at" TIMESTAMPTZ,
     "assignee_type" VARCHAR DEFAULT 'internal',
     "is_completed" BOOLEAN DEFAULT false NOT NULL,
     "is_deleted" BOOLEAN DEFAULT false NOT NULL,
@@ -183,18 +179,18 @@ CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.14 project_task_skills (タスク必要スキル)
-CREATE TABLE IF NOT EXISTS "public"."project_task_skills" (
+-- 1.14 task_skill_settings (タスクスキル割当)
+CREATE TABLE IF NOT EXISTS "public"."task_skill_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
-    "skill_id" UUID REFERENCES "public"."skills"("id") ON DELETE CASCADE,
-    "skill_level_id" UUID REFERENCES "public"."skill_levels"("id") ON DELETE SET NULL,
+    "skill_id" UUID REFERENCES "public"."skill_items"("id") ON DELETE CASCADE,
+    "skill_level_id" UUID REFERENCES "public"."skill_level_items"("id") ON DELETE SET NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.15 project_task_assignees (タスク担当者割当)
-CREATE TABLE IF NOT EXISTS "public"."project_task_assignees" (
+-- 1.15 task_assignee_settings (タスク担当者割当)
+CREATE TABLE IF NOT EXISTS "public"."task_assignee_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE SET NULL,
@@ -205,7 +201,7 @@ CREATE TABLE IF NOT EXISTS "public"."project_task_assignees" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.16 project_budgets (案件予算)
+-- 1.16 project_budgets (案件予算)
 CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE CASCADE,
@@ -217,8 +213,12 @@ CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.17 daily_work_records (日次作業記録)
-CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
+-- ==========================================
+-- 2. 日次実績層
+-- ==========================================
+
+-- 2.1 attendance_records (出欠実績)
+CREATE TABLE IF NOT EXISTS "public"."attendance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "date" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
@@ -228,77 +228,60 @@ CREATE TABLE IF NOT EXISTS "public"."daily_work_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.18 daily_allowance_records (日次その他加算手当記録)
-CREATE TABLE IF NOT EXISTS "public"."daily_allowance_records" (
+-- 2.2 allowance_records (加算手当実績)
+CREATE TABLE IF NOT EXISTS "public"."allowance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "work_record_id" UUID REFERENCES "public"."daily_work_records"("id") ON DELETE CASCADE,
-    "allowance_id" UUID REFERENCES "public"."allowances"("id") ON DELETE RESTRICT,
+    "date" DATE NOT NULL,
+    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    "allowance_id" UUID REFERENCES "public"."allowance_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.19 daily_deduction_records (日次控除記録)
-CREATE TABLE IF NOT EXISTS "public"."daily_deduction_records" (
+-- 2.3 deduction_records (控除実績)
+CREATE TABLE IF NOT EXISTS "public"."deduction_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "work_record_id" UUID REFERENCES "public"."daily_work_records"("id") ON DELETE CASCADE,
-    "deduction_id" UUID REFERENCES "public"."deductions"("id") ON DELETE RESTRICT,
+    "date" DATE NOT NULL,
+    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    "deduction_id" UUID REFERENCES "public"."deduction_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.20 daily_work_confirmations (日次作業確定)
-CREATE TABLE IF NOT EXISTS "public"."daily_work_confirmations" (
+-- 2.4 daily_record_closings (日次実績確定)
+CREATE TABLE IF NOT EXISTS "public"."daily_record_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "date" DATE NOT NULL UNIQUE,
-    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
-    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
+    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.21 daily_financial_records (日次収支記録)
-CREATE TABLE IF NOT EXISTS "public"."daily_financial_records" (
+-- ==========================================
+-- 3. 月次実績層
+-- ==========================================
+
+-- 3.1 general_financial_records (一般収支実績)
+CREATE TABLE IF NOT EXISTS "public"."general_financial_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "transaction_date" DATE DEFAULT CURRENT_DATE NOT NULL,
-    "period" DATE,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
     "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
-    "recorded_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "type" TEXT NOT NULL,
     "subject" TEXT NOT NULL,
     "amount" NUMERIC(12,2) NOT NULL,
-    "activity_category" TEXT DEFAULT 'production' NOT NULL CHECK ("activity_category" IN ('production', 'welfare')),
-    "cost_category" TEXT DEFAULT 'manufacturing' NOT NULL CHECK ("cost_category" IN ('manufacturing', 'sga')),
-    "remarks" TEXT,
+    "type" TEXT NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 互換用テーブル (financial_records)
-CREATE TABLE IF NOT EXISTS "public"."financial_records" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "period" DATE,
-    "recorded_date" DATE,
-    "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
-    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
-    "recorded_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "type" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "amount" NUMERIC(12,2) NOT NULL,
-    "activity_category" TEXT DEFAULT 'production' NOT NULL CHECK ("activity_category" IN ('production', 'welfare')),
-    "cost_category" TEXT DEFAULT 'manufacturing' NOT NULL CHECK ("cost_category" IN ('manufacturing', 'sga')),
-    "remarks" TEXT,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.22 monthly_incentive_records (月次インセンティブ記録)
-CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_records" (
+-- 3.2 incentive_records (インセンティブ実績)
+CREATE TABLE IF NOT EXISTS "public"."incentive_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" VARCHAR(7) NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
@@ -308,19 +291,41 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.23 monthly_incentive_confirmations (月次インセンティブ確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_confirmations" (
+-- 3.3 monthly_record_closings (月次実績確定)
+CREATE TABLE IF NOT EXISTS "public"."monthly_record_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" VARCHAR(7) NOT NULL UNIQUE,
-    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
-    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
+    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.24 monthly_wage_summaries (月次工賃・控除概要)
-CREATE TABLE IF NOT EXISTS "public"."monthly_wage_summaries" (
+-- ==========================================
+-- 4. スナップショット層
+-- ==========================================
+
+-- 4.1 general_financial_details (一般収支明細)
+CREATE TABLE IF NOT EXISTS "public"."general_financial_details" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "year_month" VARCHAR(7) NOT NULL,
+    "recorded_date" DATE,
+    "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
+    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
+    "recorded_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
+    "type" TEXT NOT NULL,
+    "activity_category" TEXT DEFAULT 'production' NOT NULL CHECK ("activity_category" IN ('production', 'welfare')),
+    "cost_category" TEXT DEFAULT 'manufacturing' NOT NULL CHECK ("cost_category" IN ('manufacturing', 'sga')),
+    "subject" TEXT NOT NULL,
+    "amount" NUMERIC(12,2) NOT NULL,
+    "remarks" TEXT,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 4.2 wage_summaries (工賃・控除概要)
+CREATE TABLE IF NOT EXISTS "public"."wage_summaries" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" TEXT NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
@@ -334,24 +339,24 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_wage_summaries" (
     "payment" INTEGER DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    CONSTRAINT "monthly_wage_summaries_year_month_member_id_key" UNIQUE ("year_month", "member_id")
+    CONSTRAINT "wage_summaries_year_month_member_id_key" UNIQUE ("year_month", "member_id")
 );
 
--- 3.25 monthly_incentive_details (月次インセンティブ明細)
-CREATE TABLE IF NOT EXISTS "public"."monthly_incentive_details" (
+-- 4.3 incentive_details (インセンティブ明細)
+CREATE TABLE IF NOT EXISTS "public"."incentive_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "summary_id" UUID REFERENCES "public"."monthly_wage_summaries"("id") ON DELETE CASCADE,
+    "summary_id" UUID REFERENCES "public"."wage_summaries"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE SET NULL,
     "allocation_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.26 monthly_allowance_details (月次その他加算手当明細)
-CREATE TABLE IF NOT EXISTS "public"."monthly_allowance_details" (
+-- 4.4 allowance_details (加算手当明細)
+CREATE TABLE IF NOT EXISTS "public"."allowance_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "summary_id" UUID REFERENCES "public"."monthly_wage_summaries"("id") ON DELETE CASCADE,
-    "allowance_id" UUID REFERENCES "public"."allowances"("id") ON DELETE SET NULL,
+    "summary_id" UUID REFERENCES "public"."wage_summaries"("id") ON DELETE CASCADE,
+    "allowance_id" UUID REFERENCES "public"."allowance_items"("id") ON DELETE SET NULL,
     "allowance_name" TEXT NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "quantity" NUMERIC(8,2) DEFAULT 0 NOT NULL,
@@ -360,11 +365,11 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_allowance_details" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.27 monthly_deduction_details (月次控除明細)
-CREATE TABLE IF NOT EXISTS "public"."monthly_deduction_details" (
+-- 4.5 deduction_details (控除明細)
+CREATE TABLE IF NOT EXISTS "public"."deduction_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "summary_id" UUID REFERENCES "public"."monthly_wage_summaries"("id") ON DELETE CASCADE,
-    "deduction_id" UUID REFERENCES "public"."deductions"("id") ON DELETE SET NULL,
+    "summary_id" UUID REFERENCES "public"."wage_summaries"("id") ON DELETE CASCADE,
+    "deduction_id" UUID REFERENCES "public"."deduction_items"("id") ON DELETE SET NULL,
     "deduction_name" TEXT NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "quantity" NUMERIC(8,2) DEFAULT 0 NOT NULL,
@@ -373,47 +378,45 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_deduction_details" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 3.28 monthly_wage_confirmations (月次工賃・控除確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_wage_confirmations" (
+-- 4.6 monthly_financial_closings (月次収支確定)
+CREATE TABLE IF NOT EXISTS "public"."monthly_financial_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "year_month" VARCHAR(7) NOT NULL UNIQUE,
-    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
-    "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.29 monthly_confirmation_details (月次収支明細)
-CREATE TABLE IF NOT EXISTS "public"."monthly_confirmation_details" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL,
-    "recorded_date" DATE,
-    "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
-    "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
-    "recorded_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "type" TEXT NOT NULL,
-    "activity_category" TEXT DEFAULT 'production' NOT NULL CHECK ("activity_category" IN ('production', 'welfare')),
-    "cost_category" TEXT DEFAULT 'manufacturing' NOT NULL CHECK ("cost_category" IN ('manufacturing', 'sga')),
-    "subject" TEXT NOT NULL,
-    "amount" NUMERIC(12,2) NOT NULL,
-    "remarks" TEXT,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 3.30 monthly_financial_confirmations (月次収支確定)
-CREATE TABLE IF NOT EXISTS "public"."monthly_financial_confirmations" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL UNIQUE,
-    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
     "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
-    "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 4. RLS 有効化と全アクセス許可ポリシー
+-- ==========================================
+-- 5. 旧テーブル名互換ビュー (Backward-Compatible Views)
+-- ==========================================
+
+CREATE OR REPLACE VIEW "public"."users" AS SELECT * FROM "public"."auth_users";
+CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT * FROM "public"."wage_rate_items";
+CREATE OR REPLACE VIEW "public"."allowances" AS SELECT * FROM "public"."allowance_items";
+CREATE OR REPLACE VIEW "public"."deductions" AS SELECT * FROM "public"."deduction_items";
+CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
+CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
+CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."attendance_records";
+CREATE OR REPLACE VIEW "public"."daily_allowance_records" AS SELECT * FROM "public"."allowance_records";
+CREATE OR REPLACE VIEW "public"."daily_deduction_records" AS SELECT * FROM "public"."deduction_records";
+CREATE OR REPLACE VIEW "public"."daily_work_confirmations" AS SELECT * FROM "public"."daily_record_closings";
+CREATE OR REPLACE VIEW "public"."financial_records" AS SELECT * FROM "public"."general_financial_records";
+CREATE OR REPLACE VIEW "public"."daily_financial_records" AS SELECT * FROM "public"."general_financial_records";
+CREATE OR REPLACE VIEW "public"."monthly_incentive_records" AS SELECT * FROM "public"."incentive_records";
+CREATE OR REPLACE VIEW "public"."monthly_incentive_confirmations" AS SELECT * FROM "public"."monthly_record_closings";
+CREATE OR REPLACE VIEW "public"."monthly_confirmation_details" AS SELECT * FROM "public"."general_financial_details";
+CREATE OR REPLACE VIEW "public"."monthly_wage_summaries" AS SELECT * FROM "public"."wage_summaries";
+CREATE OR REPLACE VIEW "public"."monthly_incentive_details" AS SELECT * FROM "public"."incentive_details";
+CREATE OR REPLACE VIEW "public"."monthly_allowance_details" AS SELECT * FROM "public"."allowance_details";
+CREATE OR REPLACE VIEW "public"."monthly_deduction_details" AS SELECT * FROM "public"."deduction_details";
+CREATE OR REPLACE VIEW "public"."monthly_financial_confirmations" AS SELECT * FROM "public"."monthly_financial_closings";
+
+-- ==========================================
+-- 6. RLS 有効化と全アクセス許可ポリシー
+-- ==========================================
 
 DO $$
 DECLARE

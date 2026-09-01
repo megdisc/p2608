@@ -12,11 +12,12 @@ import { ProjectFinancialRecordPage } from './ProjectFinancialRecordPage';
 
 export function ScreenProjectPage() {
   const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const currentTab = navContext.activeTab === 'screenProject' ? 'progressRecord' : navContext.activeTab;
+  const screenConfig = getScreenConfigForTab(currentTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_PROJECT;
 
   const renderContent = () => {
-    switch (navContext.activeTab) {
+    switch (currentTab) {
       case 'project':
         return <ProjectPage />;
       case 'budgetPlanning':
@@ -30,7 +31,7 @@ export function ScreenProjectPage() {
       case 'rewardAllocation':
         return <RewardAllocationPage />;
       default:
-        return <ProjectPage />;
+        return <ProgressRecordPage />;
     }
   };
 
@@ -40,7 +41,7 @@ export function ScreenProjectPage() {
         <h2 style={{ margin: 0 }}>{displayTitle}</h2>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+            <Tabs tabs={screenConfig.tabs} activeTab={currentTab} onChange={navContext.setActiveTab} />
           )}
         </div>
       </div>

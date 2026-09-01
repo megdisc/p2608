@@ -35,7 +35,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           </button>
           <button 
             className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('project')}
+            onClick={() => setActiveTab('progressRecord')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>

@@ -163,6 +163,22 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'reserve_items',
+      tableType: '独立マスタ',
+      logicalName: '積立金項目',
+      description: '積立金のマスターデータ（工賃変動積立金、設備更新積立金など）',
+      columns: [
+        { name: 'id', desc: '積立金ID' },
+        { name: 'name', desc: '積立金名' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'default_unit_price', desc: '標準単価・金額' },
+        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',

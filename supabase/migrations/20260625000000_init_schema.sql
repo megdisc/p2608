@@ -84,6 +84,17 @@ CREATE TABLE IF NOT EXISTS "public"."deduction_items" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.6 reserve_items (積立金項目)
+CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "occurrence_type" VARCHAR(20) DEFAULT 'monthly' NOT NULL,
+    "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 -- 1.6 auth_users (認証ユーザー)
 CREATE TABLE IF NOT EXISTS "public"."auth_users" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
@@ -397,6 +408,7 @@ CREATE OR REPLACE VIEW "public"."users" AS SELECT * FROM "public"."auth_users";
 CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT * FROM "public"."wage_rate_items";
 CREATE OR REPLACE VIEW "public"."allowances" AS SELECT * FROM "public"."allowance_items";
 CREATE OR REPLACE VIEW "public"."deductions" AS SELECT * FROM "public"."deduction_items";
+CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT * FROM "public"."reserve_items";
 CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
 CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
 CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."attendance_records";

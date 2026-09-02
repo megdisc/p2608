@@ -40,7 +40,7 @@ export function useAllowances() {
         // IDがDB存在ID（ALW-始まりでない）の場合は削除
         const realDeletedIds = deletedIds.filter(id => !id.startsWith('ALW-'));
         if (realDeletedIds.length > 0) {
-          const { error } = await supabase.from('allowances').delete().in('id', realDeletedIds);
+          const { error } = await supabase.from('allowance_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
           if (error) throw error;
         }
       }

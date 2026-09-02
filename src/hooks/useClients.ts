@@ -43,7 +43,7 @@ export function useClients() {
   const batchSaveClients = async (drafts: ClientItem[], deletedIds: string[]) => {
     try {
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('partners').update({ is_deleted: true }).in('id', deletedIds);
+        const { error } = await supabase.from('partners').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
         if (error) throw error;
       }
 

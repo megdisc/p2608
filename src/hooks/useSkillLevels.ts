@@ -33,7 +33,7 @@ export function useSkillLevels() {
       if (deletedIds.length > 0) {
         const { error: deleteError } = await supabase
           .from('skill_levels')
-          .update({ is_deleted: true })
+          .update({ deleted_at: new Date().toISOString() })
           .in('id', deletedIds);
         if (deleteError) throw deleteError;
       }

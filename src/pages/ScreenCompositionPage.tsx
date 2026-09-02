@@ -94,7 +94,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: 'スキルID' },
         { name: 'name', desc: 'スキル名' },
         { name: 'description', desc: 'スキルの説明' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -109,7 +109,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: 'スキルレベルID' },
         { name: 'level_value', desc: 'レベル数値' },
         { name: 'description', desc: 'レベルの説明' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -124,7 +124,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '工賃単価ID' },
         { name: 'wage', desc: '工賃単価' },
         { name: 'description', desc: '説明・摘要' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -140,7 +140,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '手当名' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'default_unit_price', desc: '標準単価' },
-        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -156,7 +156,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '控除名' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'default_unit_price', desc: '標準単価' },
-        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -172,7 +172,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '積立金名' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'default_unit_price', desc: '標準単価・金額' },
-        { name: 'is_active', desc: '有効フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -188,7 +188,7 @@ export function ScreenCompositionPage() {
         { name: 'email', desc: 'メールアドレス' },
         { name: 'role', desc: '権限ロール' },
         { name: 'user_type', desc: 'ユーザー種別（staff/member）' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -205,7 +205,7 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '利用者コード' },
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -251,7 +251,7 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '職員コード' },
         { name: 'name', desc: '職員名' },
         { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -271,7 +271,7 @@ export function ScreenCompositionPage() {
         { name: 'phone', desc: '電話番号' },
         { name: 'is_customer', desc: '顧客フラグ' },
         { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -289,7 +289,7 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '案件コード' },
         { name: 'name', desc: '案件名' },
         { name: 'project_type', desc: '案件種別' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -307,7 +307,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: 'タスク名' },
         { name: 'assignee_type', desc: '担当者区分（内部/外部等）' },
         { name: 'is_completed', desc: '完了フラグ' },
-        { name: 'is_deleted', desc: '削除フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -754,6 +754,69 @@ export function ScreenCompositionPage() {
                     return tableRows;
                   });
                 })()}
+              </tbody>
+            </table>
+
+            {/* 5. 旧テーブル名互換ビュー */}
+            <div style={{
+              marginTop: '32px',
+              marginBottom: '16px',
+              padding: '12px 16px',
+              backgroundColor: '#edf2f7',
+              borderRadius: 'var(--radius-md)',
+              borderLeft: '4px solid #4a5568'
+            }}>
+              <h4 style={{ margin: 0, fontSize: 'var(--text-body-bold)', color: '#2d3748' }}>
+                5. 旧テーブル名互換ビュー (Backward-Compatible Views)
+              </h4>
+              <div style={{ fontSize: '12px', color: '#4a5568', marginTop: '4px' }}>
+                アプリケーション互換性維持のため、4層ベーステーブルにマッピングされたビュー群
+              </div>
+            </div>
+
+            <table className="inventory-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '25%' }}>ビュー名 (View Name)</th>
+                  <th style={{ width: '25%' }}>参照ベーステーブル (Base Table)</th>
+                  <th style={{ width: '50%' }}>説明・補足</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { name: 'users', baseTable: 'auth_users', desc: '認証ユーザー互換ビュー（is_deleted 列を deleted_at から自動計算）' },
+                  { name: 'wage_rates', baseTable: 'wage_rate_items', desc: '工賃単価互換ビュー（is_deleted 列を deleted_at から自動計算）' },
+                  { name: 'allowances', baseTable: 'allowance_items', desc: '加算手当互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
+                  { name: 'deductions', baseTable: 'deduction_items', desc: '控除互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
+                  { name: 'reserve_settings', baseTable: 'reserve_items', desc: '積立金設定互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
+                  { name: 'skills', baseTable: 'skill_items', desc: 'スキル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
+                  { name: 'skill_levels', baseTable: 'skill_level_items', desc: 'スキルレベル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
+                  { name: 'member_skill_evaluations', baseTable: 'member_skill_settings', desc: '利用者スキル割当エイリアスビュー' },
+                  { name: 'member_wage_evaluations', baseTable: 'member_wage_settings', desc: '利用者工賃単価割当エイリアスビュー' },
+                  { name: 'project_task_skills', baseTable: 'task_skill_settings', desc: 'タスクスキル割当エイリアスビュー' },
+                  { name: 'project_task_assignees', baseTable: 'task_assignee_settings', desc: 'タスク担当者割当エイリアスビュー' },
+                  { name: 'daily_work_records', baseTable: 'attendance_records', desc: '出欠実績エイリアスビュー' },
+                  { name: 'daily_allowance_records', baseTable: 'allowance_records', desc: '加算手当実績エイリアスビュー' },
+                  { name: 'daily_deduction_records', baseTable: 'deduction_records', desc: '控除実績エイリアスビュー' },
+                  { name: 'daily_work_confirmations', baseTable: 'daily_record_closings', desc: '日次実績確定エイリアスビュー' },
+                  { name: 'financial_records', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
+                  { name: 'daily_financial_records', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
+                  { name: 'monthly_incentive_records', baseTable: 'incentive_records', desc: 'インセンティブ実績エイリアスビュー' },
+                  { name: 'monthly_incentive_confirmations', baseTable: 'monthly_record_closings', desc: '月次実績確定エイリアスビュー' },
+                  { name: 'monthly_wage_confirmations', baseTable: 'monthly_record_closings', desc: '月次実績確定エイリアスビュー' },
+                  { name: 'monthly_confirmation_details', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
+                  { name: 'monthly_wage_summaries', baseTable: 'wage_summaries', desc: '工賃・控除概要エイリアスビュー' },
+                  { name: 'monthly_incentive_details', baseTable: 'incentive_details', desc: 'インセンティブ明細エイリアスビュー' },
+                  { name: 'monthly_allowance_details', baseTable: 'allowance_details', desc: '加算手当明細エイリアスビュー' },
+                  { name: 'monthly_deduction_details', baseTable: 'deduction_details', desc: '控除明細エイリアスビュー' },
+                  { name: 'monthly_financial_confirmations', baseTable: 'monthly_financial_closings', desc: '月次収支確定エイリアスビュー' },
+                ].map((v, idx) => (
+                  <tr key={idx}>
+                    <td style={{ fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>{v.name}</td>
+                    <td style={{ color: 'var(--color-text-main)' }}>{v.baseTable}</td>
+                    <td style={{ color: 'var(--color-text-main)' }}>{v.desc}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

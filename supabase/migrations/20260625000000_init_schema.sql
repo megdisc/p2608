@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_level_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "level_value" INTEGER NOT NULL,
     "description" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS "public"."wage_rate_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "wage" NUMERIC(12,2) NOT NULL,
     "description" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_items" (
     "name" TEXT NOT NULL,
     "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
     "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS "public"."deduction_items" (
     "name" TEXT NOT NULL,
     "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL,
     "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
     "name" TEXT NOT NULL,
     "occurrence_type" VARCHAR(20) DEFAULT 'monthly' NOT NULL,
     "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS "public"."auth_users" (
     "email" TEXT UNIQUE,
     "role" TEXT DEFAULT '職員' NOT NULL,
     "user_type" TEXT DEFAULT 'staff' NOT NULL CHECK ("user_type" IN ('staff', 'member')),
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "code" TEXT,
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "code" TEXT,
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS "public"."partners" (
     "phone" TEXT,
     "is_customer" BOOLEAN DEFAULT false NOT NULL,
     "is_subcontractor" BOOLEAN DEFAULT false NOT NULL,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
     "code" TEXT,
     "name" TEXT NOT NULL,
     "project_type" TEXT DEFAULT 'one-off',
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "name" TEXT NOT NULL,
     "assignee_type" VARCHAR DEFAULT 'internal',
     "is_completed" BOOLEAN DEFAULT false NOT NULL,
-    "is_deleted" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -403,21 +403,26 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_financial_closings" (
 -- 5. 旧テーブル名互換ビュー (Backward-Compatible Views)
 -- ==========================================
 
-CREATE OR REPLACE VIEW "public"."users" AS SELECT * FROM "public"."auth_users";
-CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT * FROM "public"."wage_rate_items";
-CREATE OR REPLACE VIEW "public"."allowances" AS SELECT * FROM "public"."allowance_items";
-CREATE OR REPLACE VIEW "public"."deductions" AS SELECT * FROM "public"."deduction_items";
-CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT * FROM "public"."reserve_items";
-CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
-CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
+CREATE OR REPLACE VIEW "public"."users" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."auth_users";
+CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."wage_rate_items";
+CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."allowance_items";
+CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."deduction_items";
+CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."reserve_items";
+CREATE OR REPLACE VIEW "public"."skills" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."skill_items";
+CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."skill_level_items";
+CREATE OR REPLACE VIEW "public"."member_skill_evaluations" AS SELECT * FROM "public"."member_skill_settings";
+CREATE OR REPLACE VIEW "public"."member_wage_evaluations" AS SELECT * FROM "public"."member_wage_settings";
+CREATE OR REPLACE VIEW "public"."project_task_skills" AS SELECT * FROM "public"."task_skill_settings";
+CREATE OR REPLACE VIEW "public"."project_task_assignees" AS SELECT * FROM "public"."task_assignee_settings";
 CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."attendance_records";
 CREATE OR REPLACE VIEW "public"."daily_allowance_records" AS SELECT * FROM "public"."allowance_records";
 CREATE OR REPLACE VIEW "public"."daily_deduction_records" AS SELECT * FROM "public"."deduction_records";
 CREATE OR REPLACE VIEW "public"."daily_work_confirmations" AS SELECT * FROM "public"."daily_record_closings";
-CREATE OR REPLACE VIEW "public"."financial_records" AS SELECT * FROM "public"."general_financial_records";
-CREATE OR REPLACE VIEW "public"."daily_financial_records" AS SELECT * FROM "public"."general_financial_records";
+CREATE OR REPLACE VIEW "public"."financial_records" AS SELECT * FROM "public"."general_financial_details";
+CREATE OR REPLACE VIEW "public"."daily_financial_records" AS SELECT * FROM "public"."general_financial_details";
 CREATE OR REPLACE VIEW "public"."monthly_incentive_records" AS SELECT * FROM "public"."incentive_records";
 CREATE OR REPLACE VIEW "public"."monthly_incentive_confirmations" AS SELECT * FROM "public"."monthly_record_closings";
+CREATE OR REPLACE VIEW "public"."monthly_wage_confirmations" AS SELECT * FROM "public"."monthly_record_closings";
 CREATE OR REPLACE VIEW "public"."monthly_confirmation_details" AS SELECT * FROM "public"."general_financial_details";
 CREATE OR REPLACE VIEW "public"."monthly_wage_summaries" AS SELECT * FROM "public"."wage_summaries";
 CREATE OR REPLACE VIEW "public"."monthly_incentive_details" AS SELECT * FROM "public"."incentive_details";

@@ -47,7 +47,7 @@ export function useMembers() {
   const batchSaveMembers = async (drafts: MemberItem[], deletedIds: string[]) => {
     try {
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('members').update({ is_deleted: true }).in('id', deletedIds);
+        const { error } = await supabase.from('members').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
         if (error) throw error;
       }
 

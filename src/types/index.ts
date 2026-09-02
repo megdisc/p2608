@@ -4,6 +4,7 @@ export interface UserItem {
   email?: string;
   role: string;
   user_type: 'staff' | 'member';
+  deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -18,6 +19,7 @@ export type StaffItem = {
   email?: string;
   password?: string;
   role: string;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -31,6 +33,7 @@ export interface MemberItem {
   email?: string;
   password?: string;
   baseWageId?: string;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -54,6 +57,7 @@ export type ProjectTask = {
   isCompleted?: boolean;
   completedAt?: string;
   laborBudget?: number;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -68,6 +72,7 @@ export type ProjectItem = {
   projectTypeSortKey?: string;
   customerId?: string;
   tasks: ProjectTask[];
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -76,6 +81,7 @@ export type SkillItem = {
   name: string;
   yomigana?: string;
   description: string;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -83,6 +89,7 @@ export type BaseWageItem = {
   id: string;
   wage: number;
   description: string;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -91,7 +98,8 @@ export type AllowanceItem = {
   name: string;
   occurrence_type: 'daily' | 'monthly';
   default_unit_price: number;
-  is_active: boolean;
+  deleted_at?: string | null;
+  is_active?: boolean;
 };
 
 export type DeductionItem = {
@@ -99,7 +107,8 @@ export type DeductionItem = {
   name: string;
   occurrence_type: 'daily' | 'monthly';
   default_unit_price: number;
-  is_active: boolean;
+  deleted_at?: string | null;
+  is_active?: boolean;
 };
 
 export type ClientItem = {
@@ -111,6 +120,7 @@ export type ClientItem = {
   phone: string;
   isCustomer?: boolean;
   isSubcontractor?: boolean;
+  deleted_at?: string | null;
   is_deleted?: boolean;
 };
 
@@ -167,6 +177,8 @@ export type DailyDeductionRecordItem = {
 export type FinancialRecordItem = {
   id: string;
   targetPeriod: string;
+  period?: string;
+  recordedDate?: string;
   projectId: string;
   clientId?: string;
   type: 'revenue' | 'expense' | 'reserve';

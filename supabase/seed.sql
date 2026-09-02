@@ -132,21 +132,21 @@ INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4
 INSERT INTO project_task_assignees (task_id, member_id) VALUES ('d6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 'e98c7634-1eb3-4e42-b062-841f39c043e0');
 
 -- Additional Daily Work Records
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 2);
 
 -- Additional Task Progress
 
@@ -186,7 +186,7 @@ INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VAL
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'expense', '労務費（利用者工賃・構築・テスト）', '8daa6b8b-ddb2-462a-9594-1738f004832f', 800000);
 
 -- 完了案件の収支記録のシード
-INSERT INTO financial_records (period, type, subject, amount, project_id, cost_category, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'manufacturing', '2026-06-30');
+INSERT INTO financial_records (target_period, type, subject, amount, project_id, cost_category) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 2300000, '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'manufacturing');
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'reserve', '工賃変動積立金', 500000);
 
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'revenue', '就労支援事業収益', 350000);
@@ -199,7 +199,7 @@ INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VAL
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('a91b78c8-8047-4dad-924c-1ee58074ff78', 'expense', '労務費（利用者工賃・フロントエンド実装）', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 400000);
 
 -- 完了案件の収支記録のシード (新規Webサービス開発支援)
-INSERT INTO financial_records (period, type, subject, amount, project_id, cost_category, recorded_date) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'manufacturing', '2026-06-30');
+INSERT INTO financial_records (target_period, type, subject, amount, project_id, cost_category) VALUES ('2026-06-01', 'expense', '労務費（利用者工賃）', 996500, 'a91b78c8-8047-4dad-924c-1ee58074ff78', 'manufacturing');
 
 -- 社内基幹システム移行
 INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('7e3a29d8-9ba7-49c1-b7a0-24e894f92098', 'revenue', '就労支援事業収益', 1200000);
@@ -219,27 +219,27 @@ INSERT INTO project_budgets (project_id, category, subject, amount) VALUES ('c12
 INSERT INTO project_budgets (project_id, category, subject, task_id, amount) VALUES ('c1234567-89ab-cdef-0123-456789abcdef', 'expense', '労務費（利用者工賃・保守運用業務）', 'a1234567-89ab-cdef-0123-456789abcdef', 500000);
 
 -- Add daily work records for 2026-06-29
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 1);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 5);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '00000000-0000-0000-0000-000000000002', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 5);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-29', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '00000000-0000-0000-0000-000000000002', 2);
 
 -- Add daily work records for 2026-06-30
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1.5);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '00000000-0000-0000-0000-000000000002', 1.5);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 0.5);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '00000000-0000-0000-0000-000000000002', 0.5);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 5);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-06-30', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '00000000-0000-0000-0000-000000000002', 2);
 
 -- Member Skill Evaluations
 INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUES ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'e24bd35c-7833-41c3-ab5b-5136db6d75d1'); -- 江口春奈: ネットワーク設計 (1.初級)
@@ -300,98 +300,98 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 -- Financial Records (Manually Input Seed Data - ~60 records)
 INSERT INTO financial_records (target_period, project_id, client_id, type, subject, amount, recorded_by, cost_category, remarks, activity_category) VALUES
 -- 2026-01
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 2800000, '2026-01-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202601-01', 'production'),
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 60000, '2026-01-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202601-05 (木材・接着剤)', 'production'),
-('2026-01-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分工賃一括振込', 'production'),
-('2026-01-01', NULL, NULL, 'revenue', '控除', 0, '2026-01-28', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分控除一括', 'welfare'),
-('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '外注加工費', 150000, '2026-01-29', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202601-10', 'production'),
-('2026-01-01', NULL, NULL, 'reserve', '工賃変動積立金', 80000, '2026-01-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '1月分積立確定', 'production'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 2800000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202601-01', 'production'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 60000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202601-05 (木材・接着剤)', 'production'),
+('2026-01-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分工賃一括振込', 'production'),
+('2026-01-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '1月分控除一括', 'welfare'),
+('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '外注加工費', 150000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202601-10', 'production'),
+('2026-01-01', NULL, NULL, 'reserve', '工賃変動積立金', 80000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '1月分積立確定', 'production'),
 
 -- 2026-02
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3100000, '2026-02-24', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202602-02', 'production'),
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 75000, '2026-02-25', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202602-12 (梱包資材・ダンボール)', 'production'),
-('2026-02-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分工賃一括振込', 'production'),
-('2026-02-01', NULL, NULL, 'revenue', '控除', 0, '2026-02-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分控除一括', 'welfare'),
-('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '経費', 90000, '2026-02-27', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202602-18 (事務用品・印刷費)', 'production'),
-('2026-02-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-02-28', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '2月分修繕積立', 'production'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3100000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202602-02', 'production'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 75000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202602-12 (梱包資材・ダンボール)', 'production'),
+('2026-02-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分工賃一括振込', 'production'),
+('2026-02-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '2月分控除一括', 'welfare'),
+('2026-02-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '経費', 90000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202602-18 (事務用品・印刷費)', 'production'),
+('2026-02-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '2月分修繕積立', 'production'),
 
 -- 2026-03
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2500000, '2026-03-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202603-03', 'production'),
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 120000, '2026-03-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202603-08 (電装部品・基板)', 'production'),
-('2026-03-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分工賃一括振込', 'production'),
-('2026-03-01', NULL, NULL, 'revenue', '控除', 0, '2026-03-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分控除一括', 'welfare'),
-('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 100000, '2026-03-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202603-02', 'production'),
-('2026-03-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-03-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '3月分積立確定', 'production'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2500000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202603-03', 'production'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 120000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202603-08 (電装部品・基板)', 'production'),
+('2026-03-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分工賃一括振込', 'production'),
+('2026-03-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '3月分控除一括', 'welfare'),
+('2026-03-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 100000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202603-02', 'production'),
+('2026-03-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '3月分積立確定', 'production'),
 
 -- 2026-04
-('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3000000, '2026-04-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202604-01', 'production'),
-('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 55000, '2026-04-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202604-15 (塗料・工具類)', 'production'),
-('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分工賃一括振込', 'production'),
-('2026-04-01', NULL, NULL, 'revenue', '控除', 0, '2026-04-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分控除一括', 'welfare'),
-('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 250000, '2026-04-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '臨時指導員給与', 'production'),
-('2026-04-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 60000, '2026-04-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '4月分修繕積立', 'production'),
+('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3000000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202604-01', 'production'),
+('2026-04-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 55000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202604-15 (塗料・工具類)', 'production'),
+('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分工賃一括振込', 'production'),
+('2026-04-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '4月分控除一括', 'welfare'),
+('2026-04-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 250000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '臨時指導員給与', 'production'),
+('2026-04-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 60000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '4月分修繕積立', 'production'),
 
 -- 2026-05
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3400000, '2026-05-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202605-02', 'production'),
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 68000, '2026-05-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202605-03 (アクリル板・ネジ)', 'production'),
-('2026-05-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分工賃一括振込', 'production'),
-('2026-05-01', NULL, NULL, 'revenue', '控除', 0, '2026-05-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分控除一括', 'welfare'),
-('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 220000, '2026-05-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202605-08', 'production'),
-('2026-05-01', NULL, NULL, 'reserve', '工賃変動積立金', 120000, '2026-05-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '5月分積立確定', 'production'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3400000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202605-02', 'production'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 68000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202605-03 (アクリル板・ネジ)', 'production'),
+('2026-05-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分工賃一括振込', 'production'),
+('2026-05-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '5月分控除一括', 'welfare'),
+('2026-05-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 220000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202605-08', 'production'),
+('2026-05-01', NULL, NULL, 'reserve', '工賃変動積立金', 120000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '5月分積立確定', 'production'),
 
 -- 2026-06
-('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 450000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202606-01', 'production'),
-('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-06-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202606-20 (製菓材料類)', 'production'),
-('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 15525, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分工賃一括振込', 'production'),
-('2026-06-01', NULL, NULL, 'revenue', '控除', 0, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分控除一括', 'welfare'),
-('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 300000, '2026-06-30', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '外部講習講師謝礼', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 450000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202606-01', 'production'),
+('2026-06-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202606-20 (製菓材料類)', 'production'),
+('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 15525, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分工賃一括振込', 'production'),
+('2026-06-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '6月分控除一括', 'welfare'),
+('2026-06-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 300000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '外部講習講師謝礼', 'production'),
 
 -- 2026-07
 -- (No separate manual financial records for 2026-07; see ongoing project seed section below)
 
 
 -- 2026-08
-('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 1000000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202608-01', 'production'),
-('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202608-01 (清掃用具・洗浄液)', 'production'),
-('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 600000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算工賃', 'production'),
-('2026-08-01', NULL, NULL, 'revenue', '控除', 0, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算控除', 'welfare'),
-('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 150000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '専門指導員手当', 'production'),
-('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 20000, '2026-08-01', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202608-04 (消耗品代)', 'production'),
-('2026-08-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '2026-08-01', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '8月分積立予定', 'production'),
-('2026-08-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, '2026-08-01', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月分修繕積立予定', 'production'),
+('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 1000000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202608-01', 'production'),
+('2026-08-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 40000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202608-01 (清掃用具・洗浄液)', 'production'),
+('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 600000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算工賃', 'production'),
+('2026-08-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月概算控除', 'welfare'),
+('2026-08-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 150000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'sga', '専門指導員手当', 'production'),
+('2026-08-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 20000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '領収書No. R-202608-04 (消耗品代)', 'production'),
+('2026-08-01', NULL, NULL, 'reserve', '工賃変動積立金', 100000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '8月分積立予定', 'production'),
+('2026-08-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 50000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '8月分修繕積立予定', 'production'),
 
 -- 2026-09
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2900000, '2026-09-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202609-03', 'production'),
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 85000, '2026-09-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202609-10 (特殊塗料・溶剤)', 'production'),
-('2026-09-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分工賃一括振込', 'production'),
-('2026-09-01', NULL, NULL, 'revenue', '控除', 0, '2026-09-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分控除一括', 'welfare'),
-('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 180000, '2026-09-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202609-04', 'production'),
-('2026-09-01', NULL, NULL, 'reserve', '工賃変動積立金', 90000, '2026-09-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '9月分積立確定', 'production'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 2900000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202609-03', 'production'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 85000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202609-10 (特殊塗料・溶剤)', 'production'),
+('2026-09-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分工賃一括振込', 'production'),
+('2026-09-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '9月分控除一括', 'welfare'),
+('2026-09-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '外注加工費', 180000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202609-04', 'production'),
+('2026-09-01', NULL, NULL, 'reserve', '工賃変動積立金', 90000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '9月分積立確定', 'production'),
 
 -- 2026-10
-('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3200000, '2026-10-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202610-01', 'production'),
-('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 62000, '2026-10-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202610-07 (配線材・端子)', 'production'),
-('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分工賃一括振込', 'production'),
-('2026-10-01', NULL, NULL, 'revenue', '控除', 0, '2026-10-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分控除一括', 'welfare'),
-('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 220000, '2026-10-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '専門員派遣費用', 'production'),
-('2026-10-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 70000, '2026-10-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '10月分修繕積立', 'production'),
+('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 3200000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202610-01', 'production'),
+('2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 62000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202610-07 (配線材・端子)', 'production'),
+('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分工賃一括振込', 'production'),
+('2026-10-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '10月分控除一括', 'welfare'),
+('2026-10-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 220000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '専門員派遣費用', 'production'),
+('2026-10-01', NULL, NULL, 'reserve', '設備等修繕維持積立金', 70000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '10月分修繕積立', 'production'),
 
 -- 2026-11
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3500000, '2026-11-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202611-02', 'production'),
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 70000, '2026-11-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202611-19 (梱包テープ・緩衝材)', 'production'),
-('2026-11-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分工賃一括振込', 'production'),
-('2026-11-01', NULL, NULL, 'revenue', '控除', 0, '2026-11-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分控除一括', 'welfare'),
-('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 250000, '2026-11-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202611-09', 'production'),
-('2026-11-01', NULL, NULL, 'reserve', '工賃変動積立金', 150000, '2026-11-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '11月分積立確定', 'production'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'revenue', '就労支援事業収益', 3500000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202611-02', 'production'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '材料費', 70000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202611-19 (梱包テープ・緩衝材)', 'production'),
+('2026-11-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分工賃一括振込', 'production'),
+('2026-11-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '11月分控除一括', 'welfare'),
+('2026-11-01', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'expense', '外注加工費', 250000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'manufacturing', '請求書No. EXT-202611-09', 'production'),
+('2026-11-01', NULL, NULL, 'reserve', '工賃変動積立金', 150000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '11月分積立確定', 'production'),
 
 -- 2026-12
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 3800000, '2026-12-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202612-03', 'production'),
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 95000, '2026-12-26', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202612-22 (年末備品・工具)', 'production'),
-('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分工賃一括振込', 'production'),
-('2026-12-01', NULL, NULL, 'revenue', '控除', 0, '2026-12-27', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分控除一括', 'welfare'),
-('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 350000, '2026-12-28', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '年末特別手当', 'production'),
-('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 120000, '2026-12-29', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'sga', '領収書No. R-202612-30 (年物消耗品・文具)', 'production'),
-('2026-12-01', NULL, NULL, 'reserve', '工賃変動積立金', 200000, '2026-12-30', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '12月分積立確定', 'production');
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'revenue', '就労支援事業収益', 3800000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202612-03', 'production'),
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '材料費', 95000, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '領収書No. R-202612-22 (年末備品・工具)', 'production'),
+('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃）', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分工賃一括振込', 'production'),
+('2026-12-01', NULL, NULL, 'revenue', '控除', 0, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'manufacturing', '12月分控除一括', 'welfare'),
+('2026-12-01', NULL, NULL, 'expense', '労務費（利用者工賃以外）', 350000, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'sga', '年末特別手当', 'production'),
+('2026-12-01', 'a91b78c8-8047-4dad-924c-1ee58074ff78', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'expense', '経費', 120000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'sga', '領収書No. R-202612-30 (年物消耗品・文具)', 'production'),
+('2026-12-01', NULL, NULL, 'reserve', '工賃変動積立金', 200000, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '12月分積立確定', 'production');
 
 -- === COMPREHENSIVE GENERATED SEED DATA FOR 2026-06 to 2026-08 ===
 
@@ -399,49 +399,49 @@ INSERT INTO financial_records (target_period, project_id, client_id, type, subje
 
 
 -- === GENERATED DAILY WORK RECORDS FOR 2026-08 ===
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-04', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-04', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-09', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-09', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-10', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-11', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-11', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-12', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-12', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-13', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-13', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-14', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-14', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-16', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-17', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 2);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-18', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-18', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 3);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-19', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-19', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-20', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 1);
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES ('2026-08-20', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-02', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-02', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-03', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-03', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-04', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-04', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-05', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-05', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-08', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-08', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-09', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-09', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-10', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-11', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-11', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-12', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-12', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-13', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-13', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-14', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-14', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '9f95bc37-68fb-43ab-99b0-49eb8d0f500e', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'b6ed11d0-6084-48d5-bda3-6971fa912e5f', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-16', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'd6b67bb1-5d17-4ca3-aa4d-f9a80c4409b1', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-17', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 2);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-18', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-18', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'a1234567-89ab-cdef-0123-456789abcdef', 3);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-19', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-19', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-20', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '884d9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', 1);
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES ('2026-08-20', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'a1234567-89ab-cdef-0123-456789abcdef', 1);
 
 -- === SEED DAILY WORK CONFIRMATIONS ===
-INSERT INTO daily_work_confirmations (date, is_confirmed) VALUES
+INSERT INTO daily_work_confirmations (target_period, is_confirmed) VALUES
 ('2026-06-15', true), ('2026-06-16', true), ('2026-06-17', true), ('2026-06-29', true), ('2026-06-30', true),
 ('2026-07-01', true), ('2026-07-02', true), ('2026-07-03', true), ('2026-07-06', true), ('2026-07-07', true),
 ('2026-07-08', true), ('2026-07-09', true), ('2026-07-10', true), ('2026-07-13', true), ('2026-07-14', true),
@@ -455,7 +455,7 @@ INSERT INTO daily_work_confirmations (date, is_confirmed) VALUES
 ('2027-07-01', true), ('2027-07-02', true), ('2027-07-05', true), ('2027-07-06', true), ('2027-07-07', true),
 ('2027-07-08', true), ('2027-07-09', true), ('2027-07-12', true), ('2027-07-13', true), ('2027-07-14', true),
 ('2027-07-15', true)
-ON CONFLICT (date) DO NOTHING;
+ON CONFLICT (target_period) DO NOTHING;
 
 
 -- === SEED DATA FOR 2027-07 (MOCKUP SAMPLE) ===
@@ -488,15 +488,15 @@ INSERT INTO project_budgets (project_id, category, subject, amount, task_id) VAL
 ('77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, NULL);
 
 INSERT INTO financial_records (target_period, project_id, type, subject, amount, activity_category) VALUES
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・要件定義・AIモデル選定）', 600000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・学習データ作成・パイプライン構築）', 800000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, '2027-07-31', 'production'),
-('2027-07-01', '77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, '2027-07-31', 'production');
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・要件定義・AIモデル選定）', 600000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・学習データ作成・パイプライン構築）', 800000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '外注加工費（インフラ環境構築）', 500000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '材料費', 400000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, 'production'),
+('2027-07-01', '77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, 'production');
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES
 ('2027-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '77777777-7777-4777-a777-777777770001', 3),
 ('2027-07-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '77777777-7777-4777-a777-777777770001', 3),
 ('2027-07-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '77777777-7777-4777-a777-777777770002', 4),

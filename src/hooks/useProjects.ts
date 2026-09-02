@@ -103,11 +103,13 @@ export function useProjects() {
         const tIdsToDelete = deletedIds.filter(id => id.includes('TASK'));
 
         if (pIdsToDelete.length > 0) {
-          await supabase.from('projects').update({ is_deleted: true }).in('id', pIdsToDelete);
-          await supabase.from('project_tasks').update({ is_deleted: true }).in('project_id', pIdsToDelete);
+          const nowIso = new Date().toISOString();
+          await supabase.from('projects').update({ deleted_at: nowIso }).in('id', pIdsToDelete);
+          await supabase.from('project_tasks').update({ deleted_at: nowIso }).in('project_id', pIdsToDelete);
         }
         if (tIdsToDelete.length > 0) {
-          await supabase.from('project_tasks').update({ is_deleted: true }).in('id', tIdsToDelete);
+          const nowIso = new Date().toISOString();
+          await supabase.from('project_tasks').update({ deleted_at: nowIso }).in('id', tIdsToDelete);
         }
       }
 

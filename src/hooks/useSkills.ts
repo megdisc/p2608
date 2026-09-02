@@ -36,7 +36,7 @@ export function useSkills() {
       setLoading(true);
       
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('skills').update({ is_deleted: true }).in('id', deletedIds);
+        const { error } = await supabase.from('skills').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
         if (error) throw error;
       }
 

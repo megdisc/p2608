@@ -144,6 +144,7 @@ export function ProjectFinancialRecordPage() {
 
   const handleAddRow = (): FinancialRecordItem => ({
     id: `draft-${Date.now()}`,
+    targetPeriod: getCurrentJSTDateOnly(),
     period: getCurrentJSTDateOnly(),
     projectId: '',
     clientId: '',

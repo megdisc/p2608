@@ -39,7 +39,7 @@ export function useDeductions() {
       if (deletedIds.length > 0) {
         const realDeletedIds = deletedIds.filter(id => !id.startsWith('DED-'));
         if (realDeletedIds.length > 0) {
-          const { error } = await supabase.from('deductions').delete().in('id', realDeletedIds);
+          const { error } = await supabase.from('deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
           if (error) throw error;
         }
       }

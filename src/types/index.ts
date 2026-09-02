@@ -116,7 +116,7 @@ export type ClientItem = {
 
 export type DailyWorkRecordItem = {
   id: string;
-  date: string;
+  targetPeriod: string;
   userId: string;
   taskId: string;
   workTime: number;
@@ -124,7 +124,7 @@ export type DailyWorkRecordItem = {
 
 export type DailyWorkConfirmationItem = {
   id: string;
-  date: string;
+  targetPeriod: string;
   isConfirmed: boolean;
   confirmedBy?: string;
   confirmedAt?: string;
@@ -132,7 +132,7 @@ export type DailyWorkConfirmationItem = {
 
 export type MonthlyIncentiveConfirmationItem = {
   id: string;
-  yearMonth: string;
+  targetPeriod: string;
   isConfirmed: boolean;
   confirmedBy?: string;
   confirmedAt?: string;
@@ -140,7 +140,7 @@ export type MonthlyIncentiveConfirmationItem = {
 
 export type MonthlyIncentiveRecordItem = {
   id: string;
-  yearMonth: string;
+  targetPeriod: string;
   memberId?: string;
   taskId?: string;
   allocationAmount: number;
@@ -166,15 +166,14 @@ export type DailyDeductionRecordItem = {
 
 export type FinancialRecordItem = {
   id: string;
-  period: string;
+  targetPeriod: string;
   projectId: string;
   clientId?: string;
   type: 'revenue' | 'expense' | 'reserve';
   subject: string;
   amount: number;
   remarks?: string;
-  recordedDate: string;
-  recordedBy: string;
+  recordedBy?: string;
   activity_category?: 'production' | 'welfare';
   costCategory?: 'manufacturing' | 'sga';
   isLimited?: boolean;
@@ -182,7 +181,7 @@ export type FinancialRecordItem = {
 
 export type MonthlyWageSummaryItem = {
   id: string;
-  yearMonth: string;
+  targetPeriod: string;
   memberId: string;
   workTime: number;
   wageRate: number | null;
@@ -225,7 +224,7 @@ export type MonthlyDeductionDetailItem = {
 
 export type MonthlyWageConfirmationItem = {
   id: string;
-  yearMonth: string;
+  targetPeriod: string;
   isConfirmed: boolean;
   confirmedBy?: string;
   confirmedAt?: string;

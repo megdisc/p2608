@@ -5,7 +5,7 @@ import { getCurrentJSTDateOnly } from '../utils';
 
 export type DailyRecord = {
   id: string;
-  date: string;
+  target_period: string;
   member_id: string;
   task_id: string;
   work_time: number;
@@ -94,7 +94,7 @@ export function useDailyWorkRecords() {
       const { data, error } = await supabase
         .from('daily_work_records')
         .select('*')
-        .eq('date', date);
+        .eq('target_period', date);
       
       if (error) throw error;
       setRecords(data || []);
@@ -320,14 +320,14 @@ export function useDailyWorkRecords() {
           if (isRealRecord) {
             upserts.push({
               id: r.id,
-              date: currentDate,
+              target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
               work_time: workTimeNum
             });
           } else {
             inserts.push({
-              date: currentDate,
+              target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
               work_time: workTimeNum
@@ -366,9 +366,9 @@ export function useDailyWorkRecords() {
 
   const fetchConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('daily_work_confirmations').select('date').eq('is_confirmed', true);
+      const { data, error } = await supabase.from('daily_work_confirmations').select('target_period').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
-        const dbDates = data.map((d: any) => d.date);
+        const dbDates = data.map((d: any) => d.target_period);
         setConfirmedDates(prev => {
           const merged = Array.from(new Set([...prev, ...dbDates]));
           localStorage.setItem('daily_work_confirmations', JSON.stringify(merged));
@@ -388,7 +388,7 @@ export function useDailyWorkRecords() {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').upsert({ date, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'date' });
+      await supabase.from('daily_work_confirmations').upsert({ target_period: date, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'target_period' });
     } catch (err) {
       console.error('Error confirming date:', err);
     }
@@ -401,7 +401,7 @@ export function useDailyWorkRecords() {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').delete().eq('date', date);
+      await supabase.from('daily_work_confirmations').delete().eq('target_period', date);
     } catch (err) {
       console.error('Error unconfirming date:', err);
     }

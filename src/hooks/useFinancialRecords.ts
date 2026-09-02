@@ -10,7 +10,7 @@ export type UseFinancialRecordsOptions = {
 };
 
 export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
-  const initialSort = options.initialSort || { key: 'period', direction: 'desc' };
+  const initialSort = options.initialSort || { key: 'targetPeriod', direction: 'desc' };
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
   const [projects, setProjects] = useState<{id: string, name: string}[]>([]);
   const [staffs, setStaffs] = useState<{id: string, name: string}[]>([]);
@@ -28,14 +28,14 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     try {
       setLoading(true);
       let query = supabase.from('financial_records').select(`
-          id, period, type, subject, amount, remarks, recorded_date, activity_category, cost_category,
+          id, target_period, type, subject, amount, remarks, activity_category, cost_category,
           project:projects(id, name),
           staff:staffs(id, name),
           client:partners(id, name)
         `, { count: 'exact' });
 
       if (currentYear) {
-        query = query.gte('period', `${currentYear}-01-01`).lte('period', `${currentYear}-12-31`);
+        query = query.gte('target_period', `${currentYear}-01-01`).lte('target_period', `${currentYear}-12-31`);
       }
 
       if (options.type) {
@@ -45,17 +45,13 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         query = query.in('subject', options.subjects);
       }
 
-      let dbSortKey = 'period';
+      let dbSortKey = 'target_period';
       if (sortConfig.key === 'projectId') dbSortKey = 'project_id';
       else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
-      else if (sortConfig.key === 'recordedDate') dbSortKey = 'recorded_date';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
-      else if (['period', 'type', 'subject', 'amount', 'remarks', 'activity_category', 'cost_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key;
+      else if (['targetPeriod', 'type', 'subject', 'amount', 'remarks', 'activity_category', 'cost_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key === 'targetPeriod' ? 'target_period' : sortConfig.key;
 
       query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
-      if (dbSortKey !== 'recorded_date') {
-        query = query.order('recorded_date', { ascending: sortConfig.direction === 'asc' });
-      }
 
       const startIdx = (page - 1) * pageSize;
       query = query.range(startIdx, startIdx + pageSize - 1);
@@ -80,14 +76,13 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       if (recData) {
         const mapped: FinancialRecordItem[] = recData.map((r: any) => ({
           id: r.id,
-          period: r.period || '',
+          targetPeriod: r.target_period || '',
           projectId: r.project?.id || '',
           clientId: r.client?.id || '',
           type: r.type,
           subject: r.subject,
           amount: r.amount,
           remarks: r.remarks || '',
-          recordedDate: r.recorded_date,
           recordedBy: r.staff?.id || '',
           activity_category: r.activity_category || 'production',
           costCategory: r.cost_category || 'manufacturing'
@@ -112,14 +107,13 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     // Process new and updated records
     const upserts = drafts.map(d => ({
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-      period: d.period || today,
+      target_period: d.targetPeriod || today,
       project_id: d.projectId || null,
       client_id: d.clientId || null,
       type: d.type || 'revenue',
       subject: d.subject || '',
       amount: d.amount || 0,
       remarks: d.remarks || null,
-      recorded_date: d.recordedDate || today,
       recorded_by: d.recordedBy || null,
       activity_category: d.activity_category || 'production',
       cost_category: d.costCategory || 'manufacturing'

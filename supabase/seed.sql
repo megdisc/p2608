@@ -298,7 +298,7 @@ INSERT INTO member_skill_evaluations (member_id, skill_id, skill_level_id) VALUE
 
 -- Financial Records (Manually Input Seed Data - ~60 records)
 -- Financial Records (Manually Input Seed Data - ~60 records)
-INSERT INTO financial_records (period, project_id, client_id, type, subject, amount, recorded_date, recorded_by, cost_category, remarks, activity_category) VALUES
+INSERT INTO financial_records (target_period, project_id, client_id, type, subject, amount, recorded_by, cost_category, remarks, activity_category) VALUES
 -- 2026-01
 ('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'revenue', '就労支援事業収益', 2800000, '2026-01-25', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '請求書No. INV-202601-01', 'production'),
 ('2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'expense', '材料費', 60000, '2026-01-26', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'manufacturing', '領収書No. R-202601-05 (木材・接着剤)', 'production'),
@@ -487,7 +487,7 @@ INSERT INTO project_budgets (project_id, category, subject, amount, task_id) VAL
 ('77777777-7777-4777-a777-777777777777', 'expense', '経費', 200000, NULL),
 ('77777777-7777-4777-a777-777777777777', 'reserve', '予備費', 1000000, NULL);
 
-INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
+INSERT INTO financial_records (target_period, project_id, type, subject, amount, activity_category) VALUES
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'revenue', '売上', 3500000, '2027-07-31', 'production'),
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・要件定義・AIモデル選定）', 600000, '2027-07-31', 'production'),
 ('2027-07-01', '77777777-7777-4777-a777-777777777777', 'expense', '労務費（利用者工賃・学習データ作成・パイプライン構築）', 800000, '2027-07-31', 'production'),
@@ -543,21 +543,21 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
 ('2027-07-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '77777777-7777-4777-a777-777777770002', 4);
 
 -- === SEED MONTHLY INCENTIVE CONFIRMATIONS (<= 2027-07) ===
-INSERT INTO monthly_incentive_confirmations (year_month, is_confirmed) VALUES
+INSERT INTO monthly_incentive_confirmations (target_period, is_confirmed) VALUES
 ('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true), ('2027-07', true)
-ON CONFLICT (year_month) DO NOTHING;
+ON CONFLICT (target_period) DO NOTHING;
 
 -- === SEED DATA FOR 2026-07 ONGOING PROJECTS ===
-INSERT INTO financial_records (period, project_id, type, subject, amount, recorded_date, activity_category) VALUES
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000, '2026-07-31', 'production'),
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 200000, '2026-07-31', 'production'),
-('2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', 300000, '2026-07-31', 'production');
+INSERT INTO financial_records (target_period, project_id, type, subject, amount, activity_category) VALUES
+('2026-07-31', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'revenue', '就労支援事業収益', 500000, 'production'),
+('2026-07-31', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・製造業務）', 200000, 'production'),
+('2026-07-31', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'expense', '労務費（利用者工賃・販売・接客業務）', 300000, 'production');
 
-INSERT INTO monthly_incentive_records (year_month, member_id, task_id, allocation_amount) VALUES
+INSERT INTO monthly_incentive_records (target_period, member_id, task_id, allocation_amount) VALUES
 ('2026-07', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 200000),
 ('2026-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 300000);
 
-INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
+INSERT INTO daily_work_records (target_period, member_id, task_id, work_time) VALUES
 ('2026-07-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3),
 ('2026-07-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3),
 ('2026-07-02', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 3),
@@ -576,12 +576,12 @@ INSERT INTO daily_work_records (date, member_id, task_id, work_time) VALUES
 ('2026-07-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 3);
 
 -- === SEED MONTHLY WAGE CONFIRMATIONS (<= 2027-07) ===
-INSERT INTO monthly_wage_confirmations (year_month, is_confirmed) VALUES
+INSERT INTO monthly_wage_confirmations (target_period, is_confirmed) VALUES
 ('2026-01', true), ('2026-02', true), ('2026-03', true), ('2026-04', true), ('2026-05', true), ('2026-06', true), ('2026-07', true), ('2027-07', true)
-ON CONFLICT (year_month) DO NOTHING;
+ON CONFLICT (target_period) DO NOTHING;
 
 -- === SEED MONTHLY WAGE RECORDS ===
-INSERT INTO monthly_wage_summaries (id, year_month, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
+INSERT INTO monthly_wage_summaries (id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
 ('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 0, 100, 0, 0, 0, 0, 0, 0),
 ('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 0, 250, 0, 0, 0, 0, 0, 0),
 ('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 0, 250, 0, 0, 0, 0, 0, 0),
@@ -618,4 +618,4 @@ INSERT INTO monthly_wage_summaries (id, year_month, member_id, work_time, wage_r
 ('77777777-7777-4777-a777-777777779002', '2027-07', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 36, 250, 9000, 216000, 0, 225000, 0, 225000),
 ('77777777-7777-4777-a777-777777779003', '2027-07', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 48, 250, 12000, 288000, 0, 300000, 0, 300000),
 ('77777777-7777-4777-a777-777777779004', '2027-07', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 48, 500, 24000, 276000, 0, 300000, 0, 300000)
-ON CONFLICT (year_month, member_id) DO NOTHING;
+ON CONFLICT (target_period, member_id) DO NOTHING;

@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
 -- 2.1 attendance_records (出欠実績)
 CREATE TABLE IF NOT EXISTS "public"."attendance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "date" DATE NOT NULL,
+    "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
     "work_time" NUMERIC(4,1) NOT NULL,
@@ -242,7 +242,7 @@ CREATE TABLE IF NOT EXISTS "public"."attendance_records" (
 -- 2.2 allowance_records (加算手当実績)
 CREATE TABLE IF NOT EXISTS "public"."allowance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "date" DATE NOT NULL,
+    "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "allowance_id" UUID REFERENCES "public"."allowance_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
@@ -254,7 +254,7 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_records" (
 -- 2.3 deduction_records (控除実績)
 CREATE TABLE IF NOT EXISTS "public"."deduction_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "date" DATE NOT NULL,
+    "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "deduction_id" UUID REFERENCES "public"."deduction_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS "public"."deduction_records" (
 -- 2.4 daily_record_closings (日次実績確定)
 CREATE TABLE IF NOT EXISTS "public"."daily_record_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "date" DATE NOT NULL UNIQUE,
+    "target_period" DATE NOT NULL UNIQUE,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS "public"."daily_record_closings" (
 -- 3.1 general_financial_records (一般収支実績)
 CREATE TABLE IF NOT EXISTS "public"."general_financial_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "transaction_date" DATE DEFAULT CURRENT_DATE NOT NULL,
+    "target_period" DATE DEFAULT CURRENT_DATE NOT NULL,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
     "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "subject" TEXT NOT NULL,
@@ -294,7 +294,7 @@ CREATE TABLE IF NOT EXISTS "public"."general_financial_records" (
 -- 3.2 incentive_records (インセンティブ実績)
 CREATE TABLE IF NOT EXISTS "public"."incentive_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL,
+    "target_period" VARCHAR(7) NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE SET NULL,
     "allocation_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
@@ -305,7 +305,7 @@ CREATE TABLE IF NOT EXISTS "public"."incentive_records" (
 -- 3.3 monthly_record_closings (月次実績確定)
 CREATE TABLE IF NOT EXISTS "public"."monthly_record_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL UNIQUE,
+    "target_period" VARCHAR(7) NOT NULL UNIQUE,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "is_confirmed" BOOLEAN DEFAULT true NOT NULL,
@@ -320,8 +320,7 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_record_closings" (
 -- 4.1 general_financial_details (一般収支明細)
 CREATE TABLE IF NOT EXISTS "public"."general_financial_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL,
-    "recorded_date" DATE,
+    "target_period" DATE NOT NULL,
     "project_id" UUID REFERENCES "public"."projects"("id") ON DELETE SET NULL,
     "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "recorded_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
@@ -338,7 +337,7 @@ CREATE TABLE IF NOT EXISTS "public"."general_financial_details" (
 -- 4.2 wage_summaries (工賃・控除概要)
 CREATE TABLE IF NOT EXISTS "public"."wage_summaries" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" TEXT NOT NULL,
+    "target_period" TEXT NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "work_time" NUMERIC DEFAULT 0 NOT NULL,
     "wage_rate" NUMERIC,
@@ -350,7 +349,7 @@ CREATE TABLE IF NOT EXISTS "public"."wage_summaries" (
     "payment" INTEGER DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    CONSTRAINT "wage_summaries_year_month_member_id_key" UNIQUE ("year_month", "member_id")
+    CONSTRAINT "wage_summaries_target_period_member_id_key" UNIQUE ("target_period", "member_id")
 );
 
 -- 4.3 incentive_details (インセンティブ明細)
@@ -392,7 +391,7 @@ CREATE TABLE IF NOT EXISTS "public"."deduction_details" (
 -- 4.6 monthly_financial_closings (月次収支確定)
 CREATE TABLE IF NOT EXISTS "public"."monthly_financial_closings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "year_month" VARCHAR(7) NOT NULL UNIQUE,
+    "target_period" VARCHAR(7) NOT NULL UNIQUE,
     "confirmed_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "confirmed_by" UUID REFERENCES "public"."staffs"("id") ON DELETE SET NULL,
     "is_confirmed" BOOLEAN DEFAULT true NOT NULL,

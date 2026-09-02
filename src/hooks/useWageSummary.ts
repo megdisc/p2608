@@ -68,13 +68,13 @@ export function useWageSummary() {
             project_task_assignees ( member_id, staff_id )
           )
         `).eq('is_deleted', false),
-        supabase.from('financial_records').select('*').gte('period', `${monthStr}-01`).lt('period', `${nextMonthStr}-01`).eq('type', 'expense'),
-        supabase.from('daily_work_records').select('date, member_id, task_id, work_time').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`),
-        supabase.from('daily_work_confirmations').select('date').gte('date', `${monthStr}-01`).lt('date', `${nextMonthStr}-01`).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_records').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_wage_summaries').select('*').eq('year_month', monthStr),
-        supabase.from('monthly_wage_confirmations').select('year_month').eq('year_month', monthStr).eq('is_confirmed', true)
+        supabase.from('financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
+        supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
+        supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
+        supabase.from('monthly_incentive_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
+        supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
+        supabase.from('monthly_wage_summaries').select('*').eq('target_period', monthStr),
+        supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -342,7 +342,7 @@ export function useWageSummary() {
       setLoading(true);
 
       const wageRecords = data.map(r => ({
-        year_month: monthStr,
+        target_period: monthStr,
         member_id: r.id,
         work_time: r.workTime,
         wage_rate: r.wageRate,
@@ -358,7 +358,7 @@ export function useWageSummary() {
         try {
           await supabase
             .from('monthly_wage_summaries')
-            .upsert(wageRecords, { onConflict: 'year_month,member_id' });
+            .upsert(wageRecords, { onConflict: 'target_period,member_id' });
         } catch (e) {
           console.warn('Could not upsert monthly_wage_summaries:', e);
         }
@@ -367,7 +367,7 @@ export function useWageSummary() {
       try {
         await supabase
           .from('monthly_wage_confirmations')
-          .upsert({ year_month: monthStr, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'year_month' });
+          .upsert({ target_period: monthStr, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'target_period' });
       } catch (e) {
         console.warn('Could not update monthly_wage_confirmations:', e);
       }
@@ -389,7 +389,7 @@ export function useWageSummary() {
         const { data: existingFin } = await supabase
           .from('financial_records')
           .select('id')
-          .eq('period', periodDate)
+          .eq('target_period', periodDate)
           .eq('subject', '労務費（利用者工賃）')
           .limit(1);
 
@@ -406,11 +406,10 @@ export function useWageSummary() {
           await supabase
             .from('financial_records')
             .insert({
-              period: periodDate,
+              target_period: periodDate,
               type: 'expense',
               subject: '労務費（利用者工賃）',
               amount: totalLaborWage,
-              recorded_date: new Date().toISOString().split('T')[0],
               activity_category: 'production',
               cost_category: 'manufacturing'
             });
@@ -419,7 +418,7 @@ export function useWageSummary() {
         const { data: existingDedFin } = await supabase
           .from('financial_records')
           .select('id')
-          .eq('period', periodDate)
+          .eq('target_period', periodDate)
           .eq('subject', '控除')
           .limit(1);
 
@@ -438,11 +437,10 @@ export function useWageSummary() {
           await supabase
             .from('financial_records')
             .insert({
-              period: periodDate,
+              target_period: periodDate,
               type: 'revenue',
               subject: '控除',
               amount: totalDeduction,
-              recorded_date: new Date().toISOString().split('T')[0],
               activity_category: 'welfare',
               cost_category: 'manufacturing'
             });
@@ -465,7 +463,7 @@ export function useWageSummary() {
       setLoading(true);
 
       try {
-        await supabase.from('monthly_wage_confirmations').delete().eq('year_month', monthStr);
+        await supabase.from('monthly_wage_confirmations').delete().eq('target_period', monthStr);
       } catch (e) {
         console.warn('Could not update wage confirmation records:', e);
       }

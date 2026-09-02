@@ -90,9 +90,9 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('monthly_incentive_confirmations').select('year_month').eq('is_confirmed', true);
+      const { data, error } = await supabase.from('monthly_incentive_confirmations').select('target_period').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
-        const dbMonths = data.map(d => d.year_month);
+        const dbMonths = data.map(d => d.target_period);
         setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));
       }
     } catch {}
@@ -120,7 +120,7 @@ export function RewardAllocationPage() {
           type,
           subject,
           amount: Number(value) || 0,
-          period: currentMonth
+          target_period: currentMonth
         }];
       }
     });
@@ -236,8 +236,8 @@ export function RewardAllocationPage() {
 
     try {
       await supabase.from('monthly_incentive_confirmations').upsert(
-        { year_month: currentMonth, is_confirmed: true, confirmed_at: new Date().toISOString() },
-        { onConflict: 'year_month' }
+        { target_period: currentMonth, is_confirmed: true, confirmed_at: new Date().toISOString() },
+        { onConflict: 'target_period' }
       );
     } catch {}
 
@@ -253,7 +253,7 @@ export function RewardAllocationPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_incentive_confirmations').delete().eq('year_month', currentMonth);
+      await supabase.from('monthly_incentive_confirmations').delete().eq('target_period', currentMonth);
     } catch {}
 
     setConfirmedMonths(prev => {
@@ -314,7 +314,7 @@ export function RewardAllocationPage() {
       const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
       let amount = 0;
       if (isOngoing) {
-        amount = recs.filter(r => r.period && r.period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        amount = recs.filter(r => r.target_period && r.target_period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
       } else {
         amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
       }

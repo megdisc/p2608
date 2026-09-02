@@ -32,9 +32,9 @@ export function useProjectFinancialSummary(year: string) {
         supabase.from('projects').select('id, name, code').eq('is_deleted', false).order('code', { ascending: true }),
         supabase
           .from('financial_records')
-          .select('id, project_id, type, subject, amount, period, activity_category')
-          .gte('period', `${year}-01-01`)
-          .lte('period', `${year}-12-31`)
+          .select('id, project_id, type, subject, amount, target_period, activity_category')
+          .gte('target_period', `${year}-01-01`)
+          .lte('target_period', `${year}-12-31`)
       ]);
 
       if (projError) throw projError;

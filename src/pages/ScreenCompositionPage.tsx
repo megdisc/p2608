@@ -369,7 +369,7 @@ export function ScreenCompositionPage() {
       description: '利用者の日々の出欠・作業記録（作業時間）',
       columns: [
         { name: 'id', desc: '出欠記録ID' },
-        { name: 'date', desc: '発生日・日付' },
+        { name: 'target_period', desc: '対象時期・作業日' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'work_time', desc: '作業時間' },
@@ -385,7 +385,7 @@ export function ScreenCompositionPage() {
       description: '日次発生の加算手当記録（例: 送迎利用、資格手当等）',
       columns: [
         { name: 'id', desc: '手当記録ID' },
-        { name: 'date', desc: '発生日・日付' },
+        { name: 'target_period', desc: '対象時期・日付' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'allowance_id', desc: '手当ID' },
         { name: 'quantity', desc: '数量・回数' },
@@ -402,7 +402,7 @@ export function ScreenCompositionPage() {
       description: '日次発生の控除記録（例: 昼食利用、物品購入費等）',
       columns: [
         { name: 'id', desc: '控除記録ID' },
-        { name: 'date', desc: '発生日・日付' },
+        { name: 'target_period', desc: '対象時期・日付' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'deduction_id', desc: '控除ID' },
         { name: 'quantity', desc: '数量・回数' },
@@ -419,7 +419,7 @@ export function ScreenCompositionPage() {
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
-        { name: 'date', desc: '作業日' },
+        { name: 'target_period', desc: '対象時期・作業日' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'is_confirmed', desc: '確定フラグ' },
@@ -435,7 +435,7 @@ export function ScreenCompositionPage() {
       description: '日々の出入金、材料費購入、経費発生、売上請求などの一般収支明細データ',
       columns: [
         { name: 'id', desc: '一般収支記録ID' },
-        { name: 'transaction_date', desc: '発生日・取引日' },
+        { name: 'target_period', desc: '対象時期・取引日' },
         { name: 'project_id', desc: '関連案件ID' },
         { name: 'client_id', desc: '関連取引先ID' },
         { name: 'subject', desc: '勘定科目・摘要' },
@@ -453,7 +453,7 @@ export function ScreenCompositionPage() {
       description: '案件タスクの成果・貢献度に応じた各利用者の月次分配記録',
       columns: [
         { name: 'id', desc: '記録ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'member_id', desc: '分配先利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
@@ -469,7 +469,7 @@ export function ScreenCompositionPage() {
       description: '対象年月ごとの実績・インセンティブ分配等の確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'is_confirmed', desc: '確定フラグ' },
@@ -485,8 +485,7 @@ export function ScreenCompositionPage() {
       description: '締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
       columns: [
         { name: 'id', desc: '明細ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
-        { name: 'recorded_date', desc: '発生日・計上日' },
+        { name: 'target_period', desc: '対象時期' },
         { name: 'project_id', desc: '案件ID' },
         { name: 'client_id', desc: '取引先ID' },
         { name: 'recorded_by', desc: '計上職員ID' },
@@ -508,7 +507,7 @@ export function ScreenCompositionPage() {
       description: '月ごとの各利用者の計算・支給工賃記録および控除概要（基幹親テーブル）',
       columns: [
         { name: 'id', desc: '概要ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'work_time', desc: '総作業時間' },
         { name: 'wage_rate', desc: '工賃単価' },
@@ -581,7 +580,7 @@ export function ScreenCompositionPage() {
       description: '対象年月ごとの工賃計算確定および事業活動収支の締め確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
-        { name: 'year_month', desc: '対象年月(YYYY-MM)' },
+        { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'confirmed_by', desc: '確定職員ID' },
         { name: 'is_confirmed', desc: '確定フラグ' },

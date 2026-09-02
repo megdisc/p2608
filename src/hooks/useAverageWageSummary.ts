@@ -37,9 +37,9 @@ export function useAverageWageSummary() {
         { data: wageRecords, error: wageError },
         { data: finRecords, error: finError }
       ] = await Promise.all([
-        supabase.from('daily_work_records').select('date, member_id, work_time'),
-        supabase.from('monthly_wage_summaries').select('year_month, payment, wage_total, member_id'),
-        supabase.from('financial_records').select('period, type, subject, amount').eq('type', 'expense')
+        supabase.from('daily_work_records').select('target_period, member_id, work_time'),
+        supabase.from('monthly_wage_summaries').select('target_period, payment, wage_total, member_id'),
+        supabase.from('financial_records').select('target_period, type, subject, amount').eq('type', 'expense')
       ]);
 
       if (workError) throw workError;
@@ -49,13 +49,13 @@ export function useAverageWageSummary() {
       // Extract all years available
       const yearsSet = new Set<string>();
       (workRecords || []).forEach(r => {
-        if (r.date) yearsSet.add(r.date.slice(0, 4));
+        if (r.target_period) yearsSet.add(r.target_period.slice(0, 4));
       });
       (wageRecords || []).forEach(r => {
-        if (r.year_month) yearsSet.add(r.year_month.slice(0, 4));
+        if (r.target_period) yearsSet.add(r.target_period.slice(0, 4));
       });
       (finRecords || []).forEach(r => {
-        if (r.period) yearsSet.add(r.period.slice(0, 4));
+        if (r.target_period) yearsSet.add(r.target_period.slice(0, 4));
       });
 
       // Default to 2026 if no years found
@@ -72,21 +72,21 @@ export function useAverageWageSummary() {
           const monthStr = `${year}-${m.toString().padStart(2, '0')}`;
           
           // Filter work records for this month where work_time > 0
-          const monthWork = (workRecords || []).filter(r => r.date && r.date.startsWith(monthStr) && Number(r.work_time) > 0);
+          const monthWork = (workRecords || []).filter(r => r.target_period && r.target_period.startsWith(monthStr) && Number(r.work_time) > 0);
           
           // 開所日数: 作業記録の作業時間が0でない日数 (unique dates)
-          const uniqueDates = new Set(monthWork.map(r => r.date));
+          const uniqueDates = new Set(monthWork.map(r => r.target_period));
           const operatingDays = uniqueDates.size;
 
           // 延べ利用者数: 日付ごとの作業時間が0でない利用者の数 (unique date_member pairs)
-          const dateMemberPairs = new Set(monthWork.map(r => `${r.date}_${r.member_id}`));
+          const dateMemberPairs = new Set(monthWork.map(r => `${r.target_period}_${r.member_id}`));
           const totalUtilization = dateMemberPairs.size;
 
           // Total wage paid
-          const monthWages = (wageRecords || []).filter(r => r.year_month === monthStr);
+          const monthWages = (wageRecords || []).filter(r => r.target_period === monthStr);
           const wageSumFromRecord = monthWages.reduce((sum, r) => sum + (Number(r.payment || r.wage_total) || 0), 0);
 
-          const monthFins = (finRecords || []).filter(r => r.period && r.period.startsWith(monthStr));
+          const monthFins = (finRecords || []).filter(r => r.target_period && r.target_period.startsWith(monthStr));
           const memberWageFin = monthFins.find(r => r.subject && r.subject.includes('利用者工賃'));
           const wageSumFromFin = memberWageFin ? Number(memberWageFin.amount) || 0 : 0;
 

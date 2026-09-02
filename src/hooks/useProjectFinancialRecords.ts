@@ -15,7 +15,7 @@ export function useProjectFinancialRecords() {
         { data: recData, error: recError }
       ] = await Promise.all([
         supabase.from('projects').select('id, name, project_type').eq('is_deleted', false).order('name', { ascending: true }),
-        supabase.from('financial_records').select('id, project_id, type, subject, amount, period, recorded_date')
+        supabase.from('financial_records').select('id, project_id, type, subject, amount, target_period')
       ]);
 
       if (projError) throw projError;
@@ -40,14 +40,13 @@ export function useProjectFinancialRecords() {
               type: r.type,
               subject: r.subject,
               amount,
-              period: r.period ? r.period.substring(0, 7) : '',
-              recordedDate: r.recorded_date
+              period: r.target_period ? r.target_period.substring(0, 7) : '',
+              recordedDate: r.target_period
             };
           });
 
           // Sort records by period desc
           records.sort((a, b) => {
-            if (a.period !== b.period) return b.period.localeCompare(a.period);
             return b.recordedDate.localeCompare(a.recordedDate);
           });
 

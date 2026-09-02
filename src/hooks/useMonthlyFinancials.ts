@@ -7,8 +7,7 @@ export type MonthlyFinancialRecord = {
   type: 'revenue' | 'expense' | 'reserve';
   subject: string;
   amount: number;
-  period: string; // e.g. '2026-08'
-  recorded_date?: string;
+  target_period: string; // e.g. '2026-08'
 };
 
 export function useMonthlyFinancials() {
@@ -23,7 +22,7 @@ export function useMonthlyFinancials() {
         supabase
           .from('financial_records')
           .select('*')
-          .or(`period.eq.${monthStr},period.eq.${monthStr}-01,and(period.gte.${monthStr}-01,period.lte.${monthStr}-31)`),
+          .or(`target_period.eq.${monthStr},target_period.eq.${monthStr}-01,and(target_period.gte.${monthStr}-01,target_period.lte.${monthStr}-31)`),
         supabase
           .from('financial_records')
           .select('*')
@@ -60,16 +59,15 @@ const isValidUuid = (str: any): boolean => {
       
       const upserts = drafts.map(d => {
         const isRealUuid = isValidUuid(d.id);
-        const periodStr = d.period ? (d.period.length === 7 ? `${d.period}-01` : d.period) : d.period;
+        const periodStr = d.target_period ? (d.target_period.length === 7 ? `${d.target_period}-01` : d.target_period) : d.target_period;
         return {
           ...(isRealUuid ? { id: d.id } : {}),
           project_id: d.project_id,
           type: d.type,
           subject: d.subject,
           amount: Number(d.amount) || 0,
-          period: periodStr,
-          activity_category: 'production',
-          recorded_date: d.recorded_date || new Date().toISOString().split('T')[0]
+          target_period: periodStr,
+          activity_category: 'production'
         };
       });
       

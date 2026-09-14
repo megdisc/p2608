@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS "public"."organizations" (
     "representative_name" TEXT,
     "corporate_number" VARCHAR(13),
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -57,6 +58,7 @@ CREATE TABLE IF NOT EXISTS "public"."offices" (
     "is_transition" BOOLEAN DEFAULT false NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -71,6 +73,7 @@ CREATE TABLE IF NOT EXISTS "public"."addresses" (
     "town_street" TEXT,
     "building" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -93,6 +96,7 @@ CREATE TABLE IF NOT EXISTS "public"."phone_numbers" (
     "phone_type" TEXT DEFAULT 'phone' NOT NULL, -- ('phone', 'mobile', 'fax')
     "phone_number" TEXT NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -115,6 +119,7 @@ CREATE TABLE IF NOT EXISTS "public"."email_addresses" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -140,6 +145,7 @@ CREATE TABLE IF NOT EXISTS "public"."service_schemes" (
     "description" TEXT,
     "basic_reward_unit" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -158,6 +164,7 @@ CREATE TABLE IF NOT EXISTS "public"."service_items" (
     "affects_reward_units" BOOLEAN DEFAULT false NOT NULL,
     "is_auto_calculated" BOOLEAN DEFAULT false NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -169,6 +176,7 @@ CREATE TABLE IF NOT EXISTS "public"."wage_rate_items" (
     "wage" NUMERIC(12,2) NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -181,6 +189,7 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
     "occurrence_type" VARCHAR(20) DEFAULT 'monthly' NOT NULL,
     "default_unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -202,6 +211,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_schemes" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -213,6 +223,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_items" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -224,6 +235,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_level_items" (
     "level_value" INTEGER NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -235,6 +247,7 @@ CREATE TABLE IF NOT EXISTS "public"."auth_users" (
     "role" TEXT DEFAULT '職員' NOT NULL,
     "user_type" TEXT DEFAULT 'staff' NOT NULL CHECK ("user_type" IN ('staff', 'member')),
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -247,6 +260,7 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -288,6 +302,7 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -299,9 +314,11 @@ CREATE TABLE IF NOT EXISTS "public"."partners" (
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
     "contact_person" TEXT,
+    "phone" TEXT,
     "is_customer" BOOLEAN DEFAULT false NOT NULL,
     "is_subcontractor" BOOLEAN DEFAULT false NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -315,6 +332,7 @@ CREATE TABLE IF NOT EXISTS "public"."projects" (
     "name" TEXT NOT NULL,
     "project_type" TEXT DEFAULT 'one-off',
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -328,6 +346,7 @@ CREATE TABLE IF NOT EXISTS "public"."project_tasks" (
     "assignee_type" VARCHAR DEFAULT 'internal',
     "is_completed" BOOLEAN DEFAULT false NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -561,10 +580,50 @@ CREATE TABLE IF NOT EXISTS "public"."monthly_financial_closings" (
 );
 
 -- ==========================================
--- 5. 旧テーブル名互換ビュー (Backward-Compatible Views)
+-- 5. 旧テーブル名互換ビュー (Backward-Compatible Views & Triggers)
 -- ==========================================
 
-CREATE OR REPLACE VIEW "public"."users" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."auth_users";
+CREATE OR REPLACE VIEW "public"."users" AS 
+SELECT id, email, role, user_type, deleted_at, is_deleted, created_at, updated_at 
+FROM "public"."auth_users";
+
+-- users ビューに対する INSTEAD OF トリガー (データ追加・更新透過)
+CREATE OR REPLACE FUNCTION public.handle_users_view_insert()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.auth_users (id, email, role, user_type)
+    VALUES (COALESCE(NEW.id, gen_random_uuid()), NEW.email, COALESCE(NEW.role, '職員'), COALESCE(NEW.user_type, 'staff'))
+    ON CONFLICT (id) DO UPDATE SET
+        email = EXCLUDED.email,
+        role = EXCLUDED.role,
+        user_type = EXCLUDED.user_type;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS users_view_insert_trigger ON public.users;
+CREATE TRIGGER users_view_insert_trigger
+INSTEAD OF INSERT ON public.users
+FOR EACH ROW EXECUTE FUNCTION public.handle_users_view_insert();
+
+CREATE OR REPLACE FUNCTION public.handle_users_view_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE public.auth_users
+    SET email = NEW.email,
+        role = NEW.role,
+        user_type = NEW.user_type,
+        deleted_at = CASE WHEN NEW.is_deleted = true THEN now() ELSE NULL END
+    WHERE id = OLD.id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS users_view_update_trigger ON public.users;
+CREATE TRIGGER users_view_update_trigger
+INSTEAD OF UPDATE ON public.users
+FOR EACH ROW EXECUTE FUNCTION public.handle_users_view_update();
+
 CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."wage_rate_items";
 CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'allowance';
 CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'deduction';

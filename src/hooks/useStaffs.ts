@@ -12,13 +12,14 @@ export function useStaffs() {
     try {
       setLoading(true);
       const [staffsRes, allCodesRes] = await Promise.all([
-        supabase.from('staffs').select('*, users(email, role)').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('staffs').select('*, auth_users:user_id(email, role)').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('staffs').select('code, created_at').order('created_at', { ascending: false })
       ]);
       if (staffsRes.error) throw staffsRes.error;
       
       const mapped: StaffItem[] = (staffsRes.data || []).map((s: any) => {
-        let roleVal = s.users?.role || WORDS_PERSON.ROLE_STAFF;
+        const userObj = s.auth_users || {};
+        let roleVal = userObj.role || WORDS_PERSON.ROLE_STAFF;
         if (roleVal === 'Administrator') roleVal = WORDS_PERSON.ROLE_ADMIN;
         if (roleVal === 'Staff') roleVal = WORDS_PERSON.ROLE_STAFF;
         return {
@@ -27,9 +28,9 @@ export function useStaffs() {
           code: s.code,
           name: s.name,
           yomigana: s.yomigana,
-          email: s.users?.email || '',
+          email: userObj.email || '',
           role: roleVal,
-          is_deleted: s.is_deleted,
+          is_deleted: s.is_deleted ?? (s.deleted_at != null),
         };
       });
       setItems(mapped);
@@ -56,8 +57,8 @@ export function useStaffs() {
         if (!deletedIds.includes(item.id)) {
           const cleanName = item.name.replace(/[\s　]+/g, '');
           if (item.id.startsWith('STF-')) {
-            // Create user first in users table
-            const { data: userData, error: userError } = await supabase.from('users').insert({
+            // Create user first in auth_users table
+            const { data: userData, error: userError } = await supabase.from('auth_users').insert({
               email: item.email || null,
               role: item.role || WORDS_PERSON.ROLE_STAFF,
               user_type: 'staff'
@@ -78,7 +79,7 @@ export function useStaffs() {
             }
           } else {
             if (item.user_id) {
-              const { error: userError } = await supabase.from('users').update({
+              const { error: userError } = await supabase.from('auth_users').update({
                 email: item.email || null,
                 role: item.role || WORDS_PERSON.ROLE_STAFF
               }).eq('id', item.user_id);

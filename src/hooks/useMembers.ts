@@ -12,13 +12,14 @@ export function useMembers() {
     try {
       setLoading(true);
       const [membersRes, allCodesRes] = await Promise.all([
-        supabase.from('members').select('*, users(email, role)').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('members').select('*, auth_users:user_id(email, role)').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('members').select('code, created_at').order('created_at', { ascending: false })
       ]);
       if (membersRes.error) throw membersRes.error;
 
       const mapped: MemberItem[] = (membersRes.data || []).map((m: any) => {
-        let roleVal = m.users?.role || WORDS_PERSON.ROLE_MEMBER;
+        const userObj = m.auth_users || {};
+        let roleVal = userObj.role || WORDS_PERSON.ROLE_MEMBER;
         if (roleVal === 'Member') roleVal = WORDS_PERSON.ROLE_MEMBER;
         return {
           id: m.id,
@@ -26,9 +27,9 @@ export function useMembers() {
           code: m.code,
           name: m.name,
           yomigana: m.yomigana,
-          email: m.users?.email || '',
+          email: userObj.email || '',
           role: roleVal,
-          is_deleted: m.is_deleted,
+          is_deleted: m.is_deleted ?? (m.deleted_at != null),
         };
       });
       setItems(mapped);
@@ -55,8 +56,8 @@ export function useMembers() {
         if (!deletedIds.includes(item.id)) {
           const cleanName = item.name.replace(/[\s　]+/g, '');
           if (item.id.startsWith('MBR-')) {
-            // Create user first in users table
-            const { data: userData, error: userError } = await supabase.from('users').insert({
+            // Create user first in auth_users table
+            const { data: userData, error: userError } = await supabase.from('auth_users').insert({
               email: item.email || null,
               role: item.role || WORDS_PERSON.ROLE_MEMBER,
               user_type: 'member'
@@ -77,7 +78,7 @@ export function useMembers() {
             }
           } else {
             if (item.user_id) {
-              const { error: userError } = await supabase.from('users').update({
+              const { error: userError } = await supabase.from('auth_users').update({
                 email: item.email || null,
                 role: item.role || WORDS_PERSON.ROLE_MEMBER
               }).eq('id', item.user_id);

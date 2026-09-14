@@ -624,14 +624,14 @@ CREATE TRIGGER users_view_update_trigger
 INSTEAD OF UPDATE ON public.users
 FOR EACH ROW EXECUTE FUNCTION public.handle_users_view_update();
 
-CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."wage_rate_items";
-CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'allowance';
-CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'deduction';
+CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT * FROM "public"."wage_rate_items";
+CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'allowance';
+CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'deduction';
 CREATE OR REPLACE VIEW "public"."allowance_items" AS SELECT * FROM "public"."service_items" WHERE item_category = 'allowance';
 CREATE OR REPLACE VIEW "public"."deduction_items" AS SELECT * FROM "public"."service_items" WHERE item_category = 'deduction';
-CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted, (deleted_at IS NULL) AS is_active FROM "public"."reserve_items";
-CREATE OR REPLACE VIEW "public"."skills" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."skill_items";
-CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT *, (deleted_at IS NOT NULL) AS is_deleted FROM "public"."skill_level_items";
+CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."reserve_items";
+CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
+CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
 CREATE OR REPLACE VIEW "public"."member_skill_evaluations" AS SELECT * FROM "public"."member_skill_settings";
 CREATE OR REPLACE VIEW "public"."member_wage_evaluations" AS SELECT * FROM "public"."member_wage_settings";
 CREATE OR REPLACE VIEW "public"."project_task_skills" AS SELECT * FROM "public"."task_skill_settings";

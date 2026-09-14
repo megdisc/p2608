@@ -98,10 +98,94 @@ export function ScreenCompositionPage() {
         { name: 'is_type_a', desc: '就労継続支援A型フラグ（true: 実施 / false: 未実施）' },
         { name: 'is_transition', desc: '就労移行支援フラグ（true: 実施 / false: 未実施）' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
-        { name: 'postal_code', desc: '郵便番号' },
-        { name: 'address', desc: '所在地' },
-        { name: 'phone', desc: '電話番号' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'addresses',
+      tableType: '従属マスタ',
+      logicalName: '住所',
+      description: '事業所・利用者・職員・取引先等の所在地・住所情報の一元管理マスタ',
+      columns: [
+        { name: 'id', desc: '住所ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'address_type', desc: '住所種別（main: 所在地・本社 / home: 自宅 / billing: 請求先 / shipping: 納品先）' },
+        { name: 'postal_code_prefix', desc: '郵便番号上3桁' },
+        { name: 'postal_code_suffix', desc: '郵便番号下4桁' },
+        { name: 'prefecture', desc: '都道府県' },
+        { name: 'city', desc: '市区町村・郡' },
+        { name: 'town_street', desc: '町名・丁目・番地' },
+        { name: 'building', desc: '建物名・部屋番号' },
+        { name: 'is_primary', desc: '主たる住所フラグ（true: メイン住所 / false: サブ住所）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'phone_numbers',
+      tableType: '独立マスタ',
+      logicalName: '電話・FAX番号',
+      description: '電話・携帯・FAX番号の実体データマスタ（数字のみ正規化保持・重複防止）',
+      columns: [
+        { name: 'id', desc: '電話番号ID' },
+        { name: 'phone_type', desc: '電話種別（phone: 固定電話 / mobile: 携帯電話 / fax: FAX）' },
+        { name: 'phone_number', desc: '電話番号（ハイフンなし数字のみ正規化保持）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'entity_phone_settings',
+      tableType: '割当マスタ',
+      logicalName: '電話・FAX番号割当',
+      description: '事業所・利用者・職員・取引先等と電話・携帯・FAX番号の多対多割当・属性管理マスタ',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'phone_number_id', desc: '電話番号ID' },
+        { name: 'label', desc: 'ラベル・窓口名（例: 本部代表、直通、保護者携帯、緊急窓口等）' },
+        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
+        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'email_addresses',
+      tableType: '独立マスタ',
+      logicalName: 'メールアドレス',
+      description: '電子メールアドレスの実体データマスタ（RFC規格・小文字正規化保持・重複防止）',
+      columns: [
+        { name: 'id', desc: 'メールアドレスID' },
+        { name: 'email', desc: 'メールアドレス（RFC規格・小文字正規化保持）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'entity_email_settings',
+      tableType: '割当マスタ',
+      logicalName: 'メールアドレス割当',
+      description: '事業所・利用者・職員・取引先等とメールアドレスの多対多割当・属性管理マスタ',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'email_address_id', desc: 'メールアドレスID' },
+        { name: 'label', desc: 'ラベル・用途名（例: 連絡用、請求書用、保護者宛等）' },
+        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
+        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -348,7 +432,6 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '取引先・企業名' },
         { name: 'yomigana', desc: 'フリガナ' },
         { name: 'contact_person', desc: '担当者名' },
-        { name: 'phone', desc: '電話番号' },
         { name: 'is_customer', desc: '顧客フラグ' },
         { name: 'is_subcontractor', desc: '外注先フラグ' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -749,7 +832,7 @@ export function ScreenCompositionPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                 <div style={{ padding: '10px 12px', backgroundColor: '#ebf8ff', borderRadius: '6px', borderLeft: '4px solid #3182ce' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#2b6cb0' }}>1. マスタ層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>事業所（地域区分）・報酬体制設定・割当・受給者証（負担割合/上限額）・工賃体系・手当/控除（単位加減算連動）・積立体系・単価・利用者・職員・取引先・スキル・案件・予算等の定義</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・工賃体系・手当/控除（単位加減算連動）・積立体系・単価・利用者・職員・取引先・スキル・案件・予算等の定義</div>
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>

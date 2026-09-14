@@ -32,9 +32,20 @@ $$ LANGUAGE plpgsql;
 -- 1. マスタ層
 -- ==========================================
 
+-- 1.0 skill_schemes (スキル体系)
+CREATE TABLE IF NOT EXISTS "public"."skill_schemes" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 -- 1.1 skill_items (スキル項目)
 CREATE TABLE IF NOT EXISTS "public"."skill_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "skill_scheme_id" UUID REFERENCES "public"."skill_schemes"("id") ON DELETE CASCADE,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
@@ -45,6 +56,7 @@ CREATE TABLE IF NOT EXISTS "public"."skill_items" (
 -- 1.2 skill_level_items (スキルレベル項目)
 CREATE TABLE IF NOT EXISTS "public"."skill_level_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "skill_scheme_id" UUID REFERENCES "public"."skill_schemes"("id") ON DELETE CASCADE,
     "level_value" INTEGER NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,

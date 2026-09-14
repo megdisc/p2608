@@ -86,12 +86,31 @@ export function ScreenCompositionPage() {
   const dbTables = [
     {
       layer: '1. マスタ層',
+      physicalName: 'organizations',
+      tableType: '独立マスタ',
+      logicalName: '法人',
+      description: '運営法人・事業本部の基本情報（法人コード・法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
+      columns: [
+        { name: 'id', desc: '法人ID' },
+        { name: 'code', desc: '法人コード' },
+        { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
+        { name: 'corporate_number', desc: '法人番号（13桁）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'offices',
       tableType: '独立マスタ',
       logicalName: '事業所',
-      description: '法人が運営する各事業所の基本情報（多機能型事業所フラグ・地域区分単価対応）',
+      description: '法人が運営する各事業所の基本情報（所属法人ID・多機能型事業所フラグ・地域区分単価対応）',
       columns: [
         { name: 'id', desc: '事業所ID' },
+        { name: 'organization_id', desc: '所属法人ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名' },
         { name: 'is_type_b', desc: '就労継続支援B型フラグ（true: 実施 / false: 未実施）' },
@@ -106,20 +125,34 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'addresses',
-      tableType: '従属マスタ',
+      tableType: '独立マスタ',
       logicalName: '住所',
-      description: '事業所・利用者・職員・取引先等の所在地・住所情報の一元管理マスタ',
+      description: '所在地・住所情報の実体データマスタ（重複防止・名寄せ一元管理）',
       columns: [
         { name: 'id', desc: '住所ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
-        { name: 'owner_id', desc: '所有エンティティID' },
-        { name: 'address_type', desc: '住所種別（main: 所在地・本社 / home: 自宅 / billing: 請求先 / shipping: 納品先）' },
         { name: 'postal_code_prefix', desc: '郵便番号上3桁' },
         { name: 'postal_code_suffix', desc: '郵便番号下4桁' },
         { name: 'prefecture', desc: '都道府県' },
         { name: 'city', desc: '市区町村・郡' },
         { name: 'town_street', desc: '町名・丁目・番地' },
         { name: 'building', desc: '建物名・部屋番号' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'entity_address_settings',
+      tableType: '割当マスタ',
+      logicalName: '住所割当',
+      description: '法人・事業所・利用者・職員・取引先等と住所の多対多割当・属性管理マスタ',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'address_id', desc: '住所ID' },
+        { name: 'address_type', desc: '住所種別（main: 所在地・本社 / home: 自宅 / billing: 請求先 / shipping: 納品先）' },
         { name: 'is_primary', desc: '主たる住所フラグ（true: メイン住所 / false: サブ住所）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -148,7 +181,7 @@ export function ScreenCompositionPage() {
       description: '事業所・利用者・職員・取引先等と電話・携帯・FAX番号の多対多割当・属性管理マスタ',
       columns: [
         { name: 'id', desc: '割当ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
         { name: 'owner_id', desc: '所有エンティティID' },
         { name: 'phone_number_id', desc: '電話番号ID' },
         { name: 'label', desc: 'ラベル・窓口名（例: 本部代表、直通、保護者携帯、緊急窓口等）' },
@@ -180,7 +213,7 @@ export function ScreenCompositionPage() {
       description: '事業所・利用者・職員・取引先等とメールアドレスの多対多割当・属性管理マスタ',
       columns: [
         { name: 'id', desc: '割当ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
         { name: 'owner_id', desc: '所有エンティティID' },
         { name: 'email_address_id', desc: 'メールアドレスID' },
         { name: 'label', desc: 'ラベル・用途名（例: 連絡用、請求書用、保護者宛等）' },
@@ -832,7 +865,7 @@ export function ScreenCompositionPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                 <div style={{ padding: '10px 12px', backgroundColor: '#ebf8ff', borderRadius: '6px', borderLeft: '4px solid #3182ce' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#2b6cb0' }}>1. マスタ層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・工賃体系・手当/控除（単位加減算連動）・積立体系・単価・利用者・職員・取引先・スキル・案件・予算等の定義</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>法人・事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・工賃体系・手当/控除（単位加減算連動）・積立体系・単価・利用者・職員・取引先・スキル・案件・予算等の定義</div>
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>

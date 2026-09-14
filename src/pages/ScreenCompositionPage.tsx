@@ -128,15 +128,17 @@ export function ScreenCompositionPage() {
       physicalName: 'service_items',
       tableType: '体系マスタ',
       logicalName: 'サービス項目',
-      description: 'サービス体系に属する給付費体制加減算、加算手当、控除（実費・利用料等）の統合マスターデータ',
+      description: 'サービス体系に属する給付費体制加減算、処遇改善加算率、加算手当、控除（実費・利用料等）の統合マスターデータ',
       columns: [
         { name: 'id', desc: 'サービス項目ID' },
         { name: 'service_scheme_id', desc: '所属サービス体系ID' },
-        { name: 'name', desc: '項目名（例: 送迎加算、欠員減算、皆勤手当、昼食代控除など）' },
+        { name: 'name', desc: '項目名（例: 送迎加算、欠席時対応加算、欠員減算、福祉・介護職員等処遇改善加算、昼食代控除など）' },
         { name: 'item_category', desc: '項目分類区分（reward_addition: 給付費体制加算 / reward_subtraction: 給付費体制減算 / allowance: 加算手当 / deduction: 控除）' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'unit_value', desc: '標準単価または加減算単位数' },
-        { name: 'value_type', desc: '値種別区分（yen: 金額[円] / unit: 給付費単位数[単位]）' },
+        { name: 'calc_rate', desc: '定率算定率[%]（処遇改善加算等の総単位数乗算率）' },
+        { name: 'value_type', desc: '値種別区分（yen: 金額[円] / unit: 給付費単位数[単位] / rate: 給付費算定率[%]）' },
+        { name: 'monthly_limit_count', desc: '月間算定上限回数（例: 欠席時対応加算は月4回上限など）' },
         { name: 'affects_reward_units', desc: '給付費単位加減算連動フラグ（true: 給付費単位に連動 / false: 連動なし）' },
         { name: 'is_auto_calculated', desc: '自動計算フラグ（true: 利用実績・受給者証より自動算出）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -444,9 +446,28 @@ export function ScreenCompositionPage() {
       physicalName: 'attendance_records',
       tableType: 'トランザクション',
       logicalName: '出欠実績',
-      description: '利用者の日々の出欠・作業記録（作業時間）',
+      description: '利用者の日々の出欠・通所・欠席連絡・欠席時対応自動判定記録',
       columns: [
         { name: 'id', desc: '出欠記録ID' },
+        { name: 'office_id', desc: '対象事業所ID' },
+        { name: 'target_period', desc: '利用予定日（対象日）' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'status', desc: '出欠区分（present: 通所 / absent: 欠席）' },
+        { name: 'contact_date', desc: '欠席連絡日（連絡受付日：利用予定日との日数差で加算判定）' },
+        { name: 'is_absentee_supported', desc: '欠席時対応加算適用フラグ（連絡日より自動判定＋相談援助実績・手動上書き管理用）' },
+        { name: 'remarks', desc: '備考・欠席理由/連絡・相談援助内容' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '2. 日次実績層',
+      physicalName: 'work_records',
+      tableType: 'トランザクション',
+      logicalName: '作業実績',
+      description: '利用者のタスクごとの日次作業時間記録',
+      columns: [
+        { name: 'id', desc: '作業記録ID' },
         { name: 'office_id', desc: '作業実施事業所ID' },
         { name: 'target_period', desc: '対象時期・作業日' },
         { name: 'member_id', desc: '利用者ID' },
@@ -597,6 +618,7 @@ export function ScreenCompositionPage() {
         { name: 'service_fee_total', desc: 'サービス利用料総額（10割全額）' },
         { name: 'service_fee_copayment', desc: '実際に利用者が支払う額（サービス利用料控除額）' },
         { name: 'is_copayment_limit_applied', desc: '負担上限月額適用フラグ' },
+        { name: 'managed_copayment_amount', desc: '上限額管理調整後負担額（複数事業所利用時の上限管理結果・調整後負担額）' },
         { name: 'deduction_total', desc: '控除合計' },
         { name: 'payment', desc: '差引支給額' },
         { name: 'created_at', desc: '作成日時' },
@@ -731,7 +753,7 @@ export function ScreenCompositionPage() {
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>作業記録・日次手当/控除記録 ➔ [日報確定]</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>出欠・通所/欠席時対応記録・タスク作業実績記録・日次手当/控除記録 ➔ [日報確定]</div>
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#faf5ff', borderRadius: '6px', borderLeft: '4px solid #805ad5' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#6b46c1' }}>3. 月次実績層</div>
@@ -877,7 +899,7 @@ export function ScreenCompositionPage() {
                   { name: 'member_wage_evaluations', baseTable: 'member_wage_settings', desc: '利用者工賃単価割当エイリアスビュー' },
                   { name: 'project_task_skills', baseTable: 'task_skill_settings', desc: 'タスクスキル割当エイリアスビュー' },
                   { name: 'project_task_assignees', baseTable: 'task_assignee_settings', desc: 'タスク担当者割当エイリアスビュー' },
-                  { name: 'daily_work_records', baseTable: 'attendance_records', desc: '出欠実績エイリアスビュー' },
+                  { name: 'daily_work_records', baseTable: 'work_records', desc: '作業実績エイリアスビュー' },
                   { name: 'daily_allowance_records', baseTable: 'allowance_records', desc: '加算手当実績エイリアスビュー' },
                   { name: 'daily_deduction_records', baseTable: 'deduction_records', desc: '控除実績エイリアスビュー' },
                   { name: 'daily_work_confirmations', baseTable: 'daily_record_closings', desc: '日次実績確定エイリアスビュー' },

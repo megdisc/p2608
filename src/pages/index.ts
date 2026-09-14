@@ -1,10 +1,13 @@
-
 export * from './StaffPage';
 export * from './LoginPage';
 export * from './ProjectPage';
 export * from './ProjectUserPage';
 export * from './SkillPage';
 export * from './ClientPage';
+export * from './OrganizationPage';
+export * from './OfficePage';
+export * from './ServiceSchemePage';
+export * from './ScreenFacilityPage';
 export * from './DailyWorkRecordPage';
 export * from './ProgressRecordPage';
 export * from './FinancialRecordPage';
@@ -36,4 +39,3 @@ export * from './ReserveSettingPage';
 export * from './ScreenDailyWorkPage';
 export * from './DashboardPage';
 export * from './AverageWagePage';
-

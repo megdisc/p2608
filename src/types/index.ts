@@ -325,5 +325,6 @@ export type ReserveSettingItem = {
 };
 
 export type Tab = 
-  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve';
+  | 'dashboard' | 'staff' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
+  | 'screenFacility' | 'organization' | 'office' | 'serviceScheme';
 

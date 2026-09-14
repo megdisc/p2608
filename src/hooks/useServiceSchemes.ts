@@ -1,0 +1,187 @@
+import { useState, useCallback } from 'react';
+import { supabase } from '../lib';
+
+export type ServiceSchemeItem = {
+  id: string;
+  name: string;
+  service_type: string;
+  service_type_label?: string;
+  description: string;
+  basic_reward_unit: number;
+  is_deleted?: boolean;
+};
+
+export type ServiceDetailItem = {
+  id: string;
+  service_scheme_id?: string;
+  scheme_name?: string;
+  name: string;
+  item_category: string;
+  item_category_label?: string;
+  occurrence_type: string;
+  occurrence_type_label?: string;
+  unit_value: number;
+  calc_rate: number;
+  value_type: string;
+  value_type_label?: string;
+  monthly_limit_count: number | null;
+  affects_reward_units: boolean;
+  is_auto_calculated: boolean;
+  is_deleted?: boolean;
+};
+
+export function useServiceSchemes() {
+  const [schemes, setSchemes] = useState<ServiceSchemeItem[]>([]);
+  const [items, setItems] = useState<ServiceDetailItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchServiceData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [schemesRes, itemsRes] = await Promise.all([
+        supabase.from('service_schemes').select('*').eq('is_deleted', false).order('created_at', { ascending: true }),
+        supabase.from('service_items').select('*, service_schemes(name)').eq('is_deleted', false).order('created_at', { ascending: true })
+      ]);
+
+      if (schemesRes.error) throw schemesRes.error;
+      if (itemsRes.error) throw itemsRes.error;
+
+      const formattedSchemes: ServiceSchemeItem[] = (schemesRes.data || []).map((s: any) => {
+        let typeLabel = '就労継続支援B型';
+        if (s.service_type === 'type_a') typeLabel = '就労継続支援A型';
+        if (s.service_type === 'transition') typeLabel = '就労移行支援';
+        return {
+          id: s.id,
+          name: s.name,
+          service_type: s.service_type || 'type_b',
+          service_type_label: typeLabel,
+          description: s.description || '',
+          basic_reward_unit: s.basic_reward_unit ?? 0,
+          is_deleted: s.is_deleted
+        };
+      });
+
+      const formattedItems: ServiceDetailItem[] = (itemsRes.data || []).map((i: any) => {
+        let catLabel = '加算手当';
+        if (i.item_category === 'reward_addition') catLabel = '給付費体制加算';
+        if (i.item_category === 'reward_subtraction') catLabel = '給付費体制減算';
+        if (i.item_category === 'deduction') catLabel = '控除';
+
+        let valLabel = '給付費単位数[単位]';
+        if (i.value_type === 'yen') valLabel = '金額[円]';
+        if (i.value_type === 'rate') valLabel = '給付費算定率[%]';
+
+        let occLabel = '日次';
+        if (i.occurrence_type === 'monthly') occLabel = '月次';
+
+        return {
+          id: i.id,
+          service_scheme_id: i.service_scheme_id,
+          scheme_name: i.service_schemes?.name || '就労継続支援B型標準サービス体系',
+          name: i.name,
+          item_category: i.item_category || 'reward_addition',
+          item_category_label: catLabel,
+          occurrence_type: i.occurrence_type || 'daily',
+          occurrence_type_label: occLabel,
+          unit_value: i.unit_value ?? 0,
+          calc_rate: i.calc_rate ?? 0,
+          value_type: i.value_type || 'unit',
+          value_type_label: valLabel,
+          monthly_limit_count: i.monthly_limit_count ?? null,
+          affects_reward_units: i.affects_reward_units ?? false,
+          is_auto_calculated: i.is_auto_calculated ?? false,
+          is_deleted: i.is_deleted
+        };
+      });
+
+      setSchemes(formattedSchemes);
+      setItems(formattedItems);
+    } catch (err) {
+      console.error('Error fetching service schemes:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const batchSaveSchemes = async (drafts: ServiceSchemeItem[], deletedIds: string[]) => {
+    try {
+      if (deletedIds.length > 0) {
+        const { error } = await supabase
+          .from('service_schemes')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
+      for (const item of activeItems) {
+        const upsertData: any = {
+          name: item.name,
+          service_type: item.service_type || 'type_b',
+          description: item.description || null,
+          basic_reward_unit: item.basic_reward_unit || 0
+        };
+        if (!item.id.startsWith('SCH-')) {
+          upsertData.id = item.id;
+        }
+
+        const { error } = await supabase.from('service_schemes').upsert(upsertData);
+        if (error) throw error;
+      }
+
+      await fetchServiceData();
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const batchSaveItems = async (drafts: ServiceDetailItem[], deletedIds: string[]) => {
+    try {
+      if (deletedIds.length > 0) {
+        const { error } = await supabase
+          .from('service_items')
+          .update({ deleted_at: new Date().toISOString() })
+          .in('id', deletedIds);
+        if (error) throw error;
+      }
+
+      const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
+      for (const item of activeItems) {
+        const upsertData: any = {
+          service_scheme_id: item.service_scheme_id || '33333333-3333-3333-3333-333333333333',
+          name: item.name,
+          item_category: item.item_category || 'reward_addition',
+          occurrence_type: item.occurrence_type || 'daily',
+          unit_value: item.unit_value || 0,
+          calc_rate: item.calc_rate || 0,
+          value_type: item.value_type || 'unit',
+          monthly_limit_count: item.monthly_limit_count || null,
+          affects_reward_units: item.affects_reward_units ?? false,
+          is_auto_calculated: item.is_auto_calculated ?? false
+        };
+        if (!item.id.startsWith('ITM-')) {
+          upsertData.id = item.id;
+        }
+
+        const { error } = await supabase.from('service_items').upsert(upsertData);
+        if (error) throw error;
+      }
+
+      await fetchServiceData();
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  return {
+    schemes,
+    items,
+    loading,
+    fetchServiceData,
+    batchSaveSchemes,
+    batchSaveItems
+  };
+}

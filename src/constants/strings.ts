@@ -47,6 +47,7 @@ export const WORDS_SYSTEM = {
   SCREEN_USER: '利用者',
   SCREEN_STAFF: '職員',
   SCREEN_CLIENT: '取引先',
+  SCREEN_FACILITY: '施設・サービス',
   SCREEN_DASHBOARD: 'ダッシュボード',
   SCREEN_FINANCE: '収支',
   SCREEN_SKILL: 'スキル体系',

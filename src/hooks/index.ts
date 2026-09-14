@@ -2,6 +2,9 @@ export * from './useClients';
 export * from './useSkills';
 export * from './useMembers';
 export * from './useStaffs';
+export * from './useOrganizations';
+export * from './useOffices';
+export * from './useServiceSchemes';
 
 export * from './useProjects';
 export * from './useAssigneeSummary';

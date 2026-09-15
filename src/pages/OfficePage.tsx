@@ -17,14 +17,19 @@ export function OfficePage() {
   }, [fetchOffices, showAlert]);
 
   const columns: Column<OfficeItem>[] = [
-    { key: 'code', header: '事業所コード', sortKey: 'code', editable: true, inputType: 'text' },
-    { key: 'name', header: '事業所名', editable: true, inputType: 'text' },
-    { key: 'is_type_b', header: '就労継続支援B型', editable: true, inputType: 'checkbox' },
-    { key: 'is_type_a', header: '就労継続支援A型', editable: true, inputType: 'checkbox' },
-    { key: 'is_transition', header: '就労移行支援', editable: true, inputType: 'checkbox' },
-    { key: 'unit_price', header: '地域区分単価(円)', editable: true, inputType: 'number' },
-    { key: 'address', header: '所在地・住所', editable: true, inputType: 'text' },
-    { key: 'phone', header: '電話番号', editable: true, inputType: 'text' },
+    { key: 'code', header: '事業所コード', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: '事業所名', sortable: false, editable: true, inputType: 'text' },
+    { key: 'yomigana', header: 'ふりがな', sortable: false, editable: true, inputType: 'text' },
+    { key: 'unit_price', header: '地域区分単価(円)', sortable: false, editable: true, inputType: 'number' },
+    { key: 'postal_code_prefix', header: '郵便番号（前3桁）', sortable: false, editable: true, inputType: 'text' },
+    { key: 'postal_code_suffix', header: '郵便番号（後4桁）', sortable: false, editable: true, inputType: 'text' },
+    { key: 'prefecture', header: '都道府県', sortable: false, editable: true, inputType: 'text' },
+    { key: 'city', header: '市区町村・郡', sortable: false, editable: true, inputType: 'text' },
+    { key: 'town_street', header: '町名・番地', sortable: false, editable: true, inputType: 'text' },
+    { key: 'building', header: '建物名・部屋番号', sortable: false, editable: true, inputType: 'text' },
+    { key: 'phone', header: '電話番号', sortable: false, editable: true, inputType: 'text' },
+    { key: 'fax', header: 'FAX番号', sortable: false, editable: true, inputType: 'text' },
+    { key: 'email', header: 'メールアドレス', sortable: false, editable: true, inputType: 'text' },
   ];
 
   const handleBatchSave = async (drafts: OfficeItem[], deletedIds: string[]) => {
@@ -47,12 +52,16 @@ export function OfficePage() {
       id: `OFF-${Date.now()}-${Math.random()}`,
       code: generateNextUnifiedCode(existingCodes, 'OFF-'),
       name: '',
-      is_type_b: true,
-      is_type_a: false,
-      is_transition: false,
+      yomigana: '',
       unit_price: 10.68,
-      address: '',
+      postal_code_prefix: '',
+      postal_code_suffix: '',
+      prefecture: '',
+      city: '',
+      town_street: '',
+      building: '',
       phone: '',
+      fax: '',
       email: ''
     } as OfficeItem;
   };
@@ -65,7 +74,6 @@ export function OfficePage() {
       data={items} 
       columns={columns} 
       emptyMessage="登録されている事業所がありません" 
-      initialSort={{ key: 'code', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       hideHeader={true}

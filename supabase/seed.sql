@@ -32,8 +32,34 @@ INSERT INTO public.organizations (id, name, yomigana, representative_name, corpo
 ('11111111-1111-1111-1111-111111111111', '社会福祉法人未来福祉会', 'しゃかいふくしほうじんみらいふくしかい', '理事長 山田太郎', '1234567890123')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.offices (id, code, name, is_type_b, is_type_a, is_transition, unit_price) VALUES
-('22222222-2222-2222-2222-222222222222', 'OFF-001', '多機能型事業所 ワークステーション未来', true, true, false, 10.68)
+INSERT INTO public.offices (id, code, name, yomigana, unit_price) VALUES
+('22222222-2222-2222-2222-222222222222', 'OFF-001', '多機能型事業所 ワークステーション未来', 'たきのうがたじぎょうしょ わーくすてーしょんみらい', 10.68)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.addresses (id, postal_code_prefix, postal_code_suffix, prefecture, city, town_street, building) VALUES
+('aaaaa222-2222-2222-2222-222222222222', '100', '0001', '東京都', '千代田区', '千代田1-2', 'ワークステーションビル 1F')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.entity_address_settings (owner_type, owner_id, address_id) VALUES
+('office', '22222222-2222-2222-2222-222222222222', 'aaaaa222-2222-2222-2222-222222222222')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.phone_numbers (id, phone_type, phone_number) VALUES
+('bbbbb333-3333-3333-3333-333333333333', 'phone', '03-9876-5432'),
+('bbbbb444-4444-4444-4444-444444444444', 'fax', '03-9876-5433')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.entity_phone_settings (owner_type, owner_id, phone_number_id) VALUES
+('office', '22222222-2222-2222-2222-222222222222', 'bbbbb333-3333-3333-3333-333333333333'),
+('office', '22222222-2222-2222-2222-222222222222', 'bbbbb444-4444-4444-4444-444444444444')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.email_addresses (id, email) VALUES
+('ccccc222-2222-2222-2222-222222222222', 'office@mirai-fukushi.or.jp')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.entity_email_settings (owner_type, owner_id, email_address_id) VALUES
+('office', '22222222-2222-2222-2222-222222222222', 'ccccc222-2222-2222-2222-222222222222')
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. サービス体系 & 項目マスタ (service_schemes / service_items)

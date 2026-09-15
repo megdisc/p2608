@@ -110,6 +110,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '事業所ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名' },
+        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },

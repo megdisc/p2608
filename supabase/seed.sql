@@ -49,7 +49,7 @@ INSERT INTO public.service_items (id, service_scheme_id, name, item_category, oc
 ('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00, 0, 'yen', NULL, false, false)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.office_service_settings (office_id, service_scheme_id, valid_from) VALUES
+INSERT INTO public.office_service_scheme_settings (office_id, service_scheme_id, valid_from) VALUES
 ('22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '2025-04-01')
 ON CONFLICT (id) DO NOTHING;
 
@@ -163,8 +163,8 @@ INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('e2d4d8c2
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'internal') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0') ON CONFLICT (id) DO NOTHING;
 
--- 12. 作業実績 (work_records) & 出欠実績 (attendance_records)
-INSERT INTO public.attendance_records (office_id, target_period, member_id, status, contact_date, is_absentee_supported, remarks) VALUES
+-- 12. 作業実績 (member_work_records) & 出欠実績 (member_attendance_records)
+INSERT INTO public.member_attendance_records (office_id, target_period, member_id, status, contact_date, is_absentee_supported, remarks) VALUES
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'present', NULL, false, '通常通所'),
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'present', NULL, false, '通常通所'),
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'present', NULL, false, '通常通所'),
@@ -173,7 +173,7 @@ INSERT INTO public.attendance_records (office_id, target_period, member_id, stat
 ('22222222-2222-2222-2222-222222222222', '2026-06-17', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 'absent', '2026-06-16', true, '体調不良欠席（前日連絡・加算適用）')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.work_records (office_id, target_period, member_id, task_id, work_time) VALUES
+INSERT INTO public.member_work_records (office_id, target_period, member_id, task_id, work_time) VALUES
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2),
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2),
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3),

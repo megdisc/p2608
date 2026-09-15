@@ -213,8 +213,8 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 1.12 office_service_settings (事業所サービス体系割当)
-CREATE TABLE IF NOT EXISTS "public"."office_service_settings" (
+-- 1.12 office_service_scheme_settings (事業所サービス体系割当)
+CREATE TABLE IF NOT EXISTS "public"."office_service_scheme_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
     "service_scheme_id" UUID REFERENCES "public"."service_schemes"("id") ON DELETE CASCADE,
@@ -368,7 +368,6 @@ CREATE TABLE IF NOT EXISTS "public"."partners" (
     "name" TEXT NOT NULL,
     "yomigana" TEXT,
     "contact_person" TEXT,
-    "phone" TEXT,
     "is_customer" BOOLEAN DEFAULT false NOT NULL,
     "is_subcontractor" BOOLEAN DEFAULT false NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
@@ -443,8 +442,8 @@ CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
 -- 2. 日次実績層
 -- ==========================================
 
--- 2.0 staff_work_records (職員勤務実績)
-CREATE TABLE IF NOT EXISTS "public"."staff_work_records" (
+-- 2.0 staff_attendance_records (職員勤務実績)
+CREATE TABLE IF NOT EXISTS "public"."staff_attendance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
     "staff_id" UUID REFERENCES "public"."staffs"("id") ON DELETE CASCADE,
@@ -457,8 +456,8 @@ CREATE TABLE IF NOT EXISTS "public"."staff_work_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 2.1 attendance_records (出欠実績)
-CREATE TABLE IF NOT EXISTS "public"."attendance_records" (
+-- 2.1 member_attendance_records (利用者出欠実績)
+CREATE TABLE IF NOT EXISTS "public"."member_attendance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
     "target_period" DATE NOT NULL,
@@ -471,8 +470,8 @@ CREATE TABLE IF NOT EXISTS "public"."attendance_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 2.2 work_records (作業実績)
-CREATE TABLE IF NOT EXISTS "public"."work_records" (
+-- 2.2 member_work_records (利用者作業実績)
+CREATE TABLE IF NOT EXISTS "public"."member_work_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
     "target_period" DATE NOT NULL,
@@ -704,7 +703,11 @@ CREATE OR REPLACE VIEW "public"."member_skill_evaluations" AS SELECT * FROM "pub
 CREATE OR REPLACE VIEW "public"."member_wage_evaluations" AS SELECT * FROM "public"."member_wage_settings";
 CREATE OR REPLACE VIEW "public"."project_task_skills" AS SELECT * FROM "public"."task_skill_settings";
 CREATE OR REPLACE VIEW "public"."project_task_assignees" AS SELECT * FROM "public"."task_assignee_settings";
-CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."work_records";
+CREATE OR REPLACE VIEW "public"."office_service_settings" AS SELECT * FROM "public"."office_service_scheme_settings";
+CREATE OR REPLACE VIEW "public"."staff_work_records" AS SELECT * FROM "public"."staff_attendance_records";
+CREATE OR REPLACE VIEW "public"."attendance_records" AS SELECT * FROM "public"."member_attendance_records";
+CREATE OR REPLACE VIEW "public"."work_records" AS SELECT * FROM "public"."member_work_records";
+CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."member_work_records";
 CREATE OR REPLACE VIEW "public"."daily_allowance_records" AS SELECT * FROM "public"."allowance_records";
 CREATE OR REPLACE VIEW "public"."daily_deduction_records" AS SELECT * FROM "public"."deduction_records";
 CREATE OR REPLACE VIEW "public"."daily_work_confirmations" AS SELECT * FROM "public"."daily_record_closings";

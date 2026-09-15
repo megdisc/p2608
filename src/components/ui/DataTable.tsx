@@ -170,7 +170,13 @@ export function DataTable<T extends { id: string }>({
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
     setDraftData(data);
-    setDeletedIds(new Set());
+    const initialDeleted = new Set<string>();
+    (data || []).forEach(item => {
+      if ((item as any).is_deleted) {
+        initialDeleted.add(item.id);
+      }
+    });
+    setDeletedIds(initialDeleted);
     setNewRowIds(new Set());
     setOriginalNewRows([]);
   }, [data]);
@@ -390,7 +396,7 @@ export function DataTable<T extends { id: string }>({
             return true;
           })
           .map(item => {
-            const newItem = { ...item };
+            const newItem = { ...item, is_deleted: deletedIds.has(item.id) };
             if (subItemsKey && (newItem as any)[subItemsKey]) {
               (newItem as any)[subItemsKey] = ((newItem as any)[subItemsKey] as any[])
                 .filter(sub => !deletedIds.has(sub.id))
@@ -421,7 +427,13 @@ export function DataTable<T extends { id: string }>({
 
   const handleCancelClick = () => {
     setDraftData(data);
-    setDeletedIds(new Set());
+    const initialDeleted = new Set<string>();
+    (data || []).forEach(item => {
+      if ((item as any).is_deleted) {
+        initialDeleted.add(item.id);
+      }
+    });
+    setDeletedIds(initialDeleted);
     setNewRowIds(new Set());
     setOriginalNewRows([]);
   };
@@ -599,11 +611,25 @@ export function DataTable<T extends { id: string }>({
   const isEditingEnabled = !!onBatchSave;
   const showDeleteCol = isEditingEnabled && !hideDeleteColumn;
 
+  const isDeletedModified = useMemo(() => {
+    const initialDeleted = new Set<string>();
+    (data || []).forEach(item => {
+      if ((item as any).is_deleted) {
+        initialDeleted.add(item.id);
+      }
+    });
+    if (deletedIds.size !== initialDeleted.size) return true;
+    for (const id of deletedIds) {
+      if (!initialDeleted.has(id)) return true;
+    }
+    return false;
+  }, [data, deletedIds]);
+
   const isExistingModified = useMemo(() => {
-    if (deletedIds.size > 0) return true;
+    if (isDeletedModified) return true;
     const existingDrafts = draftData.filter(item => !newRowIds.has(item.id));
     return JSON.stringify(existingDrafts) !== JSON.stringify(data);
-  }, [draftData, data, deletedIds, newRowIds]);
+  }, [draftData, data, isDeletedModified, newRowIds]);
 
   const isAddedRowModified = useMemo(() => {
     if (newRowIds.size === 0) return false;

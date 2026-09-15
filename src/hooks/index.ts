@@ -5,6 +5,8 @@ export * from './useStaffs';
 export * from './useOrganizations';
 export * from './useOffices';
 export * from './useServiceSchemes';
+export * from './useServiceTypes';
+export * from './useQualifications';
 
 export * from './useProjects';
 export * from './useAssigneeSummary';

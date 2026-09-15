@@ -66,6 +66,13 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'client', label: PAGE_NAMES.CLIENT },
     ],
   },
+  SCREEN_WELFARE: {
+    screenName: PAGE_NAMES.SCREEN_WELFARE,
+    tabs: [
+      { id: 'serviceType', label: '支援種別' },
+      { id: 'qualification', label: '資格' },
+    ],
+  },
   SCREEN_FACILITY: {
     screenName: PAGE_NAMES.SCREEN_FACILITY,
     tabs: [
@@ -113,6 +120,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
   if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;
+  if (tabId === 'screenWelfare') return SCREEN_CONFIGS.SCREEN_WELFARE;
   if (tabId === 'screenFacility') return SCREEN_CONFIGS.SCREEN_FACILITY;
   if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;
   if (tabId === 'screenWage') return SCREEN_CONFIGS.SCREEN_WAGE;

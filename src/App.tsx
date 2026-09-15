@@ -9,6 +9,7 @@ import {
   ScreenUserPage,
   ScreenStaffPage,
   ScreenClientPage,
+  ScreenWelfarePage,
   ScreenFacilityPage,
   ScreenSkillPage,
   ScreenWagePage,
@@ -61,6 +62,8 @@ function AppContent() {
             <ScreenStaffPage />
           ) : ['client', 'screenClient'].includes(activeTab) ? (
             <ScreenClientPage />
+          ) : ['screenWelfare', 'serviceType', 'qualification'].includes(activeTab) ? (
+            <ScreenWelfarePage />
           ) : ['screenFacility', 'organization', 'office', 'serviceScheme'].includes(activeTab) ? (
             <ScreenFacilityPage />
           ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (

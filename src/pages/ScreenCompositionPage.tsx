@@ -112,6 +112,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '事業所名' },
         { name: 'yomigana', desc: 'ふりがな' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
+        { name: 'service_type_ids', desc: '割当支援種別（office_service_type_settings との連動割当）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

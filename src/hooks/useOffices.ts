@@ -1,6 +1,12 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 
+export type ActiveServiceType = {
+  id: string;
+  code: string;
+  name: string;
+};
+
 export type OfficeItem = {
   id: string;
   code: string;
@@ -16,24 +22,42 @@ export type OfficeItem = {
   phone: string;
   fax: string;
   email: string;
+  service_type_ids?: string[];
   is_deleted?: boolean;
 };
 
 export function useOffices() {
   const [items, setItems] = useState<OfficeItem[]>([]);
+  const [activeServiceTypes, setActiveServiceTypes] = useState<ActiveServiceType[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchOffices = useCallback(async () => {
     try {
       setLoading(true);
-      const [officesRes, addressRes, phoneRes, emailRes] = await Promise.all([
+      const [officesRes, addressRes, phoneRes, emailRes, serviceTypesRes, officeServiceTypesRes] = await Promise.all([
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('entity_address_settings').select('owner_id, address_id, addresses(postal_code_prefix, postal_code_suffix, prefecture, city, town_street, building)').eq('owner_type', 'office'),
         supabase.from('entity_phone_settings').select('owner_id, phone_number_id, phone_numbers(phone_type, phone_number)').eq('owner_type', 'office'),
-        supabase.from('entity_email_settings').select('owner_id, email_address_id, email_addresses(email)').eq('owner_type', 'office')
+        supabase.from('entity_email_settings').select('owner_id, email_address_id, email_addresses(email)').eq('owner_type', 'office'),
+        supabase.from('service_types').select('id, code, name').is('deleted_at', null).order('code', { ascending: true }),
+        supabase.from('office_service_type_settings').select('office_id, service_type_id')
       ]);
 
       if (officesRes.error) throw officesRes.error;
+
+      const activeSTs: ActiveServiceType[] = (serviceTypesRes.data || []).map((st: any) => ({
+        id: st.id,
+        code: st.code || '',
+        name: st.name || ''
+      }));
+      setActiveServiceTypes(activeSTs);
+
+      const serviceTypeMap = new Map<string, string[]>();
+      (officeServiceTypesRes.data || []).forEach((setting: any) => {
+        const existing = serviceTypeMap.get(setting.office_id) || [];
+        existing.push(setting.service_type_id);
+        serviceTypeMap.set(setting.office_id, existing);
+      });
 
       const addressMap = new Map<string, any>();
       (addressRes.data || []).forEach((item: any) => {
@@ -78,6 +102,7 @@ export function useOffices() {
           phone: phoneMap.get(o.id) || '',
           fax: faxMap.get(o.id) || '',
           email: emailMap.get(o.id) || '',
+          service_type_ids: serviceTypeMap.get(o.id) || [],
           is_deleted: o.is_deleted
         };
       });
@@ -231,6 +256,49 @@ export function useOffices() {
             });
           }
         }
+
+        // 4. Save office service type settings (事業所支援種別割当)
+        if (Array.isArray(item.service_type_ids)) {
+          const { data: existingSTs } = await supabase
+            .from('office_service_type_settings')
+            .select('id, service_type_id')
+            .eq('office_id', officeId);
+
+          const existingMap = new Map<string, string>();
+          (existingSTs || []).forEach((st: any) => {
+            existingMap.set(st.service_type_id, st.id);
+          });
+
+          const targetSet = new Set(item.service_type_ids);
+
+          // Delete unselected
+          const toDeleteIds: string[] = [];
+          existingMap.forEach((settingId, serviceTypeId) => {
+            if (!targetSet.has(serviceTypeId)) {
+              toDeleteIds.push(settingId);
+            }
+          });
+
+          if (toDeleteIds.length > 0) {
+            await supabase.from('office_service_type_settings').delete().in('id', toDeleteIds);
+          }
+
+          // Insert newly selected
+          const toInsert: any[] = [];
+          targetSet.forEach((serviceTypeId) => {
+            if (!existingMap.has(serviceTypeId)) {
+              toInsert.push({
+                office_id: officeId,
+                service_type_id: serviceTypeId,
+                capacity: 0
+              });
+            }
+          });
+
+          if (toInsert.length > 0) {
+            await supabase.from('office_service_type_settings').insert(toInsert);
+          }
+        }
       }
 
       await fetchOffices();
@@ -242,6 +310,7 @@ export function useOffices() {
 
   return {
     items,
+    activeServiceTypes,
     loading,
     fetchOffices,
     batchSaveOffices

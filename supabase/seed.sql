@@ -94,6 +94,10 @@ INSERT INTO public.service_types (id, code, name, description, deleted_at) VALUE
 ('11111111-0000-0000-0000-000000000028', 'shogaiji_sodan', '障害児相談支援', '障害児支援利用計画の作成・モニタリングおよび相談支援サービス', '2026-06-25 00:00:00+09')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO public.office_service_type_settings (id, office_id, service_type_id, capacity) VALUES
+('33333333-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', 20)
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO public.qualifications (id, code, name, category, description, deleted_at) VALUES
 ('22222222-0000-0000-0000-000000000001', 'QUAL-001', 'サービス管理責任者（サビ管）', '人員配置・必置資格', '個別支援計画の作成・評価・技術指導等を行う障害福祉事業所の必置人員資格', NULL),
 ('22222222-0000-0000-0000-000000000002', 'QUAL-002', '児童発達支援管理責任者（児発管）', '人員配置・必置資格', '障害児通所支援等において個別支援計画の作成・評価を行う必置人員資格', '2026-06-25 00:00:00+09'),

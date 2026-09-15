@@ -3,8 +3,6 @@ import { supabase } from '../lib';
 
 export type OfficeItem = {
   id: string;
-  organization_id?: string;
-  orgName?: string;
   code: string;
   name: string;
   is_type_b: boolean;
@@ -24,18 +22,14 @@ export function useOffices() {
   const fetchOffices = useCallback(async () => {
     try {
       setLoading(true);
-      const [officesRes, orgsRes, addressRes, phoneRes, emailRes] = await Promise.all([
+      const [officesRes, addressRes, phoneRes, emailRes] = await Promise.all([
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('organizations').select('id, name').eq('is_deleted', false),
         supabase.from('entity_address_settings').select('owner_id, addresses(prefecture, city, town_street, building)').eq('owner_type', 'office'),
         supabase.from('entity_phone_settings').select('owner_id, phone_numbers(phone_number)').eq('owner_type', 'office'),
         supabase.from('entity_email_settings').select('owner_id, email_addresses(email)').eq('owner_type', 'office')
       ]);
 
       if (officesRes.error) throw officesRes.error;
-
-      const orgMap = new Map<string, string>();
-      (orgsRes.data || []).forEach((o: any) => orgMap.set(o.id, o.name));
 
       const addressMap = new Map<string, string>();
       (addressRes.data || []).forEach((item: any) => {
@@ -61,8 +55,6 @@ export function useOffices() {
 
       const formatted: OfficeItem[] = (officesRes.data || []).map((o: any) => ({
         id: o.id,
-        organization_id: o.organization_id,
-        orgName: o.organization_id ? (orgMap.get(o.organization_id) || '社会福祉法人未来福祉会') : '社会福祉法人未来福祉会',
         code: o.code || '',
         name: o.name,
         is_type_b: o.is_type_b ?? true,

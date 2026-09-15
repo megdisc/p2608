@@ -28,12 +28,12 @@ ON CONFLICT (id) DO UPDATE SET
   user_type = EXCLUDED.user_type;
 
 -- 3. 法人 & 事業所マスタ (organizations / offices)
-INSERT INTO public.organizations (id, code, name, yomigana, representative_name, corporate_number) VALUES
-('11111111-1111-1111-1111-111111111111', 'ORG-001', '社会福祉法人未来福祉会', 'しゃかいふくしほうじんみらいふくしかい', '理事長 山田太郎', '1234567890123')
+INSERT INTO public.organizations (id, name, yomigana, representative_name, corporate_number) VALUES
+('11111111-1111-1111-1111-111111111111', '社会福祉法人未来福祉会', 'しゃかいふくしほうじんみらいふくしかい', '理事長 山田太郎', '1234567890123')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.offices (id, organization_id, code, name, is_type_b, is_type_a, is_transition, unit_price) VALUES
-('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', 'OFF-001', '多機能型事業所 ワークステーション未来', true, true, false, 10.68)
+INSERT INTO public.offices (id, code, name, is_type_b, is_type_a, is_transition, unit_price) VALUES
+('22222222-2222-2222-2222-222222222222', 'OFF-001', '多機能型事業所 ワークステーション未来', true, true, false, 10.68)
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. サービス体系 & 項目マスタ (service_schemes / service_items)

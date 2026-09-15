@@ -89,15 +89,13 @@ export function ScreenCompositionPage() {
       physicalName: 'organizations',
       tableType: '独立マスタ',
       logicalName: '法人',
-      description: '運営法人・事業本部の基本情報（法人コード・法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
+      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
       columns: [
         { name: 'id', desc: '法人ID' },
-        { name: 'code', desc: '法人コード' },
         { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
-        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
         { name: 'corporate_number', desc: '法人番号（13桁）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -107,10 +105,9 @@ export function ScreenCompositionPage() {
       physicalName: 'offices',
       tableType: '独立マスタ',
       logicalName: '事業所',
-      description: '法人が運営する各事業所の基本情報（所属法人ID・多機能型事業所・地域区分単価対応）',
+      description: '法人が運営する各事業所の基本情報（多機能型事業所・地域区分単価対応）',
       columns: [
         { name: 'id', desc: '事業所ID' },
-        { name: 'organization_id', desc: '所属法人ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
@@ -414,7 +411,7 @@ export function ScreenCompositionPage() {
         { name: 'user_id', desc: '認証ユーザーID' },
         { name: 'code', desc: '職員コード' },
         { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -479,7 +476,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '取引先ID' },
         { name: 'code', desc: '取引先コード' },
         { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'contact_person', desc: '担当者名' },
         { name: 'is_customer', desc: '顧客フラグ' },
         { name: 'is_subcontractor', desc: '外注先フラグ' },
@@ -499,7 +496,7 @@ export function ScreenCompositionPage() {
         { name: 'user_id', desc: '認証ユーザーID' },
         { name: 'code', desc: '利用者コード' },
         { name: 'name', desc: '利用者名' },
-        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

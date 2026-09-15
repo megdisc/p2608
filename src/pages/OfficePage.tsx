@@ -19,7 +19,6 @@ export function OfficePage() {
   const columns: Column<OfficeItem>[] = [
     { key: 'code', header: '事業所コード', sortKey: 'code', editable: true, inputType: 'text' },
     { key: 'name', header: '事業所名', editable: true, inputType: 'text' },
-    { key: 'orgName', header: '所属法人', editable: false },
     { key: 'is_type_b', header: '就労継続支援B型', editable: true, inputType: 'checkbox' },
     { key: 'is_type_a', header: '就労継続支援A型', editable: true, inputType: 'checkbox' },
     { key: 'is_transition', header: '就労移行支援', editable: true, inputType: 'checkbox' },
@@ -48,7 +47,6 @@ export function OfficePage() {
       id: `OFF-${Date.now()}-${Math.random()}`,
       code: generateNextUnifiedCode(existingCodes, 'OFF-'),
       name: '',
-      orgName: '社会福祉法人未来福祉会',
       is_type_b: true,
       is_type_a: false,
       is_transition: false,

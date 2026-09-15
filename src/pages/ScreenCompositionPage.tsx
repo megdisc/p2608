@@ -107,17 +107,45 @@ export function ScreenCompositionPage() {
       physicalName: 'offices',
       tableType: '独立マスタ',
       logicalName: '事業所',
-      description: '法人が運営する各事業所の基本情報（所属法人ID・多機能型事業所フラグ・地域区分単価対応）',
+      description: '法人が運営する各事業所の基本情報（所属法人ID・多機能型事業所・地域区分単価対応）',
       columns: [
         { name: 'id', desc: '事業所ID' },
         { name: 'organization_id', desc: '所属法人ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名' },
-        { name: 'is_type_b', desc: '就労継続支援B型フラグ（true: 実施 / false: 未実施）' },
-        { name: 'is_type_a', desc: '就労継続支援A型フラグ（true: 実施 / false: 未実施）' },
-        { name: 'is_transition', desc: '就労移行支援フラグ（true: 実施 / false: 未実施）' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'service_types',
+      tableType: '独立マスタ',
+      logicalName: '支援種別',
+      description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '支援種別ID' },
+        { name: 'code', desc: '種別コード（例: type_a, type_b, transition など）' },
+        { name: 'name', desc: '種別名称（例: 就労継続支援A型、就労継続支援B型、就労移行支援など）' },
+        { name: 'description', desc: '説明・概要' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_service_type_settings',
+      tableType: '割当マスタ',
+      logicalName: '事業所支援種別割当',
+      description: '事業所が指定を受けて実施する支援種別および定員設定',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'office_id', desc: '事業所ID' },
+        { name: 'service_type_id', desc: '支援種別ID' },
+        { name: 'capacity', desc: '利用定員（人）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -298,7 +326,7 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'office_service_settings',
+      physicalName: 'office_service_scheme_settings',
       tableType: '割当マスタ',
       logicalName: '事業所サービス体系割当',
       description: '事業所とサービス体系の多対多割当・適用期間管理マスタ（複数事業所での同時運用・共有対応）',
@@ -377,6 +405,91 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'staffs',
+      tableType: '従属マスタ',
+      logicalName: '職員',
+      description: 'システムを利用する職員情報',
+      columns: [
+        { name: 'id', desc: '職員ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '職員コード' },
+        { name: 'name', desc: '職員名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'qualifications',
+      tableType: '独立マスタ',
+      logicalName: '資格',
+      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '資格ID' },
+        { name: 'code', desc: '資格コード' },
+        { name: 'name', desc: '資格・研修名（例: サービス管理責任者、生活支援員、看護師、理学療法士など）' },
+        { name: 'category', desc: '資格区分' },
+        { name: 'description', desc: '資格概要' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'staff_qualification_settings',
+      tableType: '割当マスタ',
+      logicalName: '職員資格割当',
+      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'qualification_id', desc: '資格ID' },
+        { name: 'license_number', desc: '資格・登録番号' },
+        { name: 'acquired_on', desc: '取得年月日・修了日' },
+        { name: 'valid_until', desc: '有効期限・更新研修期限' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_staff_settings',
+      tableType: '割当マスタ',
+      logicalName: '事業所職員割当',
+      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'office_id', desc: '事業所ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'partners',
+      tableType: '独立マスタ',
+      logicalName: '取引先',
+      description: '取引先情報',
+      columns: [
+        { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'フリガナ' },
+        { name: 'contact_person', desc: '担当者名' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'members',
       tableType: '従属マスタ',
       logicalName: '利用者',
@@ -432,42 +545,6 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '評価ID' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'wage_rate_id', desc: '工賃単価ID' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staffs',
-      tableType: '従属マスタ',
-      logicalName: '職員',
-      description: 'システムを利用する職員情報',
-      columns: [
-        { name: 'id', desc: '職員ID' },
-        { name: 'user_id', desc: '認証ユーザーID' },
-        { name: 'code', desc: '職員コード' },
-        { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'partners',
-      tableType: '独立マスタ',
-      logicalName: '取引先',
-      description: '取引先情報',
-      columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'code', desc: '取引先コード' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'フリガナ' },
-        { name: 'contact_person', desc: '担当者名' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -559,9 +636,28 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '2. 日次実績層',
-      physicalName: 'attendance_records',
+      physicalName: 'staff_attendance_records',
       tableType: 'トランザクション',
-      logicalName: '出欠実績',
+      logicalName: '職員勤務実績',
+      description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種記録',
+      columns: [
+        { name: 'id', desc: '勤務記録ID' },
+        { name: 'office_id', desc: '勤務事業所ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'work_date', desc: '勤務日' },
+        { name: 'start_time', desc: '出勤時刻' },
+        { name: 'end_time', desc: '退勤時刻' },
+        { name: 'break_minutes', desc: '休憩時間（分）' },
+        { name: 'assigned_role', desc: '配置職種・役割（サービス管理責任者/生活支援員/職業指導員など）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '2. 日次実績層',
+      physicalName: 'member_attendance_records',
+      tableType: 'トランザクション',
+      logicalName: '利用者出欠実績',
       description: '利用者の日々の出欠・通所・欠席連絡・欠席時対応自動判定記録',
       columns: [
         { name: 'id', desc: '出欠記録ID' },
@@ -578,9 +674,9 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '2. 日次実績層',
-      physicalName: 'work_records',
+      physicalName: 'member_work_records',
       tableType: 'トランザクション',
-      logicalName: '作業実績',
+      logicalName: '利用者作業実績',
       description: '利用者のタスクごとの日次作業時間記録',
       columns: [
         { name: 'id', desc: '作業記録ID' },
@@ -1015,7 +1111,11 @@ export function ScreenCompositionPage() {
                   { name: 'member_wage_evaluations', baseTable: 'member_wage_settings', desc: '利用者工賃単価割当エイリアスビュー' },
                   { name: 'project_task_skills', baseTable: 'task_skill_settings', desc: 'タスクスキル割当エイリアスビュー' },
                   { name: 'project_task_assignees', baseTable: 'task_assignee_settings', desc: 'タスク担当者割当エイリアスビュー' },
-                  { name: 'daily_work_records', baseTable: 'work_records', desc: '作業実績エイリアスビュー' },
+                  { name: 'office_service_settings', baseTable: 'office_service_scheme_settings', desc: '事業所サービス体系割当エイリアスビュー' },
+                  { name: 'staff_work_records', baseTable: 'staff_attendance_records', desc: '職員勤務実績エイリアスビュー' },
+                  { name: 'attendance_records', baseTable: 'member_attendance_records', desc: '利用者出欠実績エイリアスビュー' },
+                  { name: 'work_records', baseTable: 'member_work_records', desc: '利用者作業実績エイリアスビュー' },
+                  { name: 'daily_work_records', baseTable: 'member_work_records', desc: '作業実績エイリアスビュー' },
                   { name: 'daily_allowance_records', baseTable: 'allowance_records', desc: '加算手当実績エイリアスビュー' },
                   { name: 'daily_deduction_records', baseTable: 'deduction_records', desc: '控除実績エイリアスビュー' },
                   { name: 'daily_work_confirmations', baseTable: 'daily_record_closings', desc: '日次実績確定エイリアスビュー' },

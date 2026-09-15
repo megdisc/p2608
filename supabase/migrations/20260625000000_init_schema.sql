@@ -53,12 +53,31 @@ CREATE TABLE IF NOT EXISTS "public"."offices" (
     "organization_id" UUID REFERENCES "public"."organizations"("id") ON DELETE CASCADE,
     "code" TEXT,
     "name" TEXT NOT NULL,
-    "is_type_b" BOOLEAN DEFAULT false NOT NULL,
-    "is_type_a" BOOLEAN DEFAULT false NOT NULL,
-    "is_transition" BOOLEAN DEFAULT false NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.1b service_types (支援種別マスタ)
+CREATE TABLE IF NOT EXISTS "public"."service_types" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "code" TEXT NOT NULL UNIQUE,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.1c office_service_type_settings (事業所支援種別割当)
+CREATE TABLE IF NOT EXISTS "public"."office_service_type_settings" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
+    "service_type_id" UUID REFERENCES "public"."service_types"("id") ON DELETE CASCADE,
+    "capacity" INTEGER DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -307,6 +326,41 @@ CREATE TABLE IF NOT EXISTS "public"."staffs" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.21b qualifications (資格マスタ)
+CREATE TABLE IF NOT EXISTS "public"."qualifications" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "code" TEXT NOT NULL UNIQUE,
+    "name" TEXT NOT NULL,
+    "category" TEXT,
+    "description" TEXT,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.21c staff_qualification_settings (職員資格割当)
+CREATE TABLE IF NOT EXISTS "public"."staff_qualification_settings" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "staff_id" UUID REFERENCES "public"."staffs"("id") ON DELETE CASCADE,
+    "qualification_id" UUID REFERENCES "public"."qualifications"("id") ON DELETE CASCADE,
+    "license_number" TEXT,
+    "acquired_on" DATE,
+    "valid_until" DATE,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.21d office_staff_settings (事業所職員割当)
+CREATE TABLE IF NOT EXISTS "public"."office_staff_settings" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
+    "staff_id" UUID REFERENCES "public"."staffs"("id") ON DELETE CASCADE,
+    "is_primary" BOOLEAN DEFAULT false NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 -- 1.22 partners (取引先)
 CREATE TABLE IF NOT EXISTS "public"."partners" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
@@ -388,6 +442,20 @@ CREATE TABLE IF NOT EXISTS "public"."project_budgets" (
 -- ==========================================
 -- 2. 日次実績層
 -- ==========================================
+
+-- 2.0 staff_work_records (職員勤務実績)
+CREATE TABLE IF NOT EXISTS "public"."staff_work_records" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
+    "staff_id" UUID REFERENCES "public"."staffs"("id") ON DELETE CASCADE,
+    "work_date" DATE NOT NULL,
+    "start_time" TIME,
+    "end_time" TIME,
+    "break_minutes" INTEGER DEFAULT 0 NOT NULL,
+    "assigned_role" TEXT,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
 
 -- 2.1 attendance_records (出欠実績)
 CREATE TABLE IF NOT EXISTS "public"."attendance_records" (

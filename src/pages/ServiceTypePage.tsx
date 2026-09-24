@@ -17,8 +17,8 @@ export function ServiceTypePage() {
   }, [fetchServiceTypes, showAlert]);
 
   const columns: Column<ServiceTypeItem>[] = [
-    { key: 'code', header: '種別コード', sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: '種別名称', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: 'サービス種類コード', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: 'サービス種類名称', sortable: false, editable: true, inputType: 'text' },
     { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
     { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
   ];
@@ -41,7 +41,7 @@ export function ServiceTypePage() {
 
     return {
       id: `ST-${Date.now()}-${Math.random()}`,
-      code: generateNextUnifiedCode(existingCodes, 'ST-'),
+      code: generateNextUnifiedCode(existingCodes, ''),
       name: '',
       description: '',
       is_active: true,

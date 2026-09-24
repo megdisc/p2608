@@ -62,7 +62,7 @@ function AppContent() {
             <ScreenStaffPage />
           ) : ['client', 'screenClient'].includes(activeTab) ? (
             <ScreenClientPage />
-          ) : ['screenWelfare', 'serviceType', 'qualification'].includes(activeTab) ? (
+          ) : ['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? (
             <ScreenWelfarePage />
           ) : ['screenFacility', 'organization', 'office', 'serviceScheme'].includes(activeTab) ? (
             <ScreenFacilityPage />

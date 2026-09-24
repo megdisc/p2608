@@ -17,8 +17,8 @@ export function QualificationPage() {
   }, [fetchQualifications, showAlert]);
 
   const columns: Column<QualificationItem>[] = [
-    { key: 'code', header: '資格コード', sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: '資格名称', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: '職種区分コード', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: '資格・職種名称', sortable: false, editable: true, inputType: 'text' },
     { key: 'category', header: '区分', sortable: false, editable: true, inputType: 'text' },
     { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
     { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
@@ -42,7 +42,7 @@ export function QualificationPage() {
 
     return {
       id: `QUAL-${Date.now()}-${Math.random()}`,
-      code: generateNextUnifiedCode(existingCodes, 'QUAL-'),
+      code: generateNextUnifiedCode(existingCodes, ''),
       name: '',
       category: '福祉専門職',
       description: '',

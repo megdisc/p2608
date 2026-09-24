@@ -26,7 +26,7 @@ export function RewardItemPage() {
   }));
 
   const columns: Column<RewardItem>[] = [
-    { key: 'code', header: '加減算コード', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: 'サービス詳細コード', sortable: false, editable: true, inputType: 'text' },
     { 
       key: 'service_type_id', 
       header: '所属支援種別', 
@@ -39,7 +39,7 @@ export function RewardItemPage() {
         return <span>{matched ? matched.name : item.service_type_name || '就労継続支援B型'}</span>;
       }
     },
-    { key: 'name', header: '加算・減算項目名', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: 'サービス詳細名称', sortable: false, editable: true, inputType: 'text' },
     { 
       key: 'item_category', 
       header: '項目区分', 
@@ -106,7 +106,7 @@ export function RewardItemPage() {
     return {
       id: `REW-${Date.now()}-${Math.random()}`,
       service_type_id: defaultServiceTypeId,
-      code: generateNextUnifiedCode(existingCodes, 'REW-'),
+      code: generateNextUnifiedCode(existingCodes, '5211'),
       name: '',
       item_category: 'addition',
       occurrence_type: 'daily',

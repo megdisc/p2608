@@ -93,8 +93,8 @@ export function ScreenCompositionPage() {
       description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
       columns: [
         { name: 'id', desc: '支援種別ID' },
-        { name: 'code', desc: '種別コード（例: type_a, type_b, transition など）' },
-        { name: 'name', desc: '種別名称（例: 就労継続支援A型、就労継続支援B型、就労移行支援など）' },
+        { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
+        { name: 'name', desc: 'サービス種類名称' },
         { name: 'description', desc: '説明・概要' },
         { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
         { name: 'created_at', desc: '作成日時' },
@@ -110,8 +110,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '項目ID' },
         { name: 'service_type_id', desc: '所属支援種別ID' },
-        { name: 'code', desc: '加減算コード' },
-        { name: 'name', desc: '加算・減算項目名（例: 送迎加算、欠席時対応加算、欠員減算、福祉・介護職員等処遇改善加算など）' },
+        { name: 'code', desc: 'サービス詳細コード（国保連給付費算定6桁コード。例: 521111: 送迎加算, 521121: 欠席時対応加算 など）' },
+        { name: 'name', desc: 'サービス詳細名称' },
         { name: 'item_category', desc: '項目区分（addition: 体制加算 / subtraction: 体制減算）' },
         { name: 'unit_value', desc: '加減算単位数' },
         { name: 'calc_rate', desc: '定率算定率[%]' },
@@ -130,8 +130,8 @@ export function ScreenCompositionPage() {
       description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
       columns: [
         { name: 'id', desc: '資格ID' },
-        { name: 'code', desc: '資格コード' },
-        { name: 'name', desc: '資格・研修名（例: サービス管理責任者、生活支援員、看護師、理学療法士など）' },
+        { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
+        { name: 'name', desc: '資格・職種名称' },
         { name: 'category', desc: '資格区分' },
         { name: 'description', desc: '資格概要' },
         { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },

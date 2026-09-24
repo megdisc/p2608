@@ -64,7 +64,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_CLIENT}
           </button>
           <button 
-            className={`nav-button ${['screenWelfare', 'serviceType', 'qualification'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
           >
             {PAGE_NAMES.SCREEN_WELFARE}

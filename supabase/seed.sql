@@ -125,17 +125,22 @@ INSERT INTO public.qualifications (id, code, name, category, description, is_act
 ('22222222-0000-0000-0000-000000000024', 'QUAL-024', '自立生活支援員', '地域生活支援資格', '施設退所者等の地域での自立した生活に向けた定期訪問相談を行う専門要件資格', false)
 ON CONFLICT (id) DO NOTHING;
 
--- 4. サービス体系 & 項目マスタ (service_schemes / service_items)
+-- 3.2 加算・減算項目マスタ (reward_items)
+INSERT INTO public.reward_items (id, service_type_id, code, name, item_category, occurrence_type, unit_value, calc_rate, monthly_limit_count, is_active) VALUES
+('44444444-4444-4444-4444-444444444401', '11111111-0000-0000-0000-000000000001', 'REW-001', '送迎加算', 'addition', 'daily', 21.00, 0, NULL, true),
+('44444444-4444-4444-4444-444444444402', '11111111-0000-0000-0000-000000000001', 'REW-002', '欠席時対応加算', 'addition', 'daily', 94.00, 0, 4, true),
+('44444444-4444-4444-4444-444444444403', '11111111-0000-0000-0000-000000000001', 'REW-003', '福祉・介護職員等処遇改善加算Ⅰ', 'addition', 'monthly', 0, 9.30, NULL, true),
+('44444444-4444-4444-4444-444444444406', '11111111-0000-0000-0000-000000000001', 'REW-004', '食事提供体制加算', 'addition', 'daily', 30.00, 0, NULL, true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. サービス体系 & 加算手当・控除項目マスタ (service_schemes / allowance_deduction_items)
 INSERT INTO public.service_schemes (id, name, service_type, description, basic_reward_unit) VALUES
 ('33333333-3333-3333-3333-333333333333', '就労継続支援B型標準サービス体系', 'type_b', '就労継続支援B型の標準的な給付費・加減算体系', 580.00)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.service_items (id, service_scheme_id, name, item_category, occurrence_type, unit_value, calc_rate, value_type, monthly_limit_count, affects_reward_units, is_auto_calculated) VALUES
-('44444444-4444-4444-4444-444444444401', '33333333-3333-3333-3333-333333333333', '送迎加算', 'reward_addition', 'daily', 21.00, 0, 'unit', NULL, true, false),
-('44444444-4444-4444-4444-444444444402', '33333333-3333-3333-3333-333333333333', '欠席時対応加算', 'reward_addition', 'daily', 94.00, 0, 'unit', 4, true, true),
-('44444444-4444-4444-4444-444444444403', '33333333-3333-3333-3333-333333333333', '福祉・介護職員等処遇改善加算Ⅰ', 'reward_addition', 'monthly', 0, 9.30, 'rate', NULL, true, true),
-('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00, 0, 'yen', NULL, false, false),
-('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00, 0, 'yen', NULL, false, false)
+INSERT INTO public.allowance_deduction_items (id, service_scheme_id, name, item_category, occurrence_type, unit_price, is_reward_linked, reward_item_id) VALUES
+('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00, false, NULL),
+('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00, true, '44444444-4444-4444-4444-444444444406')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.office_service_scheme_settings (office_id, service_scheme_id, valid_from) VALUES

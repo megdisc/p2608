@@ -38,13 +38,13 @@ export function useServiceSchemes() {
   const fetchServiceData = useCallback(async () => {
     try {
       setLoading(true);
-      const [schemesRes, itemsRes] = await Promise.all([
+      const [schemesRes, allowDeductRes, rewardRes] = await Promise.all([
         supabase.from('service_schemes').select('*').eq('is_deleted', false).order('created_at', { ascending: true }),
-        supabase.from('service_items').select('*, service_schemes(name)').eq('is_deleted', false).order('created_at', { ascending: true })
+        supabase.from('allowance_deduction_items').select('*, service_schemes(name)').eq('is_deleted', false).order('created_at', { ascending: true }),
+        supabase.from('reward_items').select('*').eq('is_deleted', false).order('created_at', { ascending: true })
       ]);
 
       if (schemesRes.error) throw schemesRes.error;
-      if (itemsRes.error) throw itemsRes.error;
 
       const formattedSchemes: ServiceSchemeItem[] = (schemesRes.data || []).map((s: any) => {
         let typeLabel = '就労継続支援B型';
@@ -61,41 +61,53 @@ export function useServiceSchemes() {
         };
       });
 
-      const formattedItems: ServiceDetailItem[] = (itemsRes.data || []).map((i: any) => {
-        let catLabel = '加算手当';
-        if (i.item_category === 'reward_addition') catLabel = '給付費体制加算';
-        if (i.item_category === 'reward_subtraction') catLabel = '給付費体制減算';
-        if (i.item_category === 'deduction') catLabel = '控除';
+      const rewardItems: ServiceDetailItem[] = (rewardRes.data || []).map((i: any) => {
+        const isSub = i.item_category === 'subtraction';
+        const isRate = (i.calc_rate || 0) > 0;
+        return {
+          id: i.id,
+          service_scheme_id: '33333333-3333-3333-3333-333333333333',
+          scheme_name: '就労継続支援B型標準サービス体系',
+          name: i.name,
+          item_category: isSub ? 'reward_subtraction' : 'reward_addition',
+          item_category_label: isSub ? '給付費体制減算' : '給付費体制加算',
+          occurrence_type: i.occurrence_type || 'daily',
+          occurrence_type_label: i.occurrence_type === 'monthly' ? '月次' : '日次',
+          unit_value: i.unit_value ?? 0,
+          calc_rate: i.calc_rate ?? 0,
+          value_type: isRate ? 'rate' : 'unit',
+          value_type_label: isRate ? '給付費算定率[%]' : '給付費単位数[単位]',
+          monthly_limit_count: i.monthly_limit_count ?? null,
+          affects_reward_units: true,
+          is_auto_calculated: true,
+          is_deleted: i.is_deleted
+        };
+      });
 
-        let valLabel = '給付費単位数[単位]';
-        if (i.value_type === 'yen') valLabel = '金額[円]';
-        if (i.value_type === 'rate') valLabel = '給付費算定率[%]';
-
-        let occLabel = '日次';
-        if (i.occurrence_type === 'monthly') occLabel = '月次';
-
+      const allowDeductItems: ServiceDetailItem[] = (allowDeductRes.data || []).map((i: any) => {
+        const isDed = i.item_category === 'deduction';
         return {
           id: i.id,
           service_scheme_id: i.service_scheme_id,
           scheme_name: i.service_schemes?.name || '就労継続支援B型標準サービス体系',
           name: i.name,
-          item_category: i.item_category || 'reward_addition',
-          item_category_label: catLabel,
+          item_category: i.item_category || 'allowance',
+          item_category_label: isDed ? '控除' : '加算手当',
           occurrence_type: i.occurrence_type || 'daily',
-          occurrence_type_label: occLabel,
-          unit_value: i.unit_value ?? 0,
-          calc_rate: i.calc_rate ?? 0,
-          value_type: i.value_type || 'unit',
-          value_type_label: valLabel,
-          monthly_limit_count: i.monthly_limit_count ?? null,
-          affects_reward_units: i.affects_reward_units ?? false,
-          is_auto_calculated: i.is_auto_calculated ?? false,
+          occurrence_type_label: i.occurrence_type === 'monthly' ? '月次' : '日次',
+          unit_value: i.unit_price ?? 0,
+          calc_rate: 0,
+          value_type: 'yen',
+          value_type_label: '金額[円]',
+          monthly_limit_count: null,
+          affects_reward_units: false,
+          is_auto_calculated: false,
           is_deleted: i.is_deleted
         };
       });
 
       setSchemes(formattedSchemes);
-      setItems(formattedItems);
+      setItems([...rewardItems, ...allowDeductItems]);
     } catch (err) {
       console.error('Error fetching service schemes:', err);
       throw err;
@@ -140,33 +152,45 @@ export function useServiceSchemes() {
   const batchSaveItems = async (drafts: ServiceDetailItem[], deletedIds: string[]) => {
     try {
       if (deletedIds.length > 0) {
-        const { error } = await supabase
-          .from('service_items')
-          .update({ deleted_at: new Date().toISOString() })
-          .in('id', deletedIds);
-        if (error) throw error;
+        await Promise.all([
+          supabase.from('allowance_deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds),
+          supabase.from('reward_items').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds)
+        ]);
       }
 
       const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
       for (const item of activeItems) {
-        const upsertData: any = {
-          service_scheme_id: item.service_scheme_id || '33333333-3333-3333-3333-333333333333',
-          name: item.name,
-          item_category: item.item_category || 'reward_addition',
-          occurrence_type: item.occurrence_type || 'daily',
-          unit_value: item.unit_value || 0,
-          calc_rate: item.calc_rate || 0,
-          value_type: item.value_type || 'unit',
-          monthly_limit_count: item.monthly_limit_count || null,
-          affects_reward_units: item.affects_reward_units ?? false,
-          is_auto_calculated: item.is_auto_calculated ?? false
-        };
-        if (!item.id.startsWith('ITM-')) {
-          upsertData.id = item.id;
-        }
+        const isRewardItem = item.item_category === 'reward_addition' || item.item_category === 'reward_subtraction' || item.item_category === 'addition' || item.item_category === 'subtraction';
 
-        const { error } = await supabase.from('service_items').upsert(upsertData);
-        if (error) throw error;
+        if (isRewardItem) {
+          const upsertData: any = {
+            service_type_id: '11111111-0000-0000-0000-000000000001',
+            name: item.name,
+            item_category: (item.item_category === 'reward_subtraction' || item.item_category === 'subtraction') ? 'subtraction' : 'addition',
+            occurrence_type: item.occurrence_type || 'daily',
+            unit_value: item.unit_value || 0,
+            calc_rate: item.calc_rate || 0,
+            monthly_limit_count: item.monthly_limit_count || null
+          };
+          if (!item.id.startsWith('ITM-')) {
+            upsertData.id = item.id;
+          }
+          const { error } = await supabase.from('reward_items').upsert(upsertData);
+          if (error) throw error;
+        } else {
+          const upsertData: any = {
+            service_scheme_id: item.service_scheme_id || '33333333-3333-3333-3333-333333333333',
+            name: item.name,
+            item_category: item.item_category || 'allowance',
+            occurrence_type: item.occurrence_type || 'daily',
+            unit_price: item.unit_value || 0
+          };
+          if (!item.id.startsWith('ITM-')) {
+            upsertData.id = item.id;
+          }
+          const { error } = await supabase.from('allowance_deduction_items').upsert(upsertData);
+          if (error) throw error;
+        }
       }
 
       await fetchServiceData();

@@ -68,6 +68,24 @@ CREATE TABLE IF NOT EXISTS "public"."service_types" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.1ba reward_items (加算・減算項目)
+CREATE TABLE IF NOT EXISTS "public"."reward_items" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "service_type_id" UUID REFERENCES "public"."service_types"("id") ON DELETE CASCADE,
+    "code" TEXT,
+    "name" TEXT NOT NULL,
+    "item_category" TEXT NOT NULL, -- ('addition', 'subtraction')
+    "unit_value" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "calc_rate" NUMERIC(5,2) DEFAULT 0 NOT NULL,
+    "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL, -- ('daily', 'monthly')
+    "monthly_limit_count" INTEGER DEFAULT NULL,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 -- 1.1c office_service_type_settings (事業所支援種別割当)
 CREATE TABLE IF NOT EXISTS "public"."office_service_type_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
@@ -165,19 +183,16 @@ CREATE TABLE IF NOT EXISTS "public"."service_schemes" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 1.9 service_items (サービス項目)
-CREATE TABLE IF NOT EXISTS "public"."service_items" (
+-- 1.9 allowance_deduction_items (加算手当・控除項目)
+CREATE TABLE IF NOT EXISTS "public"."allowance_deduction_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "service_scheme_id" UUID REFERENCES "public"."service_schemes"("id") ON DELETE CASCADE,
     "name" TEXT NOT NULL,
-    "item_category" TEXT NOT NULL, -- ('reward_addition', 'reward_subtraction', 'allowance', 'deduction')
+    "item_category" TEXT NOT NULL, -- ('allowance', 'deduction')
     "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL, -- ('daily', 'monthly')
-    "unit_value" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "calc_rate" NUMERIC(5,2) DEFAULT 0 NOT NULL,
-    "value_type" VARCHAR(20) DEFAULT 'unit' NOT NULL, -- ('yen', 'unit', 'rate')
-    "monthly_limit_count" INTEGER DEFAULT NULL,
-    "affects_reward_units" BOOLEAN DEFAULT false NOT NULL,
-    "is_auto_calculated" BOOLEAN DEFAULT false NOT NULL,
+    "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "is_reward_linked" BOOLEAN DEFAULT false NOT NULL,
+    "reward_item_id" UUID REFERENCES "public"."reward_items"("id") ON DELETE SET NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -482,7 +497,7 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "allowance_id" UUID REFERENCES "public"."service_items"("id") ON DELETE RESTRICT,
+    "allowance_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -494,7 +509,7 @@ CREATE TABLE IF NOT EXISTS "public"."deduction_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "deduction_id" UUID REFERENCES "public"."service_items"("id") ON DELETE RESTRICT,
+    "deduction_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -608,7 +623,7 @@ CREATE TABLE IF NOT EXISTS "public"."incentive_details" (
 CREATE TABLE IF NOT EXISTS "public"."allowance_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "summary_id" UUID REFERENCES "public"."wage_summaries"("id") ON DELETE CASCADE,
-    "allowance_id" UUID REFERENCES "public"."service_items"("id") ON DELETE SET NULL,
+    "allowance_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE SET NULL,
     "allowance_name" TEXT NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "quantity" NUMERIC(8,2) DEFAULT 0 NOT NULL,
@@ -621,7 +636,7 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_details" (
 CREATE TABLE IF NOT EXISTS "public"."deduction_details" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "summary_id" UUID REFERENCES "public"."wage_summaries"("id") ON DELETE CASCADE,
-    "deduction_id" UUID REFERENCES "public"."service_items"("id") ON DELETE SET NULL,
+    "deduction_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE SET NULL,
     "deduction_name" TEXT NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "quantity" NUMERIC(8,2) DEFAULT 0 NOT NULL,
@@ -687,10 +702,53 @@ INSTEAD OF UPDATE ON public.users
 FOR EACH ROW EXECUTE FUNCTION public.handle_users_view_update();
 
 CREATE OR REPLACE VIEW "public"."wage_rates" AS SELECT * FROM "public"."wage_rate_items";
-CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'allowance';
-CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."service_items" WHERE item_category = 'deduction';
-CREATE OR REPLACE VIEW "public"."allowance_items" AS SELECT * FROM "public"."service_items" WHERE item_category = 'allowance';
-CREATE OR REPLACE VIEW "public"."deduction_items" AS SELECT * FROM "public"."service_items" WHERE item_category = 'deduction';
+CREATE OR REPLACE VIEW "public"."allowances" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."allowance_deduction_items" WHERE item_category = 'allowance';
+CREATE OR REPLACE VIEW "public"."deductions" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."allowance_deduction_items" WHERE item_category = 'deduction';
+CREATE OR REPLACE VIEW "public"."allowance_items" AS SELECT * FROM "public"."allowance_deduction_items" WHERE item_category = 'allowance';
+CREATE OR REPLACE VIEW "public"."deduction_items" AS SELECT * FROM "public"."allowance_deduction_items" WHERE item_category = 'deduction';
+CREATE OR REPLACE VIEW "public"."service_items" AS 
+SELECT 
+    id,
+    '33333333-3333-3333-3333-333333333333'::uuid AS service_scheme_id,
+    name,
+    CASE 
+        WHEN item_category = 'addition' THEN 'reward_addition'
+        WHEN item_category = 'subtraction' THEN 'reward_subtraction'
+        ELSE item_category 
+    END AS item_category,
+    occurrence_type,
+    unit_value,
+    calc_rate,
+    CASE 
+        WHEN calc_rate > 0 THEN 'rate'
+        ELSE 'unit'
+    END AS value_type,
+    monthly_limit_count,
+    true AS affects_reward_units,
+    true AS is_auto_calculated,
+    deleted_at,
+    is_deleted,
+    created_at,
+    updated_at
+FROM "public"."reward_items"
+UNION ALL
+SELECT 
+    id,
+    service_scheme_id,
+    name,
+    item_category,
+    occurrence_type,
+    unit_price AS unit_value,
+    0::numeric(5,2) AS calc_rate,
+    'yen'::varchar(20) AS value_type,
+    NULL::integer AS monthly_limit_count,
+    false AS affects_reward_units,
+    false AS is_auto_calculated,
+    deleted_at,
+    is_deleted,
+    created_at,
+    updated_at
+FROM "public"."allowance_deduction_items";
 CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."reserve_items";
 CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
 CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";

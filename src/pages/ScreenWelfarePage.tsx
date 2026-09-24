@@ -5,6 +5,7 @@ import { Tabs } from '../components/ui';
 
 import { ServiceTypePage } from './ServiceTypePage';
 import { QualificationPage } from './QualificationPage';
+import { RewardItemPage } from './RewardItemPage';
 
 export function ScreenWelfarePage() {
   const navContext = useNavigation();
@@ -15,6 +16,8 @@ export function ScreenWelfarePage() {
     switch (navContext.activeTab) {
       case 'serviceType':
         return <ServiceTypePage />;
+      case 'rewardItem':
+        return <RewardItemPage />;
       case 'qualification':
         return <QualificationPage />;
       default:

@@ -70,6 +70,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_WELFARE,
     tabs: [
       { id: 'serviceType', label: '支援種別' },
+      { id: 'rewardItem', label: '加算・減算' },
       { id: 'qualification', label: '資格' },
     ],
   },

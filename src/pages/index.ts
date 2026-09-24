@@ -10,6 +10,7 @@ export * from './ServiceSchemePage';
 export * from './ScreenFacilityPage';
 export * from './ServiceTypePage';
 export * from './QualificationPage';
+export * from './RewardItemPage';
 export * from './ScreenWelfarePage';
 export * from './DailyWorkRecordPage';
 export * from './ProgressRecordPage';

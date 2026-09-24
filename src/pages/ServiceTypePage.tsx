@@ -20,6 +20,7 @@ export function ServiceTypePage() {
     { key: 'code', header: '種別コード', sortable: false, editable: true, inputType: 'text' },
     { key: 'name', header: '種別名称', sortable: false, editable: true, inputType: 'text' },
     { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
+    { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
   ];
 
   const handleBatchSave = async (drafts: ServiceTypeItem[], deletedIds: string[]) => {
@@ -42,7 +43,8 @@ export function ServiceTypePage() {
       id: `ST-${Date.now()}-${Math.random()}`,
       code: generateNextUnifiedCode(existingCodes, 'ST-'),
       name: '',
-      description: ''
+      description: '',
+      is_active: true,
     } as ServiceTypeItem;
   };
 
@@ -56,6 +58,7 @@ export function ServiceTypePage() {
       emptyMessage="登録されている支援種別がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideDeleteColumn={true}
       hideHeader={true}
     />
   );

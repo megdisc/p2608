@@ -21,6 +21,7 @@ export function QualificationPage() {
     { key: 'name', header: '資格名称', sortable: false, editable: true, inputType: 'text' },
     { key: 'category', header: '区分', sortable: false, editable: true, inputType: 'text' },
     { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
+    { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
   ];
 
   const handleBatchSave = async (drafts: QualificationItem[], deletedIds: string[]) => {
@@ -44,7 +45,8 @@ export function QualificationPage() {
       code: generateNextUnifiedCode(existingCodes, 'QUAL-'),
       name: '',
       category: '福祉専門職',
-      description: ''
+      description: '',
+      is_active: true,
     } as QualificationItem;
   };
 
@@ -58,6 +60,7 @@ export function QualificationPage() {
       emptyMessage="登録されている資格がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      hideDeleteColumn={true}
       hideHeader={true}
     />
   );

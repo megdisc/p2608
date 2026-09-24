@@ -63,8 +63,7 @@ CREATE TABLE IF NOT EXISTS "public"."service_types" (
     "code" TEXT NOT NULL UNIQUE,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -330,8 +329,7 @@ CREATE TABLE IF NOT EXISTS "public"."qualifications" (
     "name" TEXT NOT NULL,
     "category" TEXT,
     "description" TEXT,
-    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "is_active" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );

@@ -7,7 +7,7 @@ export type QualificationItem = {
   name: string;
   category: string;
   description: string;
-  is_deleted?: boolean;
+  is_active: boolean;
 };
 
 export function useQualifications() {
@@ -30,7 +30,7 @@ export function useQualifications() {
         name: q.name || '',
         category: q.category || '',
         description: q.description || '',
-        is_deleted: q.deleted_at !== null && q.deleted_at !== undefined
+        is_active: q.is_active ?? true
       }));
 
       setItems(formatted);
@@ -45,13 +45,13 @@ export function useQualifications() {
   const batchSaveQualifications = async (drafts: QualificationItem[], deletedIds: string[]) => {
     try {
       for (const item of drafts) {
-        const isDeleted = !!item.is_deleted || deletedIds.includes(item.id);
+        const isDeleted = deletedIds.includes(item.id);
         const upsertData: any = {
           code: item.code.trim(),
           name: item.name,
           category: item.category || null,
           description: item.description || null,
-          deleted_at: isDeleted ? new Date().toISOString() : null,
+          is_active: isDeleted ? false : (item.is_active ?? true),
         };
         if (!item.id.startsWith('QUAL-')) {
           upsertData.id = item.id;

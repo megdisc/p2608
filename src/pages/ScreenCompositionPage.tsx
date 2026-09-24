@@ -84,6 +84,61 @@ export function ScreenCompositionPage() {
   ];
 
   const dbTables = [
+    // 1. マスタ層
+    {
+      layer: '1. マスタ層',
+      physicalName: 'service_types',
+      tableType: '独立マスタ',
+      logicalName: '支援種別',
+      description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '支援種別ID' },
+        { name: 'code', desc: '種別コード（例: type_a, type_b, transition など）' },
+        { name: 'name', desc: '種別名称（例: 就労継続支援A型、就労継続支援B型、就労移行支援など）' },
+        { name: 'description', desc: '説明・概要' },
+        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'reward_items',
+      tableType: '独立マスタ',
+      logicalName: '加算・減算項目',
+      description: '法令・報酬告示に基づく公定価格基準の体制加減算・報酬項目マスタ（給付費算定用）',
+      columns: [
+        { name: 'id', desc: '項目ID' },
+        { name: 'service_type_id', desc: '所属支援種別ID' },
+        { name: 'code', desc: '加減算コード' },
+        { name: 'name', desc: '加算・減算項目名（例: 送迎加算、欠席時対応加算、欠員減算、福祉・介護職員等処遇改善加算など）' },
+        { name: 'item_category', desc: '項目区分（addition: 体制加算 / subtraction: 体制減算）' },
+        { name: 'unit_value', desc: '加減算単位数' },
+        { name: 'calc_rate', desc: '定率算定率[%]' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'monthly_limit_count', desc: '月間算定上限回数' },
+        { name: 'is_active', desc: '適用フラグ' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'qualifications',
+      tableType: '独立マスタ',
+      logicalName: '資格',
+      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '資格ID' },
+        { name: 'code', desc: '資格コード' },
+        { name: 'name', desc: '資格・研修名（例: サービス管理責任者、生活支援員、看護師、理学療法士など）' },
+        { name: 'category', desc: '資格区分' },
+        { name: 'description', desc: '資格概要' },
+        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
     {
       layer: '1. マスタ層',
       physicalName: 'organizations',
@@ -113,22 +168,6 @@ export function ScreenCompositionPage() {
         { name: 'yomigana', desc: 'ふりがな' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
         { name: 'service_type_ids', desc: '割当支援種別（office_service_type_settings との連動割当）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'service_types',
-      tableType: '独立マスタ',
-      logicalName: '支援種別',
-      description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
-      columns: [
-        { name: 'id', desc: '支援種別ID' },
-        { name: 'code', desc: '種別コード（例: type_a, type_b, transition など）' },
-        { name: 'name', desc: '種別名称（例: 就労継続支援A型、就労継続支援B型、就労移行支援など）' },
-        { name: 'description', desc: '説明・概要' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -269,29 +308,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'service_items',
-      tableType: '体系マスタ',
-      logicalName: 'サービス項目',
-      description: 'サービス体系に属する給付費体制加減算、処遇改善加算率、加算手当、控除（実費・利用料等）の統合マスターデータ',
-      columns: [
-        { name: 'id', desc: 'サービス項目ID' },
-        { name: 'service_scheme_id', desc: '所属サービス体系ID' },
-        { name: 'name', desc: '項目名（例: 送迎加算、欠席時対応加算、欠員減算、福祉・介護職員等処遇改善加算、昼食代控除など）' },
-        { name: 'item_category', desc: '項目分類区分（reward_addition: 給付費体制加算 / reward_subtraction: 給付費体制減算 / allowance: 加算手当 / deduction: 控除）' },
-        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
-        { name: 'unit_value', desc: '標準単価または加減算単位数' },
-        { name: 'calc_rate', desc: '定率算定率[%]（処遇改善加算等の総単位数乗算率）' },
-        { name: 'value_type', desc: '値種別区分（yen: 金額[円] / unit: 給付費単位数[単位] / rate: 給付費算定率[%]）' },
-        { name: 'monthly_limit_count', desc: '月間算定上限回数（例: 欠席時対応加算は月4回上限など）' },
-        { name: 'affects_reward_units', desc: '給付費単位加減算連動フラグ（true: 給付費単位に連動 / false: 連動なし）' },
-        { name: 'is_auto_calculated', desc: '自動計算フラグ（true: 利用実績・受給者証より自動算出）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'wage_rate_items',
       tableType: '体系マスタ',
       logicalName: '工賃単価項目',
@@ -301,6 +317,26 @@ export function ScreenCompositionPage() {
         { name: 'service_scheme_id', desc: '所属サービス体系ID' },
         { name: 'wage', desc: '工賃単価' },
         { name: 'description', desc: '説明・摘要' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'allowance_deduction_items',
+      tableType: '体系マスタ',
+      logicalName: '加算手当・控除項目',
+      description: 'サービス体系に属する事業所独自規定の加算手当（資格手当・皆勤手当等）および控除項目（食事代・送迎代・日用品費等）のマスターデータ',
+      columns: [
+        { name: 'id', desc: '項目ID' },
+        { name: 'service_scheme_id', desc: '所属サービス体系ID' },
+        { name: 'name', desc: '項目名（例: 資格手当、皆勤手当、食事代控除、送迎実費控除など）' },
+        { name: 'item_category', desc: '項目分類区分（allowance: 加算手当 / deduction: 控除）' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'unit_price', desc: '標準発生単価・金額（円）' },
+        { name: 'is_reward_linked', desc: '国加算連動フラグ（true: 食事提供加算等の国加算と連動して自動発生 / false: 連動なし）' },
+        { name: 'reward_item_id', desc: '連動対象加算・減算項目ID（国加算と連動する場合の連動先項目）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -388,6 +424,25 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'partners',
+      tableType: '独立マスタ',
+      logicalName: '取引先',
+      description: '取引先情報',
+      columns: [
+        { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'contact_person', desc: '担当者名' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',
@@ -421,23 +476,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'qualifications',
-      tableType: '独立マスタ',
-      logicalName: '資格',
-      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
-      columns: [
-        { name: 'id', desc: '資格ID' },
-        { name: 'code', desc: '資格コード' },
-        { name: 'name', desc: '資格・研修名（例: サービス管理責任者、生活支援員、看護師、理学療法士など）' },
-        { name: 'category', desc: '資格区分' },
-        { name: 'description', desc: '資格概要' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'staff_qualification_settings',
       tableType: '割当マスタ',
       logicalName: '職員資格割当',
@@ -464,25 +502,6 @@ export function ScreenCompositionPage() {
         { name: 'office_id', desc: '事業所ID' },
         { name: 'staff_id', desc: '職員ID' },
         { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'partners',
-      tableType: '独立マスタ',
-      logicalName: '取引先',
-      description: '取引先情報',
-      columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'code', desc: '取引先コード' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'contact_person', desc: '担当者名' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -633,6 +652,8 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
+
+    // 2. 日次実績層
     {
       layer: '2. 日次実績層',
       physicalName: 'staff_attendance_records',
@@ -698,7 +719,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '手当記録ID' },
         { name: 'target_period', desc: '対象時期・日付' },
         { name: 'member_id', desc: '利用者ID' },
-        { name: 'allowance_id', desc: '手当ID' },
+        { name: 'allowance_id', desc: '手当ID（allowance_deduction_itemsのIDを参照）' },
         { name: 'quantity', desc: '数量・回数' },
         { name: 'unit_price', desc: '発生時単価' },
         { name: 'created_at', desc: '作成日時' },
@@ -715,7 +736,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '控除記録ID' },
         { name: 'target_period', desc: '対象時期・日付' },
         { name: 'member_id', desc: '利用者ID' },
-        { name: 'deduction_id', desc: '控除ID' },
+        { name: 'deduction_id', desc: '控除ID（allowance_deduction_itemsのIDを参照）' },
         { name: 'quantity', desc: '数量・回数' },
         { name: 'unit_price', desc: '発生時単価' },
         { name: 'created_at', desc: '作成日時' },
@@ -738,6 +759,8 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
+
+    // 3. 月次実績層
     {
       layer: '3. 月次実績層',
       physicalName: 'general_financial_records',
@@ -788,6 +811,8 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
+
+    // 4. スナップショット層
     {
       layer: '4. スナップショット層',
       physicalName: 'general_financial_details',
@@ -860,7 +885,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除概要ID' },
-        { name: 'allowance_id', desc: '手当ID' },
+        { name: 'allowance_id', desc: '手当ID（allowance_deduction_itemsのIDを参照）' },
         { name: 'allowance_name', desc: '手当名' },
         { name: 'unit_price', desc: '単価' },
         { name: 'quantity', desc: '数量・日数' },
@@ -878,7 +903,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除概要ID' },
-        { name: 'deduction_id', desc: '控除ID' },
+        { name: 'deduction_id', desc: '控除ID（allowance_deduction_itemsのIDを参照）' },
         { name: 'deduction_name', desc: '控除名' },
         { name: 'unit_price', desc: '単価' },
         { name: 'quantity', desc: '数量・日数' },
@@ -902,7 +927,7 @@ export function ScreenCompositionPage() {
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
-    },
+    }
   ];
 
   return (

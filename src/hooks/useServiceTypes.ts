@@ -6,7 +6,7 @@ export type ServiceTypeItem = {
   code: string;
   name: string;
   description: string;
-  is_deleted?: boolean;
+  is_active: boolean;
 };
 
 export function useServiceTypes() {
@@ -28,7 +28,7 @@ export function useServiceTypes() {
         code: st.code || '',
         name: st.name || '',
         description: st.description || '',
-        is_deleted: st.deleted_at !== null && st.deleted_at !== undefined
+        is_active: st.is_active ?? true
       }));
 
       setItems(formatted);
@@ -43,12 +43,12 @@ export function useServiceTypes() {
   const batchSaveServiceTypes = async (drafts: ServiceTypeItem[], deletedIds: string[]) => {
     try {
       for (const item of drafts) {
-        const isDeleted = !!item.is_deleted || deletedIds.includes(item.id);
+        const isDeleted = deletedIds.includes(item.id);
         const upsertData: any = {
           code: item.code.trim(),
           name: item.name,
           description: item.description || null,
-          deleted_at: isDeleted ? new Date().toISOString() : null,
+          is_active: isDeleted ? false : (item.is_active ?? true),
         };
         if (!item.id.startsWith('ST-')) {
           upsertData.id = item.id;

@@ -157,18 +157,23 @@ INSERT INTO public.reward_items (id, service_type_id, code, name, item_category,
 ('44444444-4444-4444-4444-444444444428', '11111111-0000-0000-0000-000000000022', '542121', '開所時間減算（放デイ）', 'subtraction', 'daily', -30.00, 0, NULL, false)
 ON CONFLICT (id) DO NOTHING;
 
--- 4. サービス体系 & 加算手当・控除項目マスタ (service_schemes / allowance_deduction_items)
-INSERT INTO public.service_schemes (id, name, service_type, description, basic_reward_unit) VALUES
-('33333333-3333-3333-3333-333333333333', '就労継続支援B型標準サービス体系', 'type_b', '就労継続支援B型の標準的な給付費・加減算体系', 580.00)
+-- 4. 工賃体系 & 加算手当・控除項目マスタ (wage_schemes / allowance_deduction_items)
+INSERT INTO public.wage_schemes (id, office_id, name, description) VALUES
+('33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', '就労継続支援B型標準工賃体系', '就労継続支援B型の標準的な工賃・加算手当・控除体系')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.allowance_deduction_items (id, service_scheme_id, name, item_category, occurrence_type, unit_price, is_reward_linked, reward_item_id) VALUES
+INSERT INTO public.allowance_deduction_items (id, wage_scheme_id, name, item_category, occurrence_type, unit_price, is_reward_linked, reward_item_id) VALUES
 ('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00, false, NULL),
 ('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00, true, '44444444-4444-4444-4444-444444444406')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.office_service_scheme_settings (office_id, service_scheme_id, valid_from) VALUES
-('22222222-2222-2222-2222-222222222222', '33333333-3333-3333-3333-333333333333', '2025-04-01')
+-- 4.1 積立金体系 & 積立金項目マスタ (reserve_schemes / reserve_items)
+INSERT INTO public.reserve_schemes (id, office_id, name, description) VALUES
+('66666666-6666-6666-6666-666666666666', '22222222-2222-2222-2222-222222222222', '標準積立金体系', '事業所の標準的な積立金管理ルール')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.reserve_items (id, reserve_scheme_id, name, occurrence_type, default_unit_price) VALUES
+('77777777-7777-7777-7777-777777777777', '66666666-6666-6666-6666-666666666666', '工賃変動積立金', 'monthly', 1000.00)
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. 職員マスタ (staffs)
@@ -183,7 +188,7 @@ ON CONFLICT (id) DO UPDATE SET
   yomigana = EXCLUDED.yomigana;
 
 -- 6. 工賃単価項目マスタ (wage_rate_items)
-INSERT INTO public.wage_rate_items (id, service_scheme_id, wage, description) VALUES
+INSERT INTO public.wage_rate_items (id, wage_scheme_id, wage, description) VALUES
 ('a1b2c3d4-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 100, '新人レベル'),
 ('a1b2c3d4-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', 250, '中堅レベル'),
 ('a1b2c3d4-0000-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', 500, 'ベテランレベル')
@@ -224,8 +229,8 @@ INSERT INTO public.partners (id, code, name, yomigana, contact_person, is_custom
 ON CONFLICT (id) DO NOTHING;
 
 -- 10. スキル体系 & スキル項目マスタ (skill_schemes / skill_items / skill_level_items)
-INSERT INTO public.skill_schemes (id, name, description) VALUES
-('55555555-5555-5555-5555-555555555555', '全社標準スキル体系', 'IT作業・オフィス作業・製造業務の標準スキル分類')
+INSERT INTO public.skill_schemes (id, office_id, name, description) VALUES
+('55555555-5555-5555-5555-555555555555', '22222222-2222-2222-2222-222222222222', '全社標準スキル体系', 'IT作業・オフィス作業・製造業務の標準スキル分類')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.skill_items (id, skill_scheme_id, name, description) VALUES

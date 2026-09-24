@@ -6,7 +6,6 @@ export * from './SkillPage';
 export * from './ClientPage';
 export * from './OrganizationPage';
 export * from './OfficePage';
-export * from './ServiceSchemePage';
 export * from './ScreenFacilityPage';
 export * from './ServiceTypePage';
 export * from './QualificationPage';

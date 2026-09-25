@@ -315,13 +315,13 @@ export type ProjectFinancialSummaryRow = {
 
 export type ReserveSettingItem = {
   id: string;
-  reserveType: string;       // 積立金種別
-  method: string;            // 積立計算方式
-  calculationBase: string;   // 積立基準・計算式 (率/金額)
-  targetAmount?: number;     // 積立目標・上限額
-  autoExecution: boolean;    // 自動積立実行フラグ
-  description: string;       // 目的・用途
+  reserveType: string;                          // 積立金種別
+  calcType: 'fixed_amount' | 'fixed_rate';     // 計算方式区分 ('fixed_amount': 定額, 'fixed_rate': 定率)
+  fixedAmount: number;                          // 定額金額（円）
+  fixedRate: number;                            // 定率（%）
+  description?: string;                         // 目的・用途
   is_deleted?: boolean;
+  office_id?: string;
 };
 
 export type Tab = 

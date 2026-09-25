@@ -22,28 +22,51 @@ export function ReserveSettingPage() {
       header: TABLE_COLUMNS.RESERVE_TYPE,
       editable: false,
       inputType: 'text',
-      style: { width: '200px', fontWeight: 'bold' }
+      style: { width: '220px', fontWeight: 'bold' }
     },
     {
-      key: 'method',
-      header: TABLE_COLUMNS.METHOD,
+      key: 'calcType',
+      header: '計算方式',
       editable: true,
-      inputType: 'text',
-      style: { width: '220px' }
+      inputType: 'select',
+      options: [
+        { label: '定額（円）', value: 'fixed_amount' },
+        { label: '定率（%）', value: 'fixed_rate' }
+      ],
+      style: { width: '160px' },
+      render: (item: ReserveSettingItem) => (
+        <span>{item.calcType === 'fixed_rate' ? '定率（%）' : '定額（円）'}</span>
+      )
     },
     {
-      key: 'calculationBase',
-      header: TABLE_COLUMNS.CALCULATION_BASE,
-      editable: true,
-      inputType: 'text',
-      style: { width: '220px' }
-    },
-    {
-      key: 'targetAmount',
-      header: TABLE_COLUMNS.TARGET_AMOUNT,
-      editable: true,
+      key: 'fixedAmount',
+      header: '定額金額（円）',
+      editable: (item: ReserveSettingItem) => item.calcType === 'fixed_amount',
       inputType: 'currency',
-      style: { width: '160px', textAlign: 'right' }
+      className: 'number-column',
+      style: { width: '180px', textAlign: 'right' },
+      render: (item: ReserveSettingItem) => (
+        item.calcType === 'fixed_amount' ? (
+          <span style={{ fontVariantNumeric: 'tabular-nums' }}>¥{Number(item.fixedAmount || 0).toLocaleString()}</span>
+        ) : (
+          <span style={{ color: 'var(--color-text-muted, #a0aec0)' }}>-</span>
+        )
+      )
+    },
+    {
+      key: 'fixedRate',
+      header: '定率（%）',
+      editable: (item: ReserveSettingItem) => item.calcType === 'fixed_rate',
+      inputType: 'number',
+      className: 'number-column',
+      style: { width: '140px', textAlign: 'right' },
+      render: (item: ReserveSettingItem) => (
+        item.calcType === 'fixed_rate' ? (
+          <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Number(item.fixedRate || 0)} %</span>
+        ) : (
+          <span style={{ color: 'var(--color-text-muted, #a0aec0)' }}>-</span>
+        )
+      )
     }
   ];
 

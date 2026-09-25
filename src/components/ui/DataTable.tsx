@@ -699,7 +699,8 @@ export function DataTable<T extends { id: string }>({
                               }
                             }
                             
-                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                            const isColEditable = typeof col.editable === 'function' ? col.editable(subSubItem) : col.editable !== false;
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable;
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subSubItem, draftData) : col.style;
                             const customStyle = {
@@ -759,7 +760,8 @@ export function DataTable<T extends { id: string }>({
                         borderBottomStyle = 'none';
                       }
                       
-                      const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                      const isColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
+                      const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable;
                       
                       const baseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
                       const customStyle = {
@@ -839,7 +841,8 @@ export function DataTable<T extends { id: string }>({
                               }
                             }
                             
-                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && col.editable !== false;
+                            const isColEditable = typeof col.editable === 'function' ? col.editable(subItem) : col.editable !== false;
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable;
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem, draftData) : col.style;
                             const customStyle = {

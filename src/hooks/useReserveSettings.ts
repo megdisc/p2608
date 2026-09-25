@@ -34,10 +34,9 @@ export function useReserveSettings() {
           return {
             id: existing.id,
             reserveType: reserveTypeName,
-            method: existing.occurrence_type === 'monthly' ? '毎月定額積立' : '日次積立',
-            calculationBase: `月額 ${Number(existing.default_unit_price || 0).toLocaleString()}円`,
-            targetAmount: Number(existing.default_unit_price) || 0,
-            autoExecution: true,
+            calcType: existing.calc_type === 'fixed_rate' ? 'fixed_rate' : 'fixed_amount',
+            fixedAmount: Number(existing.fixed_amount || existing.default_unit_price || 0),
+            fixedRate: Number(existing.fixed_rate || 0),
             description: reserveTypeName,
             office_id: existing.office_id,
           };
@@ -45,10 +44,9 @@ export function useReserveSettings() {
         return {
           id: `RSV-${reserveTypeName}-${officeId || 'default'}`,
           reserveType: reserveTypeName,
-          method: '毎月定額積立',
-          calculationBase: '月額 0円',
-          targetAmount: 0,
-          autoExecution: true,
+          calcType: 'fixed_amount',
+          fixedAmount: 0,
+          fixedRate: 0,
           description: reserveTypeName,
           office_id: officeId,
         };
@@ -83,8 +81,9 @@ export function useReserveSettings() {
         ...(item.id.startsWith('RSV-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
         name: item.reserveType,
-        occurrence_type: 'monthly',
-        default_unit_price: item.targetAmount || 0,
+        calc_type: item.calcType,
+        fixed_amount: Number(item.fixedAmount || 0),
+        fixed_rate: Number(item.fixedRate || 0),
       }));
 
       if (upserts.length > 0) {

@@ -327,13 +327,14 @@ export function ScreenCompositionPage() {
       physicalName: 'reserve_items',
       tableType: '事業所依存マスタ',
       logicalName: '積立金項目',
-      description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備更新積立金など、直持ち所属事業所IDで管理）',
+      description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備等修繕維持積立金など、直持ち所属事業所IDで管理。案件収益に対して定額/定率で設定）',
       columns: [
         { name: 'id', desc: '積立金ID' },
         { name: 'office_id', desc: '所属事業所ID' },
         { name: 'name', desc: '積立金名' },
-        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
-        { name: 'default_unit_price', desc: '標準単価・金額' },
+        { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
+        { name: 'fixed_amount', desc: '定額金額（円）' },
+        { name: 'fixed_rate', desc: '定率（%）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

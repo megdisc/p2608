@@ -4,7 +4,6 @@ import { supabase } from '../lib';
 export type OrganizationItem = {
   id: string;
   name: string;
-  yomigana: string;
   representative_name: string;
   corporate_number: string;
   postal_code_prefix: string;
@@ -78,7 +77,6 @@ export function useOrganizations() {
         return {
           id: o.id,
           name: o.name,
-          yomigana: o.yomigana || '',
           representative_name: o.representative_name || '',
           corporate_number: o.corporate_number || '',
           postal_code_prefix: addr.postal_code_prefix || '',
@@ -108,7 +106,6 @@ export function useOrganizations() {
       for (const item of activeItems) {
         const upsertData: any = {
           name: item.name,
-          yomigana: item.yomigana || null,
           representative_name: item.representative_name || null,
           corporate_number: item.corporate_number || null,
         };

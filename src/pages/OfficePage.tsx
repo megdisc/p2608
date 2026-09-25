@@ -19,7 +19,7 @@ export function OfficePage() {
   const columns: Column<OfficeItem>[] = [
     { key: 'code', header: '事業所コード', sortable: false, editable: true, inputType: 'text' },
     { key: 'name', header: '事業所名', sortable: false, editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'ふりがな', sortable: false, editable: true, inputType: 'text' },
+    { key: 'short_name', header: '通称', sortable: false, editable: true, inputType: 'text' },
     { key: 'unit_price', header: '地域区分単価(円)', sortable: false, editable: true, inputType: 'number' },
     {
       key: 'service_type_ids',
@@ -91,7 +91,7 @@ export function OfficePage() {
       id: `OFF-${Date.now()}-${Math.random()}`,
       code: generateNextUnifiedCode(existingCodes, 'OFF-'),
       name: '',
-      yomigana: '',
+      short_name: '',
       unit_price: 10.68,
       postal_code_prefix: '',
       postal_code_suffix: '',

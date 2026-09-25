@@ -1,19 +1,20 @@
 import { DataPage, type Column, Button } from '../components';
 import { useEffect } from 'react';
 import type { SkillLevelItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useSkillLevels } from '../hooks';
 
 export function SkillLevelPage() {
   const { items, loading, fetchSkillLevels, batchSaveSkillLevels } = useSkillLevels();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchSkillLevels().catch(() => {
+    fetchSkillLevels(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchSkillLevels, showAlert]);
+  }, [fetchSkillLevels, selectedOfficeId, showAlert]);
 
   const columns: Column<SkillLevelItem>[] = [
     { 
@@ -74,7 +75,7 @@ export function SkillLevelPage() {
 
   const handleBatchSave = async (drafts: SkillLevelItem[], deletedIds: string[]) => {
     try {
-      await batchSaveSkillLevels(drafts, deletedIds);
+      await batchSaveSkillLevels(drafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(MESSAGES.SAVE_ERROR, 'error');
@@ -91,7 +92,7 @@ export function SkillLevelPage() {
     } as SkillLevelItem;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading && items.length === 0) return <div>Loading...</div>;
 
   return (
     <DataPage

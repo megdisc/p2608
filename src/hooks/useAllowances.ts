@@ -6,13 +6,18 @@ export function useAllowances() {
   const [items, setItems] = useState<AllowanceItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchAllowances = useCallback(async () => {
+  const fetchAllowances = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('allowances')
-        .select('*')
-        .order('name', { ascending: true });
+        .select('*');
+
+      if (officeId) {
+        query = query.eq('office_id', officeId);
+      }
+
+      const { data, error } = await query.order('name', { ascending: true });
       
       if (error) throw error;
       
@@ -20,7 +25,7 @@ export function useAllowances() {
         id: d.id,
         name: d.name || '',
         occurrence_type: d.occurrence_type || 'daily',
-        default_unit_price: Number(d.default_unit_price) || 0,
+        default_unit_price: Number(d.default_unit_price || d.unit_price || 0),
         is_active: d.is_active ?? true,
       }));
       setItems(formatted);
@@ -32,34 +37,34 @@ export function useAllowances() {
     }
   }, []);
 
-  const batchSaveAllowances = async (drafts: AllowanceItem[], deletedIds: string[]) => {
+  const batchSaveAllowances = async (drafts: AllowanceItem[], deletedIds: string[], officeId?: string) => {
     try {
       setLoading(true);
       
       if (deletedIds.length > 0) {
-        // IDがDB存在ID（ALW-始まりでない）の場合は削除
         const realDeletedIds = deletedIds.filter(id => !id.startsWith('ALW-'));
         if (realDeletedIds.length > 0) {
-          const { error } = await supabase.from('allowance_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
+          const { error } = await supabase.from('allowance_deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
           if (error) throw error;
         }
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       const upserts = activeItems.map(item => ({
-        id: item.id.startsWith('ALW-') ? undefined : item.id,
+        ...(item.id.startsWith('ALW-') ? {} : { id: item.id }),
+        ...(officeId ? { office_id: officeId } : {}),
         name: item.name,
+        item_category: 'allowance',
         occurrence_type: item.occurrence_type,
-        default_unit_price: item.default_unit_price,
-        is_active: item.is_active ?? true,
+        unit_price: item.default_unit_price,
       }));
 
       if (upserts.length > 0) {
-        const { error } = await supabase.from('allowances').upsert(upserts);
+        const { error } = await supabase.from('allowance_deduction_items').upsert(upserts);
         if (error) throw error;
       }
 
-      await fetchAllowances();
+      await fetchAllowances(officeId);
     } catch (err) {
       console.error(err);
       throw err;
@@ -75,3 +80,4 @@ export function useAllowances() {
     batchSaveAllowances
   };
 }
+

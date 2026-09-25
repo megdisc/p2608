@@ -17,7 +17,6 @@ export function OrganizationPage() {
 
   const columns: Column<OrganizationItem>[] = [
     { key: 'name', header: '法人名', sortable: false, editable: true, inputType: 'text' },
-    { key: 'yomigana', header: 'ふりがな', sortable: false, editable: true, inputType: 'text' },
     { key: 'representative_name', header: '代表者職・氏名', sortable: false, editable: true, inputType: 'text' },
     { key: 'corporate_number', header: '法人番号（13桁）', sortable: false, editable: true, inputType: 'text' },
     { key: 'postal_code_prefix', header: '郵便番号（前3桁）', sortable: false, editable: true, inputType: 'text' },

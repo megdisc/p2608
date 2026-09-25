@@ -1,19 +1,20 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { DeductionItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { MESSAGES } from '../constants';
 import { useDeductions } from '../hooks';
 
 export function DeductionPage() {
   const { items, loading, fetchDeductions, batchSaveDeductions } = useDeductions();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchDeductions().catch(() => {
+    fetchDeductions(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchDeductions, showAlert]);
+  }, [fetchDeductions, selectedOfficeId, showAlert]);
 
   const columns: Column<DeductionItem>[] = [
     { key: 'name', header: '控除名', editable: true, inputType: 'text' },
@@ -60,7 +61,7 @@ export function DeductionPage() {
         ...d,
         is_active: String(d.is_active) === 'true' || d.is_active === true
       }));
-      await batchSaveDeductions(formattedDrafts, deletedIds);
+      await batchSaveDeductions(formattedDrafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch {
       showAlert(MESSAGES.SAVE_ERROR, 'error');

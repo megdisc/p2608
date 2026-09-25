@@ -6,14 +6,19 @@ export function useSkillLevels() {
   const [items, setItems] = useState<SkillLevelItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchSkillLevels = useCallback(async () => {
+  const fetchSkillLevels = useCallback(async (officeId?: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('skill_levels')
         .select('*')
-        .eq('is_deleted', false)
-        .order('level_value');
+        .eq('is_deleted', false);
+
+      if (officeId) {
+        query = query.eq('office_id', officeId);
+      }
+
+      const { data, error } = await query.order('level_value');
       
       if (error) throw error;
       setItems((data || []).map(d => ({
@@ -26,13 +31,13 @@ export function useSkillLevels() {
     }
   }, []);
 
-  const batchSaveSkillLevels = useCallback(async (drafts: SkillLevelItem[], deletedIds: string[]) => {
+  const batchSaveSkillLevels = useCallback(async (drafts: SkillLevelItem[], deletedIds: string[], officeId?: string) => {
     setLoading(true);
     try {
       // Handle deletions
       if (deletedIds.length > 0) {
         const { error: deleteError } = await supabase
-          .from('skill_levels')
+          .from('skill_level_items')
           .update({ deleted_at: new Date().toISOString() })
           .in('id', deletedIds);
         if (deleteError) throw deleteError;
@@ -40,10 +45,10 @@ export function useSkillLevels() {
 
       // Handle upserts
       const upserts = drafts.map(draft => {
-        // If ID starts with prefix (e.g. SKL-L-), let DB generate UUID
         const isNew = draft.id.startsWith('SKL-L-') || draft.id.startsWith('temp-');
         return {
           ...(isNew ? {} : { id: draft.id }),
+          ...(officeId ? { office_id: officeId } : {}),
           level_value: Number(draft.levelValue),
           description: draft.description,
           updated_at: new Date().toISOString()
@@ -52,12 +57,12 @@ export function useSkillLevels() {
 
       if (upserts.length > 0) {
         const { error: upsertError } = await supabase
-          .from('skill_levels')
+          .from('skill_level_items')
           .upsert(upserts);
         if (upsertError) throw upsertError;
       }
 
-      await fetchSkillLevels();
+      await fetchSkillLevels(officeId);
     } finally {
       setLoading(false);
     }
@@ -65,3 +70,4 @@ export function useSkillLevels() {
 
   return { items, loading, fetchSkillLevels, batchSaveSkillLevels };
 }
+

@@ -1,19 +1,20 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { SkillItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useSkills } from '../hooks';
 
 export function SkillPage() {
   const { items, loading, fetchSkills, batchSaveSkills } = useSkills();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchSkills().catch(() => {
+    fetchSkills(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchSkills, showAlert]);
+  }, [fetchSkills, selectedOfficeId, showAlert]);
 
   const columns: Column<SkillItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.SKILL_NAME, editable: true, inputType: 'text' },
@@ -22,7 +23,7 @@ export function SkillPage() {
 
   const handleBatchSave = async (drafts: SkillItem[], deletedIds: string[]) => {
     try {
-      await batchSaveSkills(drafts, deletedIds);
+      await batchSaveSkills(drafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(MESSAGES.SAVE_ERROR, 'error');
@@ -37,7 +38,7 @@ export function SkillPage() {
     } as SkillItem;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading && items.length === 0) return <div>Loading...</div>;
 
   return (
     <DataPage
@@ -52,3 +53,4 @@ export function SkillPage() {
     />
   );
 }
+

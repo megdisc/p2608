@@ -148,7 +148,6 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '法人ID' },
         { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
-        { name: 'yomigana', desc: 'ふりがな' },
         { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
         { name: 'corporate_number', desc: '法人番号（13桁）' },
         { name: 'created_at', desc: '作成日時' },
@@ -164,8 +163,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '事業所ID' },
         { name: 'code', desc: '事業所コード' },
-        { name: 'name', desc: '事業所名' },
-        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'name', desc: '事業所名（正式名称）' },
+        { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
         { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
         { name: 'service_type_ids', desc: '割当支援種別（office_service_type_settings との連動割当）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },

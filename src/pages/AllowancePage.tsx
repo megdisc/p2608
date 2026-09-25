@@ -1,19 +1,20 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { AllowanceItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { MESSAGES } from '../constants';
 import { useAllowances } from '../hooks';
 
 export function AllowancePage() {
   const { items, loading, fetchAllowances, batchSaveAllowances } = useAllowances();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchAllowances().catch(() => {
+    fetchAllowances(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchAllowances, showAlert]);
+  }, [fetchAllowances, selectedOfficeId, showAlert]);
 
   const columns: Column<AllowanceItem>[] = [
     { key: 'name', header: '手当名', editable: true, inputType: 'text' },
@@ -60,7 +61,7 @@ export function AllowancePage() {
         ...d,
         is_active: String(d.is_active) === 'true' || d.is_active === true
       }));
-      await batchSaveAllowances(formattedDrafts, deletedIds);
+      await batchSaveAllowances(formattedDrafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch {
       showAlert(MESSAGES.SAVE_ERROR, 'error');

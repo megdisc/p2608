@@ -11,7 +11,7 @@ export type OfficeItem = {
   id: string;
   code: string;
   name: string;
-  yomigana: string;
+  short_name: string;
   unit_price: number;
   postal_code_prefix: string;
   postal_code_suffix: string;
@@ -91,7 +91,7 @@ export function useOffices() {
           id: o.id,
           code: o.code || '',
           name: o.name,
-          yomigana: o.yomigana || '',
+          short_name: o.short_name || '',
           unit_price: o.unit_price ?? 10.68,
           postal_code_prefix: addr.postal_code_prefix || '',
           postal_code_suffix: addr.postal_code_suffix || '',
@@ -131,7 +131,7 @@ export function useOffices() {
         const upsertData: any = {
           code: item.code?.trim() || null,
           name: item.name,
-          yomigana: item.yomigana || null,
+          short_name: item.short_name?.trim() || null,
           unit_price: item.unit_price || 10.68,
         };
         if (!item.id.startsWith('OFF-')) {

@@ -37,7 +37,6 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS "public"."organizations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "yomigana" TEXT,
     "representative_name" TEXT,
     "corporate_number" VARCHAR(13),
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -49,7 +48,7 @@ CREATE TABLE IF NOT EXISTS "public"."offices" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "code" TEXT,
     "name" TEXT NOT NULL,
-    "yomigana" TEXT,
+    "short_name" TEXT,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,

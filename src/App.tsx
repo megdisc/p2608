@@ -21,6 +21,7 @@ import {
 import { AlertProvider } from './contexts/AlertContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NavigationProvider } from './contexts/NavigationContext';
+import { OfficeProvider } from './contexts/OfficeContext';
 import { MESSAGES } from './constants';
 
 function AppContent() {
@@ -49,43 +50,45 @@ function AppContent() {
   }
 
   return (
-    <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
-      <AlertProvider>
-        <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
-          {['dashboard'].includes(activeTab) ? (
-            <DashboardPage />
-          ) : ['dailyWorkRecord', 'screenDailyWork'].includes(activeTab) ? (
-            <ScreenDailyWorkPage />
-          ) : ['projectUser', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (
-            <ScreenUserPage />
-          ) : ['staff', 'screenStaff'].includes(activeTab) ? (
-            <ScreenStaffPage />
-          ) : ['client', 'screenClient'].includes(activeTab) ? (
-            <ScreenClientPage />
-          ) : ['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? (
-            <ScreenWelfarePage />
-          ) : ['screenFacility', 'organization', 'office', 'serviceScheme'].includes(activeTab) ? (
-            <ScreenFacilityPage />
-          ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
-            <ScreenSkillPage />
-          ) : ['baseWage', 'allowance', 'deduction', 'screenWage'].includes(activeTab) ? (
-            <ScreenWagePage />
-          ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
-            <ScreenReservePage />
-          ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation', 'screenProject'].includes(activeTab) ? (
-            <ScreenProjectPage />
-          ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
-            <ScreenFinancePage />
-          ) : ['screenComposition', 'tableComposition', 'mainFeatures', 'workflow'].includes(activeTab) ? (
-            <ScreenCompositionPage />
-          ) : (
-            <div style={{ padding: '32px' }}>
-              <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
-            </div>
-          )}
-        </ProjectAppLayout>
-      </AlertProvider>
-    </NavigationProvider>
+    <OfficeProvider>
+      <NavigationProvider activeTab={activeTab} setActiveTab={setActiveTab}>
+        <AlertProvider>
+          <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
+            {['dashboard'].includes(activeTab) ? (
+              <DashboardPage />
+            ) : ['dailyWorkRecord', 'screenDailyWork'].includes(activeTab) ? (
+              <ScreenDailyWorkPage />
+            ) : ['projectUser', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (
+              <ScreenUserPage />
+            ) : ['staff', 'screenStaff'].includes(activeTab) ? (
+              <ScreenStaffPage />
+            ) : ['client', 'screenClient'].includes(activeTab) ? (
+              <ScreenClientPage />
+            ) : ['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? (
+              <ScreenWelfarePage />
+            ) : ['screenFacility', 'organization', 'office', 'serviceScheme'].includes(activeTab) ? (
+              <ScreenFacilityPage />
+            ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
+              <ScreenSkillPage />
+            ) : ['baseWage', 'allowance', 'deduction', 'screenWage'].includes(activeTab) ? (
+              <ScreenWagePage />
+            ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
+              <ScreenReservePage />
+            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation', 'screenProject'].includes(activeTab) ? (
+              <ScreenProjectPage />
+            ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
+              <ScreenFinancePage />
+            ) : ['screenComposition', 'tableComposition', 'mainFeatures', 'workflow'].includes(activeTab) ? (
+              <ScreenCompositionPage />
+            ) : (
+              <div style={{ padding: '32px' }}>
+                <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
+              </div>
+            )}
+          </ProjectAppLayout>
+        </AlertProvider>
+      </NavigationProvider>
+    </OfficeProvider>
   );
 }
 

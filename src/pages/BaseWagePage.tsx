@@ -1,19 +1,20 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { BaseWageItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useBaseWages } from '../hooks';
 
 export function BaseWagePage() {
   const { items, loading, fetchBaseWages, batchSaveBaseWages } = useBaseWages();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchBaseWages().catch(() => {
+    fetchBaseWages(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchBaseWages, showAlert]);
+  }, [fetchBaseWages, selectedOfficeId, showAlert]);
 
   const columns: Column<BaseWageItem>[] = [
     { key: 'wage', header: TABLE_COLUMNS.BASE_WAGE, editable: true, inputType: 'currency', className: 'number-column' },
@@ -22,7 +23,7 @@ export function BaseWagePage() {
 
   const handleBatchSave = async (drafts: BaseWageItem[], deletedIds: string[]) => {
     try {
-      await batchSaveBaseWages(drafts, deletedIds);
+      await batchSaveBaseWages(drafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch {
       showAlert(MESSAGES.SAVE_ERROR, 'error');
@@ -37,7 +38,7 @@ export function BaseWagePage() {
     } as BaseWageItem;
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading && items.length === 0) return <div>Loading...</div>;
 
   return (
     <DataPage
@@ -52,3 +53,4 @@ export function BaseWagePage() {
     />
   );
 }
+

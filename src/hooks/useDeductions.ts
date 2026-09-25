@@ -6,13 +6,18 @@ export function useDeductions() {
   const [items, setItems] = useState<DeductionItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchDeductions = useCallback(async () => {
+  const fetchDeductions = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('deductions')
-        .select('*')
-        .order('name', { ascending: true });
+        .select('*');
+
+      if (officeId) {
+        query = query.eq('office_id', officeId);
+      }
+
+      const { data, error } = await query.order('name', { ascending: true });
       
       if (error) throw error;
       
@@ -20,7 +25,7 @@ export function useDeductions() {
         id: d.id,
         name: d.name || '',
         occurrence_type: d.occurrence_type || 'daily',
-        default_unit_price: Number(d.default_unit_price) || 0,
+        default_unit_price: Number(d.default_unit_price || d.unit_price || 0),
         is_active: d.is_active ?? true,
       }));
       setItems(formatted);
@@ -32,33 +37,34 @@ export function useDeductions() {
     }
   }, []);
 
-  const batchSaveDeductions = async (drafts: DeductionItem[], deletedIds: string[]) => {
+  const batchSaveDeductions = async (drafts: DeductionItem[], deletedIds: string[], officeId?: string) => {
     try {
       setLoading(true);
       
       if (deletedIds.length > 0) {
         const realDeletedIds = deletedIds.filter(id => !id.startsWith('DED-'));
         if (realDeletedIds.length > 0) {
-          const { error } = await supabase.from('deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
+          const { error } = await supabase.from('allowance_deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', realDeletedIds);
           if (error) throw error;
         }
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       const upserts = activeItems.map(item => ({
-        id: item.id.startsWith('DED-') ? undefined : item.id,
+        ...(item.id.startsWith('DED-') ? {} : { id: item.id }),
+        ...(officeId ? { office_id: officeId } : {}),
         name: item.name,
+        item_category: 'deduction',
         occurrence_type: item.occurrence_type,
-        default_unit_price: item.default_unit_price,
-        is_active: item.is_active ?? true,
+        unit_price: item.default_unit_price,
       }));
 
       if (upserts.length > 0) {
-        const { error } = await supabase.from('deductions').upsert(upserts);
+        const { error } = await supabase.from('allowance_deduction_items').upsert(upserts);
         if (error) throw error;
       }
 
-      await fetchDeductions();
+      await fetchDeductions(officeId);
     } catch (err) {
       console.error(err);
       throw err;
@@ -74,3 +80,4 @@ export function useDeductions() {
     batchSaveDeductions
   };
 }
+

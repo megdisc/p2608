@@ -1,5 +1,5 @@
 import type { Tab } from '../../types';
-import { useAuth } from '../../contexts';
+import { useAuth, useOffice } from '../../contexts';
 import { SYSTEM_NAME, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
 
 type ProjectSidebarProps = {
@@ -9,13 +9,39 @@ type ProjectSidebarProps = {
 
 export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps) {
   const { logout, user } = useAuth();
-  
+  const { offices, selectedOfficeId, setSelectedOfficeId } = useOffice();
 
   return (
     <aside className="sidebar">
       <header className="header">
         <span className="system-id">{SYSTEM_ID}</span>
         <h1>{SYSTEM_NAME}</h1>
+        <div style={{ marginTop: '12px', width: '100%', padding: '0 4px' }}>
+          <select
+            value={selectedOfficeId}
+            onChange={(e) => setSelectedOfficeId(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '6px 10px',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: '#2a2d34',
+              color: 'var(--color-text-inverse)',
+              border: '1px solid #444444',
+              fontSize: 'var(--text-caption)',
+              fontWeight: 'var(--weight-heading)',
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          >
+            {offices.map((office) => (
+              <option key={office.id} value={office.id} style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>
+                {office.short_name || office.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </header>
       
       <nav className="nav-menu">

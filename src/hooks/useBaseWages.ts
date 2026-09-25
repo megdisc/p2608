@@ -6,14 +6,19 @@ export function useBaseWages() {
   const [items, setItems] = useState<BaseWageItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchBaseWages = useCallback(async () => {
+  const fetchBaseWages = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('wage_rates')
         .select('*')
-        .eq('is_deleted', false)
-        .order('wage', { ascending: true });
+        .eq('is_deleted', false);
+
+      if (officeId) {
+        query = query.eq('office_id', officeId);
+      }
+
+      const { data, error } = await query.order('wage', { ascending: true });
       
       if (error) throw error;
       
@@ -31,28 +36,29 @@ export function useBaseWages() {
     }
   }, []);
 
-  const batchSaveBaseWages = async (drafts: BaseWageItem[], deletedIds: string[]) => {
+  const batchSaveBaseWages = async (drafts: BaseWageItem[], deletedIds: string[], officeId?: string) => {
     try {
       setLoading(true);
       
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('wage_rates').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
+        const { error } = await supabase.from('wage_rate_items').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
         if (error) throw error;
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       const upserts = activeItems.map(item => ({
-        id: item.id.startsWith('BWG-') ? undefined : item.id,
+        ...(item.id.startsWith('BWG-') ? {} : { id: item.id }),
+        ...(officeId ? { office_id: officeId } : {}),
         wage: item.wage,
         description: item.description
       }));
 
       if (upserts.length > 0) {
-        const { error } = await supabase.from('wage_rates').upsert(upserts);
+        const { error } = await supabase.from('wage_rate_items').upsert(upserts);
         if (error) throw error;
       }
 
-      await fetchBaseWages();
+      await fetchBaseWages(officeId);
     } catch (err) {
       console.error(err);
       throw err;
@@ -68,3 +74,4 @@ export function useBaseWages() {
     batchSaveBaseWages
   };
 }
+

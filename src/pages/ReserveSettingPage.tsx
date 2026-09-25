@@ -1,39 +1,27 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { ReserveSettingItem } from '../types';
-import { useAlert } from '../contexts';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
-
-const INITIAL_MOCK_DATA: ReserveSettingItem[] = [
-  {
-    id: 'RSV-001',
-    reserveType: WORDS_PROJECT.SUBJECT_RESERVE_WAGE,
-    method: '月次剰余金の定率積立',
-    calculationBase: '月次剰余金の 10%',
-    targetAmount: 1000000,
-    autoExecution: true,
-    description: '年度内の収支変動時において、利用者の基本工賃および目標工賃水準を安定的に維持・補填するための準備金。',
-  },
-  {
-    id: 'RSV-002',
-    reserveType: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT,
-    method: '毎月定額積立',
-    calculationBase: '月額 30,000円',
-    targetAmount: 500000,
-    autoExecution: true,
-    description: '生産活動に使用する作業機器、車両、施設設備の定期点検・突然の故障修繕および更新のための準備金。',
-  },
-];
+import { useAlert, useOffice } from '../contexts';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { useReserveSettings } from '../hooks';
 
 export function ReserveSettingPage() {
-  const [items, setItems] = useState<ReserveSettingItem[]>(INITIAL_MOCK_DATA);
+  const { items, loading, fetchReserveSettings, batchSaveReserveSettings } = useReserveSettings();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
+
+  useEffect(() => {
+    fetchReserveSettings(selectedOfficeId).catch(() => {
+      showAlert('データ取得に失敗しました', 'error');
+    });
+  }, [fetchReserveSettings, selectedOfficeId, showAlert]);
 
   const columns: Column<ReserveSettingItem>[] = [
     {
       key: 'reserveType',
       header: TABLE_COLUMNS.RESERVE_TYPE,
-      editable: false,
+      editable: true,
+      inputType: 'text',
       style: { width: '200px', fontWeight: 'bold' }
     },
     {
@@ -52,7 +40,7 @@ export function ReserveSettingPage() {
     },
     {
       key: 'targetAmount',
-      header: '上限',
+      header: '積立額',
       editable: true,
       inputType: 'currency',
       style: { width: '160px', textAlign: 'right' }
@@ -81,13 +69,26 @@ export function ReserveSettingPage() {
 
   const handleBatchSave = async (drafts: ReserveSettingItem[], deletedIds: string[]) => {
     try {
-      const activeDrafts = drafts.filter(d => !deletedIds.includes(d.id));
-      setItems(activeDrafts);
+      await batchSaveReserveSettings(drafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch {
       showAlert(MESSAGES.SAVE_ERROR, 'error');
     }
   };
+
+  const handleAdd = () => {
+    return {
+      id: `RSV-${Date.now()}`,
+      reserveType: '',
+      method: '毎月定額積立',
+      calculationBase: '月額 0円',
+      targetAmount: 0,
+      autoExecution: true,
+      description: '',
+    } as ReserveSettingItem;
+  };
+
+  if (loading && items.length === 0) return <div>Loading...</div>;
 
   return (
     <DataPage
@@ -97,10 +98,9 @@ export function ReserveSettingPage() {
       emptyMessage="積立金設定が登録されていません。"
       initialSort={{ key: 'reserveType', direction: 'asc' }}
       onBatchSave={handleBatchSave}
-      hideDeleteColumn={true}
-      hideAddButton={true}
-      hideCancelButton={true}
+      onAddRow={handleAdd}
       hideHeader={true}
     />
   );
 }
+

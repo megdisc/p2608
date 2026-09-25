@@ -157,23 +157,15 @@ INSERT INTO public.reward_items (id, service_type_id, code, name, item_category,
 ('44444444-4444-4444-4444-444444444428', '11111111-0000-0000-0000-000000000022', '542121', '開所時間減算（放デイ）', 'subtraction', 'daily', -30.00, 0, NULL, false)
 ON CONFLICT (id) DO NOTHING;
 
--- 4. 工賃体系 & 加算手当・控除項目マスタ (wage_schemes / allowance_deduction_items)
-INSERT INTO public.wage_schemes (id, office_id, name, description) VALUES
-('33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', '就労継続支援B型標準工賃体系', '就労継続支援B型の標準的な工賃・加算手当・控除体系')
+-- 4. 加算手当・控除項目マスタ (allowance_deduction_items)
+INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, unit_price) VALUES
+('44444444-4444-4444-4444-444444444404', '22222222-2222-2222-2222-222222222222', '資格手当', 'allowance', 'daily', 500.00),
+('44444444-4444-4444-4444-444444444405', '22222222-2222-2222-2222-222222222222', '昼食代控除', 'deduction', 'daily', 350.00)
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.allowance_deduction_items (id, wage_scheme_id, name, item_category, occurrence_type, unit_price) VALUES
-('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00),
-('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00)
-ON CONFLICT (id) DO NOTHING;
-
--- 4.1 積立金体系 & 積立金項目マスタ (reserve_schemes / reserve_items)
-INSERT INTO public.reserve_schemes (id, office_id, name, description) VALUES
-('66666666-6666-6666-6666-666666666666', '22222222-2222-2222-2222-222222222222', '標準積立金体系', '事業所の標準的な積立金管理ルール')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO public.reserve_items (id, reserve_scheme_id, name, occurrence_type, default_unit_price) VALUES
-('77777777-7777-7777-7777-777777777777', '66666666-6666-6666-6666-666666666666', '工賃変動積立金', 'monthly', 1000.00)
+-- 4.1 積立金項目マスタ (reserve_items)
+INSERT INTO public.reserve_items (id, office_id, name, occurrence_type, default_unit_price) VALUES
+('77777777-7777-7777-7777-777777777777', '22222222-2222-2222-2222-222222222222', '工賃変動積立金', 'monthly', 1000.00)
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. 職員マスタ (staffs)
@@ -188,10 +180,10 @@ ON CONFLICT (id) DO UPDATE SET
   yomigana = EXCLUDED.yomigana;
 
 -- 6. 工賃単価項目マスタ (wage_rate_items)
-INSERT INTO public.wage_rate_items (id, wage_scheme_id, wage, description) VALUES
-('a1b2c3d4-0000-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 100, '新人レベル'),
-('a1b2c3d4-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', 250, '中堅レベル'),
-('a1b2c3d4-0000-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', 500, 'ベテランレベル')
+INSERT INTO public.wage_rate_items (id, office_id, wage, description) VALUES
+('a1b2c3d4-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 100, '新人レベル'),
+('a1b2c3d4-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 250, '中堅レベル'),
+('a1b2c3d4-0000-0000-0000-000000000003', '22222222-2222-2222-2222-222222222222', 500, 'ベテランレベル')
 ON CONFLICT (id) DO NOTHING;
 
 -- 7. 利用者マスタ & 事業所割当 (members / office_member_settings)
@@ -228,32 +220,28 @@ INSERT INTO public.partners (id, code, name, yomigana, contact_person, is_custom
 ('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', false, true)
 ON CONFLICT (id) DO NOTHING;
 
--- 10. スキル体系 & スキル項目マスタ (skill_schemes / skill_items / skill_level_items)
-INSERT INTO public.skill_schemes (id, office_id, name, description) VALUES
-('55555555-5555-5555-5555-555555555555', '22222222-2222-2222-2222-222222222222', '全社標準スキル体系', 'IT作業・オフィス作業・製造業務の標準スキル分類')
+-- 10. スキル項目マスタ (skill_items / skill_level_items)
+INSERT INTO public.skill_items (id, office_id, name, description) VALUES
+('ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '22222222-2222-2222-2222-222222222222', 'ネットワーク設計', 'ネットワーク構成の設計・構築'),
+('817f8df7-05bc-4610-8a37-9609ff4ae89d', '22222222-2222-2222-2222-222222222222', 'Cisco', 'Cisco製ネットワーク機器の設定・管理'),
+('f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', '22222222-2222-2222-2222-222222222222', 'Linux', 'Linuxサーバーの構築・運用'),
+('8172c05b-207d-4ca4-82e5-c8e51328accc', '22222222-2222-2222-2222-222222222222', 'Windows Server', 'Windows Serverの構築・運用'),
+('676fa8f0-b4d8-4035-ae3f-de391ece3a63', '22222222-2222-2222-2222-222222222222', 'React', 'Reactによるフロントエンド開発'),
+('38eb7141-55bd-43d0-a6a5-7d028233eb17', '22222222-2222-2222-2222-222222222222', 'TypeScript', 'TypeScriptによる静的型付け'),
+('9322b5f6-fbb0-4a6e-a365-b814fbca7d49', '22222222-2222-2222-2222-222222222222', 'Figma', 'Figmaを用いたUI/UXデザイン'),
+('3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', '22222222-2222-2222-2222-222222222222', 'Oracle', 'Oracle Databaseの設計・運用'),
+('740001dd-4b33-4d53-8b05-f08d178a408c', '22222222-2222-2222-2222-222222222222', 'PL/SQL', 'PL/SQLによるデータベースプログラミング'),
+('baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '22222222-2222-2222-2222-222222222222', 'Python', 'Pythonによるバックエンド開発・データ処理'),
+('074ce5ed-005a-4a3d-8681-a9eed17c4986', '22222222-2222-2222-2222-222222222222', 'セキュリティ監査', '情報セキュリティの監査・評価'),
+('f0624c11-e56b-4267-a730-75dd6980b578', '22222222-2222-2222-2222-222222222222', 'ペネトレーションテスト', 'システムへの侵入テスト'),
+('128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '22222222-2222-2222-2222-222222222222', '製パン技術', 'パンの製造および関連技術'),
+('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '22222222-2222-2222-2222-222222222222', '接客・販売', '店舗での接客、販売業務全般')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.skill_items (id, skill_scheme_id, name, description) VALUES
-('ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', '55555555-5555-5555-5555-555555555555', 'ネットワーク設計', 'ネットワーク構成の設計・構築'),
-('817f8df7-05bc-4610-8a37-9609ff4ae89d', '55555555-5555-5555-5555-555555555555', 'Cisco', 'Cisco製ネットワーク機器の設定・管理'),
-('f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', '55555555-5555-5555-5555-555555555555', 'Linux', 'Linuxサーバーの構築・運用'),
-('8172c05b-207d-4ca4-82e5-c8e51328accc', '55555555-5555-5555-5555-555555555555', 'Windows Server', 'Windows Serverの構築・運用'),
-('676fa8f0-b4d8-4035-ae3f-de391ece3a63', '55555555-5555-5555-5555-555555555555', 'React', 'Reactによるフロントエンド開発'),
-('38eb7141-55bd-43d0-a6a5-7d028233eb17', '55555555-5555-5555-5555-555555555555', 'TypeScript', 'TypeScriptによる静的型付け'),
-('9322b5f6-fbb0-4a6e-a365-b814fbca7d49', '55555555-5555-5555-5555-555555555555', 'Figma', 'Figmaを用いたUI/UXデザイン'),
-('3beb5767-f4b8-4c92-a9b8-be10e94ac7d6', '55555555-5555-5555-5555-555555555555', 'Oracle', 'Oracle Databaseの設計・運用'),
-('740001dd-4b33-4d53-8b05-f08d178a408c', '55555555-5555-5555-5555-555555555555', 'PL/SQL', 'PL/SQLによるデータベースプログラミング'),
-('baf4f0c2-954d-46ac-a3e4-a0ad211155c8', '55555555-5555-5555-5555-555555555555', 'Python', 'Pythonによるバックエンド開発・データ処理'),
-('074ce5ed-005a-4a3d-8681-a9eed17c4986', '55555555-5555-5555-5555-555555555555', 'セキュリティ監査', '情報セキュリティの監査・評価'),
-('f0624c11-e56b-4267-a730-75dd6980b578', '55555555-5555-5555-5555-555555555555', 'ペネトレーションテスト', 'システムへの侵入テスト'),
-('128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', '55555555-5555-5555-5555-555555555555', '製パン技術', 'パンの製造および関連技術'),
-('874c9f1a-5d6b-4e2c-9a3e-781f2a5b0c9d', '55555555-5555-5555-5555-555555555555', '接客・販売', '店舗での接客、販売業務全般')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO public.skill_level_items (id, skill_scheme_id, level_value, description) VALUES
-('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '55555555-5555-5555-5555-555555555555', 1, '基本的な作業はできるが、サポートが必要'),
-('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '55555555-5555-5555-5555-555555555555', 2, '日常的な作業を自立して行える'),
-('9b139db0-a352-4f38-89c0-9dff60a4f66a', '55555555-5555-5555-5555-555555555555', 3, '他者のサポートやトラブルシューティングができる')
+INSERT INTO public.skill_level_items (id, office_id, level_value, description) VALUES
+('e24bd35c-7833-41c3-ab5b-5136db6d75d1', '22222222-2222-2222-2222-222222222222', 1, '基本的な作業はできるが、サポートが必要'),
+('cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb', '22222222-2222-2222-2222-222222222222', 2, '日常的な作業を自立して行える'),
+('9b139db0-a352-4f38-89c0-9dff60a4f66a', '22222222-2222-2222-2222-222222222222', 3, '他者のサポートやトラブルシューティングができる')
 ON CONFLICT (id) DO NOTHING;
 
 -- 11. 案件 & タスク (projects / project_tasks)

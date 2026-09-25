@@ -291,29 +291,13 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'wage_schemes',
-      tableType: '体系マスタ',
-      logicalName: '工賃体系',
-      description: '事業所に所属する基本工賃単価・加算手当・控除項目を一括管理する工賃体系マスタ',
-      columns: [
-        { name: 'id', desc: '工賃体系ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: '工賃体系名（例: B型標準工賃体系、特別工賃体系など）' },
-        { name: 'description', desc: '体系の説明・適用条件' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'wage_rate_items',
-      tableType: '体系マスタ',
+      tableType: '事業所依存マスタ',
       logicalName: '工賃単価項目',
-      description: '工賃体系に属する工賃単価のマスターデータ',
+      description: '事業所に所属する工賃単価のマスターデータ（直持ち所属事業所IDで管理）',
       columns: [
         { name: 'id', desc: '工賃単価ID' },
-        { name: 'wage_scheme_id', desc: '所属工賃体系ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
         { name: 'wage', desc: '工賃単価（円/時 または 円/日）' },
         { name: 'description', desc: '説明・摘要' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -324,12 +308,12 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'allowance_deduction_items',
-      tableType: '体系マスタ',
+      tableType: '事業所依存マスタ',
       logicalName: '加算手当・控除項目',
-      description: '工賃体系に属する事業所独自規定の加算手当および控除項目のマスターデータ',
+      description: '事業所に所属する事業所独自規定の加算手当および控除項目のマスターデータ（直持ち所属事業所IDで管理）',
       columns: [
         { name: 'id', desc: '項目ID' },
-        { name: 'wage_scheme_id', desc: '所属工賃体系ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
         { name: 'name', desc: '項目名（例: 資格手当、皆勤手当、食事代控除、送迎実費控除など）' },
         { name: 'item_category', desc: '項目分類区分（allowance: 加算手当 / deduction: 控除）' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
@@ -341,29 +325,13 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'reserve_schemes',
-      tableType: '体系マスタ',
-      logicalName: '積立金体系',
-      description: '事業所に所属する積立金ルールをパッケージ管理するマスターデータ',
-      columns: [
-        { name: 'id', desc: '積立金体系ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: '積立金体系名（例: 標準積立金体系）' },
-        { name: 'description', desc: '体系の説明・適用条件' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'reserve_items',
-      tableType: '体系マスタ',
+      tableType: '事業所依存マスタ',
       logicalName: '積立金項目',
-      description: '積立金体系に属する積立金のマスターデータ（工賃変動積立金、設備更新積立金など）',
+      description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備更新積立金など、直持ち所属事業所IDで管理）',
       columns: [
         { name: 'id', desc: '積立金ID' },
-        { name: 'reserve_scheme_id', desc: '所属積立金体系ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
         { name: 'name', desc: '積立金名' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'default_unit_price', desc: '標準単価・金額' },
@@ -374,29 +342,13 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'skill_schemes',
-      tableType: '体系マスタ',
-      logicalName: 'スキル体系',
-      description: '事業所に所属するスキル・スキルレベルをパッケージ管理するマスターデータ',
-      columns: [
-        { name: 'id', desc: 'スキル体系ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: 'スキル体系名（例: 全社標準スキル体系、IT作業スキル体系など）' },
-        { name: 'description', desc: '体系の説明・適用条件' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'skill_items',
-      tableType: '体系マスタ',
+      tableType: '事業所依存マスタ',
       logicalName: 'スキル項目',
-      description: 'スキル体系に属するスキルのマスターデータ（タスクおよび利用者に紐付け）',
+      description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
       columns: [
         { name: 'id', desc: 'スキルID' },
-        { name: 'skill_scheme_id', desc: '所属スキル体系ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
         { name: 'name', desc: 'スキル名' },
         { name: 'description', desc: 'スキルの説明' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -407,12 +359,12 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'skill_level_items',
-      tableType: '体系マスタ',
+      tableType: '事業所依存マスタ',
       logicalName: 'スキルレベル項目',
-      description: 'スキル体系に属するスキルレベルの定義',
+      description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
       columns: [
         { name: 'id', desc: 'スキルレベルID' },
-        { name: 'skill_scheme_id', desc: '所属スキル体系ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
         { name: 'level_value', desc: 'レベル数値' },
         { name: 'description', desc: 'レベルの説明' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -983,7 +935,7 @@ export function ScreenCompositionPage() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                 <div style={{ padding: '10px 12px', backgroundColor: '#ebf8ff', borderRadius: '6px', borderLeft: '4px solid #3182ce' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#2b6cb0' }}>1. マスタ層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>法人・事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・工賃体系・手当/控除（単位加減算連動）・積立体系・単価・利用者・職員・取引先・スキル・案件・予算等の定義</div>
+                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>法人・事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・事業所直持ち手当/控除・積立項目・単価・利用者・職員・取引先・スキル・案件・予算等の定義（※体系テーブルは非採用とし所属事業所ID直持ちで管理）</div>
                 </div>
                 <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
                   <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>
@@ -1133,9 +1085,9 @@ export function ScreenCompositionPage() {
                   { name: 'member_wage_evaluations', baseTable: 'member_wage_settings', desc: '利用者工賃単価割当エイリアスビュー' },
                   { name: 'project_task_skills', baseTable: 'task_skill_settings', desc: 'タスクスキル割当エイリアスビュー' },
                   { name: 'project_task_assignees', baseTable: 'task_assignee_settings', desc: 'タスク担当者割当エイリアスビュー' },
-                  { name: 'service_schemes', baseTable: 'wage_schemes', desc: '給付費・工賃サービス体系互換ビュー' },
-                  { name: 'office_service_scheme_settings', baseTable: 'wage_schemes', desc: '事業所サービス体系割当互換ビュー' },
-                  { name: 'office_service_settings', baseTable: 'wage_schemes', desc: '事業所サービス設定互換ビュー' },
+                  { name: 'service_schemes', baseTable: 'offices', desc: '給付費・工賃サービス体系互換ビュー' },
+                  { name: 'office_service_scheme_settings', baseTable: 'offices', desc: '事業所サービス体系割当互換ビュー' },
+                  { name: 'office_service_settings', baseTable: 'offices', desc: '事業所サービス設定互換ビュー' },
                   { name: 'staff_work_records', baseTable: 'staff_attendance_records', desc: '職員勤務実績エイリアスビュー' },
                   { name: 'attendance_records', baseTable: 'member_attendance_records', desc: '利用者出欠実績エイリアスビュー' },
                   { name: 'work_records', baseTable: 'member_work_records', desc: '利用者作業実績エイリアスビュー' },

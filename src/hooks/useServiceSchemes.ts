@@ -40,7 +40,7 @@ export function useServiceSchemes() {
       setLoading(true);
       const [schemesRes, allowDeductRes, rewardRes] = await Promise.all([
         supabase.from('service_schemes').select('*').eq('is_deleted', false).order('created_at', { ascending: true }),
-        supabase.from('allowance_deduction_items').select('*, service_schemes(name)').eq('is_deleted', false).order('created_at', { ascending: true }),
+        supabase.from('allowance_deduction_items').select('*, offices(name)').eq('is_deleted', false).order('created_at', { ascending: true }),
         supabase.from('reward_items').select('*').eq('is_deleted', false).order('created_at', { ascending: true })
       ]);
 
@@ -88,8 +88,8 @@ export function useServiceSchemes() {
         const isDed = i.item_category === 'deduction';
         return {
           id: i.id,
-          service_scheme_id: i.service_scheme_id,
-          scheme_name: i.service_schemes?.name || '就労継続支援B型標準サービス体系',
+          service_scheme_id: i.office_id,
+          scheme_name: i.offices?.name || '多機能型事業所 ワークステーション未来',
           name: i.name,
           item_category: i.item_category || 'allowance',
           item_category_label: isDed ? '控除' : '加算手当',
@@ -179,7 +179,7 @@ export function useServiceSchemes() {
           if (error) throw error;
         } else {
           const upsertData: any = {
-            service_scheme_id: item.service_scheme_id || '33333333-3333-3333-3333-333333333333',
+            office_id: item.service_scheme_id && item.service_scheme_id !== '33333333-3333-3333-3333-333333333333' ? item.service_scheme_id : '22222222-2222-2222-2222-222222222222',
             name: item.name,
             item_category: item.item_category || 'allowance',
             occurrence_type: item.occurrence_type || 'daily',

@@ -1,6 +1,12 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { ReserveSettingItem } from '../types';
+import { WORDS_PROJECT } from '../constants';
+
+const FIXED_RESERVE_TYPES = [
+  WORDS_PROJECT.SUBJECT_RESERVE_WAGE,
+  WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT,
+];
 
 export function useReserveSettings() {
   const [items, setItems] = useState<ReserveSettingItem[]>([]);
@@ -22,16 +28,32 @@ export function useReserveSettings() {
 
       if (error) throw error;
 
-      const formatted: ReserveSettingItem[] = (data || []).map(d => ({
-        id: d.id,
-        reserveType: d.name || '',
-        method: d.occurrence_type === 'monthly' ? '毎月定額積立' : '日次積立',
-        calculationBase: `月額 ${Number(d.default_unit_price || 0).toLocaleString()}円`,
-        targetAmount: Number(d.default_unit_price) || 0,
-        autoExecution: true,
-        description: d.name || '',
-        office_id: d.office_id,
-      }));
+      const formatted: ReserveSettingItem[] = FIXED_RESERVE_TYPES.map(reserveTypeName => {
+        const existing = (data || []).find(d => d.name === reserveTypeName);
+        if (existing) {
+          return {
+            id: existing.id,
+            reserveType: reserveTypeName,
+            method: existing.occurrence_type === 'monthly' ? '毎月定額積立' : '日次積立',
+            calculationBase: `月額 ${Number(existing.default_unit_price || 0).toLocaleString()}円`,
+            targetAmount: Number(existing.default_unit_price) || 0,
+            autoExecution: true,
+            description: reserveTypeName,
+            office_id: existing.office_id,
+          };
+        }
+        return {
+          id: `RSV-${reserveTypeName}-${officeId || 'default'}`,
+          reserveType: reserveTypeName,
+          method: '毎月定額積立',
+          calculationBase: '月額 0円',
+          targetAmount: 0,
+          autoExecution: true,
+          description: reserveTypeName,
+          office_id: officeId,
+        };
+      });
+
       setItems(formatted);
     } catch (error) {
       console.error(error);

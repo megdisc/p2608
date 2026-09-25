@@ -20,7 +20,7 @@ export function ReserveSettingPage() {
     {
       key: 'reserveType',
       header: TABLE_COLUMNS.RESERVE_TYPE,
-      editable: true,
+      editable: false,
       inputType: 'text',
       style: { width: '200px', fontWeight: 'bold' }
     },
@@ -76,18 +76,6 @@ export function ReserveSettingPage() {
     }
   };
 
-  const handleAdd = () => {
-    return {
-      id: `RSV-${Date.now()}`,
-      reserveType: '',
-      method: '毎月定額積立',
-      calculationBase: '月額 0円',
-      targetAmount: 0,
-      autoExecution: true,
-      description: '',
-    } as ReserveSettingItem;
-  };
-
   if (loading && items.length === 0) return <div>Loading...</div>;
 
   return (
@@ -98,7 +86,8 @@ export function ReserveSettingPage() {
       emptyMessage="積立金設定が登録されていません。"
       initialSort={{ key: 'reserveType', direction: 'asc' }}
       onBatchSave={handleBatchSave}
-      onAddRow={handleAdd}
+      hideAddButton={true}
+      hideDeleteColumn={true}
       hideHeader={true}
     />
   );

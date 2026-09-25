@@ -86,7 +86,7 @@ export function useProjectFinancialSummary(year: string) {
               resTotal += amount;
               if (r.subject === '工賃変動積立金') {
                 resWage += amount;
-              } else if (r.subject === '設備等整備積立金') {
+              } else if (r.subject === '設備等整備積立金' || r.subject === '設備等修繕維持積立金') {
                 resEquipment += amount;
               }
             }

@@ -17,8 +17,7 @@ export function useReserveSettings() {
       setLoading(true);
       let query = supabase
         .from('reserve_items')
-        .select('*')
-        .eq('is_deleted', false);
+        .select('*');
 
       if (officeId) {
         query = query.eq('office_id', officeId);
@@ -64,17 +63,6 @@ export function useReserveSettings() {
   const batchSaveReserveSettings = async (drafts: ReserveSettingItem[], deletedIds: string[], officeId?: string) => {
     try {
       setLoading(true);
-
-      if (deletedIds.length > 0) {
-        const realDeletedIds = deletedIds.filter(id => !id.startsWith('RSV-'));
-        if (realDeletedIds.length > 0) {
-          const { error } = await supabase
-            .from('reserve_items')
-            .update({ deleted_at: new Date().toISOString() })
-            .in('id', realDeletedIds);
-          if (error) throw error;
-        }
-      }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       const upserts = activeItems.map(item => ({

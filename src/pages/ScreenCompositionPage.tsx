@@ -335,7 +335,6 @@ export function ScreenCompositionPage() {
         { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
         { name: 'fixed_amount', desc: '定額金額（円）' },
         { name: 'fixed_rate', desc: '定率（%）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -1078,7 +1077,7 @@ export function ScreenCompositionPage() {
                   { name: 'wage_rates', baseTable: 'wage_rate_items', desc: '工賃単価互換ビュー（is_deleted 列を deleted_at から自動計算）' },
                   { name: 'allowances', baseTable: 'allowance_items', desc: '加算手当互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
                   { name: 'deductions', baseTable: 'deduction_items', desc: '控除互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
-                  { name: 'reserve_settings', baseTable: 'reserve_items', desc: '積立金設定互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
+                  { name: 'reserve_settings', baseTable: 'reserve_items', desc: '積立金設定互換ビュー' },
                   { name: 'skills', baseTable: 'skill_items', desc: 'スキル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
                   { name: 'skill_levels', baseTable: 'skill_level_items', desc: 'スキルレベル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
                   { name: 'member_skill_evaluations', baseTable: 'member_skill_settings', desc: '利用者スキル割当エイリアスビュー' },

@@ -203,8 +203,6 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
     "calc_type" VARCHAR(20) DEFAULT 'fixed_amount' NOT NULL,
     "fixed_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "fixed_rate" NUMERIC(5,2) DEFAULT 0 NOT NULL,
-    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -714,7 +712,7 @@ SELECT
 FROM "public"."allowance_deduction_items";
 CREATE OR REPLACE VIEW "public"."service_schemes" AS SELECT id, id AS office_id, name, 'type_b'::text AS service_type, '標準サービス体系'::text AS description, 580.00::numeric(12,2) AS basic_reward_unit, deleted_at, is_deleted, created_at, updated_at FROM "public"."offices";
 CREATE OR REPLACE VIEW "public"."office_service_scheme_settings" AS SELECT gen_random_uuid() AS id, id AS office_id, id AS service_scheme_id, CURRENT_DATE AS valid_from, NULL::date AS valid_to, created_at, updated_at FROM "public"."offices";
-CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT *, (deleted_at IS NULL) AS is_active FROM "public"."reserve_items";
+CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT * FROM "public"."reserve_items";
 CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
 CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
 CREATE OR REPLACE VIEW "public"."member_skill_evaluations" AS SELECT * FROM "public"."member_skill_settings";

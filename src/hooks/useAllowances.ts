@@ -11,7 +11,8 @@ export function useAllowances() {
       setLoading(true);
       let query = supabase
         .from('allowances')
-        .select('*');
+        .select('*')
+        .eq('is_deleted', false);
 
       if (officeId) {
         query = query.eq('office_id', officeId);

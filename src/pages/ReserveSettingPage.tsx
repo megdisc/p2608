@@ -26,44 +26,24 @@ export function ReserveSettingPage() {
     },
     {
       key: 'method',
-      header: '方式',
+      header: TABLE_COLUMNS.METHOD,
       editable: true,
       inputType: 'text',
       style: { width: '220px' }
     },
     {
       key: 'calculationBase',
-      header: '基準',
+      header: TABLE_COLUMNS.CALCULATION_BASE,
       editable: true,
       inputType: 'text',
       style: { width: '220px' }
     },
     {
       key: 'targetAmount',
-      header: '積立額',
+      header: TABLE_COLUMNS.TARGET_AMOUNT,
       editable: true,
       inputType: 'currency',
       style: { width: '160px', textAlign: 'right' }
-    },
-    {
-      key: 'autoExecution',
-      header: '自動処理',
-      editable: true,
-      inputType: 'checkbox',
-      style: { width: '100px', textAlign: 'center' },
-      render: (item: ReserveSettingItem) => (
-        <span style={{ 
-          padding: '2px 8px', 
-          borderRadius: '4px', 
-          fontSize: '12px',
-          fontWeight: 600,
-          backgroundColor: item.autoExecution ? 'rgba(76, 175, 80, 0.15)' : 'rgba(158, 158, 158, 0.15)',
-          color: item.autoExecution ? '#2e7d32' : '#616161',
-          border: item.autoExecution ? '1px solid #a5d6a7' : '1px solid #e0e0e0'
-        }}>
-          {item.autoExecution ? '有効' : '手動'}
-        </span>
-      )
     }
   ];
 

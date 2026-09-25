@@ -25,7 +25,7 @@ export function SkillLevelPage() {
     { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, editable: true, inputType: 'text', sortable: false },
     {
       key: 'reorder',
-      header: '順序変更',
+      header: TABLE_COLUMNS.REORDER,
       sortable: false,
       render: (item: SkillLevelItem, draftData: SkillLevelItem[], updateData?: (newData: SkillLevelItem[]) => void) => {
         if (!updateData) return null;

@@ -2,7 +2,7 @@ import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { DeductionItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, PAGE_NAMES, TABLE_COLUMNS } from '../constants';
 import { useDeductions } from '../hooks';
 
 export function DeductionPage() {
@@ -17,10 +17,10 @@ export function DeductionPage() {
   }, [fetchDeductions, selectedOfficeId, showAlert]);
 
   const columns: Column<DeductionItem>[] = [
-    { key: 'name', header: '控除名', editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.DEDUCTION_NAME, editable: true, inputType: 'text' },
     { 
       key: 'occurrence_type', 
-      header: '発生単位', 
+      header: TABLE_COLUMNS.OCCURRENCE_TYPE, 
       editable: true, 
       inputType: 'select',
       options: [
@@ -31,10 +31,10 @@ export function DeductionPage() {
         <span>{item.occurrence_type === 'monthly' ? '月次発生' : '日次発生'}</span>
       )
     },
-    { key: 'default_unit_price', header: '標準単価', editable: true, inputType: 'currency', className: 'number-column' },
+    { key: 'default_unit_price', header: TABLE_COLUMNS.DEFAULT_UNIT_PRICE, editable: true, inputType: 'currency', className: 'number-column' },
     { 
       key: 'is_active', 
-      header: '状態', 
+      header: TABLE_COLUMNS.STATUS, 
       editable: true, 
       inputType: 'select',
       options: [
@@ -82,7 +82,7 @@ export function DeductionPage() {
 
   return (
     <DataPage
-      title="控除"
+      title={PAGE_NAMES.DEDUCTION}
       data={items}
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_DEDUCTION}

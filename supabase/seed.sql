@@ -162,9 +162,9 @@ INSERT INTO public.wage_schemes (id, office_id, name, description) VALUES
 ('33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222', '就労継続支援B型標準工賃体系', '就労継続支援B型の標準的な工賃・加算手当・控除体系')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.allowance_deduction_items (id, wage_scheme_id, name, item_category, occurrence_type, unit_price, is_reward_linked, reward_item_id) VALUES
-('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00, false, NULL),
-('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00, true, '44444444-4444-4444-4444-444444444406')
+INSERT INTO public.allowance_deduction_items (id, wage_scheme_id, name, item_category, occurrence_type, unit_price) VALUES
+('44444444-4444-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '資格手当', 'allowance', 'daily', 500.00),
+('44444444-4444-4444-4444-444444444405', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 350.00)
 ON CONFLICT (id) DO NOTHING;
 
 -- 4.1 積立金体系 & 積立金項目マスタ (reserve_schemes / reserve_items)

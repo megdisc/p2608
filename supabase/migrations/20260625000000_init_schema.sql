@@ -202,8 +202,6 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_deduction_items" (
     "item_category" TEXT NOT NULL, -- ('allowance', 'deduction')
     "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL, -- ('daily', 'monthly')
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "is_reward_linked" BOOLEAN DEFAULT false NOT NULL,
-    "reward_item_id" UUID REFERENCES "public"."reward_items"("id") ON DELETE SET NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,

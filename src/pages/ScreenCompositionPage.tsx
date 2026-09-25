@@ -334,8 +334,6 @@ export function ScreenCompositionPage() {
         { name: 'item_category', desc: '項目分類区分（allowance: 加算手当 / deduction: 控除）' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'unit_price', desc: '標準発生単価・金額（円）' },
-        { name: 'is_reward_linked', desc: '国加算連動フラグ（true: 食事提供加算等の国加算と連動して自動発生 / false: 連動なし）' },
-        { name: 'reward_item_id', desc: '連動対象加算・減算項目ID（国加算と連動する場合の連動先項目）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

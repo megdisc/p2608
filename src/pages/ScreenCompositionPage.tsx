@@ -290,6 +290,38 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'skill_items',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキル項目',
+      description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: 'スキルID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'name', desc: 'スキル名' },
+        { name: 'description', desc: 'スキルの説明' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'skill_level_items',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキルレベル項目',
+      description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: 'スキルレベルID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'level_value', desc: 'レベル数値' },
+        { name: 'description', desc: 'レベルの説明' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'wage_rate_items',
       tableType: '事業所依存マスタ',
       logicalName: '工賃単価項目',
@@ -335,38 +367,6 @@ export function ScreenCompositionPage() {
         { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
         { name: 'fixed_amount', desc: '定額金額（円）' },
         { name: 'fixed_rate', desc: '定率（%）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'skill_items',
-      tableType: '事業所依存マスタ',
-      logicalName: 'スキル項目',
-      description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: 'スキルID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: 'スキル名' },
-        { name: 'description', desc: 'スキルの説明' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'skill_level_items',
-      tableType: '事業所依存マスタ',
-      logicalName: 'スキルレベル項目',
-      description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: 'スキルレベルID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'level_value', desc: 'レベル数値' },
-        { name: 'description', desc: 'レベルの説明' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

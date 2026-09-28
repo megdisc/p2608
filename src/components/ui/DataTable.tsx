@@ -313,7 +313,7 @@ export function DataTable<T extends { id: string }>({
 
     if (col && col.onCellChange) {
       const updateRow = (asyncUpdates: Partial<T>) => {
-        setDraftData(currentData => currentData.map(d => d.id === id ? { ...d, ...asyncUpdates } : d));
+        newItem = { ...newItem, ...asyncUpdates };
       };
       syncUpdates = col.onCellChange(value, newItem, updateRow);
       if (syncUpdates) {
@@ -443,7 +443,7 @@ export function DataTable<T extends { id: string }>({
     const parentMainItem = mainItem || item;
     const isRowEditable = canEditRow ? canEditRow(parentMainItem) : true;
     const isColEditable = typeof col.editable === 'function' ? col.editable(parentMainItem) : col.editable !== false;
-    const isEditable = !isDeleted && isRowEditable && !!onBatchSave && isColEditable && col.inputType;
+    const isEditable = !isDeleted && isRowEditable && !!onBatchSave && isColEditable && (col.inputType || !!col.customEditRender);
     
     if (isEditable) {
       const value = item[col.key] ?? '';
@@ -560,6 +560,7 @@ export function DataTable<T extends { id: string }>({
     
     // Default render for non-editable state
     if (col.render) return col.render(item, draftData, setDraftData);
+    if (col.customEditRender) return col.customEditRender(item[col.key], item, () => {});
     
     if (col.inputType === 'radio') {
       const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
@@ -789,7 +790,7 @@ export function DataTable<T extends { id: string }>({
                             display: 'flex', 
                             alignItems: 'center', 
                             gap: '8px',
-                            justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : 'flex-start'
+                            justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : (customStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
                           }}>
                             {renderCellContent(col, item, false, undefined, false, undefined, item)}
                           </div>

@@ -1,25 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { DataPage, RadioButton, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
-import type { StaffTableItem, OfficeTableItem, OfficeStaffSettingTableItem } from '../types/db';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import type { OfficeStaffSettingTableItem, OfficeTableItem, StaffTableItem } from '../types/db';
 
-type StaffOfficeRow = {
+type StaffOfficeGridRow = {
   id: string; // staff_id
   code: string;
   name: string;
   yomigana: string;
-  // officeId -> assigned boolean
   assignedOffices: Record<string, boolean>;
-  // officeId which is primary (only one office per staff, or null)
   primaryOfficeId: string | null;
+  [officeId: string]: any;
 };
 
 export function StaffOfficePage() {
   const [offices, setOffices] = useState<OfficeTableItem[]>([]);
-  const [matrixData, setMatrixData] = useState<StaffOfficeRow[]>([]);
+  const [matrixData, setMatrixData] = useState<StaffOfficeGridRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const { showAlert } = useAlert();
 
   const fetchMatrixData = useCallback(async () => {
@@ -41,7 +40,7 @@ export function StaffOfficePage() {
 
       setOffices(activeOffices);
 
-      const rows: StaffOfficeRow[] = activeStaffs.map(staff => {
+      const rows: StaffOfficeGridRow[] = activeStaffs.map(staff => {
         const assignedMap: Record<string, boolean> = {};
         let primaryId: string | null = null;
 
@@ -55,7 +54,6 @@ export function StaffOfficePage() {
           }
         });
 
-        // Fallback: If assigned to some offices but no primary is set, pick the first assigned as primary
         if (!primaryId) {
           const firstAssigned = activeOffices.find(o => assignedMap[o.id]);
           if (firstAssigned) {
@@ -85,64 +83,109 @@ export function StaffOfficePage() {
     fetchMatrixData();
   }, [fetchMatrixData]);
 
-  const handleToggleAssigned = (staffId: string, officeId: string) => {
-    setMatrixData(prev =>
-      prev.map(row => {
-        if (row.id !== staffId) return row;
+  const columns: Column<StaffOfficeGridRow>[] = useMemo(() => {
+    const cols: Column<StaffOfficeGridRow>[] = [
+      {
+        key: 'code',
+        header: TABLE_COLUMNS.STAFF_ID,
+        sortable: true,
+        sortKey: 'code',
+        editable: false,
+      },
+      {
+        key: 'name',
+        header: TABLE_COLUMNS.NAME,
+        sortable: true,
+        sortKey: 'yomigana',
+        editable: false,
+      },
+    ];
 
-        const nextAssigned = !row.assignedOffices[officeId];
-        const updatedAssigned = {
-          ...row.assignedOffices,
-          [officeId]: nextAssigned,
-        };
-
-        let nextPrimary = row.primaryOfficeId;
-
-        if (nextAssigned) {
-          // If no primary was set, set this newly assigned office as primary
-          if (!nextPrimary) {
-            nextPrimary = officeId;
+    offices.forEach(office => {
+      cols.push({
+        key: office.id,
+        header: office.short_name || office.name,
+        sortable: false,
+        editable: true,
+        inputType: 'checkbox',
+        style: { textAlign: 'center' },
+        onCellChange: (newValue, _item, updateRow) => {
+          if (newValue && typeof newValue === 'object') {
+            updateRow(newValue);
+            return newValue;
           }
-        } else {
-          // If we uncheck the primary office, find another assigned office to be primary
-          if (nextPrimary === officeId) {
-            const remainingOffice = offices.find(o => o.id !== officeId && updatedAssigned[o.id]);
-            nextPrimary = remainingOffice ? remainingOffice.id : null;
-          }
-        }
+        },
+        customEditRender: (_val, item: StaffOfficeGridRow, onChange) => {
+          const assignedOfficesMap = item.assignedOffices || {};
+          const isAssigned = !!assignedOfficesMap[office.id];
+          const isPrimary = item.primaryOfficeId === office.id;
 
-        return {
-          ...row,
-          assignedOffices: updatedAssigned,
-          primaryOfficeId: nextPrimary,
-        };
-      })
-    );
-  };
+          const handleToggleAssigned = () => {
+            const nextAssigned = !isAssigned;
+            const updatedAssigned = {
+              ...assignedOfficesMap,
+              [office.id]: nextAssigned,
+            };
 
-  const handleSetPrimary = (staffId: string, officeId: string) => {
-    setMatrixData(prev =>
-      prev.map(row => {
-        if (row.id !== staffId) return row;
+            let nextPrimary = item.primaryOfficeId;
+            if (nextAssigned) {
+              if (!nextPrimary) {
+                nextPrimary = office.id;
+              }
+            } else {
+              if (nextPrimary === office.id) {
+                const remainingOffice = offices.find(o => o.id !== office.id && updatedAssigned[o.id]);
+                nextPrimary = remainingOffice ? remainingOffice.id : null;
+              }
+            }
 
-        // Setting primary automatically ensures it is assigned
-        return {
-          ...row,
-          assignedOffices: {
-            ...row.assignedOffices,
-            [officeId]: true,
-          },
-          primaryOfficeId: officeId,
-        };
-      })
-    );
-  };
+            onChange({
+              assignedOffices: updatedAssigned,
+              primaryOfficeId: nextPrimary,
+            });
+          };
 
-  const handleSave = async () => {
+          const handleSetPrimary = () => {
+            const updatedAssigned = {
+              ...assignedOfficesMap,
+              [office.id]: true,
+            };
+            onChange({
+              assignedOffices: updatedAssigned,
+              primaryOfficeId: office.id,
+            });
+          };
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '4px 0' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
+                <input
+                  type="checkbox"
+                  className="custom-checkbox"
+                  checked={isAssigned}
+                  onChange={handleToggleAssigned}
+                />
+                <span>割当</span>
+              </label>
+
+              <RadioButton
+                label="主たる事業所"
+                name={`primary_office_${item.id}`}
+                checked={isPrimary}
+                disabled={!isAssigned}
+                onChange={handleSetPrimary}
+              />
+            </div>
+          );
+        },
+      });
+    });
+
+    return cols;
+  }, [offices]);
+
+  const handleBatchSave = async (drafts: StaffOfficeGridRow[]) => {
     try {
-      setSaving(true);
-
-      // Fetch latest settings from DB to compute diff accurately
       const { data: currentSettings, error: fetchErr } = await supabase
         .from('office_staff_settings')
         .select('*');
@@ -158,7 +201,7 @@ export function StaffOfficePage() {
       const toUpdate: { id: string; is_primary: boolean }[] = [];
       const toDeleteIds: string[] = [];
 
-      matrixData.forEach(row => {
+      drafts.forEach(row => {
         offices.forEach(office => {
           const key = `${row.id}_${office.id}`;
           const isSelected = !!row.assignedOffices[office.id];
@@ -184,7 +227,6 @@ export function StaffOfficePage() {
         });
       });
 
-      // Execute Deletions
       if (toDeleteIds.length > 0) {
         const { error: delErr } = await supabase
           .from('office_staff_settings')
@@ -193,7 +235,6 @@ export function StaffOfficePage() {
         if (delErr) throw delErr;
       }
 
-      // Execute Updates
       for (const item of toUpdate) {
         const { error: upErr } = await supabase
           .from('office_staff_settings')
@@ -202,7 +243,6 @@ export function StaffOfficePage() {
         if (upErr) throw upErr;
       }
 
-      // Execute Insertions
       if (toInsert.length > 0) {
         const { error: insErr } = await supabase
           .from('office_staff_settings')
@@ -214,127 +254,27 @@ export function StaffOfficePage() {
       await fetchMatrixData();
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
-    } finally {
-      setSaving(false);
+      throw err;
     }
   };
 
-  if (loading) {
-    return <div style={{ padding: '24px' }}>Loading...</div>;
-  }
+  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
 
   return (
-    <div style={{ padding: '0 0 24px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <div>
-          <h3 style={{ margin: 0, fontSize: '18px', color: '#1e293b' }}>職員事業所割当設定</h3>
-          <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#64748b' }}>
-            登録済の事業所（通称名）に対して、各職員の所属割り当ておよび「主たる事業所」を管理します。
-          </p>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{
-            padding: '8px 20px',
-            backgroundColor: '#2563eb',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 600,
-            fontSize: '14px',
-            cursor: saving ? 'not-allowed' : 'pointer',
-            opacity: saving ? 0.7 : 1,
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            transition: 'background-color 0.2s',
-          }}
-        >
-          {saving ? '保存中...' : '保存'}
-        </button>
-      </div>
-
-      {offices.length === 0 ? (
-        <div style={{ padding: '32px', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '8px', color: '#64748b' }}>
-          登録されている事業所がありません。「施設管理」画面で事業所を登録してください。
-        </div>
-      ) : (
-        <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px', backgroundColor: '#ffffff' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', minWidth: '100px', position: 'sticky', left: 0, backgroundColor: '#f8fafc', zIndex: 10 }}>
-                  職員コード
-                </th>
-                <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', minWidth: '140px', position: 'sticky', left: '100px', backgroundColor: '#f8fafc', zIndex: 10 }}>
-                  職員氏名
-                </th>
-                {offices.map(office => (
-                  <th key={office.id} style={{ padding: '12px 16px', fontWeight: 600, color: '#334155', textAlign: 'center', minWidth: '160px', borderLeft: '1px solid #f1f5f9' }}>
-                    <div>{office.short_name || office.name}</div>
-                    <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b', display: 'block', marginTop: '2px' }}>
-                      {office.code || ''}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {matrixData.map((row, idx) => (
-                <tr key={row.id} style={{ borderBottom: idx === matrixData.length - 1 ? 'none' : '1px solid #f1f5f9', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfd' }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 500, color: '#64748b', position: 'sticky', left: 0, backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfd', zIndex: 5 }}>
-                    {row.code || '-'}
-                  </td>
-                  <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b', position: 'sticky', left: '100px', backgroundColor: idx % 2 === 0 ? '#ffffff' : '#fcfcfd', zIndex: 5 }}>
-                    {row.name}
-                  </td>
-                  {offices.map(office => {
-                    const isAssigned = !!row.assignedOffices[office.id];
-                    const isPrimary = row.primaryOfficeId === office.id;
-
-                    return (
-                      <td key={office.id} style={{ padding: '12px 16px', textAlign: 'center', borderLeft: '1px solid #f1f5f9' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px', color: isAssigned ? '#1e293b' : '#94a3b8' }}>
-                            <input
-                              type="checkbox"
-                              checked={isAssigned}
-                              onChange={() => handleToggleAssigned(row.id, office.id)}
-                              style={{
-                                width: '16px',
-                                height: '16px',
-                                cursor: 'pointer',
-                                accentColor: '#2563eb',
-                              }}
-                            />
-                            <span>割当</span>
-                          </label>
-
-                          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: isAssigned ? 'pointer' : 'not-allowed', fontSize: '12px', color: isPrimary ? '#2563eb' : (isAssigned ? '#64748b' : '#cbd5e1'), fontWeight: isPrimary ? 600 : 400 }}>
-                            <input
-                              type="radio"
-                              name={`primary_office_${row.id}`}
-                              checked={isPrimary}
-                              disabled={!isAssigned}
-                              onChange={() => handleSetPrimary(row.id, office.id)}
-                              style={{
-                                width: '15px',
-                                height: '15px',
-                                cursor: isAssigned ? 'pointer' : 'not-allowed',
-                                accentColor: '#2563eb',
-                              }}
-                            />
-                            <span>主たる事業所</span>
-                          </label>
-                        </div>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+    <DataPage
+      title="事業所割当"
+      data={matrixData}
+      columns={columns}
+      emptyMessage={
+        offices.length === 0
+          ? '登録されている事業所がありません。「施設管理」画面で事業所を登録してください。'
+          : MESSAGES.EMPTY_STAFF
+      }
+      initialSort={{ key: 'code', direction: 'asc' }}
+      onBatchSave={handleBatchSave}
+      hideDeleteColumn={true}
+      hideAddButton={true}
+      hideHeader={true}
+    />
   );
 }

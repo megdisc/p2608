@@ -18,6 +18,65 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
     ],
   },
+  SCREEN_WELFARE: {
+    screenName: PAGE_NAMES.SCREEN_WELFARE,
+    tabs: [
+      { id: 'serviceType', label: '支援種別' },
+      { id: 'rewardItem', label: '加算・減算' },
+      { id: 'qualification', label: '資格' },
+    ],
+  },
+  SCREEN_FACILITY: {
+    screenName: PAGE_NAMES.SCREEN_FACILITY,
+    tabs: [
+      { id: 'organization', label: '法人' },
+      { id: 'office', label: '事業所' },
+      { id: 'officeServiceType', label: '支援種別' },
+    ],
+  },
+  SCREEN_CLIENT: {
+    screenName: PAGE_NAMES.SCREEN_CLIENT,
+    tabs: [
+      { id: 'client', label: PAGE_NAMES.CLIENT },
+    ],
+  },
+  SCREEN_SKILL: {
+    screenName: PAGE_NAMES.SCREEN_SKILL,
+    tabs: [
+      { id: 'skill', label: PAGE_NAMES.SKILL },
+      { id: 'skillLevel', label: PAGE_NAMES.SKILL_LEVEL },
+    ],
+  },
+  SCREEN_WAGE: {
+    screenName: PAGE_NAMES.SCREEN_WAGE,
+    tabs: [
+      { id: 'baseWage', label: PAGE_NAMES.BASE_WAGE },
+      { id: 'allowance', label: PAGE_NAMES.ALLOWANCE },
+      { id: 'deduction', label: PAGE_NAMES.DEDUCTION },
+    ],
+  },
+  SCREEN_RESERVE: {
+    screenName: PAGE_NAMES.SCREEN_RESERVE,
+    tabs: [
+      { id: 'reserveSetting', label: PAGE_NAMES.TAB_RESERVE_SETTING },
+    ],
+  },
+  SCREEN_STAFF: {
+    screenName: PAGE_NAMES.SCREEN_STAFF,
+    tabs: [
+      { id: 'staff', label: PAGE_NAMES.STAFF },
+      { id: 'staffQualification', label: '資格' },
+      { id: 'staffOffice', label: '事業所' },
+    ],
+  },
+  SCREEN_USER: {
+    screenName: PAGE_NAMES.SCREEN_USER,
+    tabs: [
+      { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
+      { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
+      { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
+    ],
+  },
   SCREEN_DAILY_WORK: {
     screenName: PAGE_NAMES.SCREEN_DAILY_WORK,
     tabs: [
@@ -44,65 +103,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'projectFinancialSummary', label: PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY },
       { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
       { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
-    ],
-  },
-  SCREEN_USER: {
-    screenName: PAGE_NAMES.SCREEN_USER,
-    tabs: [
-      { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
-      { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
-      { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
-    ],
-  },
-  SCREEN_STAFF: {
-    screenName: PAGE_NAMES.SCREEN_STAFF,
-    tabs: [
-      { id: 'staff', label: PAGE_NAMES.STAFF },
-      { id: 'staffQualification', label: '資格' },
-      { id: 'staffOffice', label: '事業所' },
-    ],
-  },
-  SCREEN_CLIENT: {
-    screenName: PAGE_NAMES.SCREEN_CLIENT,
-    tabs: [
-      { id: 'client', label: PAGE_NAMES.CLIENT },
-    ],
-  },
-  SCREEN_WELFARE: {
-    screenName: PAGE_NAMES.SCREEN_WELFARE,
-    tabs: [
-      { id: 'serviceType', label: '支援種別' },
-      { id: 'rewardItem', label: '加算・減算' },
-      { id: 'qualification', label: '資格' },
-    ],
-  },
-  SCREEN_FACILITY: {
-    screenName: PAGE_NAMES.SCREEN_FACILITY,
-    tabs: [
-      { id: 'organization', label: '法人' },
-      { id: 'office', label: '事業所' },
-      { id: 'officeServiceType', label: '支援種別' },
-    ],
-  },
-  SCREEN_SKILL: {
-    screenName: PAGE_NAMES.SCREEN_SKILL,
-    tabs: [
-      { id: 'skill', label: PAGE_NAMES.SKILL },
-      { id: 'skillLevel', label: PAGE_NAMES.SKILL_LEVEL },
-    ],
-  },
-  SCREEN_WAGE: {
-    screenName: PAGE_NAMES.SCREEN_WAGE,
-    tabs: [
-      { id: 'baseWage', label: PAGE_NAMES.BASE_WAGE },
-      { id: 'allowance', label: PAGE_NAMES.ALLOWANCE },
-      { id: 'deduction', label: PAGE_NAMES.DEDUCTION },
-    ],
-  },
-  SCREEN_RESERVE: {
-    screenName: PAGE_NAMES.SCREEN_RESERVE,
-    tabs: [
-      { id: 'reserveSetting', label: PAGE_NAMES.TAB_RESERVE_SETTING },
     ],
   },
   SCREEN_COMPOSITION: {

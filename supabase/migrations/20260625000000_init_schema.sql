@@ -318,6 +318,7 @@ CREATE TABLE IF NOT EXISTS "public"."staff_qualification_settings" (
     "license_number" TEXT,
     "acquired_on" DATE,
     "valid_until" DATE,
+    "is_primary" BOOLEAN DEFAULT false NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );

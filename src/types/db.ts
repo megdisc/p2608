@@ -77,9 +77,21 @@ export type UserTableItem = {
   updated_at?: string;
 };
 
+export type OfficeTableItem = {
+  id: string; // UUID
+  code?: string;
+  name: string;
+  short_name?: string;
+  unit_price?: number;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type StaffTableItem = {
   id: string; // UUID
   user_id?: string; // UUID
+  code?: string;
   name: string;
   yomigana: string;
   is_deleted?: boolean;
@@ -98,3 +110,36 @@ export type StocktakingTableItem = {
   location_id: string; // UUID
   created_at?: string;
 };
+
+export type QualificationTableItem = {
+  id: string; // UUID
+  code: string;
+  name: string;
+  category?: string;
+  description?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type StaffQualificationSettingTableItem = {
+  id?: string; // UUID
+  staff_id: string; // UUID
+  qualification_id: string; // UUID
+  license_number?: string;
+  acquired_on?: string;
+  valid_until?: string;
+  is_primary?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeStaffSettingTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  staff_id: string; // UUID
+  is_primary: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+

@@ -374,3 +374,23 @@ INSERT INTO public.wage_summaries (id, target_period, member_id, work_time, wage
 ('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 0, 1750),
 ('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 0, 3500, 0, 3500)
 ON CONFLICT (target_period, member_id) DO NOTHING;
+
+-- 15. 事業所職員割当 (office_staff_settings)
+INSERT INTO public.office_staff_settings (office_id, staff_id, is_primary) VALUES
+('22222222-2222-2222-2222-222222222222', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('33333333-3333-3333-3333-333333333333', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', false),
+('22222222-2222-2222-2222-222222222222', 'de2d336b-254d-4af7-8e49-5acbda340e67', true),
+('33333333-3333-3333-3333-333333333333', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', true),
+('44444444-4444-4444-4444-444444444444', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', false)
+ON CONFLICT DO NOTHING;
+
+-- 16. 職員資格割当 (staff_qualification_settings)
+INSERT INTO public.staff_qualification_settings (staff_id, qualification_id, is_primary) VALUES
+('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000001', true),
+('563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000003', false),
+('de2d336b-254d-4af7-8e49-5acbda340e67', '22222222-0000-0000-0000-000000000005', true),
+('de2d336b-254d-4af7-8e49-5acbda340e67', '22222222-0000-0000-0000-000000000013', false),
+('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000011', true),
+('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000012', false)
+ON CONFLICT DO NOTHING;
+

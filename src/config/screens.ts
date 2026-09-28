@@ -58,6 +58,8 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_STAFF,
     tabs: [
       { id: 'staff', label: PAGE_NAMES.STAFF },
+      { id: 'staffQualification', label: '資格' },
+      { id: 'staffOffice', label: '事業所' },
     ],
   },
   SCREEN_CLIENT: {

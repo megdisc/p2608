@@ -4,6 +4,8 @@ import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
 import { StaffPage } from './StaffPage';
+import { StaffQualificationPage } from './StaffQualificationPage';
+import { StaffOfficePage } from './StaffOfficePage';
 
 export function ScreenStaffPage() {
   const navContext = useNavigation();
@@ -14,6 +16,10 @@ export function ScreenStaffPage() {
     switch (navContext.activeTab) {
       case 'staff':
         return <StaffPage />;
+      case 'staffQualification':
+        return <StaffQualificationPage />;
+      case 'staffOffice':
+        return <StaffOfficePage />;
       default:
         return <StaffPage />;
     }

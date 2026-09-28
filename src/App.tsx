@@ -66,7 +66,7 @@ function AppContent() {
               <ScreenClientPage />
             ) : ['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? (
               <ScreenWelfarePage />
-            ) : ['screenFacility', 'organization', 'office', 'serviceScheme'].includes(activeTab) ? (
+            ) : ['screenFacility', 'organization', 'office', 'serviceScheme', 'officeServiceType'].includes(activeTab) ? (
               <ScreenFacilityPage />
             ) : ['skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
               <ScreenSkillPage />
@@ -74,7 +74,7 @@ function AppContent() {
               <ScreenWagePage />
             ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
               <ScreenReservePage />
-            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation', 'screenProject'].includes(activeTab) ? (
+            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (
               <ScreenProjectPage />
             ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
               <ScreenFinancePage />

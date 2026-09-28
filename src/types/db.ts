@@ -143,3 +143,23 @@ export type OfficeStaffSettingTableItem = {
   updated_at?: string;
 };
 
+export type ServiceTypeTableItem = {
+  id: string; // UUID
+  code: string;
+  name: string;
+  description?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeServiceTypeSettingTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  service_type_id: string; // UUID
+  capacity?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+

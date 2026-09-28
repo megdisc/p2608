@@ -81,6 +81,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     tabs: [
       { id: 'organization', label: '法人' },
       { id: 'office', label: '事業所' },
+      { id: 'officeServiceType', label: '支援種別' },
     ],
   },
   SCREEN_SKILL: {

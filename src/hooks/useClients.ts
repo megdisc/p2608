@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
-import type { ClientItem } from '../types';
+import type { ClientItem, PartnerContactItem } from '../types';
 
 export function useClients() {
   const [items, setItems] = useState<ClientItem[]>([]);
@@ -11,22 +11,45 @@ export function useClients() {
     try {
       setLoading(true);
       const [partnersRes, allCodesRes] = await Promise.all([
-        supabase.from('partners').select('*').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('partners').select(`
+          *,
+          partner_contacts (*)
+        `).eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('partners').select('code, created_at').order('created_at', { ascending: false })
       ]);
 
       if (partnersRes.error) throw partnersRes.error;
 
-      const formatted = (partnersRes.data || []).map(d => ({
-        id: d.id,
-        code: d.code || '',
-        name: d.name,
-        yomigana: d.yomigana || '',
-        isCustomer: d.is_customer ?? true,
-        isSubcontractor: d.is_subcontractor ?? true,
-        contactPerson: d.contact_person || '',
-        phone: d.phone || ''
-      }));
+      const formatted: ClientItem[] = (partnersRes.data || []).map((d: any) => {
+        const contacts: PartnerContactItem[] = (d.partner_contacts || [])
+          .filter((c: any) => !c.is_deleted)
+          .map((c: any) => ({
+            id: c.id,
+            partnerId: c.partner_id,
+            contactName: c.name || '',
+            department: c.department || '',
+            position: c.position || '',
+            contactPhone: c.phone || '',
+            email: c.email || '',
+            isPrimary: c.is_primary || false,
+          }));
+
+        const primaryContact = contacts.find(c => c.isPrimary) || contacts[0];
+        const contactPersonFallback = primaryContact ? primaryContact.contactName : (d.contact_person || '');
+
+        return {
+          id: d.id,
+          code: d.code || '',
+          name: d.name,
+          yomigana: d.yomigana || '',
+          isCustomer: d.is_customer ?? true,
+          isSubcontractor: d.is_subcontractor ?? true,
+          contactPerson: contactPersonFallback,
+          phone: d.phone || '',
+          contacts
+        };
+      });
+
       setItems(formatted);
 
       const rawCodes = allCodesRes.data || [];
@@ -42,31 +65,77 @@ export function useClients() {
 
   const batchSaveClients = async (drafts: ClientItem[], deletedIds: string[]) => {
     try {
+      const nowIso = new Date().toISOString();
+
       if (deletedIds.length > 0) {
-        const { error } = await supabase.from('partners').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds);
-        if (error) throw error;
+        // Handle deleted partner contacts
+        const partnerIdsToDelete = deletedIds.filter(id => !id.startsWith('CNT-'));
+        const contactIdsToDelete = deletedIds.filter(id => id.startsWith('CNT-') || !partnerIdsToDelete.includes(id));
+
+        if (partnerIdsToDelete.length > 0) {
+          await supabase.from('partners').update({ deleted_at: nowIso }).in('id', partnerIdsToDelete);
+          await supabase.from('partner_contacts').update({ deleted_at: nowIso }).in('partner_id', partnerIdsToDelete);
+        }
+        if (contactIdsToDelete.length > 0) {
+          const validContactUUIDs = contactIdsToDelete.filter(id => !id.startsWith('CNT-'));
+          if (validContactUUIDs.length > 0) {
+            await supabase.from('partner_contacts').update({ deleted_at: nowIso }).in('id', validContactUUIDs);
+          }
+        }
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       for (const item of activeItems) {
-        const upsertData: any = {
+        const primaryContact = (item.contacts || []).find(c => c.isPrimary) || (item.contacts || [])[0];
+
+        const upsertPartnerData: any = {
           code: item.code?.trim() || null,
           name: item.name,
           yomigana: item.yomigana,
           is_customer: item.isCustomer ?? true,
           is_subcontractor: item.isSubcontractor ?? true,
-          contact_person: item.contactPerson,
+          contact_person: primaryContact?.contactName || item.contactPerson || '',
           phone: item.phone
         };
         if (!item.id.startsWith('CLI-')) {
-          upsertData.id = item.id;
+          upsertPartnerData.id = item.id;
         }
-        const { error } = await supabase.from('partners').upsert(upsertData);
-        if (error) {
-          if (error.code === '23505' || error.message?.includes('duplicate key') || error.details?.includes('code')) {
+
+        const { data: savedPartner, error: pErr } = await supabase
+          .from('partners')
+          .upsert(upsertPartnerData)
+          .select('id')
+          .single();
+
+        if (pErr) {
+          if (pErr.code === '23505' || pErr.message?.includes('duplicate key') || pErr.details?.includes('code')) {
             throw new Error(`取引先ID「${item.code}」は既に使用されています（削除済み含む）。別のIDを指定してください。`);
           }
-          throw error;
+          throw pErr;
+        }
+
+        const partnerId = savedPartner ? savedPartner.id : item.id;
+
+        if (item.contacts && item.contacts.length > 0) {
+          for (const c of item.contacts) {
+            if (deletedIds.includes(c.id)) continue;
+
+            const upsertContactData: any = {
+              partner_id: partnerId,
+              name: c.contactName || '',
+              department: c.department || '',
+              position: c.position || '',
+              phone: c.contactPhone || '',
+              email: c.email || '',
+              is_primary: c.isPrimary ?? false
+            };
+            if (!c.id.startsWith('CNT-')) {
+              upsertContactData.id = c.id;
+            }
+
+            const { error: cErr } = await supabase.from('partner_contacts').upsert(upsertContactData);
+            if (cErr) throw cErr;
+          }
         }
       }
 
@@ -85,3 +154,4 @@ export function useClients() {
     batchSaveClients
   };
 }
+

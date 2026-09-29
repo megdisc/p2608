@@ -392,6 +392,26 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'partner_contacts',
+      tableType: '従属マスタ',
+      logicalName: '取引先担当者',
+      description: '取引先ごとの担当者情報（1対多）',
+      columns: [
+        { name: 'id', desc: '担当者ID' },
+        { name: 'partner_id', desc: '取引先ID' },
+        { name: 'name', desc: '担当者名' },
+        { name: 'department', desc: '部署' },
+        { name: 'position', desc: '役職' },
+        { name: 'phone', desc: '電話番号' },
+        { name: 'email', desc: 'メールアドレス' },
+        { name: 'is_primary', desc: '主担当フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',

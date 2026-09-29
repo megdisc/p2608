@@ -348,6 +348,23 @@ CREATE TABLE IF NOT EXISTS "public"."partners" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.22.1 partner_contacts (取引先担当者)
+CREATE TABLE IF NOT EXISTS "public"."partner_contacts" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "partner_id" UUID REFERENCES "public"."partners"("id") ON DELETE CASCADE,
+    "name" TEXT NOT NULL,
+    "department" TEXT,
+    "position" TEXT,
+    "phone" TEXT,
+    "email" TEXT,
+    "is_primary" BOOLEAN DEFAULT false NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+
 -- 1.23 projects (案件)
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,

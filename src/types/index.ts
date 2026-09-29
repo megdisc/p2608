@@ -111,15 +111,29 @@ export type DeductionItem = {
   is_active?: boolean;
 };
 
+export type PartnerContactItem = {
+  id: string;
+  partnerId?: string;
+  contactName: string;
+  department?: string;
+  position?: string;
+  contactPhone?: string;
+  email?: string;
+  isPrimary?: boolean;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+};
+
 export type ClientItem = {
   id: string;
   code?: string;
   name: string;
   yomigana: string;
-  contactPerson: string;
+  contactPerson?: string;
   phone: string;
   isCustomer?: boolean;
   isSubcontractor?: boolean;
+  contacts?: PartnerContactItem[];
   deleted_at?: string | null;
   is_deleted?: boolean;
 };

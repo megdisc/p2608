@@ -1,6 +1,6 @@
-import { DataPage, type Column } from '../components';
+import { DataPage, Button, type Column } from '../components';
 import { useEffect } from 'react';
-import type { ClientItem } from '../types';
+import type { ClientItem, PartnerContactItem } from '../types';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useClients } from '../hooks';
@@ -17,13 +17,103 @@ export function ClientPage() {
   }, [fetchClients, showAlert]);
 
   const columns: Column<ClientItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.CLIENT_ID, sortKey: 'code', editable: true, inputType: 'text' },
-    { key: 'name', header: TABLE_COLUMNS.CLIENT_NAME, sortKey: 'yomigana', editable: true, inputType: 'text' },
-    { key: 'yomigana', header: TABLE_COLUMNS.YOMIGANA, editable: true, inputType: 'text' },
-    { key: 'isCustomer', header: TABLE_COLUMNS.IS_CUSTOMER, editable: true, inputType: 'checkbox' },
-    { key: 'isSubcontractor', header: TABLE_COLUMNS.IS_SUBCONTRACTOR, editable: true, inputType: 'checkbox' },
-    { key: 'contactPerson', header: TABLE_COLUMNS.CONTACT_PERSON, editable: true, inputType: 'text' },
-    { key: 'phone', header: TABLE_COLUMNS.PHONE, editable: true, inputType: 'text' },
+    { 
+      key: 'code', 
+      header: TABLE_COLUMNS.CLIENT_ID, 
+      sortKey: 'code', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'main'
+    },
+    { 
+      key: 'name', 
+      header: TABLE_COLUMNS.CLIENT_NAME, 
+      sortKey: 'yomigana', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'main'
+    },
+    { 
+      key: 'yomigana', 
+      header: TABLE_COLUMNS.YOMIGANA, 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'main'
+    },
+    { 
+      key: 'isCustomer', 
+      header: TABLE_COLUMNS.IS_CUSTOMER, 
+      editable: true, 
+      inputType: 'checkbox',
+      rowType: 'main'
+    },
+    { 
+      key: 'isSubcontractor', 
+      header: TABLE_COLUMNS.IS_SUBCONTRACTOR, 
+      editable: true, 
+      inputType: 'checkbox',
+      rowType: 'main'
+    },
+    { 
+      key: 'phone', 
+      header: '代表電話番号', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'main'
+    },
+    { 
+      key: 'contactName', 
+      header: '担当者名', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false,
+      mainRender: (_item, addSubRow) => (
+        <Button onClick={addSubRow}>
+          ＋ 担当者追加
+        </Button>
+      )
+    },
+    { 
+      key: 'department', 
+      header: '部署', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false
+    },
+    { 
+      key: 'position', 
+      header: '役職', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false
+    },
+    { 
+      key: 'contactPhone', 
+      header: '直通電話番号', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false
+    },
+    { 
+      key: 'email', 
+      header: 'メールアドレス', 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false
+    },
+    { 
+      key: 'isPrimary', 
+      header: '主担当', 
+      editable: true, 
+      inputType: 'checkbox',
+      rowType: 'sub',
+      sortable: false
+    },
   ];
 
   const handleBatchSave = async (drafts: ClientItem[], deletedIds: string[]) => {
@@ -43,15 +133,27 @@ export function ClientPage() {
     ];
 
     return {
-      id: `CLI-${Date.now()}-${Math.random()}`,
+      id: `CLI-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       code: generateNextUnifiedCode(existingCodes, 'C-'),
       name: '',
       yomigana: '',
       isCustomer: true,
       isSubcontractor: true,
-      contactPerson: '',
-      phone: ''
+      phone: '',
+      contacts: []
     } as ClientItem;
+  };
+
+  const handleAddSubRow = (_parentId: string) => {
+    return {
+      id: `CNT-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      contactName: '',
+      department: '',
+      position: '',
+      contactPhone: '',
+      email: '',
+      isPrimary: false
+    } as PartnerContactItem;
   };
 
   if (loading) return <div>Loading...</div>;
@@ -65,7 +167,10 @@ export function ClientPage() {
       initialSort={{ key: 'code', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
+      subItemsKey="contacts"
+      onAddSubRow={handleAddSubRow}
       hideHeader={true}
     />
   );
 }
+

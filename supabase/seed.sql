@@ -254,6 +254,11 @@ INSERT INTO public.office_member_settings (office_id, member_id, is_primary) VAL
 ('22222222-2222-2222-2222-222222222222', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', true)
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO public.member_recipient_certificates (id, member_id, certificate_number, issuing_municipality, income_category, copayment_limit_amount, disability_support_class, copayment_management_type, copayment_office_name, valid_from, valid_to, remarks) VALUES
+('rc100000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self', '', '2025-04-01', '2026-03-31', '継続申請済み'),
+('rc200000-0000-0000-0000-000000000001', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9876543210', '川崎市川崎区', 'general_1', 9300, 'class_1', 'other', 'ワークステーションみらい', '2025-04-01', '2026-03-31', '')
+ON CONFLICT (id) DO NOTHING;
+
 -- 8. 利用者工賃単価割当 (member_wage_settings)
 INSERT INTO public.member_wage_settings (member_id, wage_rate_id) VALUES
 ('b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'a1b2c3d4-0000-0000-0000-000000000001'),

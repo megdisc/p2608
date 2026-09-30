@@ -256,6 +256,27 @@ CREATE TABLE IF NOT EXISTS "public"."members" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.17.1 member_recipient_certificates (利用者受給者証)
+CREATE TABLE IF NOT EXISTS "public"."member_recipient_certificates" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
+    "certificate_number" VARCHAR(10),
+    "issuing_municipality" TEXT,
+    "income_category" TEXT,
+    "copayment_limit_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
+    "disability_support_class" TEXT,
+    "copayment_management_type" TEXT,
+    "copayment_office_name" TEXT,
+    "valid_from" DATE NOT NULL,
+    "valid_to" DATE NOT NULL,
+    "remarks" TEXT,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+
 -- 1.18 office_member_settings (事業所利用者割当)
 CREATE TABLE IF NOT EXISTS "public"."office_member_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,

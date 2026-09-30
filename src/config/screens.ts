@@ -73,6 +73,8 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_USER,
     tabs: [
       { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
+      { id: 'memberRecipientCertificate', label: '受給者証' },
+      { id: 'memberOffice', label: '事業所' },
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
     ],

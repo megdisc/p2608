@@ -176,5 +176,33 @@ export type PartnerContactTableItem = {
   updated_at?: string;
 };
 
+export type OfficeMemberSettingTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  member_id: string; // UUID
+  is_primary: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MemberRecipientCertificateTableItem = {
+  id: string; // UUID
+  member_id: string; // UUID
+  certificate_number?: string;
+  issuing_municipality?: string;
+  income_category?: string;
+  copayment_limit_amount: number;
+  disability_support_class?: string;
+  copayment_management_type?: string;
+  copayment_office_name?: string;
+  valid_from: string;
+  valid_to: string;
+  remarks?: string;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 
 

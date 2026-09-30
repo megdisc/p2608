@@ -43,3 +43,5 @@ export * from './ReserveSettingPage';
 export * from './ScreenDailyWorkPage';
 export * from './DashboardPage';
 export * from './AverageWagePage';
+export * from './MemberOfficePage';
+export * from './RecipientCertificatePage';

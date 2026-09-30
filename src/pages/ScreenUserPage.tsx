@@ -4,6 +4,8 @@ import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
 import { ProjectUserPage } from './ProjectUserPage';
+import { RecipientCertificatePage } from './RecipientCertificatePage';
+import { MemberOfficePage } from './MemberOfficePage';
 import { SkillEvaluationPage } from './SkillEvaluationPage';
 import { BaseWageAssignmentPage } from './BaseWageAssignmentPage';
 
@@ -16,6 +18,10 @@ export function ScreenUserPage() {
     switch (navContext.activeTab) {
       case 'projectUser':
         return <ProjectUserPage />;
+      case 'memberRecipientCertificate':
+        return <RecipientCertificatePage />;
+      case 'memberOffice':
+        return <MemberOfficePage />;
       case 'skillEvaluation':
         return <SkillEvaluationPage />;
       case 'baseWageAssignment':

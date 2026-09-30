@@ -1,0 +1,124 @@
+import { useState, useCallback } from 'react';
+import { supabase } from '../lib';
+import type { MemberRecipientCertificateItem } from '../types';
+
+export type MemberRecipientCertificateGridRow = {
+  id: string; // member_id
+  code: string;
+  name: string;
+  yomigana: string;
+  certificates: MemberRecipientCertificateItem[];
+};
+
+export function useRecipientCertificates() {
+  const [items, setItems] = useState<MemberRecipientCertificateGridRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchCertificates = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [memberRes, certRes] = await Promise.all([
+        supabase.from('members').select('id, code, name, yomigana').eq('is_deleted', false).order('code', { ascending: true }),
+        supabase.from('member_recipient_certificates').select('*').order('valid_from', { ascending: false }),
+      ]);
+
+      if (memberRes.error) throw memberRes.error;
+      if (certRes.error && certRes.error.code !== '42P01') throw certRes.error;
+
+      const members = memberRes.data || [];
+      const certs = certRes.data || [];
+
+      const formatted: MemberRecipientCertificateGridRow[] = members.map((m: any) => {
+        const memberCerts: MemberRecipientCertificateItem[] = certs
+          .filter((c: any) => c.member_id === m.id && !c.is_deleted)
+          .map((c: any) => ({
+            id: c.id,
+            memberId: c.member_id,
+            certificateNumber: c.certificate_number || '',
+            issuingMunicipality: c.issuing_municipality || '',
+            incomeCategory: c.income_category || 'welfare',
+            copaymentLimitAmount: Number(c.copayment_limit_amount) || 0,
+            disabilitySupportClass: c.disability_support_class || 'none',
+            copaymentManagementType: c.copayment_management_type || 'self',
+            copaymentOfficeName: c.copayment_office_name || '',
+            validFrom: c.valid_from || '',
+            validTo: c.valid_to || '',
+            remarks: c.remarks || '',
+          }));
+
+        return {
+          id: m.id,
+          code: m.code || '',
+          name: m.name,
+          yomigana: m.yomigana || '',
+          certificates: memberCerts,
+        };
+      });
+
+      setItems(formatted);
+    } catch (err) {
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const batchSaveCertificates = async (drafts: MemberRecipientCertificateGridRow[], deletedIds: string[]) => {
+    try {
+      const nowIso = new Date().toISOString();
+
+      if (deletedIds.length > 0) {
+        const certIdsToDelete = deletedIds.filter(id => !id.startsWith('CRT-') && id.includes('-'));
+        if (certIdsToDelete.length > 0) {
+          await supabase.from('member_recipient_certificates').update({ deleted_at: nowIso }).in('id', certIdsToDelete);
+        }
+      }
+
+      for (const draft of drafts) {
+        const memberId = draft.id;
+        if (!draft.certificates || draft.certificates.length === 0) continue;
+
+        for (const cert of draft.certificates) {
+          if (deletedIds.includes(cert.id)) continue;
+
+          const upsertData: any = {
+            member_id: memberId,
+            certificate_number: cert.certificateNumber || null,
+            issuing_municipality: cert.issuingMunicipality || null,
+            income_category: cert.incomeCategory || 'welfare',
+            copayment_limit_amount: cert.copaymentLimitAmount || 0,
+            disability_support_class: cert.disabilitySupportClass || 'none',
+            copayment_management_type: cert.copaymentManagementType || 'self',
+            copayment_office_name: cert.copaymentOfficeName || null,
+            valid_from: cert.validFrom || new Date().toISOString().substring(0, 10),
+            valid_to: cert.validTo || '2099-12-31',
+            remarks: cert.remarks || null,
+          };
+
+          if (!cert.id.startsWith('CRT-')) {
+            upsertData.id = cert.id;
+          }
+
+          const { error: upsertErr } = await supabase
+            .from('member_recipient_certificates')
+            .upsert(upsertData);
+
+          if (upsertErr) throw upsertErr;
+        }
+      }
+
+      await fetchCertificates();
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  return {
+    items,
+    loading,
+    fetchCertificates,
+    batchSaveCertificates,
+  };
+}

@@ -338,8 +338,25 @@ export type ReserveSettingItem = {
   office_id?: string;
 };
 
+export type MemberRecipientCertificateItem = {
+  id: string;
+  memberId?: string;
+  certificateNumber?: string;
+  issuingMunicipality?: string;
+  incomeCategory?: string;
+  copaymentLimitAmount: number;
+  disabilitySupportClass?: string;
+  copaymentManagementType?: string;
+  copaymentOfficeName?: string;
+  validFrom: string;
+  validTo: string;
+  remarks?: string;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+};
+
 export type Tab = 
-  | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'project' | 'projectUser' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
+  | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'project' | 'projectUser' | 'memberRecipientCertificate' | 'memberOffice' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
   | 'screenFacility' | 'organization' | 'office' | 'officeServiceType' | 'serviceScheme'
   | 'screenWelfare' | 'serviceType' | 'qualification' | 'rewardItem';
 

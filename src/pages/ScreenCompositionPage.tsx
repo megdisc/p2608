@@ -492,24 +492,9 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'office_member_settings',
-      tableType: '割当マスタ',
-      logicalName: '事業所利用者割当',
-      description: '利用者と事業所の多対多割当・所属情報（多拠点利用対応）',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: サブ利用拠点）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'member_recipient_certificates',
       tableType: '従属マスタ',
-      logicalName: '利用者受給者証履歴',
+      logicalName: '利用者受給者証',
       description: '利用者の受給者証情報（受給者証番号・交付市町村・負担上限月額・所得階層区分・障害支援区分・支給決定期間等）の履歴管理マスタ',
       columns: [
         { name: 'id', desc: '履歴ID' },
@@ -525,6 +510,21 @@ export function ScreenCompositionPage() {
         { name: 'valid_to', desc: '支給決定終了日' },
         { name: 'remarks', desc: '備考・特記事項' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_member_settings',
+      tableType: '割当マスタ',
+      logicalName: '事業所利用者割当',
+      description: '利用者と事業所の多対多割当・所属情報（多拠点利用対応）',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'office_id', desc: '事業所ID' },
+        { name: 'member_id', desc: '利用者ID' },
+        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: サブ利用拠点）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

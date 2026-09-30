@@ -108,7 +108,7 @@ export function StaffOfficePage() {
         sortable: false,
         editable: true,
         inputType: 'checkbox',
-        style: { textAlign: 'center' },
+        style: { textAlign: 'center', minWidth: '120px', whiteSpace: 'nowrap' },
         onCellChange: (newValue, _item, updateRow) => {
           if (newValue && typeof newValue === 'object') {
             updateRow(newValue);
@@ -157,7 +157,7 @@ export function StaffOfficePage() {
           };
 
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '4px 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '4px 0', minWidth: '100px' }}>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
                 <input
                   type="checkbox"

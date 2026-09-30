@@ -17,16 +17,38 @@ export function useRecipientCertificates() {
   const fetchCertificates = useCallback(async () => {
     try {
       setLoading(true);
-      const [memberRes, certRes] = await Promise.all([
-        supabase.from('members').select('id, code, name, yomigana').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('member_recipient_certificates').select('*').order('valid_from', { ascending: false }),
-      ]);
 
-      if (memberRes.error) throw memberRes.error;
-      if (certRes.error && certRes.error.code !== '42P01') throw certRes.error;
+      // Fetch Members (active members)
+      const memberRes = await supabase
+        .from('members')
+        .select('*')
+        .or('is_deleted.eq.false,is_deleted.is.null')
+        .order('code', { ascending: true });
+
+      if (memberRes.error) {
+        console.error('Error fetching members:', memberRes.error);
+        throw memberRes.error;
+      }
 
       const members = memberRes.data || [];
-      const certs = certRes.data || [];
+
+      // Fetch Recipient Certificates
+      let certs: any[] = [];
+      try {
+        const certRes = await supabase
+          .from('member_recipient_certificates')
+          .select('*')
+          .or('is_deleted.eq.false,is_deleted.is.null')
+          .order('valid_from', { ascending: false });
+
+        if (!certRes.error && certRes.data) {
+          certs = certRes.data;
+        } else if (certRes.error) {
+          console.warn('Warning fetching member_recipient_certificates:', certRes.error);
+        }
+      } catch (cErr) {
+        console.warn('Exception fetching member_recipient_certificates:', cErr);
+      }
 
       const formatted: MemberRecipientCertificateGridRow[] = members.map((m: any) => {
         const memberCerts: MemberRecipientCertificateItem[] = certs
@@ -49,7 +71,7 @@ export function useRecipientCertificates() {
         return {
           id: m.id,
           code: m.code || '',
-          name: m.name,
+          name: m.name || '',
           yomigana: m.yomigana || '',
           certificates: memberCerts,
         };
@@ -57,7 +79,7 @@ export function useRecipientCertificates() {
 
       setItems(formatted);
     } catch (err) {
-      console.error(err);
+      console.error('fetchCertificates failed:', err);
       throw err;
     } finally {
       setLoading(false);

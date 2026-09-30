@@ -55,10 +55,10 @@ export function ClientPage() {
       rowType: 'main'
     },
     { 
-      key: 'phone', 
-      header: '代表電話番号', 
+      key: 'isOther', 
+      header: TABLE_COLUMNS.IS_OTHER, 
       editable: true, 
-      inputType: 'text',
+      inputType: 'checkbox',
       rowType: 'main'
     },
     { 
@@ -73,6 +73,14 @@ export function ClientPage() {
           ＋ 担当者追加
         </Button>
       )
+    },
+    { 
+      key: 'yomigana', 
+      header: TABLE_COLUMNS.YOMIGANA, 
+      editable: true, 
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false
     },
     { 
       key: 'department', 
@@ -99,21 +107,21 @@ export function ClientPage() {
       sortable: false
     },
     { 
-      key: 'email', 
-      header: 'メールアドレス', 
+      key: 'contactFax', 
+      header: TABLE_COLUMNS.FAX, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',
       sortable: false
     },
     { 
-      key: 'isPrimary', 
-      header: '主担当', 
+      key: 'email', 
+      header: 'メールアドレス', 
       editable: true, 
-      inputType: 'checkbox',
+      inputType: 'text',
       rowType: 'sub',
       sortable: false
-    },
+    }
   ];
 
   const handleBatchSave = async (drafts: ClientItem[], deletedIds: string[]) => {
@@ -139,7 +147,7 @@ export function ClientPage() {
       yomigana: '',
       isCustomer: true,
       isSubcontractor: true,
-      phone: '',
+      isOther: false,
       contacts: []
     } as ClientItem;
   };
@@ -148,11 +156,12 @@ export function ClientPage() {
     return {
       id: `CNT-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       contactName: '',
+      yomigana: '',
       department: '',
       position: '',
       contactPhone: '',
-      email: '',
-      isPrimary: false
+      contactFax: '',
+      email: ''
     } as PartnerContactItem;
   };
 
@@ -173,4 +182,3 @@ export function ClientPage() {
     />
   );
 }
-

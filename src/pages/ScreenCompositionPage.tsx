@@ -189,6 +189,43 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'partners',
+      tableType: '独立マスタ',
+      logicalName: '取引先',
+      description: '取引先情報',
+      columns: [
+        { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
+        { name: 'is_other', desc: 'その他フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'partner_contacts',
+      tableType: '従属マスタ',
+      logicalName: '取引先担当者',
+      description: '取引先ごとの担当者情報（1対多。電話・FAX・メールは割当テーブルにて管理）',
+      columns: [
+        { name: 'id', desc: '担当者ID' },
+        { name: 'partner_id', desc: '取引先ID' },
+        { name: 'name', desc: '担当者名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'department', desc: '部署' },
+        { name: 'position', desc: '役職' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'addresses',
       tableType: '独立マスタ',
       logicalName: '住所',
@@ -373,45 +410,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'partners',
-      tableType: '独立マスタ',
-      logicalName: '取引先',
-      description: '取引先情報',
-      columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'code', desc: '取引先コード' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'contact_person', desc: '担当者名' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'partner_contacts',
-      tableType: '従属マスタ',
-      logicalName: '取引先担当者',
-      description: '取引先ごとの担当者情報（1対多）',
-      columns: [
-        { name: 'id', desc: '担当者ID' },
-        { name: 'partner_id', desc: '取引先ID' },
-        { name: 'name', desc: '担当者名' },
-        { name: 'department', desc: '部署' },
-        { name: 'position', desc: '役職' },
-        { name: 'phone', desc: '電話番号' },
-        { name: 'email', desc: 'メールアドレス' },
-        { name: 'is_primary', desc: '主担当フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',
@@ -445,6 +443,21 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'office_staff_settings',
+      tableType: '割当マスタ',
+      logicalName: '事業所職員割当',
+      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'office_id', desc: '事業所ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'staff_qualification_settings',
       tableType: '割当マスタ',
       logicalName: '職員資格割当',
@@ -456,21 +469,6 @@ export function ScreenCompositionPage() {
         { name: 'license_number', desc: '資格・登録番号' },
         { name: 'acquired_on', desc: '取得年月日・修了日' },
         { name: 'valid_until', desc: '有効期限・更新研修期限' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'office_staff_settings',
-      tableType: '割当マスタ',
-      logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

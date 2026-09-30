@@ -10,15 +10,38 @@ export function useClients() {
   const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
-      const [partnersRes, allCodesRes] = await Promise.all([
+      const [partnersRes, allCodesRes, phoneSettingsRes, emailSettingsRes] = await Promise.all([
         supabase.from('partners').select(`
           *,
           partner_contacts (*)
         `).eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('partners').select('code, created_at').order('created_at', { ascending: false })
+        supabase.from('partners').select('code, created_at').order('created_at', { ascending: false }),
+        supabase.from('entity_phone_settings').select('owner_id, phone_number_id, phone_numbers(phone_type, phone_number)').eq('owner_type', 'partner_contact'),
+        supabase.from('entity_email_settings').select('owner_id, email_address_id, email_addresses(email)').eq('owner_type', 'partner_contact')
       ]);
 
       if (partnersRes.error) throw partnersRes.error;
+
+      const phoneMap = new Map<string, string>();
+      const faxMap = new Map<string, string>();
+      (phoneSettingsRes.data || []).forEach((item: any) => {
+        if (item.phone_numbers) {
+          if (item.phone_numbers.phone_type === 'fax') {
+            faxMap.set(item.owner_id, item.phone_numbers.phone_number || '');
+          } else {
+            phoneMap.get(item.owner_id) 
+              ? phoneMap.set(item.owner_id, phoneMap.get(item.owner_id)!) 
+              : phoneMap.set(item.owner_id, item.phone_numbers.phone_number || '');
+          }
+        }
+      });
+
+      const emailMap = new Map<string, string>();
+      (emailSettingsRes.data || []).forEach((item: any) => {
+        if (item.email_addresses?.email) {
+          emailMap.set(item.owner_id, item.email_addresses.email || '');
+        }
+      });
 
       const formatted: ClientItem[] = (partnersRes.data || []).map((d: any) => {
         const contacts: PartnerContactItem[] = (d.partner_contacts || [])
@@ -27,25 +50,22 @@ export function useClients() {
             id: c.id,
             partnerId: c.partner_id,
             contactName: c.name || '',
+            yomigana: c.yomigana || '',
             department: c.department || '',
             position: c.position || '',
-            contactPhone: c.phone || '',
-            email: c.email || '',
-            isPrimary: c.is_primary || false,
+            contactPhone: phoneMap.get(c.id) || '',
+            contactFax: faxMap.get(c.id) || '',
+            email: emailMap.get(c.id) || '',
           }));
-
-        const primaryContact = contacts.find(c => c.isPrimary) || contacts[0];
-        const contactPersonFallback = primaryContact ? primaryContact.contactName : (d.contact_person || '');
 
         return {
           id: d.id,
           code: d.code || '',
           name: d.name,
           yomigana: d.yomigana || '',
-          isCustomer: d.is_customer ?? true,
-          isSubcontractor: d.is_subcontractor ?? true,
-          contactPerson: contactPersonFallback,
-          phone: d.phone || '',
+          isCustomer: d.is_customer ?? false,
+          isSubcontractor: d.is_subcontractor ?? false,
+          isOther: d.is_other ?? false,
           contacts
         };
       });
@@ -68,9 +88,8 @@ export function useClients() {
       const nowIso = new Date().toISOString();
 
       if (deletedIds.length > 0) {
-        // Handle deleted partner contacts
-        const partnerIdsToDelete = deletedIds.filter(id => !id.startsWith('CNT-'));
-        const contactIdsToDelete = deletedIds.filter(id => id.startsWith('CNT-') || !partnerIdsToDelete.includes(id));
+        const partnerIdsToDelete = deletedIds.filter(id => !id.startsWith('CLI-') && !id.startsWith('CNT-'));
+        const contactIdsToDelete = deletedIds.filter(id => id.startsWith('CNT-') || (!partnerIdsToDelete.includes(id) && id.includes('-')));
 
         if (partnerIdsToDelete.length > 0) {
           await supabase.from('partners').update({ deleted_at: nowIso }).in('id', partnerIdsToDelete);
@@ -86,16 +105,13 @@ export function useClients() {
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
       for (const item of activeItems) {
-        const primaryContact = (item.contacts || []).find(c => c.isPrimary) || (item.contacts || [])[0];
-
         const upsertPartnerData: any = {
           code: item.code?.trim() || null,
           name: item.name,
           yomigana: item.yomigana,
-          is_customer: item.isCustomer ?? true,
-          is_subcontractor: item.isSubcontractor ?? true,
-          contact_person: primaryContact?.contactName || item.contactPerson || '',
-          phone: item.phone
+          is_customer: item.isCustomer ?? false,
+          is_subcontractor: item.isSubcontractor ?? false,
+          is_other: item.isOther ?? false
         };
         if (!item.id.startsWith('CLI-')) {
           upsertPartnerData.id = item.id;
@@ -123,18 +139,97 @@ export function useClients() {
             const upsertContactData: any = {
               partner_id: partnerId,
               name: c.contactName || '',
+              yomigana: c.yomigana || '',
               department: c.department || '',
-              position: c.position || '',
-              phone: c.contactPhone || '',
-              email: c.email || '',
-              is_primary: c.isPrimary ?? false
+              position: c.position || ''
             };
             if (!c.id.startsWith('CNT-')) {
               upsertContactData.id = c.id;
             }
 
-            const { error: cErr } = await supabase.from('partner_contacts').upsert(upsertContactData);
+            const { data: savedContact, error: cErr } = await supabase
+              .from('partner_contacts')
+              .upsert(upsertContactData)
+              .select('id')
+              .single();
             if (cErr) throw cErr;
+
+            const contactId = savedContact ? savedContact.id : (c.id.startsWith('CNT-') ? null : c.id);
+            if (!contactId) continue;
+
+            // Manage Phone & Fax
+            const phoneSettingRes = await supabase
+              .from('entity_phone_settings')
+              .select('id, phone_number_id, phone_numbers(phone_type)')
+              .eq('owner_type', 'partner_contact')
+              .eq('owner_id', contactId);
+
+            const phoneSettings = phoneSettingRes.data || [];
+            const existingPhone = phoneSettings.find((p: any) => p.phone_numbers?.phone_type !== 'fax');
+            const existingFax = phoneSettings.find((p: any) => p.phone_numbers?.phone_type === 'fax');
+
+            // Phone
+            if (existingPhone?.phone_number_id) {
+              await supabase.from('phone_numbers').update({
+                phone_number: c.contactPhone || '',
+              }).eq('id', existingPhone.phone_number_id);
+            } else if (c.contactPhone) {
+              const { data: newPhone } = await supabase.from('phone_numbers').insert({
+                phone_type: 'phone',
+                phone_number: c.contactPhone,
+              }).select('id').single();
+              if (newPhone) {
+                await supabase.from('entity_phone_settings').insert({
+                  owner_type: 'partner_contact',
+                  owner_id: contactId,
+                  phone_number_id: newPhone.id,
+                });
+              }
+            }
+
+            // Fax
+            if (existingFax?.phone_number_id) {
+              await supabase.from('phone_numbers').update({
+                phone_number: c.contactFax || '',
+              }).eq('id', existingFax.phone_number_id);
+            } else if (c.contactFax) {
+              const { data: newFax } = await supabase.from('phone_numbers').insert({
+                phone_type: 'fax',
+                phone_number: c.contactFax,
+              }).select('id').single();
+              if (newFax) {
+                await supabase.from('entity_phone_settings').insert({
+                  owner_type: 'partner_contact',
+                  owner_id: contactId,
+                  phone_number_id: newFax.id,
+                });
+              }
+            }
+
+            // Email
+            const emailSettingRes = await supabase
+              .from('entity_email_settings')
+              .select('id, email_address_id')
+              .eq('owner_type', 'partner_contact')
+              .eq('owner_id', contactId);
+
+            const existingEmail = (emailSettingRes.data || [])[0];
+            if (existingEmail?.email_address_id) {
+              await supabase.from('email_addresses').update({
+                email: c.email || '',
+              }).eq('id', existingEmail.email_address_id);
+            } else if (c.email) {
+              const { data: newEmail } = await supabase.from('email_addresses').insert({
+                email: c.email,
+              }).select('id').single();
+              if (newEmail) {
+                await supabase.from('entity_email_settings').insert({
+                  owner_type: 'partner_contact',
+                  owner_id: contactId,
+                  email_address_id: newEmail.id,
+                });
+              }
+            }
           }
         }
       }
@@ -154,4 +249,3 @@ export function useClients() {
     batchSaveClients
   };
 }
-

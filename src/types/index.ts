@@ -115,11 +115,12 @@ export type PartnerContactItem = {
   id: string;
   partnerId?: string;
   contactName: string;
+  yomigana?: string;
   department?: string;
   position?: string;
   contactPhone?: string;
+  contactFax?: string;
   email?: string;
-  isPrimary?: boolean;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };
@@ -129,10 +130,9 @@ export type ClientItem = {
   code?: string;
   name: string;
   yomigana: string;
-  contactPerson?: string;
-  phone: string;
   isCustomer?: boolean;
   isSubcontractor?: boolean;
+  isOther?: boolean;
   contacts?: PartnerContactItem[];
   deleted_at?: string | null;
   is_deleted?: boolean;

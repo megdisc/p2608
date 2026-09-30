@@ -263,19 +263,19 @@ INSERT INTO public.member_wage_settings (member_id, wage_rate_id) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- 9. 取引先マスタ (partners)
-INSERT INTO public.partners (id, code, name, yomigana, contact_person, is_customer, is_subcontractor) VALUES 
-('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', '佐々木凛', true, false),
-('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', '清水蒼', true, true),
-('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', '杉山結愛', false, true)
+INSERT INTO public.partners (id, code, name, yomigana, is_customer, is_subcontractor, is_other) VALUES 
+('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', true, false, false),
+('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', true, true, false),
+('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', false, true, false)
 ON CONFLICT (id) DO NOTHING;
 
 -- 9.1 取引先担当者マスタ (partner_contacts)
-INSERT INTO public.partner_contacts (id, partner_id, name, department, position, phone, email, is_primary) VALUES
-('c1000000-0000-0000-0000-000000000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '佐々木凛', '営業部', '部長', '03-1234-5678', 'sasaki@tech-sol.example.com', true),
-('c1000000-0000-0000-0000-000000000002', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '高橋健太', '開発部', '課長', '03-1234-5679', 'takahashi@tech-sol.example.com', false),
-('c2000000-0000-0000-0000-000000000001', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '清水蒼', '購買部', '主任', '06-9876-5432', 'shimizu@global-ind.example.com', true),
-('c2000000-0000-0000-0000-000000000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '渡辺裕樹', '総務部', '係長', '06-9876-5433', 'watanabe@global-ind.example.com', false),
-('c3000000-0000-0000-0000-000000000001', '0ff5f11e-b752-4b06-aaab-86984a67eec7', '杉山結愛', '企画部', 'マネージャー', '052-111-2222', 'sugiyama@innolab.example.com', true)
+INSERT INTO public.partner_contacts (id, partner_id, name, yomigana, department, position) VALUES
+('c1000000-0000-0000-0000-000000000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '佐々木凛', 'ささき りん', '営業部', '部長'),
+('c1000000-0000-0000-0000-000000000002', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '高橋健太', 'たかはし けんた', '開発部', '課長'),
+('c2000000-0000-0000-0000-000000000001', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '清水蒼', 'しみず あおい', '購買部', '主任'),
+('c2000000-0000-0000-0000-000000000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '渡辺裕樹', 'わたなべ ひろき', '総務部', '係長'),
+('c3000000-0000-0000-0000-000000000001', '0ff5f11e-b752-4b06-aaab-86984a67eec7', '杉山結愛', 'すぎやま ゆあ', '企画部', 'マネージャー')
 ON CONFLICT (id) DO NOTHING;
 
 

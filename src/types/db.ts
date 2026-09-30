@@ -49,8 +49,9 @@ export type SupplierTableItem = {
   code: string;
   name: string;
   yomigana: string;
-  contact_person: string;
-  phone: string;
+  is_customer?: boolean;
+  is_subcontractor?: boolean;
+  is_other?: boolean;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -161,5 +162,19 @@ export type OfficeServiceTypeSettingTableItem = {
   created_at?: string;
   updated_at?: string;
 };
+
+export type PartnerContactTableItem = {
+  id: string; // UUID
+  partner_id: string; // UUID
+  name: string;
+  yomigana?: string;
+  department?: string;
+  position?: string;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 
 

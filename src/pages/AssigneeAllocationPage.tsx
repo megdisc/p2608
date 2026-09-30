@@ -69,10 +69,9 @@ export function AssigneeAllocationPage() {
         code: c.code || '',
         name: c.name,
         yomigana: c.yomigana || '',
-        contactPerson: c.contact_person || '',
-        phone: c.phone || '',
-        isCustomer: c.is_customer ?? true,
-        isSubcontractor: c.is_subcontractor ?? true,
+        isCustomer: c.is_customer ?? false,
+        isSubcontractor: c.is_subcontractor ?? false,
+        isOther: c.is_other ?? false,
         is_deleted: c.is_deleted
       })));
 

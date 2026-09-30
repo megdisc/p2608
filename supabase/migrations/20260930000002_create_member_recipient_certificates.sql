@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS "public"."member_recipient_certificates" (
     "copayment_limit_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "disability_support_class" TEXT,
     "copayment_management_type" TEXT,
+    "copayment_office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
+    "copayment_office_code" VARCHAR(10),
     "copayment_office_name" TEXT,
     "valid_from" DATE NOT NULL,
     "valid_to" DATE NOT NULL,

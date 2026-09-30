@@ -347,6 +347,8 @@ export type MemberRecipientCertificateItem = {
   copaymentLimitAmount: number;
   disabilitySupportClass?: string;
   copaymentManagementType?: string;
+  copaymentOfficeId?: string | null;
+  copaymentOfficeCode?: string | null;
   copaymentOfficeName?: string;
   validFrom: string;
   validTo: string;

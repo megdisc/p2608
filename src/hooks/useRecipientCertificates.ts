@@ -53,20 +53,26 @@ export function useRecipientCertificates() {
       const formatted: MemberRecipientCertificateGridRow[] = members.map((m: any) => {
         const memberCerts: MemberRecipientCertificateItem[] = certs
           .filter((c: any) => c.member_id === m.id && !c.is_deleted)
-          .map((c: any) => ({
-            id: c.id,
-            memberId: c.member_id,
-            certificateNumber: c.certificate_number || '',
-            issuingMunicipality: c.issuing_municipality || '',
-            incomeCategory: c.income_category || 'welfare',
-            copaymentLimitAmount: Number(c.copayment_limit_amount) || 0,
-            disabilitySupportClass: c.disability_support_class || 'none',
-            copaymentManagementType: c.copayment_management_type || 'self',
-            copaymentOfficeName: c.copayment_office_name || '',
-            validFrom: c.valid_from || '',
-            validTo: c.valid_to || '',
-            remarks: c.remarks || '',
-          }));
+          .map((c: any) => {
+            let mgmtType = c.copayment_management_type || 'none';
+            if (mgmtType === 'self') mgmtType = 'self_internal';
+            return {
+              id: c.id,
+              memberId: c.member_id,
+              certificateNumber: c.certificate_number || '',
+              issuingMunicipality: c.issuing_municipality || '',
+              incomeCategory: c.income_category || 'welfare',
+              copaymentLimitAmount: Number(c.copayment_limit_amount) || 0,
+              disabilitySupportClass: c.disability_support_class || 'none',
+              copaymentManagementType: mgmtType,
+              copaymentOfficeId: c.copayment_office_id || null,
+              copaymentOfficeCode: c.copayment_office_code || '',
+              copaymentOfficeName: c.copayment_office_name || '',
+              validFrom: c.valid_from || '',
+              validTo: c.valid_to || '',
+              remarks: c.remarks || '',
+            };
+          });
 
         return {
           id: m.id,
@@ -104,6 +110,9 @@ export function useRecipientCertificates() {
         for (const cert of draft.certificates) {
           if (deletedIds.includes(cert.id)) continue;
 
+          let mgmtType = cert.copaymentManagementType || 'none';
+          if (mgmtType === 'self') mgmtType = 'self_internal';
+
           const upsertData: any = {
             member_id: memberId,
             certificate_number: cert.certificateNumber || null,
@@ -111,8 +120,10 @@ export function useRecipientCertificates() {
             income_category: cert.incomeCategory || 'welfare',
             copayment_limit_amount: cert.copaymentLimitAmount || 0,
             disability_support_class: cert.disabilitySupportClass || 'none',
-            copayment_management_type: cert.copaymentManagementType || 'self',
-            copayment_office_name: cert.copaymentOfficeName || null,
+            copayment_management_type: mgmtType,
+            copayment_office_id: mgmtType === 'self_internal' ? (cert.copaymentOfficeId || null) : null,
+            copayment_office_code: mgmtType === 'other' ? (cert.copaymentOfficeCode || null) : null,
+            copayment_office_name: mgmtType === 'other' ? (cert.copaymentOfficeName || null) : null,
             valid_from: cert.validFrom || new Date().toISOString().substring(0, 10),
             valid_to: cert.validTo || '2099-12-31',
             remarks: cert.remarks || null,

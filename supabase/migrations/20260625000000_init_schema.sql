@@ -265,7 +265,9 @@ CREATE TABLE IF NOT EXISTS "public"."member_recipient_certificates" (
     "income_category" TEXT,
     "copayment_limit_amount" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "disability_support_class" TEXT,
-    "copayment_management_type" TEXT,
+    "copayment_management_type" TEXT, -- ('self_internal', 'other', 'none')
+    "copayment_office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
+    "copayment_office_code" VARCHAR(10),
     "copayment_office_name" TEXT,
     "valid_from" DATE NOT NULL,
     "valid_to" DATE NOT NULL,
@@ -282,7 +284,6 @@ CREATE TABLE IF NOT EXISTS "public"."office_member_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "is_primary" BOOLEAN DEFAULT false NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );

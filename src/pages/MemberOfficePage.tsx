@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, RadioButton, type Column } from '../components';
+import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
@@ -11,7 +11,6 @@ type MemberOfficeGridRow = {
   name: string;
   yomigana: string;
   assignedOffices: Record<string, boolean>;
-  primaryOfficeId: string | null;
   [officeId: string]: any;
 };
 
@@ -42,24 +41,11 @@ export function MemberOfficePage() {
 
       const rows: MemberOfficeGridRow[] = activeMembers.map(member => {
         const assignedMap: Record<string, boolean> = {};
-        let primaryId: string | null = null;
 
         activeOffices.forEach(office => {
           const setting = settings.find(s => s.member_id === member.id && s.office_id === office.id);
-          const isAssigned = !!setting;
-          assignedMap[office.id] = isAssigned;
-
-          if (setting?.is_primary) {
-            primaryId = office.id;
-          }
+          assignedMap[office.id] = !!setting;
         });
-
-        if (!primaryId) {
-          const firstAssigned = activeOffices.find(o => assignedMap[o.id]);
-          if (firstAssigned) {
-            primaryId = firstAssigned.id;
-          }
-        }
 
         return {
           id: member.id,
@@ -67,7 +53,6 @@ export function MemberOfficePage() {
           name: member.name,
           yomigana: member.yomigana || '',
           assignedOffices: assignedMap,
-          primaryOfficeId: primaryId,
         };
       });
 
@@ -108,7 +93,7 @@ export function MemberOfficePage() {
         sortable: false,
         editable: true,
         inputType: 'checkbox',
-        style: { textAlign: 'center', minWidth: '120px', whiteSpace: 'nowrap' },
+        style: { textAlign: 'center', minWidth: '100px', whiteSpace: 'nowrap' },
         onCellChange: (newValue, _item, updateRow) => {
           if (newValue && typeof newValue === 'object') {
             updateRow(newValue);
@@ -118,7 +103,6 @@ export function MemberOfficePage() {
         customEditRender: (_val, item: MemberOfficeGridRow, onChange) => {
           const assignedOfficesMap = item.assignedOffices || {};
           const isAssigned = !!assignedOfficesMap[office.id];
-          const isPrimary = item.primaryOfficeId === office.id;
 
           const handleToggleAssigned = () => {
             const nextAssigned = !isAssigned;
@@ -127,37 +111,13 @@ export function MemberOfficePage() {
               [office.id]: nextAssigned,
             };
 
-            let nextPrimary = item.primaryOfficeId;
-            if (nextAssigned) {
-              if (!nextPrimary) {
-                nextPrimary = office.id;
-              }
-            } else {
-              if (nextPrimary === office.id) {
-                const remainingOffice = offices.find(o => o.id !== office.id && updatedAssigned[o.id]);
-                nextPrimary = remainingOffice ? remainingOffice.id : null;
-              }
-            }
-
             onChange({
               assignedOffices: updatedAssigned,
-              primaryOfficeId: nextPrimary,
-            });
-          };
-
-          const handleSetPrimary = () => {
-            const updatedAssigned = {
-              ...assignedOfficesMap,
-              [office.id]: true,
-            };
-            onChange({
-              assignedOffices: updatedAssigned,
-              primaryOfficeId: office.id,
             });
           };
 
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '4px 0', minWidth: '100px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4px 0' }}>
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
                 <input
                   type="checkbox"
@@ -165,16 +125,8 @@ export function MemberOfficePage() {
                   checked={isAssigned}
                   onChange={handleToggleAssigned}
                 />
-                <span>割当</span>
+                <span>所属</span>
               </label>
-
-              <RadioButton
-                label="主たる事業所"
-                name={`primary_office_${item.id}`}
-                checked={isPrimary}
-                disabled={!isAssigned}
-                onChange={handleSetPrimary}
-              />
             </div>
           );
         },
@@ -197,15 +149,13 @@ export function MemberOfficePage() {
         existingMap.set(`${s.member_id}_${s.office_id}`, s);
       });
 
-      const toInsert: { office_id: string; member_id: string; is_primary: boolean }[] = [];
-      const toUpdate: { id: string; is_primary: boolean }[] = [];
+      const toInsert: { office_id: string; member_id: string }[] = [];
       const toDeleteIds: string[] = [];
 
       drafts.forEach(row => {
         offices.forEach(office => {
           const key = `${row.id}_${office.id}`;
           const isSelected = !!row.assignedOffices[office.id];
-          const isPrimary = row.primaryOfficeId === office.id;
           const existing = existingMap.get(key);
 
           if (isSelected) {
@@ -213,12 +163,6 @@ export function MemberOfficePage() {
               toInsert.push({
                 office_id: office.id,
                 member_id: row.id,
-                is_primary: isPrimary,
-              });
-            } else if (existing.is_primary !== isPrimary && existing.id) {
-              toUpdate.push({
-                id: existing.id,
-                is_primary: isPrimary,
               });
             }
           } else if (existing && existing.id) {
@@ -233,14 +177,6 @@ export function MemberOfficePage() {
           .delete()
           .in('id', toDeleteIds);
         if (delErr) throw delErr;
-      }
-
-      for (const item of toUpdate) {
-        const { error: upErr } = await supabase
-          .from('office_member_settings')
-          .update({ is_primary: item.is_primary })
-          .eq('id', item.id);
-        if (upErr) throw upErr;
       }
 
       if (toInsert.length > 0) {

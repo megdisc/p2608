@@ -180,7 +180,7 @@ export type OfficeMemberSettingTableItem = {
   id?: string; // UUID
   office_id: string; // UUID
   member_id: string; // UUID
-  is_primary: boolean;
+  is_primary?: boolean;
   created_at?: string;
   updated_at?: string;
 };
@@ -194,6 +194,8 @@ export type MemberRecipientCertificateTableItem = {
   copayment_limit_amount: number;
   disability_support_class?: string;
   copayment_management_type?: string;
+  copayment_office_id?: string | null;
+  copayment_office_code?: string | null;
   copayment_office_name?: string;
   valid_from: string;
   valid_to: string;

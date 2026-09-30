@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DataPage, Button, type Column } from '../components';
+import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks/useRecipientCertificates';
 import type { MemberRecipientCertificateItem } from '../types';
+import type { OfficeTableItem } from '../types/db';
 
 const INCOME_CATEGORY_OPTIONS = [
   { label: '生活保護', value: 'welfare' },
@@ -23,20 +25,35 @@ const DISABILITY_CLASS_OPTIONS = [
 ];
 
 const COPAYMENT_MGMT_OPTIONS = [
-  { label: '自事業所管理', value: 'self' },
-  { label: '他事業所管理', value: 'other' },
+  { label: '自法人内管理', value: 'self_internal' },
+  { label: '他法人管理', value: 'other' },
   { label: '管理なし', value: 'none' },
 ];
 
 export function RecipientCertificatePage() {
   const { items, loading, fetchCertificates, batchSaveCertificates } = useRecipientCertificates();
+  const [offices, setOffices] = useState<OfficeTableItem[]>([]);
   const { showAlert } = useAlert();
 
   useEffect(() => {
     fetchCertificates().catch(() => {
       showAlert('受給者証データの取得に失敗しました', 'error');
     });
+
+    supabase
+      .from('offices')
+      .select('*')
+      .eq('is_deleted', false)
+      .order('code', { ascending: true })
+      .then(({ data }) => {
+        if (data) setOffices(data);
+      });
   }, [fetchCertificates, showAlert]);
+
+  const officeOptions = [
+    { label: '（未選択）', value: '' },
+    ...offices.map(o => ({ label: o.short_name || o.name, value: o.id }))
+  ];
 
   const columns: Column<MemberRecipientCertificateGridRow>[] = [
     {
@@ -110,8 +127,25 @@ export function RecipientCertificatePage() {
       sortable: false,
     },
     {
+      key: 'copaymentOfficeId',
+      header: '管理自事業所',
+      editable: true,
+      inputType: 'select',
+      options: officeOptions,
+      rowType: 'sub',
+      sortable: false,
+    },
+    {
+      key: 'copaymentOfficeCode',
+      header: '他法人事業所番号',
+      editable: true,
+      inputType: 'text',
+      rowType: 'sub',
+      sortable: false,
+    },
+    {
       key: 'copaymentOfficeName',
-      header: '上限額管理事業所名',
+      header: '他法人事業所名',
       editable: true,
       inputType: 'text',
       rowType: 'sub',
@@ -164,7 +198,9 @@ export function RecipientCertificatePage() {
       incomeCategory: 'welfare',
       copaymentLimitAmount: 0,
       disabilitySupportClass: 'none',
-      copaymentManagementType: 'self',
+      copaymentManagementType: 'self_internal',
+      copaymentOfficeId: null,
+      copaymentOfficeCode: '',
       copaymentOfficeName: '',
       validFrom: today,
       validTo: nextYear,

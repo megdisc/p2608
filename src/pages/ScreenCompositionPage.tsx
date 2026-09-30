@@ -504,8 +504,10 @@ export function ScreenCompositionPage() {
         { name: 'income_category', desc: '所得階層区分（welfare: 生活保護 / low_income: 低所得 / general_1: 一般1 / general_2: 一般2）' },
         { name: 'copayment_limit_amount', desc: '負担上限月額（円）' },
         { name: 'disability_support_class', desc: '障害支援区分（none: 区分なし / class_1〜class_6）' },
-        { name: 'copayment_management_type', desc: '上限額管理区分（self: 自事業所 / other: 他事業所 / none: なし）' },
-        { name: 'copayment_office_name', desc: '上限額管理事業所名' },
+        { name: 'copayment_management_type', desc: '上限額管理区分（self_internal: 自法人 / other: 他法人 / none: なし）' },
+        { name: 'copayment_office_id', desc: '自法人内の上限額管理事業所ID（FK -> offices.id）' },
+        { name: 'copayment_office_code', desc: '他法人管理事業所番号（10桁）' },
+        { name: 'copayment_office_name', desc: '他法人管理事業所名' },
         { name: 'valid_from', desc: '支給決定開始日' },
         { name: 'valid_to', desc: '支給決定終了日' },
         { name: 'remarks', desc: '備考・特記事項' },
@@ -524,7 +526,6 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '割当ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'member_id', desc: '利用者ID' },
-        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: サブ利用拠点）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

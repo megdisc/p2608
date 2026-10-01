@@ -255,9 +255,25 @@ INSERT INTO public.office_member_settings (office_id, member_id) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.member_recipient_certificates (id, member_id, certificate_number, issuing_municipality, income_category, copayment_limit_amount, disability_support_class, copayment_management_type, copayment_office_id, copayment_office_code, copayment_office_name, valid_from, valid_to, remarks) VALUES
-('rc100000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2025-04-01', '2026-03-31', '継続申請済み'),
-('rc200000-0000-0000-0000-000000000001', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9876543210', '川崎市川崎区', 'general_1', 9300, 'class_1', 'other', NULL, '1410100001', 'ワークステーションみらい', '2025-04-01', '2026-03-31', '')
-ON CONFLICT (id) DO NOTHING;
+('99000000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2025-04-01', '2026-03-31', '継続申請済み'),
+('99000000-0000-0000-0000-000000000002', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2024-04-01', '2025-03-31', '前年度更新分'),
+('99000000-0000-0000-0000-000000000003', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9876543210', '川崎市川崎区', 'general_1', 9300, 'class_1', 'other', NULL, '1410100001', 'ワークステーションみらい', '2025-04-01', '2026-03-31', '他法人上限額管理'),
+('99000000-0000-0000-0000-000000000004', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '1122334455', '東京都千代田区', 'welfare', 0, 'none', 'none', NULL, NULL, '', '2025-04-01', '2026-03-31', '新規支給決定'),
+('99000000-0000-0000-0000-000000000005', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '5566778899', '東京都世田谷区', 'general_2', 37200, 'class_3', 'self_internal', '33333333-3333-3333-3333-333333333333', NULL, '', '2025-04-01', '2026-03-31', '自法人にて上限管理実施')
+ON CONFLICT (id) DO UPDATE SET
+  member_id = EXCLUDED.member_id,
+  certificate_number = EXCLUDED.certificate_number,
+  issuing_municipality = EXCLUDED.issuing_municipality,
+  income_category = EXCLUDED.income_category,
+  copayment_limit_amount = EXCLUDED.copayment_limit_amount,
+  disability_support_class = EXCLUDED.disability_support_class,
+  copayment_management_type = EXCLUDED.copayment_management_type,
+  copayment_office_id = EXCLUDED.copayment_office_id,
+  copayment_office_code = EXCLUDED.copayment_office_code,
+  copayment_office_name = EXCLUDED.copayment_office_name,
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to,
+  remarks = EXCLUDED.remarks;
 
 -- 8. 利用者工賃単価割当 (member_wage_settings)
 INSERT INTO public.member_wage_settings (member_id, wage_rate_id) VALUES

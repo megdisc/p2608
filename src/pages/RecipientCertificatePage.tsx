@@ -55,7 +55,7 @@ export function RecipientCertificatePage() {
     ...offices.map(o => ({ label: o.short_name || o.name, value: o.id }))
   ];
 
-  const columns: Column<MemberRecipientCertificateGridRow>[] = [
+  const columns: Column<any>[] = [
     {
       key: 'code',
       header: TABLE_COLUMNS.MEMBER_ID,
@@ -125,11 +125,20 @@ export function RecipientCertificatePage() {
       options: COPAYMENT_MGMT_OPTIONS,
       rowType: 'sub',
       sortable: false,
+      onCellChange: (value: any) => {
+        if (value === 'self_internal') {
+          return { copaymentOfficeCode: '', copaymentOfficeName: '' };
+        } else if (value === 'other') {
+          return { copaymentOfficeId: null };
+        } else {
+          return { copaymentOfficeId: null, copaymentOfficeCode: '', copaymentOfficeName: '' };
+        }
+      },
     },
     {
       key: 'copaymentOfficeId',
       header: '管理自事業所',
-      editable: true,
+      editable: (cert: any) => cert.copaymentManagementType === 'self_internal',
       inputType: 'select',
       options: officeOptions,
       rowType: 'sub',
@@ -138,7 +147,7 @@ export function RecipientCertificatePage() {
     {
       key: 'copaymentOfficeCode',
       header: '他法人事業所番号',
-      editable: true,
+      editable: (cert: any) => cert.copaymentManagementType === 'other',
       inputType: 'text',
       rowType: 'sub',
       sortable: false,
@@ -146,7 +155,7 @@ export function RecipientCertificatePage() {
     {
       key: 'copaymentOfficeName',
       header: '他法人事業所名',
-      editable: true,
+      editable: (cert: any) => cert.copaymentManagementType === 'other',
       inputType: 'text',
       rowType: 'sub',
       sortable: false,

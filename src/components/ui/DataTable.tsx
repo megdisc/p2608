@@ -295,9 +295,22 @@ export function DataTable<T extends { id: string }>({
       setDraftData(prev => prev.map(item => {
         if (item.id === parentId) {
           const subItems = ((item as any)[subItemsKey] as any[]) || [];
-          const newSubItems = subItems.map(subItem => 
-            subItem.id === id ? { ...subItem, [key]: value } : subItem
-          );
+          const newSubItems = subItems.map(subItem => {
+            if (subItem.id === id) {
+              let updatedSubItem = { ...subItem, [key]: value };
+              if (col && col.onCellChange) {
+                const updateRow = (asyncUpdates: Partial<any>) => {
+                  updatedSubItem = { ...updatedSubItem, ...asyncUpdates };
+                };
+                const syncUpdates = col.onCellChange(value, updatedSubItem, updateRow);
+                if (syncUpdates) {
+                  updatedSubItem = { ...updatedSubItem, ...syncUpdates };
+                }
+              }
+              return updatedSubItem;
+            }
+            return subItem;
+          });
           return { ...item, [subItemsKey]: newSubItems };
         }
         return item;
@@ -442,7 +455,7 @@ export function DataTable<T extends { id: string }>({
     const isDeleted = deletedIds.has(item.id);
     const parentMainItem = mainItem || item;
     const isRowEditable = canEditRow ? canEditRow(parentMainItem) : true;
-    const isColEditable = typeof col.editable === 'function' ? col.editable(parentMainItem) : col.editable !== false;
+    const isColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
     const isEditable = !isDeleted && isRowEditable && !!onBatchSave && isColEditable && (col.inputType || !!col.customEditRender);
     
     if (isEditable) {

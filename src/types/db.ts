@@ -201,10 +201,23 @@ export type MemberRecipientCertificateTableItem = {
   valid_to: string;
   remarks?: string;
   deleted_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type SkillCategoryTableItem = {
+  id: string; // UUID
+  office_id?: string; // UUID
+  parent_id?: string | null; // UUID
+  name: string;
+  description?: string;
+  sort_order?: number;
+  deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
 };
+
 
 
 

@@ -327,6 +327,24 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'skill_categories',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキルカテゴリ',
+      description: 'スキルの分類カテゴリマスターデータ（親カテゴリ参照 parent_id により任意のN階層構造に対応）',
+      columns: [
+        { name: 'id', desc: 'カテゴリID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'parent_id', desc: '親カテゴリID（自己参照、NULL可）' },
+        { name: 'name', desc: 'カテゴリ名' },
+        { name: 'description', desc: 'カテゴリの説明' },
+        { name: 'sort_order', desc: '表示順序' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'skill_items',
       tableType: '事業所依存マスタ',
       logicalName: 'スキル項目',
@@ -334,6 +352,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: 'スキルID' },
         { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'category_id', desc: 'スキルカテゴリID（skill_categories参照、NULL可）' },
         { name: 'name', desc: 'スキル名' },
         { name: 'description', desc: 'スキルの説明' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -1121,6 +1140,7 @@ export function ScreenCompositionPage() {
                   { name: 'allowances', baseTable: 'allowance_items', desc: '加算手当互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
                   { name: 'deductions', baseTable: 'deduction_items', desc: '控除互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
                   { name: 'reserve_settings', baseTable: 'reserve_items', desc: '積立金設定互換ビュー' },
+                  { name: 'skill_categories_view', baseTable: 'skill_categories', desc: 'スキルカテゴリ互換ビュー' },
                   { name: 'skills', baseTable: 'skill_items', desc: 'スキル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
                   { name: 'skill_levels', baseTable: 'skill_level_items', desc: 'スキルレベル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
                   { name: 'member_skill_evaluations', baseTable: 'member_skill_settings', desc: '利用者スキル割当エイリアスビュー' },

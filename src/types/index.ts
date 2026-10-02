@@ -76,8 +76,20 @@ export type ProjectItem = {
   is_deleted?: boolean;
 };
 
+export type SkillCategoryItem = {
+  id: string;
+  office_id?: string;
+  parent_id?: string | null;
+  name: string;
+  description?: string;
+  sort_order?: number;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+};
+
 export type SkillItem = {
   id: string;
+  category_id?: string | null;
   name: string;
   yomigana?: string;
   description: string;

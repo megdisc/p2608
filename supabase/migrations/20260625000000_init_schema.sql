@@ -207,10 +207,25 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
+-- 1.13b skill_categories (スキルカテゴリ)
+CREATE TABLE IF NOT EXISTS "public"."skill_categories" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
+    "parent_id" UUID REFERENCES "public"."skill_categories"("id") ON DELETE CASCADE,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "sort_order" INTEGER DEFAULT 0 NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
 -- 1.14 skill_items (スキル項目)
 CREATE TABLE IF NOT EXISTS "public"."skill_items" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
+    "category_id" UUID REFERENCES "public"."skill_categories"("id") ON DELETE SET NULL,
     "name" TEXT NOT NULL,
     "description" TEXT,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
@@ -751,6 +766,7 @@ FROM "public"."allowance_deduction_items";
 CREATE OR REPLACE VIEW "public"."service_schemes" AS SELECT id, id AS office_id, name, 'type_b'::text AS service_type, '標準サービス体系'::text AS description, 580.00::numeric(12,2) AS basic_reward_unit, deleted_at, is_deleted, created_at, updated_at FROM "public"."offices";
 CREATE OR REPLACE VIEW "public"."office_service_scheme_settings" AS SELECT gen_random_uuid() AS id, id AS office_id, id AS service_scheme_id, CURRENT_DATE AS valid_from, NULL::date AS valid_to, created_at, updated_at FROM "public"."offices";
 CREATE OR REPLACE VIEW "public"."reserve_settings" AS SELECT * FROM "public"."reserve_items";
+CREATE OR REPLACE VIEW "public"."skill_categories_view" AS SELECT * FROM "public"."skill_categories";
 CREATE OR REPLACE VIEW "public"."skills" AS SELECT * FROM "public"."skill_items";
 CREATE OR REPLACE VIEW "public"."skill_levels" AS SELECT * FROM "public"."skill_level_items";
 CREATE OR REPLACE VIEW "public"."member_skill_evaluations" AS SELECT * FROM "public"."member_skill_settings";

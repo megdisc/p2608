@@ -138,6 +138,21 @@ export function useRecipientCertificates() {
             .upsert(upsertData);
 
           if (upsertErr) throw upsertErr;
+
+          if (mgmtType === 'self_internal' && cert.copaymentOfficeId) {
+            const { data: existingSetting } = await supabase
+              .from('office_member_settings')
+              .select('id')
+              .eq('member_id', memberId)
+              .eq('office_id', cert.copaymentOfficeId);
+
+            if (!existingSetting || existingSetting.length === 0) {
+              await supabase.from('office_member_settings').insert({
+                member_id: memberId,
+                office_id: cert.copaymentOfficeId,
+              });
+            }
+          }
         }
       }
 

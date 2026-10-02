@@ -480,6 +480,10 @@ th.sticky-right {
   transition: all 0.2s;
 }
 
+.custom-checkbox:disabled {
+  cursor: not-allowed;
+}
+
 .custom-checkbox:checked {
   background-color: var(--color-bg-checked);
   border-color: var(--color-bg-checked);

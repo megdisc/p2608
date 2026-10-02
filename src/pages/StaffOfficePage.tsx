@@ -165,7 +165,7 @@ export function StaffOfficePage() {
                   checked={isAssigned}
                   onChange={handleToggleAssigned}
                 />
-                <span>割当</span>
+                <span>勤務</span>
               </label>
 
               <RadioButton

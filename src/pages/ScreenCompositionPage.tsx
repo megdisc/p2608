@@ -330,14 +330,12 @@ export function ScreenCompositionPage() {
       physicalName: 'skill_categories',
       tableType: '事業所依存マスタ',
       logicalName: 'スキルカテゴリ',
-      description: 'スキルの分類カテゴリマスターデータ（親カテゴリ参照 parent_id により任意のN階層構造に対応）',
+      description: 'スキルの分類カテゴリマスターデータ（親テーブル: skill_categories ↔ 子テーブル: skill_items の1対N関係）',
       columns: [
         { name: 'id', desc: 'カテゴリID' },
         { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'parent_id', desc: '親カテゴリID（自己参照、NULL可）' },
         { name: 'name', desc: 'カテゴリ名' },
         { name: 'description', desc: 'カテゴリの説明' },
-        { name: 'sort_order', desc: '表示順序' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

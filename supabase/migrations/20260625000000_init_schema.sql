@@ -211,10 +211,8 @@ CREATE TABLE IF NOT EXISTS "public"."reserve_items" (
 CREATE TABLE IF NOT EXISTS "public"."skill_categories" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE CASCADE,
-    "parent_id" UUID REFERENCES "public"."skill_categories"("id") ON DELETE CASCADE,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "sort_order" INTEGER DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,

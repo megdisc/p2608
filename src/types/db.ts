@@ -208,10 +208,8 @@ export type MemberRecipientCertificateTableItem = {
 export type SkillCategoryTableItem = {
   id: string; // UUID
   office_id?: string; // UUID
-  parent_id?: string | null; // UUID
   name: string;
   description?: string;
-  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;

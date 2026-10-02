@@ -79,10 +79,8 @@ export type ProjectItem = {
 export type SkillCategoryItem = {
   id: string;
   office_id?: string;
-  parent_id?: string | null;
   name: string;
   description?: string;
-  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };

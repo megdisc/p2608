@@ -336,6 +336,7 @@ export function ScreenCompositionPage() {
         { name: 'office_id', desc: '所属事業所ID' },
         { name: 'name', desc: 'カテゴリ名' },
         { name: 'description', desc: 'カテゴリの説明' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -353,6 +354,7 @@ export function ScreenCompositionPage() {
         { name: 'category_id', desc: 'スキルカテゴリID（skill_categories参照、NULL可）' },
         { name: 'name', desc: 'スキル名' },
         { name: 'description', desc: 'スキルの説明' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -486,6 +488,7 @@ export function ScreenCompositionPage() {
         { name: 'license_number', desc: '資格・登録番号' },
         { name: 'acquired_on', desc: '取得年月日・修了日' },
         { name: 'valid_until', desc: '有効期限・更新研修期限' },
+        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

@@ -22,7 +22,7 @@ export function SkillCategoryPage() {
       header: TABLE_COLUMNS.CATEGORY_NAME,
       editable: true,
       inputType: 'text',
-      sortable: true,
+      sortable: false,
     },
     {
       key: 'description',
@@ -102,6 +102,7 @@ export function SkillCategoryPage() {
       data={categories}
       columns={columns}
       emptyMessage="カテゴリが登録されていません。"
+      initialSort={{ key: '', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
       hideHeader={true}

@@ -15,7 +15,7 @@ export function useSkills() {
         .eq('is_deleted', false);
 
       if (officeId) {
-        query = query.eq('office_id', officeId);
+        query = query.or(`office_id.eq.${officeId},office_id.is.null`);
       }
 
       const { data, error } = await query.order('name', { ascending: true });
@@ -24,6 +24,8 @@ export function useSkills() {
       
       const formatted = (data || []).map(d => ({
         id: d.id,
+        office_id: d.office_id,
+        category_id: d.category_id || null,
         name: d.name,
         description: d.description || ''
       }));
@@ -49,8 +51,9 @@ export function useSkills() {
       const upserts = activeItems.map(item => ({
         ...(item.id.startsWith('SKL-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
+        category_id: item.category_id || null,
         name: item.name,
-        description: item.description
+        description: item.description || ''
       }));
 
       if (upserts.length > 0) {

@@ -1,5 +1,6 @@
 export * from './useClients';
 export * from './useSkills';
+export * from './useSkillCategories';
 export * from './useMembers';
 export * from './useStaffs';
 export * from './useOrganizations';

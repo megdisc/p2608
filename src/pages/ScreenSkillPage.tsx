@@ -3,16 +3,20 @@ import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
+import { SkillCategoryPage } from './SkillCategoryPage';
 import { SkillPage } from './SkillPage';
 import { SkillLevelPage } from './SkillLevelPage';
 
 export function ScreenSkillPage() {
   const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const effectiveTab = navContext.activeTab === 'screenSkill' ? 'skill' : navContext.activeTab;
+  const screenConfig = getScreenConfigForTab(effectiveTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_SKILL;
 
   const renderContent = () => {
-    switch (navContext.activeTab) {
+    switch (effectiveTab) {
+      case 'skillCategory':
+        return <SkillCategoryPage />;
       case 'skill':
         return <SkillPage />;
       case 'skillLevel':
@@ -28,7 +32,7 @@ export function ScreenSkillPage() {
         <h2 style={{ margin: 0 }}>{displayTitle}</h2>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+            <Tabs tabs={screenConfig.tabs} activeTab={effectiveTab} onChange={navContext.setActiveTab} />
           )}
         </div>
       </div>

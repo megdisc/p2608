@@ -43,6 +43,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_SKILL: {
     screenName: PAGE_NAMES.SCREEN_SKILL,
     tabs: [
+      { id: 'skillCategory', label: PAGE_NAMES.SKILL_CATEGORY },
       { id: 'skill', label: PAGE_NAMES.SKILL },
       { id: 'skillLevel', label: PAGE_NAMES.SKILL_LEVEL },
     ],

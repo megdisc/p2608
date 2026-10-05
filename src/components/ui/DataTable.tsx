@@ -26,7 +26,7 @@ export type Column<T> = {
   sortable?: boolean;
   render?: (item: T, draftData: T[], updateData: (newData: T[]) => void) => React.ReactNode;
   mainRender?: (item: T, addSubRow?: () => void, subItem?: any) => React.ReactNode;
-  rowType?: 'main' | 'sub' | 'sub-sub';
+  rowType?: 'main' | 'sub' | 'sub-sub' | 'both';
   className?: string;
   style?: React.CSSProperties | ((item: T, draftData?: T[]) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
@@ -768,7 +768,7 @@ export function DataTable<T extends { id: string }>({
                     }}
                   >
                     {columns.map((col, idx) => {
-                      const isMainCol = col.rowType === 'main' || !col.rowType;
+                      const isMainCol = col.rowType === 'main' || col.rowType === 'both' || !col.rowType;
                       let borderBottomStyle: string | undefined;
                       if (isMainCol && subItems.length > 0) {
                         borderBottomStyle = 'none';
@@ -843,7 +843,7 @@ export function DataTable<T extends { id: string }>({
                       <React.Fragment key={subItem.id}>
                         <tr className={isSubDeleted || isDeleted ? 'deleted-row' : ''}>
                           {columns.map((col, idx) => {
-                            const isMainCol = col.rowType === 'main' || !col.rowType;
+                            const isMainCol = col.rowType === 'main' || col.rowType === 'both' || !col.rowType;
                             let borderBottomStyle: string | undefined;
                             if (isMainCol) {
                               if (!isLastSubItem || (!isSubSubHidden && subSubItems.length > 0)) {
@@ -873,7 +873,7 @@ export function DataTable<T extends { id: string }>({
                             }
                             return (
                               <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                {col.rowType === 'sub' ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null}
+                                {(col.rowType === 'sub' || col.rowType === 'both') ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null}
                               </td>
                             );
                           })}

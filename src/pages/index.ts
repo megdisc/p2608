@@ -3,6 +3,7 @@ export * from './LoginPage';
 export * from './ProjectPage';
 export * from './ProjectUserPage';
 export * from './SkillPage';
+export * from './SkillCategoryPage';
 export * from './ClientPage';
 export * from './OrganizationPage';
 export * from './OfficePage';

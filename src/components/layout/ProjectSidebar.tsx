@@ -72,7 +72,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_CLIENT}
           </button>
           <button 
-            className={`nav-button ${['screenSkill', 'skill', 'skillLevel'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenSkill', 'skillCategory', 'skill', 'skillLevel'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('skill')}
           >
             {PAGE_NAMES.SCREEN_SKILL}

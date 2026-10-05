@@ -63,7 +63,7 @@ export function ClientPage() {
     },
     { 
       key: 'contactName', 
-      header: '担当者名', 
+      header: TABLE_COLUMNS.CONTACT_NAME, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',
@@ -84,7 +84,7 @@ export function ClientPage() {
     },
     { 
       key: 'department', 
-      header: '部署', 
+      header: TABLE_COLUMNS.DEPARTMENT, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',
@@ -92,7 +92,7 @@ export function ClientPage() {
     },
     { 
       key: 'position', 
-      header: '役職', 
+      header: TABLE_COLUMNS.POSITION, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',
@@ -100,7 +100,7 @@ export function ClientPage() {
     },
     { 
       key: 'contactPhone', 
-      header: '直通電話番号', 
+      header: TABLE_COLUMNS.DIRECT_PHONE, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',
@@ -116,7 +116,7 @@ export function ClientPage() {
     },
     { 
       key: 'email', 
-      header: 'メールアドレス', 
+      header: TABLE_COLUMNS.EMAIL, 
       editable: true, 
       inputType: 'text',
       rowType: 'sub',

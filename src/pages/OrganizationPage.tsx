@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { OrganizationItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOrganizations } from '../hooks';
 
 export function OrganizationPage() {
@@ -16,18 +16,18 @@ export function OrganizationPage() {
   }, [fetchOrganizations, showAlert]);
 
   const columns: Column<OrganizationItem>[] = [
-    { key: 'name', header: '法人名', sortable: false, editable: true, inputType: 'text' },
-    { key: 'representative_name', header: '代表者職・氏名', sortable: false, editable: true, inputType: 'text' },
-    { key: 'corporate_number', header: '法人番号（13桁）', sortable: false, editable: true, inputType: 'text' },
-    { key: 'postal_code_prefix', header: '郵便番号（前3桁）', sortable: false, editable: true, inputType: 'text' },
-    { key: 'postal_code_suffix', header: '郵便番号（後4桁）', sortable: false, editable: true, inputType: 'text' },
-    { key: 'prefecture', header: '都道府県', sortable: false, editable: true, inputType: 'text' },
-    { key: 'city', header: '市区町村・郡', sortable: false, editable: true, inputType: 'text' },
-    { key: 'town_street', header: '町名・番地', sortable: false, editable: true, inputType: 'text' },
-    { key: 'building', header: '建物名・部屋番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'phone', header: '電話番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'fax', header: 'FAX番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'email', header: 'メールアドレス', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.ORGANIZATION_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'representative_name', header: TABLE_COLUMNS.REPRESENTATIVE_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'corporate_number', header: TABLE_COLUMNS.CORPORATE_NUMBER, sortable: false, editable: true, inputType: 'text' },
+    { key: 'postal_code_prefix', header: TABLE_COLUMNS.POSTAL_CODE_PREFIX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'postal_code_suffix', header: TABLE_COLUMNS.POSTAL_CODE_SUFFIX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'prefecture', header: TABLE_COLUMNS.PREFECTURE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'city', header: TABLE_COLUMNS.CITY, sortable: false, editable: true, inputType: 'text' },
+    { key: 'town_street', header: TABLE_COLUMNS.TOWN_STREET, sortable: false, editable: true, inputType: 'text' },
+    { key: 'building', header: TABLE_COLUMNS.BUILDING, sortable: false, editable: true, inputType: 'text' },
+    { key: 'phone', header: TABLE_COLUMNS.PHONE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'fax', header: TABLE_COLUMNS.FAX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'email', header: TABLE_COLUMNS.EMAIL, sortable: false, editable: true, inputType: 'text' },
   ];
 
   const handleBatchSave = async (drafts: OrganizationItem[], deletedIds: string[]) => {

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { OfficeItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOffices } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -17,13 +17,13 @@ export function OfficePage() {
   }, [fetchOffices, showAlert]);
 
   const columns: Column<OfficeItem>[] = [
-    { key: 'code', header: '事業所コード', sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: '事業所名', sortable: false, editable: true, inputType: 'text' },
-    { key: 'short_name', header: '通称', sortable: false, editable: true, inputType: 'text' },
-    { key: 'unit_price', header: '地域区分単価(円)', sortable: false, editable: true, inputType: 'number' },
+    { key: 'code', header: TABLE_COLUMNS.OFFICE_ID, sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.OFFICE_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'short_name', header: TABLE_COLUMNS.OFFICE_SHORT_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'unit_price', header: TABLE_COLUMNS.UNIT_PRICE_REGIONAL, sortable: false, editable: true, inputType: 'number' },
     {
       key: 'service_type_ids',
-      header: '支援種別',
+      header: TABLE_COLUMNS.SERVICE_TYPE,
       sortable: false,
       editable: true,
       inputType: 'checkbox',
@@ -58,15 +58,15 @@ export function OfficePage() {
         return assignedNames.join('、') || '-';
       }
     },
-    { key: 'postal_code_prefix', header: '郵便番号（前3桁）', sortable: false, editable: true, inputType: 'text' },
-    { key: 'postal_code_suffix', header: '郵便番号（後4桁）', sortable: false, editable: true, inputType: 'text' },
-    { key: 'prefecture', header: '都道府県', sortable: false, editable: true, inputType: 'text' },
-    { key: 'city', header: '市区町村・郡', sortable: false, editable: true, inputType: 'text' },
-    { key: 'town_street', header: '町名・番地', sortable: false, editable: true, inputType: 'text' },
-    { key: 'building', header: '建物名・部屋番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'phone', header: '電話番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'fax', header: 'FAX番号', sortable: false, editable: true, inputType: 'text' },
-    { key: 'email', header: 'メールアドレス', sortable: false, editable: true, inputType: 'text' },
+    { key: 'postal_code_prefix', header: TABLE_COLUMNS.POSTAL_CODE_PREFIX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'postal_code_suffix', header: TABLE_COLUMNS.POSTAL_CODE_SUFFIX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'prefecture', header: TABLE_COLUMNS.PREFECTURE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'city', header: TABLE_COLUMNS.CITY, sortable: false, editable: true, inputType: 'text' },
+    { key: 'town_street', header: TABLE_COLUMNS.TOWN_STREET, sortable: false, editable: true, inputType: 'text' },
+    { key: 'building', header: TABLE_COLUMNS.BUILDING, sortable: false, editable: true, inputType: 'text' },
+    { key: 'phone', header: TABLE_COLUMNS.PHONE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'fax', header: TABLE_COLUMNS.FAX, sortable: false, editable: true, inputType: 'text' },
+    { key: 'email', header: TABLE_COLUMNS.EMAIL, sortable: false, editable: true, inputType: 'text' },
   ];
 
   const handleBatchSave = async (drafts: OfficeItem[], deletedIds: string[]) => {

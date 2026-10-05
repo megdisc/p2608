@@ -21,7 +21,8 @@ import { SortIcon } from './SortIcon';
 
 export type Column<T> = {
   key: string;
-  header: string;
+  header: string | React.ReactNode;
+  groupHeader?: string;
   sortKey?: string;
   sortable?: boolean;
   render?: (item: T, draftData: T[], updateData: (newData: T[]) => void) => React.ReactNode;
@@ -258,6 +259,41 @@ export function DataTable<T extends { id: string }>({
     const paginatedExisting = sortedExistingRows.slice(startIndex, startIndex + pageSize);
     return [...paginatedExisting, ...newRows];
   }, [sortedExistingRows, newRows, currentPage, pageSize, serverSidePagination]);
+
+  const hasGroupHeaders = useMemo(() => columns.some(col => !!col.groupHeader), [columns]);
+
+  const groupHeaderCells = useMemo(() => {
+    if (!hasGroupHeaders) return [];
+
+    const cells: { key: string; label: string; colSpan: number; isSingleRow: boolean; firstCol: Column<T> }[] = [];
+    
+    columns.forEach((col, idx) => {
+      if (!col.groupHeader) {
+        cells.push({
+          key: col.key || `single-${idx}`,
+          label: '',
+          colSpan: 1,
+          isSingleRow: true,
+          firstCol: col
+        });
+      } else {
+        const lastCell = cells.length > 0 ? cells[cells.length - 1] : null;
+        if (lastCell && !lastCell.isSingleRow && lastCell.label === col.groupHeader) {
+          lastCell.colSpan += 1;
+        } else {
+          cells.push({
+            key: `group-${col.groupHeader}-${idx}`,
+            label: col.groupHeader,
+            colSpan: 1,
+            isSingleRow: false,
+            firstCol: col
+          });
+        }
+      }
+    });
+
+    return cells;
+  }, [columns, hasGroupHeaders]);
 
   const handleSort = (key: string) => {
     if (!key) return;
@@ -659,28 +695,90 @@ export function DataTable<T extends { id: string }>({
       <div className="table-container">
         <table className="inventory-table" ref={tableRef} style={tableStyle}>
           <thead>
-            <tr>
-              {columns.map((col, idx) => {
-                const isSortable = col.sortable !== false;
-                return (
-                  <th 
-                    key={col.key || idx}
-                    onClick={() => isSortable && handleSort(col.key)}
-                    style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none' }}
-                    title={isSortable ? `${col.header}でソート` : undefined}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      {col.header}
-                      {isSortable && (
-                        <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
-                      )}
-                    </div>
-                  </th>
-                );
-              })}
-              {showDeleteCol && <th className="sticky-right" style={{ width: '40px', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
-              {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
-            </tr>
+            {hasGroupHeaders ? (
+              <>
+                <tr>
+                  {groupHeaderCells.map((cell) => {
+                    if (cell.isSingleRow) {
+                      const col = cell.firstCol;
+                      const isSortable = col.sortable !== false;
+                      return (
+                        <th 
+                          key={cell.key}
+                          rowSpan={2}
+                          onClick={() => isSortable && handleSort(col.key)}
+                          style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none', verticalAlign: 'middle', textAlign: 'left' }}
+                          title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            {col.header}
+                            {isSortable && (
+                              <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
+                            )}
+                          </div>
+                        </th>
+                      );
+                    } else {
+                      return (
+                        <th 
+                          key={cell.key}
+                          colSpan={cell.colSpan}
+                          style={{ textAlign: 'left', userSelect: 'none', verticalAlign: 'middle' }}
+                        >
+                          {cell.label}
+                        </th>
+                      );
+                    }
+                  })}
+                  {showDeleteCol && <th rowSpan={2} className="sticky-right" style={{ width: '40px', right: showRestrictionColumn ? '40px' : '0', verticalAlign: 'middle' }}>{BUTTON_LABELS.DELETE}</th>}
+                  {showRestrictionColumn && <th rowSpan={2} className="sticky-right" style={{ width: '40px', right: '0', verticalAlign: 'middle' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
+                </tr>
+                <tr>
+                  {columns.map((col, idx) => {
+                    if (!col.groupHeader) return null;
+                    const isSortable = col.sortable !== false;
+                    return (
+                      <th 
+                        key={col.key || idx}
+                        onClick={() => isSortable && handleSort(col.key)}
+                        style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none', textAlign: 'left', verticalAlign: 'middle' }}
+                        title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          {col.header}
+                          {isSortable && (
+                            <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
+                          )}
+                        </div>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </>
+            ) : (
+              <tr>
+                {columns.map((col, idx) => {
+                  const isSortable = col.sortable !== false;
+                  return (
+                    <th 
+                      key={col.key || idx}
+                      onClick={() => isSortable && handleSort(col.key)}
+                      style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none' }}
+                      title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {col.header}
+                        {isSortable && (
+                          <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
+                        )}
+                      </div>
+                    </th>
+                  );
+                })}
+                {showDeleteCol && <th className="sticky-right" style={{ width: '40px', right: showRestrictionColumn ? '40px' : '0' }}>{BUTTON_LABELS.DELETE}</th>}
+                {showRestrictionColumn && <th className="sticky-right" style={{ width: '40px', right: '0' }}>{TABLE_COLUMNS.RESTRICTION}</th>}
+              </tr>
+            )}
           </thead>
           <tbody>
             {visibleData.map((item) => {

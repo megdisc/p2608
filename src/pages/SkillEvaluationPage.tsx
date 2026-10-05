@@ -1,19 +1,20 @@
 import { DataPage, Select, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
 import type { SkillEvaluationGridRow } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useSkillEvaluations } from '../hooks';
 
 export function SkillEvaluationPage() {
   const { items, skills, skillLevels, loading, fetchData, batchSaveEvaluations } = useSkillEvaluations();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchData().catch(() => {
+    fetchData(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchData, showAlert]);
+  }, [fetchData, selectedOfficeId, showAlert]);
 
   const levelOptions = useMemo(() => {
     return [
@@ -24,6 +25,13 @@ export function SkillEvaluationPage() {
 
   const columns: Column<SkillEvaluationGridRow>[] = useMemo(() => {
     const cols: Column<SkillEvaluationGridRow>[] = [
+      {
+        key: 'memberCode',
+        header: TABLE_COLUMNS.MEMBER_ID,
+        sortable: true,
+        sortKey: 'memberCode',
+        editable: false
+      },
       { 
         key: 'memberName', 
         header: TABLE_COLUMNS.NAME, 
@@ -35,7 +43,8 @@ export function SkillEvaluationPage() {
 
     skills.forEach(skill => {
       cols.push({
-        key: skill.id, // We'll map the cell to evaluations[skill.id]
+        key: skill.id,
+        groupHeader: skill.categoryName || '未分類',
         header: skill.name,
         editable: true,
         inputType: 'select',

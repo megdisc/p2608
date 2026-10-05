@@ -72,7 +72,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'certificateNumber',
-      header: '受給者証番号',
+      header: TABLE_COLUMNS.CERTIFICATE_NUMBER,
       editable: true,
       inputType: 'text',
       rowType: 'sub',
@@ -85,7 +85,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'issuingMunicipality',
-      header: '交付市町村',
+      header: TABLE_COLUMNS.ISSUING_MUNICIPALITY,
       editable: true,
       inputType: 'text',
       rowType: 'sub',
@@ -93,7 +93,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'incomeCategory',
-      header: '所得階層区分',
+      header: TABLE_COLUMNS.INCOME_CATEGORY,
       editable: true,
       inputType: 'select',
       options: INCOME_CATEGORY_OPTIONS,
@@ -102,7 +102,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'copaymentLimitAmount',
-      header: '負担上限月額（円）',
+      header: TABLE_COLUMNS.COPAYMENT_LIMIT_AMOUNT,
       editable: true,
       inputType: 'number',
       rowType: 'sub',
@@ -110,7 +110,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'disabilitySupportClass',
-      header: '障害支援区分',
+      header: TABLE_COLUMNS.DISABILITY_SUPPORT_CLASS,
       editable: true,
       inputType: 'select',
       options: DISABILITY_CLASS_OPTIONS,
@@ -119,7 +119,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'copaymentManagementType',
-      header: '上限額管理区分',
+      header: TABLE_COLUMNS.COPAYMENT_MANAGEMENT_TYPE,
       editable: true,
       inputType: 'select',
       options: COPAYMENT_MGMT_OPTIONS,
@@ -162,7 +162,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'validFrom',
-      header: '支給決定開始日',
+      header: TABLE_COLUMNS.VALID_FROM,
       editable: true,
       inputType: 'date',
       rowType: 'sub',
@@ -170,7 +170,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'validTo',
-      header: '支給決定終了日',
+      header: TABLE_COLUMNS.VALID_TO,
       editable: true,
       inputType: 'date',
       rowType: 'sub',
@@ -178,7 +178,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'remarks',
-      header: '備考',
+      header: TABLE_COLUMNS.REMARKS,
       editable: true,
       inputType: 'text',
       rowType: 'sub',

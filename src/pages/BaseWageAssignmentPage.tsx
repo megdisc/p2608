@@ -1,21 +1,23 @@
 import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useBaseWageAssignments } from '../hooks';
 import type { MemberItem } from '../types';
 
 export function BaseWageAssignmentPage() {
   const { items, baseWages, loading, fetchAssignments, batchSaveAssignments } = useBaseWageAssignments();
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchAssignments().catch(() => {
+    fetchAssignments(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchAssignments, showAlert]);
+  }, [fetchAssignments, selectedOfficeId, showAlert]);
 
   const columns: Column<MemberItem>[] = [
+    { key: 'code', header: TABLE_COLUMNS.MEMBER_ID, sortable: true, sortKey: 'code', editable: false, inputType: 'text' },
     { key: 'name', header: TABLE_COLUMNS.NAME, sortable: true, sortKey: 'yomigana', editable: false, inputType: 'text' },
     { 
       key: 'baseWageId', 

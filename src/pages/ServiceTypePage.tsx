@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { ServiceTypeItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useServiceTypes } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -17,9 +17,9 @@ export function ServiceTypePage() {
   }, [fetchServiceTypes, showAlert]);
 
   const columns: Column<ServiceTypeItem>[] = [
-    { key: 'code', header: 'サービス種類コード', sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: 'サービス種類名称', sortable: false, editable: true, inputType: 'text' },
-    { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: false, editable: true, inputType: 'text' },
     { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
   ];
 

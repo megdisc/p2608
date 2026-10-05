@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { RewardItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useRewardItems, useServiceTypes } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -26,10 +26,10 @@ export function RewardItemPage() {
   }));
 
   const columns: Column<RewardItem>[] = [
-    { key: 'code', header: 'サービス詳細コード', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: false, editable: true, inputType: 'text' },
     { 
       key: 'service_type_id', 
-      header: '所属支援種別', 
+      header: TABLE_COLUMNS.SERVICE_TYPE, 
       sortable: false, 
       editable: true, 
       inputType: 'select',
@@ -39,10 +39,10 @@ export function RewardItemPage() {
         return <span>{matched ? matched.name : item.service_type_name || '就労継続支援B型'}</span>;
       }
     },
-    { key: 'name', header: 'サービス詳細名称', sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: false, editable: true, inputType: 'text' },
     { 
       key: 'item_category', 
-      header: '項目区分', 
+      header: TABLE_COLUMNS.TYPE, 
       sortable: false, 
       editable: true, 
       inputType: 'select',
@@ -67,7 +67,7 @@ export function RewardItemPage() {
     },
     { 
       key: 'occurrence_type', 
-      header: '発生単位', 
+      header: TABLE_COLUMNS.OCCURRENCE_TYPE, 
       sortable: false, 
       editable: true, 
       inputType: 'select',
@@ -79,7 +79,7 @@ export function RewardItemPage() {
         <span>{item.occurrence_type === 'monthly' ? '月次発生' : '日次発生'}</span>
       )
     },
-    { key: 'unit_value', header: '単位数', sortable: false, editable: true, inputType: 'number' },
+    { key: 'unit_value', header: TABLE_COLUMNS.UNIT, sortable: false, editable: true, inputType: 'number' },
     { key: 'calc_rate', header: '定率算定率[%]', sortable: false, editable: true, inputType: 'number' },
     { key: 'monthly_limit_count', header: '月間上限回数', sortable: false, editable: true, inputType: 'number' },
     { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },

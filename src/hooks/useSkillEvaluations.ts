@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { SkillEvaluationGridRow, SkillItem, SkillLevelItem, MemberItem } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -7,18 +7,82 @@ export function useSkillEvaluations() {
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillLevels, setSkillLevels] = useState<SkillLevelItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const currentOfficeIdRef = useRef<string | undefined>(undefined);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (officeId?: string) => {
+    currentOfficeIdRef.current = officeId;
     setLoading(true);
     try {
+      // Fetch skill categories
+      let catQuery = supabase
+        .from('skill_categories')
+        .select('*')
+        .eq('is_deleted', false);
+      if (officeId) {
+        catQuery = catQuery.or(`office_id.eq.${officeId},office_id.is.null`);
+      }
+      const { data: categoriesData, error: categoriesError } = await catQuery
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (categoriesError) throw categoriesError;
+
+      const categoriesList = categoriesData || [];
+      const categoryMap = new Map<string, { id: string; name: string; sort_order: number }>();
+      categoriesList.forEach(c => {
+        categoryMap.set(c.id, { id: c.id, name: c.name, sort_order: c.sort_order ?? 0 });
+      });
+
       // Fetch skills
-      const { data: skillsData, error: skillsError } = await supabase
+      let skillQuery = supabase
         .from('skills')
         .select('*')
-        .eq('is_deleted', false)
-        .order('name');
+        .eq('is_deleted', false);
+      if (officeId) {
+        skillQuery = skillQuery.or(`office_id.eq.${officeId},office_id.is.null`);
+      }
+      const { data: skillsData, error: skillsError } = await skillQuery
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
       if (skillsError) throw skillsError;
-      setSkills(skillsData as SkillItem[]);
+
+      const rawSkills = (skillsData || []) as any[];
+      const sortedSkills: SkillItem[] = [];
+
+      categoriesList.forEach(cat => {
+        const catSkills = rawSkills
+          .filter(s => s.category_id === cat.id)
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+        catSkills.forEach(s => {
+          sortedSkills.push({
+            id: s.id,
+            office_id: s.office_id,
+            category_id: cat.id,
+            categoryName: cat.name,
+            name: s.name,
+            description: s.description || '',
+            sort_order: s.sort_order ?? 0
+          });
+        });
+      });
+
+      const uncategorized = rawSkills
+        .filter(s => !s.category_id || !categoryMap.has(s.category_id))
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+      uncategorized.forEach(s => {
+        sortedSkills.push({
+          id: s.id,
+          office_id: s.office_id,
+          category_id: s.category_id || null,
+          categoryName: '未分類',
+          name: s.name,
+          description: s.description || '',
+          sort_order: s.sort_order ?? 0
+        });
+      });
+
+      setSkills(sortedSkills);
 
       // Fetch skill levels
       const { data: levelsData, error: levelsError } = await supabase
@@ -40,6 +104,23 @@ export function useSkillEvaluations() {
         .order('yomigana');
       if (membersError) throw membersError;
 
+      // Filter members for target office
+      let memberIdsForOffice: Set<string> | null = null;
+      if (officeId) {
+        memberIdsForOffice = new Set<string>();
+        const [settingsRes, certRes] = await Promise.all([
+          supabase.from('office_member_settings').select('member_id').eq('office_id', officeId),
+          supabase.from('member_recipient_certificates').select('member_id').eq('copayment_office_id', officeId).or('is_deleted.eq.false,is_deleted.is.null')
+        ]);
+        (settingsRes.data || []).forEach(s => memberIdsForOffice!.add(s.member_id));
+        (certRes.data || []).forEach(c => memberIdsForOffice!.add(c.member_id));
+      }
+
+      const targetMembers = (membersData || []).filter((member: MemberItem) => {
+        if (!memberIdsForOffice) return true;
+        return memberIdsForOffice.has(member.id);
+      });
+
       // Fetch evaluations
       const { data: evalsData, error: evalsError } = await supabase
         .from('member_skill_evaluations')
@@ -47,13 +128,14 @@ export function useSkillEvaluations() {
       if (evalsError) throw evalsError;
 
       // Build grid rows
-      const gridRows: SkillEvaluationGridRow[] = membersData.map((member: MemberItem) => {
+      const gridRows: SkillEvaluationGridRow[] = targetMembers.map((member: MemberItem) => {
         const evaluations: Record<string, string> = {};
         
         // Populate evaluations for this member
         const memberEvals = evalsData.filter(e => e.member_id === member.id);
         const row: any = {
           id: member.id, // Row ID is Member ID
+          memberCode: member.code || '',
           memberName: member.name,
           memberYomigana: member.yomigana || '',
           evaluations
@@ -104,7 +186,7 @@ export function useSkillEvaluations() {
         if (upsertError) throw upsertError;
       }
 
-      await fetchData();
+      await fetchData(currentOfficeIdRef.current);
     } finally {
       setLoading(false);
     }

@@ -90,6 +90,7 @@ export type SkillItem = {
   id: string;
   office_id?: string;
   category_id?: string | null;
+  categoryName?: string;
   name: string;
   yomigana?: string;
   description: string;
@@ -317,7 +318,9 @@ export type SkillEvaluationItem = {
 // UI usage: cross-tabulation table row for skill evaluations
 export type SkillEvaluationGridRow = {
   id: string; // memberId serves as row id
+  memberCode?: string;
   memberName: string;
+  memberYomigana?: string;
   evaluations: Record<string, string>; // mapping from skillId to skillLevelId
 };
 

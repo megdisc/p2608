@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { QualificationItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useQualifications } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -17,10 +17,10 @@ export function QualificationPage() {
   }, [fetchQualifications, showAlert]);
 
   const columns: Column<QualificationItem>[] = [
-    { key: 'code', header: '職種区分コード', sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: '資格・職種名称', sortable: false, editable: true, inputType: 'text' },
-    { key: 'category', header: '区分', sortable: false, editable: true, inputType: 'text' },
-    { key: 'description', header: '説明・概要', sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: false, editable: true, inputType: 'text' },
     { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
   ];
 

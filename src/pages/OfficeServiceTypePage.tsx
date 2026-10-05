@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import type { OfficeServiceTypeSettingTableItem, OfficeTableItem, ServiceTypeTableItem } from '../types/db';
 
 type OfficeServiceTypeGridRow = {
@@ -69,14 +69,14 @@ export function OfficeServiceTypePage() {
     const cols: Column<OfficeServiceTypeGridRow>[] = [
       {
         key: 'code',
-        header: '事業所ID',
+        header: TABLE_COLUMNS.OFFICE_ID,
         sortable: true,
         sortKey: 'code',
         editable: false,
       },
       {
         key: 'name',
-        header: '事業所名',
+        header: TABLE_COLUMNS.OFFICE_NAME,
         sortable: true,
         sortKey: 'name',
         editable: false,

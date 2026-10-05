@@ -21,17 +21,17 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_WELFARE: {
     screenName: PAGE_NAMES.SCREEN_WELFARE,
     tabs: [
-      { id: 'serviceType', label: '支援種別' },
-      { id: 'rewardItem', label: '加算・減算' },
-      { id: 'qualification', label: '資格' },
+      { id: 'serviceType', label: PAGE_NAMES.SERVICE_TYPE },
+      { id: 'rewardItem', label: PAGE_NAMES.REWARD_ITEM },
+      { id: 'qualification', label: PAGE_NAMES.QUALIFICATION },
     ],
   },
   SCREEN_FACILITY: {
     screenName: PAGE_NAMES.SCREEN_FACILITY,
     tabs: [
-      { id: 'organization', label: '法人' },
-      { id: 'office', label: '事業所' },
-      { id: 'officeServiceType', label: '支援種別' },
+      { id: 'organization', label: PAGE_NAMES.ORGANIZATION },
+      { id: 'office', label: PAGE_NAMES.OFFICE },
+      { id: 'officeServiceType', label: PAGE_NAMES.SERVICE_TYPE },
     ],
   },
   SCREEN_CLIENT: {
@@ -66,16 +66,16 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_STAFF,
     tabs: [
       { id: 'staff', label: PAGE_NAMES.STAFF },
-      { id: 'staffQualification', label: '資格' },
-      { id: 'staffOffice', label: '事業所' },
+      { id: 'staffQualification', label: PAGE_NAMES.QUALIFICATION },
+      { id: 'staffOffice', label: PAGE_NAMES.OFFICE },
     ],
   },
   SCREEN_USER: {
     screenName: PAGE_NAMES.SCREEN_USER,
     tabs: [
       { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
-      { id: 'memberRecipientCertificate', label: '受給者証' },
-      { id: 'memberOffice', label: '事業所' },
+      { id: 'memberRecipientCertificate', label: PAGE_NAMES.RECIPIENT_CERTIFICATE },
+      { id: 'memberOffice', label: PAGE_NAMES.OFFICE },
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
     ],

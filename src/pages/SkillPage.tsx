@@ -61,7 +61,7 @@ export function SkillPage() {
     {
       key: 'name',
       header: 'カテゴリ',
-      editable: (item: CategoryWithSkills) => !item.isUncategorized,
+      editable: false,
       inputType: 'text',
       rowType: 'main',
       render: (item: CategoryWithSkills) => (
@@ -91,7 +91,7 @@ export function SkillPage() {
     {
       key: 'description',
       header: TABLE_COLUMNS.DESCRIPTION,
-      editable: (item: any) => !item.isUncategorized,
+      editable: (item: any) => !Array.isArray(item.skills),
       inputType: 'text',
       rowType: 'both',
       sortable: false,
@@ -154,15 +154,6 @@ export function SkillPage() {
     }
   };
 
-  const handleAddCategory = () => {
-    return {
-      id: `CAT-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      name: '',
-      description: '',
-      skills: []
-    } as CategoryWithSkills;
-  };
-
   const handleAddSkill = (parentId: string) => {
     return {
       id: `SKL-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -183,10 +174,9 @@ export function SkillPage() {
       columns={columns}
       emptyMessage={MESSAGES.EMPTY_SKILL}
       onBatchSave={handleBatchSave}
-      onAddRow={handleAddCategory}
       subItemsKey="skills"
       onAddSubRow={handleAddSkill}
-      canDeleteRow={(item) => !item.isUncategorized}
+      canDeleteRow={() => false}
       hideHeader={true}
     />
   );

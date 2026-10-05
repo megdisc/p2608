@@ -81,6 +81,7 @@ export type SkillCategoryItem = {
   office_id?: string;
   name: string;
   description?: string;
+  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };
@@ -92,6 +93,7 @@ export type SkillItem = {
   name: string;
   yomigana?: string;
   description: string;
+  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };

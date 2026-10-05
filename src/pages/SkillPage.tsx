@@ -34,8 +34,12 @@ export function SkillPage() {
 
   // カテゴリ ＋ スキルのネスト表示用データ構築
   const items: CategoryWithSkills[] = useMemo(() => {
-    const list: CategoryWithSkills[] = categories.map(cat => {
-      const catSkills = skills.filter(s => s.category_id === cat.id);
+    const sortedCategories = [...categories].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+    const list: CategoryWithSkills[] = sortedCategories.map(cat => {
+      const catSkills = skills
+        .filter(s => s.category_id === cat.id)
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
       return {
         ...cat,
         skills: catSkills
@@ -43,7 +47,10 @@ export function SkillPage() {
     });
 
     // カテゴリ未分類のスキル群
-    const uncategorizedSkills = skills.filter(s => !s.category_id || !categories.some(c => c.id === s.category_id));
+    const uncategorizedSkills = skills
+      .filter(s => !s.category_id || !categories.some(c => c.id === s.category_id))
+      .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
     if (uncategorizedSkills.length > 0 || list.length === 0) {
       list.push({
         id: 'UNCATEGORIZED',
@@ -98,6 +105,128 @@ export function SkillPage() {
       onCellChange: (newValue, _item: any, updateRow) => {
         updateRow({ description: newValue });
       }
+    },
+    {
+      key: 'reorder',
+      header: TABLE_COLUMNS.REORDER,
+      rowType: 'sub',
+      sortable: false,
+      render: (item: any, draftData: CategoryWithSkills[], updateData?: (newData: CategoryWithSkills[]) => void) => {
+        if (!updateData || Array.isArray(item.skills)) return null;
+
+        const subItem: SkillItem = item;
+        const catIndex = draftData.findIndex(c => c.skills && c.skills.some(s => s.id === subItem.id));
+        if (catIndex === -1) return null;
+        
+        const cat = draftData[catIndex];
+        const skillIndex = cat.skills.findIndex(s => s.id === subItem.id);
+
+        const handleUp = () => {
+          if (skillIndex > 0) {
+            const newDraft = [...draftData];
+            const newSkills = [...cat.skills];
+            const temp = newSkills[skillIndex - 1];
+            newSkills[skillIndex - 1] = newSkills[skillIndex];
+            newSkills[skillIndex] = temp;
+            newSkills.forEach((s, idx) => { s.sort_order = idx; });
+            newDraft[catIndex] = { ...cat, skills: newSkills };
+            updateData(newDraft);
+          }
+        };
+
+        const handleDown = () => {
+          if (skillIndex >= 0 && skillIndex < cat.skills.length - 1) {
+            const newDraft = [...draftData];
+            const newSkills = [...cat.skills];
+            const temp = newSkills[skillIndex + 1];
+            newSkills[skillIndex + 1] = newSkills[skillIndex];
+            newSkills[skillIndex] = temp;
+            newSkills.forEach((s, idx) => { s.sort_order = idx; });
+            newDraft[catIndex] = { ...cat, skills: newSkills };
+            updateData(newDraft);
+          }
+        };
+
+        return (
+          <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+            <Button onClick={handleUp} disabled={skillIndex <= 0} style={{ padding: '4px 8px', minWidth: 'auto' }}>↑</Button>
+            <Button onClick={handleDown} disabled={skillIndex === -1 || skillIndex >= cat.skills.length - 1} style={{ padding: '4px 8px', minWidth: 'auto' }}>↓</Button>
+          </div>
+        );
+      }
+    },
+    {
+      key: 'categoryChange',
+      header: TABLE_COLUMNS.CATEGORY_CHANGE,
+      rowType: 'sub',
+      sortable: false,
+      render: (item: any, draftData: CategoryWithSkills[], updateData?: (newData: CategoryWithSkills[]) => void) => {
+        if (!updateData || Array.isArray(item.skills)) return null;
+
+        const subItem: SkillItem = item;
+
+        const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+          const newCatId = e.target.value || null;
+          let foundSkill: SkillItem | null = null;
+
+          const newDraft = draftData.map(cat => {
+            const remainingSkills = cat.skills.filter(s => {
+              if (s.id === subItem.id) {
+                foundSkill = { ...s, category_id: newCatId };
+                return false;
+              }
+              return true;
+            });
+            return { ...cat, skills: remainingSkills };
+          });
+
+          if (!foundSkill) return;
+
+          const targetCatId = newCatId || 'UNCATEGORIZED';
+          let targetCat = newDraft.find(c => c.id === targetCatId);
+
+          if (!targetCat && targetCatId === 'UNCATEGORIZED') {
+            targetCat = {
+              id: 'UNCATEGORIZED',
+              name: '未分類',
+              description: 'カテゴリに属さないスキル',
+              skills: [],
+              isUncategorized: true
+            };
+            newDraft.push(targetCat);
+          }
+
+          if (targetCat) {
+            targetCat.skills.push(foundSkill);
+          }
+
+          updateData(newDraft);
+        };
+
+        const currentCatId = subItem.category_id || '';
+
+        return (
+          <select
+            value={currentCatId}
+            onChange={handleCategorySelect}
+            style={{
+              padding: '4px 8px',
+              borderRadius: '4px',
+              border: '1px solid #cbd5e1',
+              backgroundColor: '#ffffff',
+              fontSize: '14px',
+              width: '100%'
+            }}
+          >
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+            <option value="">未分類</option>
+          </select>
+        );
+      }
     }
   ];
 
@@ -123,20 +252,22 @@ export function SkillPage() {
             id: cat.id,
             office_id: cat.office_id,
             name: cat.name,
-            description: cat.description || ''
+            description: cat.description || '',
+            sort_order: cat.sort_order
           });
         }
 
         const catId = cat.isUncategorized ? null : cat.id;
 
-        (cat.skills || []).forEach(skl => {
+        (cat.skills || []).forEach((skl, idx) => {
           if (!deletedIds.includes(skl.id)) {
             activeSkls.push({
               id: skl.id,
               office_id: skl.office_id,
               category_id: catId,
               name: skl.name,
-              description: skl.description || ''
+              description: skl.description || '',
+              sort_order: skl.sort_order ?? idx
             });
           }
         });

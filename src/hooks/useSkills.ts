@@ -18,7 +18,9 @@ export function useSkills() {
         query = query.or(`office_id.eq.${officeId},office_id.is.null`);
       }
 
-      const { data, error } = await query.order('name', { ascending: true });
+      const { data, error } = await query
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
       
       if (error) throw error;
       
@@ -27,7 +29,8 @@ export function useSkills() {
         office_id: d.office_id,
         category_id: d.category_id || null,
         name: d.name,
-        description: d.description || ''
+        description: d.description || '',
+        sort_order: d.sort_order ?? 0
       }));
       setItems(formatted);
     } catch (error) {
@@ -48,12 +51,13 @@ export function useSkills() {
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
+      const upserts = activeItems.map((item, index) => ({
         ...(item.id.startsWith('SKL-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
         category_id: item.category_id || null,
         name: item.name,
-        description: item.description || ''
+        description: item.description || '',
+        sort_order: item.sort_order ?? index
       }));
 
       if (upserts.length > 0) {

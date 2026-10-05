@@ -1,4 +1,4 @@
-import { DataPage, type Column } from '../components';
+import { DataPage, Button, type Column } from '../components';
 import { useEffect } from 'react';
 import type { SkillCategoryItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
@@ -31,6 +31,49 @@ export function SkillCategoryPage() {
       inputType: 'text',
       sortable: false,
     },
+    {
+      key: 'reorder',
+      header: TABLE_COLUMNS.REORDER,
+      sortable: false,
+      render: (item: SkillCategoryItem, draftData: SkillCategoryItem[], updateData?: (newData: SkillCategoryItem[]) => void) => {
+        if (!updateData) return null;
+        
+        const index = draftData.findIndex(d => d.id === item.id);
+        
+        const handleUp = () => {
+          if (index > 0) {
+            const newData = [...draftData];
+            const temp = newData[index - 1];
+            newData[index - 1] = newData[index];
+            newData[index] = temp;
+            newData.forEach((d, idx) => {
+              d.sort_order = idx;
+            });
+            updateData(newData);
+          }
+        };
+
+        const handleDown = () => {
+          if (index >= 0 && index < draftData.length - 1) {
+            const newData = [...draftData];
+            const temp = newData[index + 1];
+            newData[index + 1] = newData[index];
+            newData[index] = temp;
+            newData.forEach((d, idx) => {
+              d.sort_order = idx;
+            });
+            updateData(newData);
+          }
+        };
+
+        return (
+          <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+            <Button onClick={handleUp} disabled={index <= 0} style={{ padding: '4px 8px', minWidth: 'auto' }}>↑</Button>
+            <Button onClick={handleDown} disabled={index === -1 || index >= draftData.length - 1} style={{ padding: '4px 8px', minWidth: 'auto' }}>↓</Button>
+          </div>
+        );
+      }
+    }
   ];
 
   const handleBatchSave = async (drafts: SkillCategoryItem[], deletedIds: string[]) => {

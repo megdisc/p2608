@@ -18,7 +18,9 @@ export function useSkillCategories() {
         query = query.or(`office_id.eq.${officeId},office_id.is.null`);
       }
 
-      const { data, error } = await query.order('created_at', { ascending: true });
+      const { data, error } = await query
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (error) {
         console.error('fetchCategories error:', error);
@@ -30,6 +32,7 @@ export function useSkillCategories() {
         office_id: d.office_id,
         name: d.name,
         description: d.description || '',
+        sort_order: d.sort_order ?? 0,
       }));
       setCategories(formatted);
     } catch (error) {
@@ -53,11 +56,12 @@ export function useSkillCategories() {
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
+      const upserts = activeItems.map((item, index) => ({
         ...(item.id.startsWith('CAT-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
         name: item.name,
         description: item.description || '',
+        sort_order: item.sort_order ?? index,
       }));
 
       if (upserts.length > 0) {

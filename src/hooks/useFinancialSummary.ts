@@ -34,9 +34,9 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
       setLoading(true);
       let query = supabase
         .from('financial_records')
-        .select('period, type, subject, amount, activity_category')
-        .gte('period', `${year}-01-01`)
-        .lte('period', `${year}-12-31`);
+        .select('target_period, type, subject, amount, activity_category')
+        .gte('target_period', `${year}-01-01`)
+        .lte('target_period', `${year}-12-31`);
 
       if (activityCategory === 'welfare') {
         query = query.eq('activity_category', 'welfare');
@@ -72,7 +72,8 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
       }
 
       (records || []).forEach(record => {
-        const [y, m] = record.period.split('-');
+        if (!record.target_period) return;
+        const [y, m] = record.target_period.split('-');
         const periodKey = `${y}-${m}`;
 
         if (!summaryMap.has(periodKey)) return;

@@ -48,12 +48,6 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
 
           <button 
-            className={`nav-button ${['dashboard'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
-          >
-            {PAGE_NAMES.SCREEN_DASHBOARD}
-          </button>
-          <button 
             className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
           >
@@ -102,22 +96,28 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_USER}
           </button>
           <button 
-            className={`nav-button ${['screenDailyWork', 'dailyWorkRecord'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('dailyWorkRecord')}
-          >
-            {PAGE_NAMES.SCREEN_DAILY_WORK}
-          </button>
-          <button 
             className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('progressRecord')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
+            className={`nav-button ${['screenDailyWork', 'dailyWorkRecord'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dailyWorkRecord')}
+          >
+            {PAGE_NAMES.SCREEN_DAILY_WORK}
+          </button>
+          <button 
             className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('wageSummary')}
           >
             {PAGE_NAMES.SCREEN_FINANCE}
+          </button>
+          <button 
+            className={`nav-button ${['dashboard'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            {PAGE_NAMES.SCREEN_DASHBOARD}
           </button>
           <button 
             className={`nav-button ${['screenComposition', 'tableComposition', 'mainFeatures', 'workflow'].includes(activeTab) ? 'active' : ''}`}

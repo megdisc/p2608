@@ -12,12 +12,6 @@ export type ScreenConfig = {
 };
 
 export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
-  SCREEN_DASHBOARD: {
-    screenName: PAGE_NAMES.SCREEN_DASHBOARD,
-    tabs: [
-      { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
-    ],
-  },
   SCREEN_WELFARE: {
     screenName: PAGE_NAMES.SCREEN_WELFARE,
     tabs: [
@@ -80,12 +74,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
     ],
   },
-  SCREEN_DAILY_WORK: {
-    screenName: PAGE_NAMES.SCREEN_DAILY_WORK,
-    tabs: [
-      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
-    ],
-  },
   SCREEN_PROJECT: {
     screenName: PAGE_NAMES.SCREEN_PROJECT,
     tabs: [
@@ -97,6 +85,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
+  SCREEN_DAILY_WORK: {
+    screenName: PAGE_NAMES.SCREEN_DAILY_WORK,
+    tabs: [
+      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
+    ],
+  },
   SCREEN_FINANCE: {
     screenName: PAGE_NAMES.SCREEN_FINANCE,
     tabs: [
@@ -106,6 +100,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'projectFinancialSummary', label: PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY },
       { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
       { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
+    ],
+  },
+  SCREEN_DASHBOARD: {
+    screenName: PAGE_NAMES.SCREEN_DASHBOARD,
+    tabs: [
+      { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
     ],
   },
   SCREEN_COMPOSITION: {

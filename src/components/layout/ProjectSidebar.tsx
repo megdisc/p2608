@@ -46,7 +46,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
       
       <nav className="nav-menu">
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.INDEPENDENT_MASTER}</div>
+          <div className="nav-category">{MENU_CATEGORIES.MASTER}</div>
           <button 
             className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
@@ -83,10 +83,6 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.SCREEN_RESERVE}
           </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.DEPENDENT_MASTER}</div>
           <button 
             className={`nav-button ${['screenStaff', 'staff', 'staffQualification', 'staffOffice'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('staff')}

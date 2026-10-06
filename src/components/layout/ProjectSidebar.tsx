@@ -1,6 +1,6 @@
 import type { Tab } from '../../types';
 import { useAuth, useOffice } from '../../contexts';
-import { SYSTEM_NAME, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS } from '../../constants';
+import { SYSTEM_NAME, SYSTEM_ID, PAGE_NAMES, BUTTON_LABELS, MENU_CATEGORIES } from '../../constants';
 
 type ProjectSidebarProps = {
   activeTab: Tab;
@@ -46,7 +46,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
       
       <nav className="nav-menu">
         <div className="nav-section">
-
+          <div className="nav-category">{MENU_CATEGORIES.INDEPENDENT_MASTER}</div>
           <button 
             className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'rewardItem'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
@@ -83,6 +83,10 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.SCREEN_RESERVE}
           </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.DEPENDENT_MASTER}</div>
           <button 
             className={`nav-button ${['screenStaff', 'staff', 'staffQualification', 'staffOffice'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('staff')}
@@ -101,12 +105,20 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.RECORD}</div>
           <button 
             className={`nav-button ${['screenDailyWork', 'dailyWorkRecord'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('dailyWorkRecord')}
           >
             {PAGE_NAMES.SCREEN_DAILY_WORK}
           </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.SUMMARY}</div>
           <button 
             className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('wageSummary')}
@@ -126,8 +138,6 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             システム構成（開発用）
           </button>
         </div>
-
-
       </nav>
 
       <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>

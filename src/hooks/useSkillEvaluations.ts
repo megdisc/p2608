@@ -6,6 +6,7 @@ export function useSkillEvaluations() {
   const [items, setItems] = useState<SkillEvaluationGridRow[]>([]);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [skillLevels, setSkillLevels] = useState<SkillLevelItem[]>([]);
+  const [allSkillLevels, setAllSkillLevels] = useState<SkillLevelItem[]>([]);
   const [loading, setLoading] = useState(false);
   const currentOfficeIdRef = useRef<string | undefined>(undefined);
 
@@ -84,17 +85,41 @@ export function useSkillEvaluations() {
 
       setSkills(sortedSkills);
 
-      // Fetch skill levels
-      const { data: levelsData, error: levelsError } = await supabase
+      // Fetch skill levels filtered by office
+      let levelQuery = supabase
         .from('skill_levels')
         .select('*')
+        .eq('is_deleted', false);
+      if (officeId) {
+        levelQuery = levelQuery.or(`office_id.eq.${officeId},office_id.is.null`);
+      }
+      const { data: levelsData, error: levelsError } = await levelQuery
         .order('level_value');
       if (levelsError) throw levelsError;
-      setSkillLevels((levelsData || []).map(l => ({
+
+      const formattedLevels: SkillLevelItem[] = (levelsData || []).map(l => ({
         id: l.id,
+        office_id: l.office_id,
         levelValue: l.level_value,
         description: l.description
-      })));
+      }));
+      setSkillLevels(formattedLevels);
+
+      // Fetch all non-deleted skill levels for evaluation display lookup
+      const { data: allLevelsData, error: allLevelsError } = await supabase
+        .from('skill_levels')
+        .select('*')
+        .eq('is_deleted', false);
+      if (!allLevelsError && allLevelsData) {
+        setAllSkillLevels(allLevelsData.map(l => ({
+          id: l.id,
+          office_id: l.office_id,
+          levelValue: l.level_value,
+          description: l.description
+        })));
+      } else {
+        setAllSkillLevels(formattedLevels);
+      }
 
       // Fetch members
       const { data: membersData, error: membersError } = await supabase
@@ -192,5 +217,5 @@ export function useSkillEvaluations() {
     }
   }, [fetchData]);
 
-  return { items, skills, skillLevels, loading, fetchData, batchSaveEvaluations };
+  return { items, skills, skillLevels, allSkillLevels, loading, fetchData, batchSaveEvaluations };
 }

@@ -390,6 +390,10 @@ INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'internal') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2') ON CONFLICT (id) DO NOTHING;
 
 -- 12. 作業実績 (member_work_records) & 出欠実績 (member_attendance_records)
 INSERT INTO public.member_attendance_records (office_id, target_period, member_id, status, contact_date, is_absentee_supported, remarks) VALUES
@@ -404,9 +408,15 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.member_work_records (office_id, target_period, member_id, task_id, work_time) VALUES
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 2),
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 2),
+('22222222-2222-2222-2222-222222222222', '2026-06-15', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3),
+('22222222-2222-2222-2222-222222222222', '2026-06-15', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4),
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3),
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3),
-('22222222-2222-2222-2222-222222222222', '2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4)
+('22222222-2222-2222-2222-222222222222', '2026-06-16', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 4),
+('22222222-2222-2222-2222-222222222222', '2026-06-16', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 3),
+('22222222-2222-2222-2222-222222222222', '2026-06-17', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4),
+('22222222-2222-2222-2222-222222222222', '2026-06-17', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 3),
+('22222222-2222-2222-2222-222222222222', '2026-06-17', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4)
 ON CONFLICT (id) DO NOTHING;
 
 -- 13. 日次確定 (daily_record_closings)

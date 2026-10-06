@@ -131,8 +131,8 @@ export function useProgressRecords() {
 
       const workTimeRes = await supabase
         .from('daily_work_records')
-        .select('member_id, task_id, work_time, date')
-        .lt('date', endDate);
+        .select('member_id, task_id, work_time, target_period')
+        .lt('target_period', endDate);
       
       if (workTimeRes.error) throw workTimeRes.error;
 
@@ -150,7 +150,8 @@ export function useProgressRecords() {
           
           cumulativeTimeMap[key] = (cumulativeTimeMap[key] || 0) + t;
           
-          if (r.date >= startDate && r.date < endDate) {
+          const recDate = r.target_period || r.date;
+          if (recDate >= startDate && recDate < endDate) {
              timeMap[key] = (timeMap[key] || 0) + t;
           }
         }

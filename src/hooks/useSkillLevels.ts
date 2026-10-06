@@ -15,7 +15,7 @@ export function useSkillLevels() {
         .eq('is_deleted', false);
 
       if (officeId) {
-        query = query.eq('office_id', officeId);
+        query = query.or(`office_id.eq.${officeId},office_id.is.null`);
       }
 
       const { data, error } = await query.order('level_value');
@@ -23,6 +23,7 @@ export function useSkillLevels() {
       if (error) throw error;
       setItems((data || []).map(d => ({
         id: d.id,
+        office_id: d.office_id,
         levelValue: d.level_value,
         description: d.description
       })));

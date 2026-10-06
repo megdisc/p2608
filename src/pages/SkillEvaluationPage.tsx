@@ -6,7 +6,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useSkillEvaluations } from '../hooks';
 
 export function SkillEvaluationPage() {
-  const { items, skills, skillLevels, loading, fetchData, batchSaveEvaluations } = useSkillEvaluations();
+  const { items, skills, skillLevels, allSkillLevels, loading, fetchData, batchSaveEvaluations } = useSkillEvaluations();
   const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
 
@@ -51,7 +51,7 @@ export function SkillEvaluationPage() {
         options: levelOptions,
         render: (item: SkillEvaluationGridRow) => {
           const levelId = (item as any)[skill.id] || item.evaluations[skill.id];
-          const levelVal = skillLevels.find(l => l.id === levelId)?.levelValue;
+          const levelVal = (allSkillLevels && allSkillLevels.length > 0 ? allSkillLevels : skillLevels).find(l => l.id === levelId)?.levelValue;
           return levelVal !== undefined ? String(levelVal) : '未設定';
         },
         customEditRender: (_value: any, item: SkillEvaluationGridRow, onChange: (newValue: any) => void) => {
@@ -75,7 +75,7 @@ export function SkillEvaluationPage() {
     });
 
     return cols;
-  }, [skills, skillLevels, levelOptions]);
+  }, [skills, skillLevels, allSkillLevels, levelOptions]);
 
   const handleBatchSave = async (drafts: SkillEvaluationGridRow[]) => {
     try {

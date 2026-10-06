@@ -18,7 +18,7 @@ export function SkillEvaluationPage() {
 
   const levelOptions = useMemo(() => {
     return [
-      { label: '未設定', value: '' },
+      { label: '-', value: '' },
       ...skillLevels.map(level => ({ label: String(level.levelValue), value: level.id }))
     ];
   }, [skillLevels]);
@@ -52,7 +52,7 @@ export function SkillEvaluationPage() {
         render: (item: SkillEvaluationGridRow) => {
           const levelId = (item as any)[skill.id] || item.evaluations[skill.id];
           const levelVal = (allSkillLevels && allSkillLevels.length > 0 ? allSkillLevels : skillLevels).find(l => l.id === levelId)?.levelValue;
-          return levelVal !== undefined ? String(levelVal) : '未設定';
+          return levelVal !== undefined ? String(levelVal) : '-';
         },
         customEditRender: (_value: any, item: SkillEvaluationGridRow, onChange: (newValue: any) => void) => {
           const levelId = (item as any)[skill.id] || item.evaluations[skill.id] || '';

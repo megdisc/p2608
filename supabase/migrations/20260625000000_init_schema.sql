@@ -310,7 +310,8 @@ CREATE TABLE IF NOT EXISTS "public"."member_skill_settings" (
     "skill_id" UUID REFERENCES "public"."skill_items"("id") ON DELETE CASCADE,
     "skill_level_id" UUID REFERENCES "public"."skill_level_items"("id") ON DELETE CASCADE,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT member_skill_settings_member_id_skill_id_key UNIQUE (member_id, skill_id)
 );
 
 -- 1.20 member_wage_settings (利用者工賃単価割当)

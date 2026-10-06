@@ -186,6 +186,7 @@ export function useSkillEvaluations() {
     setLoading(true);
     try {
       const upserts: any[] = [];
+      const deletes: { member_id: string; skill_id: string }[] = [];
       
       drafts.forEach(draft => {
         const memberId = draft.id;
@@ -199,6 +200,8 @@ export function useSkillEvaluations() {
               skill_level_id: skillLevelId,
               updated_at: new Date().toISOString()
             });
+          } else {
+            deletes.push({ member_id: memberId, skill_id: skillId });
           }
         });
       });
@@ -206,9 +209,16 @@ export function useSkillEvaluations() {
       if (upserts.length > 0) {
         // Upsert requires conflict target, which is (member_id, skill_id)
         const { error: upsertError } = await supabase
-          .from('member_skill_evaluations')
+          .from('member_skill_settings')
           .upsert(upserts, { onConflict: 'member_id,skill_id' });
         if (upsertError) throw upsertError;
+      }
+
+      for (const del of deletes) {
+        await supabase
+          .from('member_skill_settings')
+          .delete()
+          .match({ member_id: del.member_id, skill_id: del.skill_id });
       }
 
       await fetchData(currentOfficeIdRef.current);

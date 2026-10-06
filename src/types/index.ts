@@ -109,20 +109,22 @@ export type BaseWageItem = {
 
 export type AllowanceItem = {
   id: string;
+  office_id?: string;
   name: string;
   occurrence_type: 'daily' | 'monthly';
-  default_unit_price: number;
+  unit_price: number;
   deleted_at?: string | null;
-  is_active?: boolean;
+  is_deleted?: boolean;
 };
 
 export type DeductionItem = {
   id: string;
+  office_id?: string;
   name: string;
   occurrence_type: 'daily' | 'monthly';
-  default_unit_price: number;
+  unit_price: number;
   deleted_at?: string | null;
-  is_active?: boolean;
+  is_deleted?: boolean;
 };
 
 export type PartnerContactItem = {

@@ -24,10 +24,10 @@ export function useDeductions() {
       
       const formatted: DeductionItem[] = (data || []).map(d => ({
         id: d.id,
+        office_id: d.office_id,
         name: d.name || '',
         occurrence_type: d.occurrence_type || 'daily',
-        default_unit_price: Number(d.default_unit_price || d.unit_price || 0),
-        is_active: d.is_active ?? true,
+        unit_price: Number(d.unit_price ?? d.default_unit_price ?? 0),
       }));
       setItems(formatted);
     } catch (error) {
@@ -57,7 +57,7 @@ export function useDeductions() {
         name: item.name,
         item_category: 'deduction',
         occurrence_type: item.occurrence_type,
-        unit_price: item.default_unit_price,
+        unit_price: item.unit_price,
       }));
 
       if (upserts.length > 0) {

@@ -59,11 +59,15 @@ export function useBaseWageAssignments() {
 
       if (evaluationsError) throw evaluationsError;
 
-      // Map latest evaluation to each member
+      const validWageRateIds = new Set((wagesData || []).map((w: any) => w.id));
+
+      // Map latest office-specific evaluation to each member
       const memberWageMap: Record<string, string> = {};
       (evaluationsData || []).forEach((ev: any) => {
         if (!memberWageMap[ev.member_id]) {
-          memberWageMap[ev.member_id] = ev.wage_rate_id;
+          if (!officeId || validWageRateIds.has(ev.wage_rate_id)) {
+            memberWageMap[ev.member_id] = ev.wage_rate_id;
+          }
         }
       });
 
@@ -89,23 +93,45 @@ export function useBaseWageAssignments() {
   }, []);
 
   const batchSaveAssignments = async (drafts: MemberItem[]) => {
-    for (const d of drafts) {
-      if (d.baseWageId) {
-        const { data: existing } = await supabase
-          .from('member_wage_evaluations')
-          .select('id')
-          .eq('member_id', d.id)
-          .order('created_at', { ascending: false })
-          .limit(1);
+    const officeId = currentOfficeIdRef.current;
 
-        if (existing && existing.length > 0) {
+    // Fetch valid wage_rate_ids for the target office
+    let wageQuery = supabase
+      .from('wage_rates')
+      .select('id, office_id')
+      .eq('is_deleted', false);
+    if (officeId) {
+      wageQuery = wageQuery.or(`office_id.eq.${officeId},office_id.is.null`);
+    }
+    const { data: currentOfficeWages } = await wageQuery;
+    const officeWageIds = new Set((currentOfficeWages || []).map((w: any) => w.id));
+
+    // Fetch existing member wage evaluations for the drafts
+    const draftMemberIds = drafts.map(d => d.id);
+    let existingEvals: any[] = [];
+    if (draftMemberIds.length > 0) {
+      const { data: evals } = await supabase
+        .from('member_wage_evaluations')
+        .select('id, member_id, wage_rate_id')
+        .in('member_id', draftMemberIds)
+        .order('created_at', { ascending: false });
+      existingEvals = evals || [];
+    }
+
+    for (const d of drafts) {
+      const existingForOffice = existingEvals.find((ev: any) =>
+        ev.member_id === d.id && (!officeId || officeWageIds.has(ev.wage_rate_id))
+      );
+
+      if (d.baseWageId) {
+        if (existingForOffice) {
           const { error } = await supabase
             .from('member_wage_evaluations')
             .update({
               wage_rate_id: d.baseWageId,
               updated_at: new Date().toISOString()
             })
-            .eq('id', existing[0].id);
+            .eq('id', existingForOffice.id);
 
           if (error) throw error;
         } else {
@@ -118,9 +144,18 @@ export function useBaseWageAssignments() {
 
           if (error) throw error;
         }
+      } else {
+        if (existingForOffice) {
+          const { error } = await supabase
+            .from('member_wage_evaluations')
+            .delete()
+            .eq('id', existingForOffice.id);
+
+          if (error) throw error;
+        }
       }
     }
-    await fetchAssignments(currentOfficeIdRef.current);
+    await fetchAssignments(officeId);
   };
 
   return {

@@ -69,7 +69,7 @@ export function useWageSummary() {
           )
         `).eq('is_deleted', false),
         supabase.from('financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
-        supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
+        supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time, office_id').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
         supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_incentive_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
         supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
@@ -144,12 +144,25 @@ export function useWageSummary() {
         name: m.is_deleted ? `${m.name} (削除済)` : m.name
       }));
 
-      const wageRateMap = new Map((wageRatesRes.data || []).map((w: any) => [w.id, Number(w.wage)]));
-      const memberWageMap = new Map<string, number>();
+      const wageRateInfoMap = new Map<string, { wage: number; officeId: string | null }>(
+        (wageRatesRes.data || []).map((w: any) => [w.id, { wage: Number(w.wage), officeId: w.office_id || null }])
+      );
+
+      const memberOfficeWageMap = new Map<string, number>();
+      const memberDefaultWageMap = new Map<string, number>();
+
       (wageEvalsRes.data || []).forEach((ev: any) => {
-        if (!memberWageMap.has(ev.member_id)) {
-          const w = wageRateMap.get(ev.wage_rate_id);
-          if (w !== undefined) memberWageMap.set(ev.member_id, w);
+        const wageInfo = wageRateInfoMap.get(ev.wage_rate_id);
+        if (wageInfo) {
+          if (!memberDefaultWageMap.has(ev.member_id)) {
+            memberDefaultWageMap.set(ev.member_id, wageInfo.wage);
+          }
+          if (wageInfo.officeId) {
+            const key = `${ev.member_id}_${wageInfo.officeId}`;
+            if (!memberOfficeWageMap.has(key)) {
+              memberOfficeWageMap.set(key, wageInfo.wage);
+            }
+          }
         }
       });
 
@@ -157,11 +170,32 @@ export function useWageSummary() {
         const dbRecord: any = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
-        
-        let basicWage = null;
-        let wageRate: number | null = memberWageMap.get(member.id) ?? null;
-        if (wageRate !== null) {
-          basicWage = Math.floor(wageRate * totalWorkTime);
+
+        let calculatedBasicWage = 0;
+        let hasValidRate = false;
+
+        memberWorks.forEach((w: any) => {
+          const time = Number(w.work_time);
+          if (time > 0) {
+            let rate: number | null = null;
+            if (w.office_id && memberOfficeWageMap.has(`${member.id}_${w.office_id}`)) {
+              rate = memberOfficeWageMap.get(`${member.id}_${w.office_id}`)!;
+            } else if (memberDefaultWageMap.has(member.id)) {
+              rate = memberDefaultWageMap.get(member.id)!;
+            }
+
+            if (rate !== null) {
+              hasValidRate = true;
+              calculatedBasicWage += rate * time;
+            }
+          }
+        });
+
+        let basicWage = hasValidRate ? Math.floor(calculatedBasicWage) : null;
+        let wageRate: number | null = memberDefaultWageMap.get(member.id) ?? null;
+        const primaryWorkOfficeId = memberWorks.find((w: any) => w.office_id && Number(w.work_time) > 0)?.office_id;
+        if (primaryWorkOfficeId && memberOfficeWageMap.has(`${member.id}_${primaryWorkOfficeId}`)) {
+          wageRate = memberOfficeWageMap.get(`${member.id}_${primaryWorkOfficeId}`)!;
         }
 
         let sumRewardUnitPrice = 0;

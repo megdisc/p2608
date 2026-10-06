@@ -7,7 +7,7 @@ import { useOffices } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
 export function OfficePage() {
-  const { items, activeServiceTypes, loading, fetchOffices, batchSaveOffices } = useOffices();
+  const { items, loading, fetchOffices, batchSaveOffices } = useOffices();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -21,43 +21,6 @@ export function OfficePage() {
     { key: 'name', header: TABLE_COLUMNS.OFFICE_NAME, sortable: false, editable: true, inputType: 'text' },
     { key: 'short_name', header: TABLE_COLUMNS.OFFICE_SHORT_NAME, sortable: false, editable: true, inputType: 'text' },
     { key: 'unit_price', header: TABLE_COLUMNS.UNIT_PRICE_REGIONAL, sortable: false, editable: true, inputType: 'number' },
-    {
-      key: 'service_type_ids',
-      header: TABLE_COLUMNS.SERVICE_TYPE,
-      sortable: false,
-      editable: true,
-      inputType: 'checkbox',
-      customEditRender: (value: string[] = [], _item, onChange) => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: '160px', padding: '4px 0' }}>
-          {activeServiceTypes.map(st => {
-            const checked = (value || []).includes(st.id);
-            return (
-              <label key={st.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px', userSelect: 'none' }}>
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={(e) => {
-                    const currentArr = value || [];
-                    const next = e.target.checked
-                      ? [...currentArr, st.id]
-                      : currentArr.filter(id => id !== st.id);
-                    onChange(next);
-                  }}
-                  className="custom-checkbox"
-                />
-                {st.name}
-              </label>
-            );
-          })}
-        </div>
-      ),
-      render: (item) => {
-        const assignedNames = activeServiceTypes
-          .filter(st => (item.service_type_ids || []).includes(st.id))
-          .map(st => st.name);
-        return assignedNames.join('、') || '-';
-      }
-    },
     { key: 'postal_code_prefix', header: TABLE_COLUMNS.POSTAL_CODE_PREFIX, sortable: false, editable: true, inputType: 'text' },
     { key: 'postal_code_suffix', header: TABLE_COLUMNS.POSTAL_CODE_SUFFIX, sortable: false, editable: true, inputType: 'text' },
     { key: 'prefecture', header: TABLE_COLUMNS.PREFECTURE, sortable: false, editable: true, inputType: 'text' },
@@ -85,8 +48,6 @@ export function OfficePage() {
       ...(currentDrafts || []).map(i => i.code)
     ];
 
-    const defaultSTIds = activeServiceTypes.length > 0 ? [activeServiceTypes[0].id] : [];
-
     return {
       id: `OFF-${Date.now()}-${Math.random()}`,
       code: generateNextUnifiedCode(existingCodes, 'OFF-'),
@@ -102,7 +63,6 @@ export function OfficePage() {
       phone: '',
       fax: '',
       email: '',
-      service_type_ids: defaultSTIds
     } as OfficeItem;
   };
 

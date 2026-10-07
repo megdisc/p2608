@@ -490,9 +490,13 @@ CREATE TABLE IF NOT EXISTS "public"."member_attendance_records" (
     "status" TEXT DEFAULT 'present' NOT NULL, -- ('present', 'absent')
     "contact_date" DATE DEFAULT NULL,
     "is_absentee_supported" BOOLEAN DEFAULT false NOT NULL,
+    "has_meal" BOOLEAN DEFAULT false NOT NULL,
+    "has_pickup" BOOLEAN DEFAULT false NOT NULL,
+    "has_dropoff" BOOLEAN DEFAULT false NOT NULL,
     "remarks" TEXT,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT "member_attendance_records_target_period_member_id_key" UNIQUE ("target_period", "member_id")
 );
 
 -- 2.2 member_work_records (利用者作業実績)
@@ -541,6 +545,9 @@ CREATE TABLE IF NOT EXISTS "public"."daily_record_closings" (
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
+
+
+
 
 -- ==========================================
 -- 3. 月次実績層

@@ -11,11 +11,32 @@ export type DailyRecord = {
   work_time: number;
 };
 
+export type DailyAttendanceRecord = {
+  id?: string;
+  target_period: string;
+  member_id: string;
+  status: string;
+  contact_date?: string | null;
+  is_absentee_supported: boolean;
+  has_meal: boolean;
+  has_pickup: boolean;
+  has_dropoff: boolean;
+  remarks?: string | null;
+};
+
 export type DailyFlatRecord = {
   id: string;
   userId: string;
+  userCode: string;
   userName: string;
   userYomigana: string;
+  status: string;
+  contactDate: string;
+  isAbsenteeSupported: boolean;
+  hasMeal: boolean;
+  hasPickup: boolean;
+  hasDropoff: boolean;
+  remarks: string;
   date: string;
   projectId: string;
   projectYomigana: string;
@@ -34,6 +55,7 @@ export function useDailyWorkRecords() {
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
   const [records, setRecords] = useState<DailyRecord[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<DailyAttendanceRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
 
@@ -91,13 +113,18 @@ export function useDailyWorkRecords() {
   const fetchRecords = useCallback(async (date: string) => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('daily_work_records')
-        .select('*')
-        .eq('target_period', date);
-      
-      if (error) throw error;
-      setRecords(data || []);
+      const [workRes, attendanceRes] = await Promise.all([
+        supabase.from('daily_work_records').select('*').eq('target_period', date),
+        supabase.from('member_attendance_records').select('*').eq('target_period', date)
+      ]);
+
+      if (workRes.error) throw workRes.error;
+      if (attendanceRes.error && attendanceRes.error.code !== 'PGRST116') {
+        console.warn('Warning fetching attendance records:', attendanceRes.error);
+      }
+
+      setRecords(workRes.data || []);
+      setAttendanceRecords(attendanceRes.data || []);
     } catch (error) {
       console.error('Error fetching records:', error);
       throw error;
@@ -147,6 +174,17 @@ export function useDailyWorkRecords() {
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
       if (member.is_deleted && userRecords.length === 0) continue;
+      
+      const userAttendance = attendanceRecords.find(a => a.member_id === member.id);
+      const status = userAttendance ? (userAttendance.status || 'present') : 'present';
+      const contactDate = userAttendance ? (userAttendance.contact_date || '') : '';
+      const isAbsenteeSupported = userAttendance ? Boolean(userAttendance.is_absentee_supported) : false;
+      const hasMeal = userAttendance ? Boolean(userAttendance.has_meal) : false;
+      const hasPickup = userAttendance ? Boolean(userAttendance.has_pickup) : false;
+      const hasDropoff = userAttendance ? Boolean(userAttendance.has_dropoff) : false;
+      const remarks = userAttendance ? (userAttendance.remarks || '') : '';
+      const userCode = (member as any).code || '';
+
       const taskMap = new Map<string, DailyFlatRecord>();
 
       // 1. 作業記録テーブル（daily_work_records）に記録されているデータ
@@ -155,8 +193,16 @@ export function useDailyWorkRecords() {
           taskMap.set(r.task_id, {
             id: r.id,
             userId: member.id,
+            userCode,
             userName: member.name,
             userYomigana: member.yomigana || '',
+            status,
+            contactDate,
+            isAbsenteeSupported,
+            hasMeal,
+            hasPickup,
+            hasDropoff,
+            remarks,
             date: currentDate,
             projectId: OTHER_PROJECT_ID,
             projectYomigana: 'んんん',
@@ -177,8 +223,16 @@ export function useDailyWorkRecords() {
           taskMap.set(r.task_id, {
             id: r.id,
             userId: member.id,
+            userCode,
             userName: member.name,
             userYomigana: member.yomigana || '',
+            status,
+            contactDate,
+            isAbsenteeSupported,
+            hasMeal,
+            hasPickup,
+            hasDropoff,
+            remarks,
             date: currentDate,
             projectId,
             projectYomigana: targetProject?.yomigana || '',
@@ -200,8 +254,16 @@ export function useDailyWorkRecords() {
               taskMap.set(t.id, {
                 id: `UNSAVED-${currentDate}-${member.id}-${t.id}`,
                 userId: member.id,
+                userCode,
                 userName: member.name,
                 userYomigana: member.yomigana || '',
+                status,
+                contactDate,
+                isAbsenteeSupported,
+                hasMeal,
+                hasPickup,
+                hasDropoff,
+                remarks,
                 date: currentDate,
                 projectId: p.id,
                 projectYomigana: p.yomigana || '',
@@ -219,8 +281,16 @@ export function useDailyWorkRecords() {
           taskMap.set(OTHER_TASK_ID, {
             id: `UNSAVED-${currentDate}-${member.id}-${OTHER_TASK_ID}`,
             userId: member.id,
+            userCode,
             userName: member.name,
             userYomigana: member.yomigana || '',
+            status,
+            contactDate,
+            isAbsenteeSupported,
+            hasMeal,
+            hasPickup,
+            hasDropoff,
+            remarks,
             date: currentDate,
             projectId: OTHER_PROJECT_ID,
             projectYomigana: 'んんん',
@@ -236,8 +306,16 @@ export function useDailyWorkRecords() {
           taskMap.set('EMPTY_RECORD', {
             id: `EMPTY-${currentDate}-${member.id}`,
             userId: member.id,
+            userCode,
             userName: member.name,
             userYomigana: member.yomigana || '',
+            status,
+            contactDate,
+            isAbsenteeSupported,
+            hasMeal,
+            hasPickup,
+            hasDropoff,
+            remarks,
             date: currentDate,
             projectId: '',
             projectYomigana: '',
@@ -254,6 +332,10 @@ export function useDailyWorkRecords() {
     }
 
     flatRows.sort((a, b) => {
+      const codeA = a.userCode || '';
+      const codeB = b.userCode || '';
+      if (codeA !== codeB) return codeA.localeCompare(codeB, undefined, { numeric: true });
+
       const mA = dbMembers.find(m => m.id === a.userId)?.yomigana || '';
       const mB = dbMembers.find(m => m.id === b.userId)?.yomigana || '';
       if (mA !== mB) return mA.localeCompare(mB);
@@ -299,7 +381,7 @@ export function useDailyWorkRecords() {
     });
 
     return finalRows;
-  }, [currentDate, dbMembers, dbProjects, records, confirmedDates]);
+  }, [currentDate, dbMembers, dbProjects, records, attendanceRecords, confirmedDates]);
 
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {
@@ -307,6 +389,55 @@ export function useDailyWorkRecords() {
       const inserts: any[] = [];
       const deletes: string[] = [];
 
+      // 1. 出欠・欠席連絡・サービス利用記録を member_attendance_records テーブルに保存
+      const userAttendanceMap = new Map<string, { 
+        status: string;
+        contactDate: string;
+        isAbsenteeSupported: boolean;
+        hasMeal: boolean;
+        hasPickup: boolean;
+        hasDropoff: boolean;
+        remarks: string;
+      }>();
+
+      for (const r of drafts) {
+        if (!userAttendanceMap.has(r.userId)) {
+          userAttendanceMap.set(r.userId, {
+            status: r.status || 'present',
+            contactDate: r.contactDate || '',
+            isAbsenteeSupported: Boolean(r.isAbsenteeSupported),
+            hasMeal: Boolean(r.hasMeal),
+            hasPickup: Boolean(r.hasPickup),
+            hasDropoff: Boolean(r.hasDropoff),
+            remarks: r.remarks || ''
+          });
+        }
+      }
+
+      const attendanceUpserts = Array.from(userAttendanceMap.entries()).map(([memberId, s]) => {
+        const existing = attendanceRecords.find(a => a.member_id === memberId);
+        return {
+          id: existing?.id,
+          target_period: currentDate,
+          member_id: memberId,
+          status: s.status,
+          contact_date: s.contactDate ? s.contactDate : null,
+          is_absentee_supported: s.isAbsenteeSupported,
+          has_meal: s.hasMeal,
+          has_pickup: s.hasPickup,
+          has_dropoff: s.hasDropoff,
+          remarks: s.remarks || null
+        };
+      });
+
+      if (attendanceUpserts.length > 0) {
+        const { error: aErr } = await supabase
+          .from('member_attendance_records')
+          .upsert(attendanceUpserts, { onConflict: 'target_period,member_id' });
+        if (aErr) throw aErr;
+      }
+
+      // 2. 作業時間記録の保存
       for (const r of drafts) {
         const isRealRecord = r.isSaved || (!r.id.startsWith('UNSAVED-') && !r.id.startsWith('EMPTY-'));
         if (deletedIds.includes(r.id)) {
@@ -363,7 +494,6 @@ export function useDailyWorkRecords() {
     }
   };
 
-
   const fetchConfirmations = useCallback(async () => {
     try {
       const { data, error } = await supabase.from('daily_work_confirmations').select('target_period').eq('is_confirmed', true);
@@ -411,6 +541,7 @@ export function useDailyWorkRecords() {
     dbMembers,
     dbProjects,
     records,
+    attendanceRecords,
     loading,
     currentDate,
     setCurrentDate,

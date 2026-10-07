@@ -259,6 +259,12 @@ button {
   border-radius: var(--radius-full);
   transition: all 0.2s ease;
   border: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin: 0;
 }
 
 .nav-button:hover {

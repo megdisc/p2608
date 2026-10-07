@@ -699,6 +699,9 @@ export function ScreenCompositionPage() {
         { name: 'status', desc: '出欠区分（present: 通所 / absent: 欠席）' },
         { name: 'contact_date', desc: '欠席連絡日（連絡受付日：利用予定日との日数差で加算判定）' },
         { name: 'is_absentee_supported', desc: '欠席時対応加算適用フラグ（連絡日より自動判定＋相談援助実績・手動上書き管理用）' },
+        { name: 'has_meal', desc: '食事利用フラグ' },
+        { name: 'has_pickup', desc: '送迎（往路）利用フラグ' },
+        { name: 'has_dropoff', desc: '送迎（復路）利用フラグ' },
         { name: 'remarks', desc: '備考・欠席理由/連絡・相談援助内容' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -771,6 +774,7 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
+
 
     // 3. 月次実績層
     {

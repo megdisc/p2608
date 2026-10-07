@@ -6,14 +6,16 @@ export type DateInputProps = {
   onChange: (value: string) => void;
   className?: string;
   style?: React.CSSProperties;
+  disabled?: boolean;
 };
 
-export function DateInput({ value, onChange, className = '', style }: DateInputProps) {
+export function DateInput({ value, onChange, className = '', style, disabled }: DateInputProps) {
   const finalClass = className || 'inline-input';
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleContainerClick = () => {
+    if (disabled) return;
     setIsEditing(true);
     setTimeout(() => {
       if (inputRef.current) {
@@ -28,6 +30,17 @@ export function DateInput({ value, onChange, className = '', style }: DateInputP
       }
     }, 10);
   };
+
+  if (disabled) {
+    return (
+      <div 
+        className={finalClass} 
+        style={{ display: 'flex', alignItems: 'center', opacity: 0.6, cursor: 'not-allowed', paddingRight: '4px', ...style }}
+      >
+        <DateDisplay value={value} />
+      </div>
+    );
+  }
 
   if (isEditing) {
     return (

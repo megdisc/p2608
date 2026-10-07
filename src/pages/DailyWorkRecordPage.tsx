@@ -1,4 +1,4 @@
-import { DataPage, type Column } from '../components';
+import { DataPage, Input, Select, DateInput, type Column } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useAlert } from '../contexts';
@@ -62,6 +62,19 @@ export function DailyWorkRecordPage() {
 
   const columns: Column<any>[] = [
     { 
+      key: 'userCode', 
+      header: TABLE_COLUMNS.MEMBER_CODE || '利用者ID', 
+      sortKey: 'userCode',
+      sortable: true,
+      editable: false, 
+      render: (item: any) => item.isFirstInUser ? (item.userCode || item.userId?.slice(0, 8) || '-') : '',
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        width: '100px',
+        textAlign: 'center'
+      })
+    },
+    { 
       key: 'userId', 
       header: TABLE_COLUMNS.NAME, 
       sortKey: 'userYomigana',
@@ -71,6 +84,215 @@ export function DailyWorkRecordPage() {
       render: (item: any) => item.isFirstInUser ? (dbMembers.find(u => u.id === item.userId)?.name || '') : '',
       style: (item: any) => ({
         borderBottom: item.isLastInUser ? undefined : 'none'
+      })
+    },
+    {
+      key: 'status',
+      header: TABLE_COLUMNS.ATTENDANCE_STATUS || '出欠区分',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Select
+              disabled={isConfirmed}
+              value={item.status || 'present'}
+              onChange={(e) => {
+                const nextVal = e.target.value;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, status: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              options={[
+                { label: '通所', value: 'present' },
+                { label: '欠席', value: 'absent' }
+              ]}
+              style={{ width: '85px' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '95px'
+      })
+    },
+    {
+      key: 'contactDate',
+      header: TABLE_COLUMNS.CONTACT_DATE || '欠席連絡日',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <DateInput
+              disabled={isConfirmed}
+              value={item.contactDate || ''}
+              onChange={(newVal) => {
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, contactDate: newVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ width: '130px' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '140px'
+      })
+    },
+    {
+      key: 'isAbsenteeSupported',
+      header: TABLE_COLUMNS.IS_ABSENTEE_SUPPORTED || '欠席時対応',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        const checked = Boolean(item.isAbsenteeSupported);
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Input
+              type="checkbox"
+              disabled={isConfirmed}
+              checked={checked}
+              onChange={(e) => {
+                const nextVal = e.target.checked;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, isAbsenteeSupported: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ cursor: isConfirmed ? 'not-allowed' : 'pointer' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '95px'
+      })
+    },
+    {
+      key: 'hasMeal',
+      header: TABLE_COLUMNS.MEAL || '食事',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        const checked = Boolean(item.hasMeal);
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Input
+              type="checkbox"
+              disabled={isConfirmed}
+              checked={checked}
+              onChange={(e) => {
+                const nextVal = e.target.checked;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, hasMeal: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ cursor: isConfirmed ? 'not-allowed' : 'pointer' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '75px'
+      })
+    },
+    {
+      key: 'hasPickup',
+      header: TABLE_COLUMNS.PICKUP_OUTBOUND || '送迎（往路）',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        const checked = Boolean(item.hasPickup);
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Input
+              type="checkbox"
+              disabled={isConfirmed}
+              checked={checked}
+              onChange={(e) => {
+                const nextVal = e.target.checked;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, hasPickup: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ cursor: isConfirmed ? 'not-allowed' : 'pointer' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '100px'
+      })
+    },
+    {
+      key: 'hasDropoff',
+      header: TABLE_COLUMNS.DROPOFF_INBOUND || '送迎（復路）',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        const checked = Boolean(item.hasDropoff);
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Input
+              type="checkbox"
+              disabled={isConfirmed}
+              checked={checked}
+              onChange={(e) => {
+                const nextVal = e.target.checked;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, hasDropoff: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ cursor: isConfirmed ? 'not-allowed' : 'pointer' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '100px'
+      })
+    },
+    {
+      key: 'remarks',
+      header: TABLE_COLUMNS.REMARKS || '備考',
+      sortable: false,
+      editable: false,
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (!item.isFirstInUser) return null;
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Input
+              type="text"
+              disabled={isConfirmed}
+              value={item.remarks || ''}
+              placeholder="欠席理由・備考"
+              onChange={(e) => {
+                const nextVal = e.target.value;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, remarks: nextVal } : d);
+                updateData(newDrafts);
+              }}
+              style={{ width: '130px' }}
+            />
+          </div>
+        );
+      },
+      style: (item: any) => ({
+        borderBottom: item.isLastInUser ? undefined : 'none',
+        textAlign: 'center',
+        width: '140px'
       })
     },
     { 
@@ -120,7 +342,7 @@ export function DailyWorkRecordPage() {
         if (item.isEmptyRow) return '-';
         return item.workTime;
       },
-      style: { width: '120px' }
+      style: { width: '110px' }
     },
   ];
 
@@ -163,6 +385,7 @@ export function DailyWorkRecordPage() {
       title={PAGE_NAMES.DAILY_WORK_RECORD}
       data={displayData}
       columns={columns}
+      initialSort={{ key: 'userCode', direction: 'asc' }}
       emptyMessage={MESSAGES.EMPTY_DAILY_WORK_RECORD}
       onBatchSave={handleBatchSave}
       showSingleDateFilter={true}

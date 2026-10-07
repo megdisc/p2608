@@ -112,6 +112,11 @@ export type AllowanceItem = {
   office_id?: string;
   name: string;
   occurrence_type: 'daily' | 'monthly';
+  calc_trigger_basis?: string;
+  threshold_value?: number | null;
+  threshold_unit?: string | null;
+  threshold_operator?: string | null;
+  is_auto_applied?: boolean | string;
   unit_price: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
@@ -122,6 +127,11 @@ export type DeductionItem = {
   office_id?: string;
   name: string;
   occurrence_type: 'daily' | 'monthly';
+  calc_trigger_basis?: string;
+  threshold_value?: number | null;
+  threshold_unit?: string | null;
+  threshold_operator?: string | null;
+  is_auto_applied?: boolean | string;
   unit_price: number;
   deleted_at?: string | null;
   is_deleted?: boolean;

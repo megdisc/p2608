@@ -289,7 +289,7 @@ export const TABLE_COLUMNS = {
   RESERVE_SETTING: '設定',
   ALLOWANCE_NAME: '手当名',
   DEDUCTION_NAME: '控除名',
-  OCCURRENCE_TYPE: '発生単位',
+  OCCURRENCE_TYPE: '頻度',
   DEFAULT_UNIT_PRICE: '標準単価',
   UNIT: '単位数',
   STATUS: '状態',
@@ -384,6 +384,11 @@ export const TABLE_COLUMNS = {
   SKILL_NAME: WORDS_PROJECT.SKILL, // スキルに統合
   SKILL_LEVEL: WORDS_PROJECT.SKILL_LEVEL,
   BASE_WAGE: WORDS_PROJECT.BASE_WAGE,
+  CALC_TRIGGER_BASIS: '基準',
+  THRESHOLD_VALUE: '基準値',
+  THRESHOLD_UNIT: '単位',
+  THRESHOLD_OPERATOR: '範囲',
+  IS_AUTO_APPLIED: '自動適用',
 
   // 作業記録
   MEMBER_CODE: '利用者ID',
@@ -501,4 +506,45 @@ export const STAFF_ROLE_OPTIONS = [
 
 export const MEMBER_ROLE_OPTIONS = [
   { label: WORDS_PERSON.ROLE_MEMBER, value: WORDS_PERSON.ROLE_MEMBER }
+];
+
+export const OCCURRENCE_TYPE_OPTIONS = [
+  { label: '日次', value: 'daily' },
+  { label: '月次', value: 'monthly' }
+];
+
+export const CALC_TRIGGER_BASIS_OPTIONS = [
+  { label: '手入力', value: 'manual' },
+  { label: '利用時間', value: 'work_hours' },
+  { label: '利用日数', value: 'attendance_days' },
+  { label: '非利用日数', value: 'absence_days' },
+  { label: '利用率', value: 'attendance_rate' },
+  { label: '非利用率', value: 'absence_rate' },
+  { label: '食事利用', value: 'meal_count' },
+  { label: '送迎利用（往復）', value: 'transport_round' },
+  { label: '送迎利用（片道）', value: 'transport_one_way' },
+  { label: '送迎利用（往路）', value: 'transport_outbound' },
+  { label: '送迎利用（復路）', value: 'transport_inbound' }
+];
+
+export const THRESHOLD_UNIT_OPTIONS = [
+  { label: 'ー', value: '' },
+  { label: '時間', value: 'hours' },
+  { label: '日', value: 'days' },
+  { label: '率', value: 'percent' },
+  { label: '回', value: 'times' }
+];
+
+export const THRESHOLD_OPERATOR_OPTIONS = [
+  { label: 'ー', value: '' },
+  { label: '以上', value: 'gte' },
+  { label: '以下', value: 'lte' },
+  { label: '超過', value: 'gt' },
+  { label: '未満', value: 'lt' },
+  { label: '一致', value: 'eq' }
+];
+
+export const IS_AUTO_APPLIED_OPTIONS = [
+  { label: 'ー', value: 'false' },
+  { label: '自動適用', value: 'true' }
 ];

@@ -178,21 +178,32 @@ INSERT INTO public.reward_items (id, service_type_id, code, name, item_category,
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. 加算手当・控除項目マスタ (allowance_deduction_items)
-INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, unit_price) VALUES
+INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, calc_trigger_basis, threshold_value, threshold_unit, threshold_operator, unit_price) VALUES
 -- 事業所1: ワークステーション未来
-('44444444-4444-4444-4444-444444444404', '22222222-2222-2222-2222-222222222222', '資格手当', 'allowance', 'daily', 500.00),
-('44444444-4444-4444-4444-444444444405', '22222222-2222-2222-2222-222222222222', '昼食代控除', 'deduction', 'daily', 350.00),
+('44444444-2222-4444-4444-444444444401', '22222222-2222-2222-2222-222222222222', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
+('44444444-2222-4444-4444-444444444402', '22222222-2222-2222-2222-222222222222', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
+('44444444-2222-4444-4444-444444444403', '22222222-2222-2222-2222-222222222222', '昼食代', 'deduction', 'daily', 'meal_count', 1.00, 'times', 'gte', 200.00),
+('44444444-2222-4444-4444-444444444404', '22222222-2222-2222-2222-222222222222', '飲料設備代', 'deduction', 'daily', 'attendance_days', 1.00, 'days', 'gte', 30.00),
 -- 事業所2: 未来ワークスあすか
-('44444444-3333-4444-4444-444444444401', '33333333-3333-3333-3333-333333333333', '皆勤手当', 'allowance', 'monthly', 1000.00),
-('44444444-3333-4444-4444-444444444402', '33333333-3333-3333-3333-333333333333', '精勤手当', 'allowance', 'monthly', 500.00),
-('44444444-3333-4444-4444-444444444403', '33333333-3333-3333-3333-333333333333', '昼食代控除', 'deduction', 'daily', 400.00),
-('44444444-3333-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '送迎代控除', 'deduction', 'daily', 200.00),
+('44444444-3333-4444-4444-444444444401', '33333333-3333-3333-3333-333333333333', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
+('44444444-3333-4444-4444-444444444402', '33333333-3333-3333-3333-333333333333', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
+('44444444-3333-4444-4444-444444444403', '33333333-3333-3333-3333-333333333333', '昼食代', 'deduction', 'daily', 'meal_count', 1.00, 'times', 'gte', 200.00),
+('44444444-3333-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '飲料設備代', 'deduction', 'daily', 'attendance_days', 1.00, 'days', 'gte', 30.00),
 -- 事業所3: 未来オアシス
-('44444444-4444-4444-4444-444444444401', '44444444-4444-4444-4444-444444444444', '特別成果手当', 'allowance', 'daily', 300.00),
-('44444444-4444-4444-4444-444444444402', '44444444-4444-4444-4444-444444444444', 'リーダー手当', 'allowance', 'monthly', 1500.00),
-('44444444-4444-4444-4444-444444444403', '44444444-4444-4444-4444-444444444444', '給食費控除', 'deduction', 'daily', 300.00),
-('44444444-4444-4444-4444-444444444404', '44444444-4444-4444-4444-444444444444', '機材共益費控除', 'deduction', 'monthly', 500.00)
-ON CONFLICT (id) DO NOTHING;
+('44444444-4444-4444-4444-444444444401', '44444444-4444-4444-4444-444444444444', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
+('44444444-4444-4444-4444-444444444402', '44444444-4444-4444-4444-444444444444', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
+('44444444-4444-4444-4444-444444444403', '44444444-4444-4444-4444-444444444444', '昼食代', 'deduction', 'daily', 'meal_count', 1.00, 'times', 'gte', 200.00),
+('44444444-4444-4444-4444-444444444404', '44444444-4444-4444-4444-444444444444', '飲料設備代', 'deduction', 'daily', 'attendance_days', 1.00, 'days', 'gte', 30.00)
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  name = EXCLUDED.name,
+  item_category = EXCLUDED.item_category,
+  occurrence_type = EXCLUDED.occurrence_type,
+  calc_trigger_basis = EXCLUDED.calc_trigger_basis,
+  threshold_value = EXCLUDED.threshold_value,
+  threshold_unit = EXCLUDED.threshold_unit,
+  threshold_operator = EXCLUDED.threshold_operator,
+  unit_price = EXCLUDED.unit_price;
 
 -- 4.1 積立金項目マスタ (reserve_items)
 INSERT INTO public.reserve_items (id, office_id, name, calc_type, fixed_amount, fixed_rate) VALUES

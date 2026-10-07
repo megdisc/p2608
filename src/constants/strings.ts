@@ -55,7 +55,7 @@ export const WORDS_SYSTEM = {
   SCREEN_SKILL: 'スキル体系',
   SCREEN_WAGE: '工賃・控除体系',
   SCREEN_RESERVE: '積立金体系',
-  ALLOWANCE: 'その他加算手当',
+  ALLOWANCE: '加算手当',
   DEDUCTION: '控除',
   TAB_RESERVE_SETTING: '基本情報',
   TAB_SCREEN_COMPOSITION: '画面構成',
@@ -287,7 +287,7 @@ export const TABLE_COLUMNS = {
   PERSON_IN_CHARGE: WORDS_PERSON.PERSON_IN_CHARGE,
   RESERVE_TYPE: '積立金種別',
   RESERVE_SETTING: '設定',
-  ALLOWANCE_NAME: '手当名',
+  ALLOWANCE_NAME: '加算手当名',
   DEDUCTION_NAME: '控除名',
   OCCURRENCE_TYPE: '頻度',
   DEFAULT_UNIT_PRICE: '標準単価',
@@ -388,7 +388,6 @@ export const TABLE_COLUMNS = {
   THRESHOLD_VALUE: '基準値',
   THRESHOLD_UNIT: '単位',
   THRESHOLD_OPERATOR: '範囲',
-  IS_AUTO_APPLIED: '自動適用',
 
   // 作業記録
   MEMBER_CODE: '利用者ID',
@@ -462,7 +461,7 @@ export const MESSAGES = {
   EMPTY_CLIENT: WORDS_MESSAGE.EMPTY_CLIENT,
   EMPTY_SKILL: WORDS_MESSAGE.EMPTY_SKILL,
   EMPTY_BASE_WAGE: WORDS_MESSAGE.EMPTY_BASE_WAGE,
-  EMPTY_ALLOWANCE: 'その他加算手当データがありません',
+  EMPTY_ALLOWANCE: '加算手当データがありません',
   EMPTY_DEDUCTION: '控除データがありません',
   EMPTY_BASE_WAGE_ASSIGNMENT: WORDS_MESSAGE.EMPTY_BASE_WAGE_ASSIGNMENT,
   EMPTY_FINANCIAL_RECORD: WORDS_MESSAGE.EMPTY_FINANCIAL_RECORD,
@@ -542,9 +541,4 @@ export const THRESHOLD_OPERATOR_OPTIONS = [
   { label: '超過', value: 'gt' },
   { label: '未満', value: 'lt' },
   { label: '一致', value: 'eq' }
-];
-
-export const IS_AUTO_APPLIED_OPTIONS = [
-  { label: 'ー', value: 'false' },
-  { label: '自動適用', value: 'true' }
 ];

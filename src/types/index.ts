@@ -116,7 +116,6 @@ export type AllowanceItem = {
   threshold_value?: number | null;
   threshold_unit?: string | null;
   threshold_operator?: string | null;
-  is_auto_applied?: boolean | string;
   unit_price: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
@@ -131,7 +130,6 @@ export type DeductionItem = {
   threshold_value?: number | null;
   threshold_unit?: string | null;
   threshold_operator?: string | null;
-  is_auto_applied?: boolean | string;
   unit_price: number;
   deleted_at?: string | null;
   is_deleted?: boolean;

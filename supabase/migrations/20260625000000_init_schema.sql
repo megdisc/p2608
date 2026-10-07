@@ -192,7 +192,6 @@ CREATE TABLE IF NOT EXISTS "public"."allowance_deduction_items" (
     "threshold_value" NUMERIC(8,2) DEFAULT NULL,
     "threshold_unit" VARCHAR(20) DEFAULT NULL,
     "threshold_operator" VARCHAR(20) DEFAULT NULL,
-    "is_auto_applied" BOOLEAN DEFAULT false NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "deleted_at" TIMESTAMPTZ DEFAULT NULL,
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,

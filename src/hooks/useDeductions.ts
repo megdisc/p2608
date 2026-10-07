@@ -31,7 +31,6 @@ export function useDeductions() {
         threshold_value: d.threshold_value !== null && d.threshold_value !== undefined ? Number(d.threshold_value) : null,
         threshold_unit: d.threshold_unit || '',
         threshold_operator: d.threshold_operator || '',
-        is_auto_applied: Boolean(d.is_auto_applied),
         unit_price: Number(d.unit_price ?? d.default_unit_price ?? 0),
       }));
       setItems(formatted);
@@ -66,7 +65,6 @@ export function useDeductions() {
         threshold_value: item.threshold_value === null || item.threshold_value === undefined || (item.threshold_value as any) === '' ? null : Number(item.threshold_value),
         threshold_unit: item.threshold_unit || null,
         threshold_operator: item.threshold_operator || null,
-        is_auto_applied: Boolean(item.is_auto_applied),
         unit_price: Number(item.unit_price || 0),
       }));
 

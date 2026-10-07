@@ -408,7 +408,6 @@ export function ScreenCompositionPage() {
         { name: 'threshold_value', desc: '基準値（数値）' },
         { name: 'threshold_unit', desc: '単位（hours: 時間 / days: 日 / percent: 率 / times: 回）' },
         { name: 'threshold_operator', desc: '範囲（gte: 以上 / lte: 以下 / gt: 超過 / lt: 未満 / eq: 一致）' },
-        { name: 'is_auto_applied', desc: '自動判定・適用フラグ' },
         { name: 'unit_price', desc: '標準発生単価・金額（円）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'created_at', desc: '作成日時' },

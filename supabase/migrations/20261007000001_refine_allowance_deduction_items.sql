@@ -6,8 +6,7 @@ ALTER TABLE "public"."allowance_deduction_items"
 ADD COLUMN IF NOT EXISTS "calc_trigger_basis" VARCHAR(30) DEFAULT 'manual' NOT NULL,
 ADD COLUMN IF NOT EXISTS "threshold_value" NUMERIC(8,2) DEFAULT NULL,
 ADD COLUMN IF NOT EXISTS "threshold_unit" VARCHAR(20) DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS "threshold_operator" VARCHAR(20) DEFAULT NULL,
-ADD COLUMN IF NOT EXISTS "is_auto_applied" BOOLEAN DEFAULT false NOT NULL;
+ADD COLUMN IF NOT EXISTS "threshold_operator" VARCHAR(20) DEFAULT NULL;
 
 DROP VIEW IF EXISTS "public"."allowances" CASCADE;
 DROP VIEW IF EXISTS "public"."deductions" CASCADE;

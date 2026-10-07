@@ -2,7 +2,7 @@ import { DataPage, type Column } from '../components';
 import { useEffect } from 'react';
 import type { DeductionItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
-import { MESSAGES, PAGE_NAMES, TABLE_COLUMNS, OCCURRENCE_TYPE_OPTIONS, CALC_TRIGGER_BASIS_OPTIONS, THRESHOLD_UNIT_OPTIONS, THRESHOLD_OPERATOR_OPTIONS, IS_AUTO_APPLIED_OPTIONS } from '../constants';
+import { MESSAGES, PAGE_NAMES, TABLE_COLUMNS, OCCURRENCE_TYPE_OPTIONS, CALC_TRIGGER_BASIS_OPTIONS, THRESHOLD_UNIT_OPTIONS, THRESHOLD_OPERATOR_OPTIONS } from '../constants';
 import { useDeductions } from '../hooks';
 
 export function DeductionPage() {
@@ -24,9 +24,6 @@ export function DeductionPage() {
       editable: true, 
       inputType: 'select',
       options: OCCURRENCE_TYPE_OPTIONS,
-      render: (item) => (
-        <span>{OCCURRENCE_TYPE_OPTIONS.find(o => o.value === item.occurrence_type)?.label || item.occurrence_type}</span>
-      )
     },
     {
       key: 'calc_trigger_basis',
@@ -34,9 +31,6 @@ export function DeductionPage() {
       editable: true,
       inputType: 'select',
       options: CALC_TRIGGER_BASIS_OPTIONS,
-      render: (item) => (
-        <span>{CALC_TRIGGER_BASIS_OPTIONS.find(o => o.value === item.calc_trigger_basis)?.label || item.calc_trigger_basis || '手入力'}</span>
-      )
     },
     { key: 'threshold_value', header: TABLE_COLUMNS.THRESHOLD_VALUE, editable: true, inputType: 'number', className: 'number-column' },
     {
@@ -45,9 +39,6 @@ export function DeductionPage() {
       editable: true,
       inputType: 'select',
       options: THRESHOLD_UNIT_OPTIONS,
-      render: (item) => (
-        <span>{THRESHOLD_UNIT_OPTIONS.find(o => o.value === item.threshold_unit)?.label || item.threshold_unit || 'ー'}</span>
-      )
     },
     {
       key: 'threshold_operator',
@@ -55,20 +46,6 @@ export function DeductionPage() {
       editable: true,
       inputType: 'select',
       options: THRESHOLD_OPERATOR_OPTIONS,
-      render: (item) => (
-        <span>{THRESHOLD_OPERATOR_OPTIONS.find(o => o.value === item.threshold_operator)?.label || item.threshold_operator || 'ー'}</span>
-      )
-    },
-    {
-      key: 'is_auto_applied',
-      header: TABLE_COLUMNS.IS_AUTO_APPLIED,
-      editable: true,
-      inputType: 'select',
-      options: IS_AUTO_APPLIED_OPTIONS,
-      render: (item) => {
-        const valStr = String(item.is_auto_applied === true || item.is_auto_applied === 'true');
-        return <span>{IS_AUTO_APPLIED_OPTIONS.find(o => o.value === valStr)?.label || 'ー'}</span>;
-      }
     },
     { key: 'unit_price', header: TABLE_COLUMNS.DEFAULT_UNIT_PRICE, editable: true, inputType: 'currency', className: 'number-column' },
   ];
@@ -91,7 +68,6 @@ export function DeductionPage() {
       threshold_value: null,
       threshold_unit: '',
       threshold_operator: '',
-      is_auto_applied: 'false',
       unit_price: 0,
     } as DeductionItem;
   };

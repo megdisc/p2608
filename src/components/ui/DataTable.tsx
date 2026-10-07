@@ -500,6 +500,10 @@ export function DataTable<T extends { id: string }>({
       if (col.customEditRender) {
         return col.customEditRender(value, item, (newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId));
       }
+
+      if (col.render) {
+        return col.render(item, draftData, setDraftData);
+      }
       
       if (col.inputType === 'select') {
         const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options;

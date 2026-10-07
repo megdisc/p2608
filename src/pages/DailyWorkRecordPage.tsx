@@ -90,24 +90,27 @@ export function DailyWorkRecordPage() {
       key: 'status',
       header: TABLE_COLUMNS.ATTENDANCE_STATUS || '出欠区分',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'select',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Select
               disabled={isConfirmed}
-              value={item.status || 'present'}
+              value={item.status || '通所利用'}
               onChange={(e) => {
                 const nextVal = e.target.value;
                 const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, status: nextVal } : d);
                 updateData(newDrafts);
               }}
               options={[
-                { label: '通所', value: 'present' },
-                { label: '欠席', value: 'absent' }
+                { label: '通所利用', value: '通所利用' },
+                { label: '在宅利用', value: '在宅利用' },
+                { label: '施設外利用', value: '施設外利用' },
+                { label: '非利用／欠席', value: '非利用／欠席' }
               ]}
-              style={{ width: '85px' }}
+              style={{ width: '115px' }}
             />
           </div>
         );
@@ -115,18 +118,19 @@ export function DailyWorkRecordPage() {
       style: (item: any) => ({
         borderBottom: item.isLastInUser ? undefined : 'none',
         textAlign: 'center',
-        width: '95px'
+        width: '125px'
       })
     },
     {
       key: 'contactDate',
       header: TABLE_COLUMNS.CONTACT_DATE || '欠席連絡日',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'date',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <DateInput
               disabled={isConfirmed}
               value={item.contactDate || ''}
@@ -146,25 +150,26 @@ export function DailyWorkRecordPage() {
       })
     },
     {
-      key: 'isAbsenteeSupported',
-      header: TABLE_COLUMNS.IS_ABSENTEE_SUPPORTED || '欠席時対応',
+      key: 'remarks',
+      header: '欠席時対応内容',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'text',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
-        const checked = Boolean(item.isAbsenteeSupported);
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Input
-              type="checkbox"
+              type="text"
               disabled={isConfirmed}
-              checked={checked}
+              value={item.remarks || ''}
+              placeholder="対応内容・備考"
               onChange={(e) => {
-                const nextVal = e.target.checked;
-                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, isAbsenteeSupported: nextVal } : d);
+                const nextVal = e.target.value;
+                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, remarks: nextVal } : d);
                 updateData(newDrafts);
               }}
-              style={{ cursor: isConfirmed ? 'not-allowed' : 'pointer' }}
+              style={{ width: '140px' }}
             />
           </div>
         );
@@ -172,19 +177,20 @@ export function DailyWorkRecordPage() {
       style: (item: any) => ({
         borderBottom: item.isLastInUser ? undefined : 'none',
         textAlign: 'center',
-        width: '95px'
+        width: '150px'
       })
     },
     {
       key: 'hasMeal',
       header: TABLE_COLUMNS.MEAL || '食事',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'checkbox',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
         const checked = Boolean(item.hasMeal);
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Input
               type="checkbox"
               disabled={isConfirmed}
@@ -209,12 +215,13 @@ export function DailyWorkRecordPage() {
       key: 'hasPickup',
       header: TABLE_COLUMNS.PICKUP_OUTBOUND || '送迎（往路）',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'checkbox',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
         const checked = Boolean(item.hasPickup);
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Input
               type="checkbox"
               disabled={isConfirmed}
@@ -239,12 +246,13 @@ export function DailyWorkRecordPage() {
       key: 'hasDropoff',
       header: TABLE_COLUMNS.DROPOFF_INBOUND || '送迎（復路）',
       sortable: false,
-      editable: false,
+      editable: () => !isConfirmed,
+      inputType: 'checkbox',
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (!item.isFirstInUser) return null;
         const checked = Boolean(item.hasDropoff);
         return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Input
               type="checkbox"
               disabled={isConfirmed}
@@ -263,36 +271,6 @@ export function DailyWorkRecordPage() {
         borderBottom: item.isLastInUser ? undefined : 'none',
         textAlign: 'center',
         width: '100px'
-      })
-    },
-    {
-      key: 'remarks',
-      header: TABLE_COLUMNS.REMARKS || '備考',
-      sortable: false,
-      editable: false,
-      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
-        if (!item.isFirstInUser) return null;
-        return (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Input
-              type="text"
-              disabled={isConfirmed}
-              value={item.remarks || ''}
-              placeholder="欠席理由・備考"
-              onChange={(e) => {
-                const nextVal = e.target.value;
-                const newDrafts = draftData.map(d => d.userId === item.userId ? { ...d, remarks: nextVal } : d);
-                updateData(newDrafts);
-              }}
-              style={{ width: '130px' }}
-            />
-          </div>
-        );
-      },
-      style: (item: any) => ({
-        borderBottom: item.isLastInUser ? undefined : 'none',
-        textAlign: 'center',
-        width: '140px'
       })
     },
     { 

@@ -1,10 +1,12 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { supabase } from '../lib';
+import { useOffice } from '../contexts';
 import type { MemberItem, ProjectItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
 
 export type DailyRecord = {
   id: string;
+  office_id?: string | null;
   target_period: string;
   member_id: string;
   task_id: string;
@@ -13,6 +15,7 @@ export type DailyRecord = {
 
 export type DailyAttendanceRecord = {
   id?: string;
+  office_id?: string | null;
   target_period: string;
   member_id: string;
   status: string;
@@ -52,6 +55,7 @@ export type DailyFlatRecord = {
 };
 
 export function useDailyWorkRecords() {
+  const { selectedOfficeId } = useOffice();
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
   const [records, setRecords] = useState<DailyRecord[]>([]);
@@ -59,7 +63,8 @@ export function useDailyWorkRecords() {
   const [loading, setLoading] = useState(false);
   const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
 
-  const fetchMasters = useCallback(async () => {
+  const fetchMasters = useCallback(async (officeId?: string) => {
+    const targetOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
     try {
       setLoading(true);
       const [membersRes, projectsRes] = await Promise.all([
@@ -76,10 +81,27 @@ export function useDailyWorkRecords() {
       if (membersRes.error) throw membersRes.error;
       if (projectsRes.error) throw projectsRes.error;
 
-      const membersData = (membersRes.data || []).map((m: any) => ({
-        ...m,
-        name: m.is_deleted ? `${m.name} (削除済)` : m.name
-      }));
+      // 選択された事業所に割当のある利用者を抽出
+      let memberIdsForOffice: Set<string> | null = null;
+      if (targetOfficeId) {
+        memberIdsForOffice = new Set<string>();
+        const [settingsRes, certRes] = await Promise.all([
+          supabase.from('office_member_settings').select('member_id').eq('office_id', targetOfficeId),
+          supabase.from('member_recipient_certificates').select('member_id').eq('copayment_office_id', targetOfficeId)
+        ]);
+        (settingsRes.data || []).forEach(s => memberIdsForOffice!.add(s.member_id));
+        (certRes.data || []).forEach(c => memberIdsForOffice!.add(c.member_id));
+      }
+
+      const membersData = (membersRes.data || [])
+        .filter((m: any) => {
+          if (!memberIdsForOffice || memberIdsForOffice.size === 0) return true;
+          return memberIdsForOffice.has(m.id);
+        })
+        .map((m: any) => ({
+          ...m,
+          name: m.is_deleted ? `${m.name} (削除済)` : m.name
+        }));
 
       setDbMembers(membersData);
       
@@ -108,15 +130,21 @@ export function useDailyWorkRecords() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
 
-  const fetchRecords = useCallback(async (date: string) => {
+  const fetchRecords = useCallback(async (date: string, officeId?: string) => {
+    const targetOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
     try {
       setLoading(true);
-      const [workRes, attendanceRes] = await Promise.all([
-        supabase.from('daily_work_records').select('*').eq('target_period', date),
-        supabase.from('member_attendance_records').select('*').eq('target_period', date)
-      ]);
+      let workQuery = supabase.from('daily_work_records').select('*').eq('target_period', date);
+      let attendanceQuery = supabase.from('member_attendance_records').select('*').eq('target_period', date);
+
+      if (targetOfficeId) {
+        workQuery = workQuery.or(`office_id.eq.${targetOfficeId},office_id.is.null`);
+        attendanceQuery = attendanceQuery.or(`office_id.eq.${targetOfficeId},office_id.is.null`);
+      }
+
+      const [workRes, attendanceRes] = await Promise.all([workQuery, attendanceQuery]);
 
       if (workRes.error) throw workRes.error;
       if (attendanceRes.error && attendanceRes.error.code !== 'PGRST116') {
@@ -131,7 +159,12 @@ export function useDailyWorkRecords() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
+
+  useEffect(() => {
+    fetchMasters(selectedOfficeId);
+    fetchRecords(currentDate, selectedOfficeId);
+  }, [selectedOfficeId, currentDate, fetchMasters, fetchRecords]);
 
   const [confirmedDates, setConfirmedDates] = useState<string[]>(() => {
     try {
@@ -171,12 +204,19 @@ export function useDailyWorkRecords() {
     const OTHER_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
     const OTHER_TASK_ID = '00000000-0000-0000-0000-000000000002';
 
+    const normalizeStatus = (rawStatus?: string) => {
+      if (!rawStatus || rawStatus === 'present') return '通所利用';
+      if (rawStatus === 'absent') return '非利用／欠席';
+      if (['通所利用', '在宅利用', '施設外利用', '非利用／欠席'].includes(rawStatus)) return rawStatus;
+      return '通所利用';
+    };
+
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
       if (member.is_deleted && userRecords.length === 0) continue;
       
       const userAttendance = attendanceRecords.find(a => a.member_id === member.id);
-      const status = userAttendance ? (userAttendance.status || 'present') : 'present';
+      const status = normalizeStatus(userAttendance?.status);
       const contactDate = userAttendance ? (userAttendance.contact_date || '') : '';
       const isAbsenteeSupported = userAttendance ? Boolean(userAttendance.is_absentee_supported) : false;
       const hasMeal = userAttendance ? Boolean(userAttendance.has_meal) : false;
@@ -393,7 +433,6 @@ export function useDailyWorkRecords() {
       const userAttendanceMap = new Map<string, { 
         status: string;
         contactDate: string;
-        isAbsenteeSupported: boolean;
         hasMeal: boolean;
         hasPickup: boolean;
         hasDropoff: boolean;
@@ -403,9 +442,8 @@ export function useDailyWorkRecords() {
       for (const r of drafts) {
         if (!userAttendanceMap.has(r.userId)) {
           userAttendanceMap.set(r.userId, {
-            status: r.status || 'present',
+            status: r.status || '通所利用',
             contactDate: r.contactDate || '',
-            isAbsenteeSupported: Boolean(r.isAbsenteeSupported),
             hasMeal: Boolean(r.hasMeal),
             hasPickup: Boolean(r.hasPickup),
             hasDropoff: Boolean(r.hasDropoff),
@@ -415,14 +453,17 @@ export function useDailyWorkRecords() {
       }
 
       const attendanceUpserts = Array.from(userAttendanceMap.entries()).map(([memberId, s]) => {
-        const existing = attendanceRecords.find(a => a.member_id === memberId);
+        const existing = attendanceRecords.find(a => a.member_id === memberId && (a.office_id === selectedOfficeId || !a.office_id));
+        const isAbsenteeSupported = Boolean(s.contactDate && s.status === '非利用／欠席');
+
         return {
           id: existing?.id,
+          office_id: selectedOfficeId || null,
           target_period: currentDate,
           member_id: memberId,
           status: s.status,
           contact_date: s.contactDate ? s.contactDate : null,
-          is_absentee_supported: s.isAbsenteeSupported,
+          is_absentee_supported: isAbsenteeSupported,
           has_meal: s.hasMeal,
           has_pickup: s.hasPickup,
           has_dropoff: s.hasDropoff,
@@ -451,6 +492,7 @@ export function useDailyWorkRecords() {
           if (isRealRecord) {
             upserts.push({
               id: r.id,
+              office_id: selectedOfficeId || null,
               target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
@@ -458,6 +500,7 @@ export function useDailyWorkRecords() {
             });
           } else {
             inserts.push({
+              office_id: selectedOfficeId || null,
               target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
@@ -487,7 +530,7 @@ export function useDailyWorkRecords() {
         if (error) throw error;
       }
 
-      await fetchRecords(currentDate);
+      await fetchRecords(currentDate, selectedOfficeId);
     } catch (err) {
       console.error(err);
       throw err;

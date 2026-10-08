@@ -71,9 +71,9 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
       { label: '費用', colSpan: 2 },
     ],
     [
-      { label: TABLE_COLUMNS.SUBJECT_DEDUCTION },
+      { label: '事業収益' },
       { label: TABLE_COLUMNS.TOTAL },
-      { label: '（未検討）' },
+      { label: '事業費用・経費' },
       { label: TABLE_COLUMNS.TOTAL },
     ]
   ] : [

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
+import { WORDS_PROJECT } from '../constants';
 
 export type ProjectFinancialSummaryRow = {
   id: string;
@@ -70,31 +71,30 @@ export function useProjectFinancialSummary(year: string, officeId?: string) {
 
           pRecs.forEach((r: any) => {
             const amount = Number(r.amount) || 0;
+            const subj = r.subject || '';
             if (r.type === 'revenue') {
               revTotal += amount;
-              if (r.subject === '売上' || r.subject === '売上高' || !r.subject) {
-                revSales += amount;
-              } else {
-                revSales += amount;
-              }
+              revSales += amount;
             } else if (r.type === 'expense') {
               expTotal += amount;
-              if (r.subject === '材料費') {
+              if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subj.includes('材料費')) {
                 expMaterial += amount;
-              } else if (r.subject === 'メンバー工賃' || r.subject === '基本工賃' || r.subject === '工賃') {
+              } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || subj.includes('労務費（利用者工賃）') || subj.includes('メンバー工賃') || subj.includes('基本工賃') || subj.includes('工賃')) {
                 expLaborMember += amount;
-              } else if (r.subject === 'その他人件費') {
+              } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || subj.includes('労務費（利用者工賃以外）') || subj.includes('労務費（その他）') || subj.includes('その他人件費')) {
                 expLaborOther += amount;
-              } else if (r.subject === '外注加工費') {
+              } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || subj.includes('外注加工費')) {
                 expOutsource += amount;
               } else {
                 expOther += amount;
               }
             } else if (r.type === 'reserve') {
               resTotal += amount;
-              if (r.subject === '工賃変動積立金') {
+              if (subj === WORDS_PROJECT.SUBJECT_RESERVE_WAGE || subj.includes('工賃変動積立金')) {
                 resWage += amount;
-              } else if (r.subject === '設備等整備積立金' || r.subject === '設備等修繕維持積立金') {
+              } else if (subj === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || subj.includes('設備等修繕維持積立金') || subj.includes('設備等整備積立金') || subj.includes('積立金')) {
+                resEquipment += amount;
+              } else {
                 resEquipment += amount;
               }
             }

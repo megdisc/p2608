@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button, Pagination, MultiSelectDropdown, SortIcon, Tooltip } from '../components';
 import { TABLE_COLUMNS, MESSAGES, OPTIONS, BUTTON_LABELS } from '../constants';
 
 import { supabase } from '../lib';
 import type { MemberItem, ClientItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 
 type AllocationRow = {
   id: string; // task id
@@ -31,6 +31,7 @@ export function AssigneeAllocationPage() {
   const [originalDrafts, setOriginalDrafts] = useState<AllocationRow[]>([]);
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbClients, setDbClients] = useState<ClientItem[]>([]);
+  const [officeMemberIds, setOfficeMemberIds] = useState<string[]>([]);
   const [memberSkillMap, setMemberSkillMap] = useState<Record<string, Record<string, number>>>({});
   const [loading, setLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
@@ -38,15 +39,16 @@ export function AssigneeAllocationPage() {
   const pageSize = 50;
   
   const { showAlert } = useAlert();
+  const { selectedOfficeId } = useOffice();
 
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
-      const [membersRes, clientsRes, projectsRes, evalsRes] = await Promise.all([
+      const [membersRes, clientsRes, projectsRes, evalsRes, officeMembersRes] = await Promise.all([
         supabase.from('members').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, client_id,
+          id, office_id, code, name, project_type, client_id,
           project_tasks (
             id, name, is_deleted, assignee_type, is_completed, completed_at,
             project_task_assignees ( member_id, client_id, staff_id ),
@@ -55,7 +57,8 @@ export function AssigneeAllocationPage() {
         `).eq('is_deleted', false),
         supabase.from('member_skill_evaluations').select(`
           member_id, skill_id, skill_levels(level_value)
-        `)
+        `),
+        supabase.from('office_member_settings').select('office_id, member_id')
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -75,6 +78,11 @@ export function AssigneeAllocationPage() {
         is_deleted: c.is_deleted
       })));
 
+      const activeOfficeMembers = (officeMembersRes.data || [])
+        .filter((om: any) => om.office_id === selectedOfficeId)
+        .map((om: any) => om.member_id);
+      setOfficeMemberIds(activeOfficeMembers);
+
       const evals = evalsRes.data || [];
       const skillMap: Record<string, Record<string, number>> = {};
       evals.forEach((e: any) => {
@@ -87,6 +95,7 @@ export function AssigneeAllocationPage() {
       
       (projectsRes.data || [])
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+        .filter((p: any) => !selectedOfficeId || p.office_id === selectedOfficeId)
         .forEach((p: any) => {
         const projectTypeSortKey = p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1');
         const activeTasks = (p.project_tasks || []).filter((pt: any) => !pt.is_deleted);
@@ -140,11 +149,11 @@ export function AssigneeAllocationPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedOfficeId, showAlert]);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+  }, [fetchAllData]);
 
   const handleBatchSave = async () => {
     try {
@@ -298,6 +307,9 @@ export function AssigneeAllocationPage() {
                     ) : item.assigneeType === 'internal' ? (
                       <MultiSelectDropdown 
                         options={dbMembers.filter(u => {
+                          if (selectedOfficeId && officeMemberIds.length > 0 && !officeMemberIds.includes(u.id)) {
+                            return false;
+                          }
                           const reqSkills = item.requiredSkills || [];
                           if (reqSkills.length === 0) return true;
                           

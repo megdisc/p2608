@@ -438,10 +438,10 @@ INSERT INTO public.member_skill_settings (id, member_id, skill_id, skill_level_i
 ON CONFLICT (id) DO NOTHING;
 
 -- 11. 案件 & タスク (projects / project_tasks)
-INSERT INTO public.projects (id, name, code, project_type) VALUES ('00000000-0000-0000-0000-000000000001', 'その他', 'P-000000', 'other') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, project_type) VALUES ('00000000-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'その他', 'P-000000', 'other') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name) VALUES ('00000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'その他作業') ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.projects (id, name, code, client_id) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id) VALUES ('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '22222222-2222-2222-2222-222222222222', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'internal') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUES ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a') ON CONFLICT (id) DO NOTHING;
@@ -458,10 +458,10 @@ INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUE
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a') ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.projects (id, name, code, client_id, project_type, settlement_year_month) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '支社サーバーリプレイス', 'P-000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'one-off', '2026-08') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month) VALUES ('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '33333333-3333-3333-3333-333333333333', '支社サーバーリプレイス', 'P-000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'one-off', '2026-08') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type, is_completed, completed_at) VALUES ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'external', true, '2026-08-31 23:59:59+09') ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.projects (id, name, code, client_id, project_type, created_at) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing', '2026-06-01 09:00:00+09') ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, created_at) VALUES ('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '22222222-2222-2222-2222-222222222222', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing', '2026-06-01 09:00:00+09') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務', 'internal') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a') ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'internal') ON CONFLICT (id) DO NOTHING;

@@ -11,7 +11,7 @@ export function useProjects() {
   const [dbSkillLevels, setDbSkillLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchProjects = useCallback(async () => {
+  const fetchProjects = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
       const [clientsRes, skillsRes, skillLevelsRes, projectsRes, allProjectsCodesRes] = await Promise.all([
@@ -19,7 +19,7 @@ export function useProjects() {
         supabase.from('skills').select('*').eq('is_deleted', false).order('name', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, settlement_year_month, created_at, client_id,
+          id, office_id, code, name, project_type, settlement_year_month, created_at, client_id,
           project_tasks (
             id, name, is_deleted, assignee_type, created_at, is_completed, completed_at,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
@@ -51,10 +51,16 @@ export function useProjects() {
       const latestCode = rawCodes.find((p: any) => p.code && p.code.trim() !== '')?.code || null;
       setLastDbCode(latestCode);
 
-      const formattedProjects: ProjectItem[] = (projectsRes.data || [])
+      let rawProjects = projectsRes.data || [];
+      if (officeId) {
+        rawProjects = rawProjects.filter((p: any) => p.office_id === officeId);
+      }
+
+      const formattedProjects: ProjectItem[] = rawProjects
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
         .map((p: any) => ({
         id: p.id,
+        officeId: p.office_id || '',
         code: p.code || '',
         name: p.name,
         projectType: p.project_type || 'one-off',
@@ -95,7 +101,7 @@ export function useProjects() {
     }
   }, []);
 
-  const batchSaveProjects = async (drafts: ProjectItem[], deletedIds: string[]) => {
+  const batchSaveProjects = async (drafts: ProjectItem[], deletedIds: string[], targetOfficeId?: string) => {
     try {
       if (deletedIds.length > 0) {
         const pIdsToDelete = deletedIds.filter(id => !id.includes('TASK'));
@@ -117,6 +123,7 @@ export function useProjects() {
       for (const p of activeProjects) {
         const projData: any = {
           id: p.id,
+          office_id: p.officeId || targetOfficeId || null,
           code: p.code?.trim() || null,
           name: p.name,
           project_type: p.projectType || 'one-off',

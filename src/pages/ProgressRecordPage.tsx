@@ -126,7 +126,8 @@ export function ProgressRecordPage() {
       key: 'taskCompleted',
       header: 'タスク完了',
       sortable: false,
-      editable: false,
+      editable: (item: any) => Boolean(item.isFirstInTask),
+      inputType: 'checkbox',
       render: (item: any, drafts: any[], setDrafts: (newData: any[]) => void) => {
         if (!item.isFirstInTask) return '';
 

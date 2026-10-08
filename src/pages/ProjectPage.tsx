@@ -2,19 +2,20 @@ import { DataPage, Button, Tooltip, type Column } from '../components';
 import { useEffect } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_ORG_LOCATION, OPTIONS } from '../constants';
 import type { ProjectItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useProjects } from '../hooks';
 import { isProjectFinished, generateNextUnifiedCode } from '../utils';
 
 export function ProjectPage() {
   const { items, allCodes, dbClients, dbSkills, dbSkillLevels, loading, fetchProjects, batchSaveProjects } = useProjects();
   const { showAlert } = useAlert();
+  const { selectedOfficeId } = useOffice();
 
   useEffect(() => {
-    fetchProjects().catch(() => {
+    fetchProjects(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchProjects, showAlert]);
+  }, [fetchProjects, selectedOfficeId, showAlert]);
 
   const columns: Column<ProjectItem>[] = [
     { 
@@ -117,7 +118,7 @@ export function ProjectPage() {
 
   const handleBatchSave = async (drafts: ProjectItem[], deletedIds: string[]) => {
     try {
-      await batchSaveProjects(drafts, deletedIds);
+      await batchSaveProjects(drafts, deletedIds, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
@@ -143,6 +144,7 @@ export function ProjectPage() {
 
     return {
       id: generateId(),
+      officeId: selectedOfficeId,
       code: generateNextUnifiedCode(existingCodes, 'P-'),
       name: '',
       projectType: 'ongoing',

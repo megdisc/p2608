@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
 import type { MemberItem, ProjectItem, StaffItem, ClientItem } from '../types';
 import { getCurrentJSTMonth } from '../utils';
+import { useOffice } from '../contexts';
 
 export type ProgressFlatRecord = {
   id: string;
@@ -50,6 +51,7 @@ export function useProgressRecords() {
   const [taskHasWorkSummary, setTaskHasWorkSummary] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
+  const { selectedOfficeId } = useOffice();
 
   const fetchMasters = useCallback(async () => {
     try {
@@ -60,7 +62,7 @@ export function useProgressRecords() {
         supabase.from('partners').select('*').order('yomigana', { ascending: true }),
         supabase.from('project_budgets').select('*').eq('category', 'expense'),
         supabase.from('projects').select(`
-          id, code, name, project_type, settlement_year_month, created_at, client_id, is_deleted,
+          id, office_id, code, name, project_type, settlement_year_month, created_at, client_id, is_deleted,
           project_tasks (
             id, name, is_deleted, is_completed, completed_at,
             project_task_assignees ( member_id, staff_id, client_id )
@@ -80,8 +82,14 @@ export function useProgressRecords() {
       
       const budgetItems = budgetsRes.data || [];
       
-      const formattedProjects = (projectsRes.data || [])
-        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
+      let rawProjects = (projectsRes.data || [])
+        .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他');
+
+      if (selectedOfficeId) {
+        rawProjects = rawProjects.filter((p: any) => p.office_id === selectedOfficeId);
+      }
+
+      const formattedProjects = rawProjects
         .map((p: any) => ({
         id: p.id,
         code: p.code || '',

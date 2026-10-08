@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { ProjectFinancialSummaryRow, ProjectFinancialRecordSubRow } from '../types';
+import { useOffice } from '../contexts';
 
 export function useProjectFinancialRecords() {
   const [items, setItems] = useState<ProjectFinancialSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const { selectedOfficeId } = useOffice();
 
   const fetchRecords = useCallback(async () => {
     try {
@@ -14,7 +16,7 @@ export function useProjectFinancialRecords() {
         { data: projData, error: projError },
         { data: recData, error: recError }
       ] = await Promise.all([
-        supabase.from('projects').select('id, name, project_type').eq('is_deleted', false).order('name', { ascending: true }),
+        supabase.from('projects').select('id, office_id, name, project_type').eq('is_deleted', false).order('name', { ascending: true }),
         supabase.from('financial_records').select('id, project_id, type, subject, amount, target_period')
       ]);
 
@@ -22,7 +24,12 @@ export function useProjectFinancialRecords() {
       if (recError) throw recError;
 
       if (projData && recData) {
-        const mappedItems: ProjectFinancialSummaryRow[] = projData.map((p: any) => {
+        let filteredProjects = projData;
+        if (selectedOfficeId) {
+          filteredProjects = filteredProjects.filter((p: any) => p.office_id === selectedOfficeId);
+        }
+
+        const mappedItems: ProjectFinancialSummaryRow[] = filteredProjects.map((p: any) => {
           const recordsForProject = recData.filter((r: any) => r.project_id === p.id);
           
           let totalRevenue = 0;

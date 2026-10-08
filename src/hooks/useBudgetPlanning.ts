@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { ProjectItem, BudgetCategory } from '../types';
 import { WORDS_PROJECT } from '../constants';
+import { useOffice } from '../contexts';
 
 export type DetailItem = {
   id?: string;
@@ -21,6 +22,7 @@ export function useBudgetPlanning() {
   const [drafts, setDrafts] = useState<ProjectDraft[]>([]);
   const [originalDrafts, setOriginalDrafts] = useState<ProjectDraft[]>([]);
   const [loading, setLoading] = useState(false);
+  const { selectedOfficeId } = useOffice();
 
   const fetchBudgetPlanning = useCallback(async () => {
     try {
@@ -29,7 +31,7 @@ export function useBudgetPlanning() {
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
         .select(`
-          id, code, name, project_type,
+          id, office_id, code, name, project_type,
           project_tasks(id, name, is_deleted, assignee_type, is_completed, completed_at)
         `)
         .eq('is_deleted', false)
@@ -45,7 +47,12 @@ export function useBudgetPlanning() {
 
       const items = (budgetsData as any[]) || [];
 
-      const initialDrafts: ProjectDraft[] = (projectsData as any[])
+      let rawProjects = (projectsData as any[]) || [];
+      if (selectedOfficeId) {
+        rawProjects = rawProjects.filter((p: any) => p.office_id === selectedOfficeId);
+      }
+
+      const initialDrafts: ProjectDraft[] = rawProjects
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
         .map(p => {
         const pItems = items.filter(b => b.project_id === p.id);

@@ -236,7 +236,7 @@ export function BudgetPlanningPage() {
                                 </div>
                               ) : ''}
                             </td>
-                            <td className={isFinished ? undefined : "bg-input-highlight"} style={{ borderBottom: 'none' }}>
+                            <td className={i === 0 && !isFinished ? "bg-input-highlight" : undefined} style={{ borderBottom: 'none' }}>
                               {i === 0 ? renderProjectTypeRadio() : ''}
                             </td>
                         <td>{rev?.subject || ''}</td>
@@ -290,7 +290,7 @@ export function BudgetPlanningPage() {
                     <tr key={`${draft.project.id}-total`}>
                       <td></td>
                       <td></td>
-                      <td className={isFinished ? undefined : "bg-input-highlight"}></td>
+                      <td></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
                       <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         <strong>¥{sumRevenues.toLocaleString()}</strong>

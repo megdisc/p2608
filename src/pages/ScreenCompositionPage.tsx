@@ -588,9 +588,10 @@ export function ScreenCompositionPage() {
       physicalName: 'projects',
       tableType: '業務マスタ',
       logicalName: '案件',
-      description: '案件基本情報',
+      description: '案件基本情報（事業所ごとに管理）',
       columns: [
         { name: 'id', desc: '案件ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'settlement_year_month', desc: '精算年月' },
         { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'code', desc: '案件コード' },

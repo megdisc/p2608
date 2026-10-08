@@ -65,6 +65,7 @@ export type ProjectItem = {
   id: string;
   code?: string;
   name: string;
+  officeId?: string;
   yomigana?: string;
   projectType: 'one-off' | 'ongoing' | 'その他';
   settlementYearMonth?: string;

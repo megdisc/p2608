@@ -408,6 +408,7 @@ CREATE TABLE IF NOT EXISTS "public"."partner_contacts" (
 -- 1.23 projects (案件)
 CREATE TABLE IF NOT EXISTS "public"."projects" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "office_id" UUID REFERENCES "public"."offices"("id") ON DELETE SET NULL,
     "settlement_year_month" VARCHAR(7),
     "client_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "code" TEXT,

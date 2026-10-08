@@ -35,7 +35,7 @@ export function FinancialRecordPage() {
 
   const columns: Column<FinancialRecordItem>[] = [
     { 
-      key: 'period', 
+      key: 'targetPeriod', 
       header: TABLE_COLUMNS.PERIOD,
       inputType: 'date'
     },
@@ -127,7 +127,7 @@ export function FinancialRecordPage() {
       inputType: 'text'
     },
     { 
-      key: 'recordedDate', 
+      key: 'targetPeriod', 
       header: TABLE_COLUMNS.RECORDED_DATE,
       inputType: 'date'
     },
@@ -151,7 +151,7 @@ export function FinancialRecordPage() {
       showYearFilter={true}
       singleYear={currentYear}
       onSingleYearChange={handleYearChange}
-      initialSort={{ key: 'period', direction: 'desc' }}
+      initialSort={{ key: 'targetPeriod', direction: 'desc' }}
       sortConfig={sortConfig}
       hideHeader={true}
       serverSidePagination={true}

@@ -502,11 +502,19 @@ ON CONFLICT (target_period) DO NOTHING;
 
 -- 14. 月次工賃サマリー (wage_summaries)
 INSERT INTO public.wage_summaries (id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
-('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 0, 0, 3150, 0, 3150),
-('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 0, 7125, 0, 7125),
-('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 0, 1750),
-('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 0, 3500, 0, 3500)
-ON CONFLICT (target_period, member_id) DO NOTHING;
+('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 0, 0, 3150, 90, 3060),
+('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 0, 7125, 60, 7065),
+('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 90, 1660),
+('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 0, 3500, 90, 3410)
+ON CONFLICT (target_period, member_id) DO UPDATE SET
+  work_time = EXCLUDED.work_time,
+  wage_rate = EXCLUDED.wage_rate,
+  basic_wage = EXCLUDED.basic_wage,
+  incentive_total = EXCLUDED.incentive_total,
+  other_allowance_total = EXCLUDED.other_allowance_total,
+  wage_total = EXCLUDED.wage_total,
+  deduction_total = EXCLUDED.deduction_total,
+  payment = EXCLUDED.payment;
 
 -- 15. 事業所職員割当 (office_staff_settings)
 INSERT INTO public.office_staff_settings (office_id, staff_id, is_primary) VALUES
@@ -526,4 +534,15 @@ INSERT INTO public.staff_qualification_settings (staff_id, qualification_id, is_
 ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000011', true),
 ('5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000012', false)
 ON CONFLICT DO NOTHING;
+
+-- 17. 収支記録 (general_financial_details)
+INSERT INTO public.general_financial_details (id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
+('f1111111-1111-4111-a111-111111111111', '2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 500000, 'ECサイト制作売上'),
+('f2222222-2222-4222-a222-222222222222', '2026-06-15', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '材料費', 50000, '開発用消耗品費'),
+('f3333333-3333-4333-a333-333333333333', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '労務費（利用者工賃）', 15000, '6月度工賃支払'),
+('f4444444-4444-4444-a444-444444444444', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 2000, '6月度食費控除'),
+('f5555555-5555-4555-a555-555555555555', '2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 320000, 'パン販売売上'),
+('f6666666-6666-4666-a666-666666666666', '2026-07-10', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'expense', 'production', 'manufacturing', '材料費', 80000, '製パン材料費')
+ON CONFLICT (id) DO NOTHING;
+
 

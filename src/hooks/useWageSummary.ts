@@ -11,8 +11,10 @@ export type WageRow = {
   basicWage: number | null;
   taskIncentives: { projectName: string; taskName: string; amount: number }[];
   incentiveTotal: number;
-  otherAllowanceTotal: number;
+  allowanceItems: { name: string; amount: number }[];
+  allowanceTotal: number;
   wageTotal: number;
+  deductionItems: { name: string; amount: number }[];
   dedA: number | null;
   dedB: number | null;
   dedTotal: number;
@@ -52,11 +54,15 @@ export function useWageSummary() {
         projectsRes,
         budgetsRes,
         workRes,
+        attendanceRes,
+        allowancesMasterRes,
+        deductionsMasterRes,
         dailyConfirmRes,
         monthlyIncentiveConfirmRes,
         monthlyIncentiveRecordsRes,
         wageConfirmRes,
-        wageHeaderConfirmRes
+        wageHeaderConfirmRes,
+        officeSettingsRes
       ] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('wage_rates').select('*').eq('is_deleted', false),
@@ -70,11 +76,15 @@ export function useWageSummary() {
         `).eq('is_deleted', false),
         supabase.from('financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time, office_id').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
+        supabase.from('member_attendance_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
+        supabase.from('allowances').select('*').eq('is_deleted', false),
+        supabase.from('deductions').select('*').eq('is_deleted', false),
         supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_incentive_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
         supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
         supabase.from('monthly_wage_summaries').select('*').eq('target_period', monthStr),
-        supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true)
+        supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
+        supabase.from('office_member_settings').select('*')
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -133,6 +143,9 @@ export function useWageSummary() {
 
       const allMembers = membersRes.data || [];
       const projects = projectsRes.data || [];
+      const allowanceMasterList = allowancesMasterRes.data || [];
+      const deductionMasterList = deductionsMasterRes.data || [];
+      const attendanceRecords = attendanceRes.data || [];
 
       const members = allMembers.filter((m: any) => {
         if (!m.is_deleted) return true;
@@ -166,9 +179,14 @@ export function useWageSummary() {
         }
       });
 
+      const memberOfficeSettingsMap = new Map<string, string>(
+        (officeSettingsRes.data || []).map((s: any) => [s.member_id, s.office_id])
+      );
+
       const rows: WageRow[] = members.map((member: any) => {
         const dbRecord: any = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
+        const memberAttendances = attendanceRecords.filter((a: any) => a.member_id === member.id);
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
 
         let calculatedBasicWage = 0;
@@ -194,6 +212,8 @@ export function useWageSummary() {
         let basicWage = hasValidRate ? Math.floor(calculatedBasicWage) : null;
         let wageRate: number | null = memberDefaultWageMap.get(member.id) ?? null;
         const primaryWorkOfficeId = memberWorks.find((w: any) => w.office_id && Number(w.work_time) > 0)?.office_id;
+        const memberOfficeId = primaryWorkOfficeId || memberOfficeSettingsMap.get(member.id) || null;
+
         if (primaryWorkOfficeId && memberOfficeWageMap.has(`${member.id}_${primaryWorkOfficeId}`)) {
           wageRate = memberOfficeWageMap.get(`${member.id}_${primaryWorkOfficeId}`)!;
         }
@@ -285,7 +305,159 @@ export function useWageSummary() {
           }
         }
 
-        const finalOtherAllowanceTotal = dbRecord?.other_allowance_total !== undefined && dbRecord?.other_allowance_total !== null ? Number(dbRecord.other_allowance_total) : 0;
+        // --- 加算手当 & 控除の動的計算ロジック ---
+        const attendanceDates = new Set<string>();
+        const absenceDates = new Set<string>();
+        let mealCount = 0;
+        let transportRoundCount = 0;
+        let transportOneWayCount = 0;
+        let transportOutboundCount = 0;
+        let transportInboundCount = 0;
+
+        memberAttendances.forEach((a: any) => {
+          const status = a.status || 'present';
+          const isPresent = ['present', '通所利用', '在宅利用', '施設外利用'].includes(status);
+          const isAbsent = ['absent', '非利用／欠席'].includes(status);
+
+          if (isPresent) {
+            attendanceDates.add(a.target_period);
+          } else if (isAbsent) {
+            absenceDates.add(a.target_period);
+          }
+
+          if (a.has_meal) mealCount++;
+          if (a.has_pickup && a.has_dropoff) {
+            transportRoundCount++;
+          } else if (a.has_pickup || a.has_dropoff) {
+            transportOneWayCount++;
+          }
+          if (a.has_pickup) transportOutboundCount++;
+          if (a.has_dropoff) transportInboundCount++;
+        });
+
+        memberWorks.forEach((w: any) => {
+          if (Number(w.work_time) > 0 && w.target_period) {
+            attendanceDates.add(w.target_period);
+          }
+        });
+
+        const attendanceDaysCount = attendanceDates.size;
+        const absenceDaysCount = absenceDates.size;
+        const totalDays = attendanceDaysCount + absenceDaysCount;
+        const attendanceRate = totalDays > 0 ? (attendanceDaysCount / totalDays) * 100 : 0;
+        const absenceRate = totalDays > 0 ? (absenceDaysCount / totalDays) * 100 : 0;
+
+        const evalItems = (masterList: any[]) => {
+          const resList: { name: string; amount: number }[] = [];
+          const seenNames = new Set<string>();
+
+          const officeFilteredList = masterList.filter((item: any) => {
+            if (memberOfficeId && item.office_id) {
+              return item.office_id === memberOfficeId;
+            }
+            return true;
+          });
+
+          for (const item of officeFilteredList) {
+            if (seenNames.has(item.name)) continue;
+            seenNames.add(item.name);
+
+            const basis = item.calc_trigger_basis || 'manual';
+            const unitPrice = Number(item.unit_price) || 0;
+            const thresholdVal = item.threshold_value !== null && item.threshold_value !== undefined ? Number(item.threshold_value) : null;
+            const operator = item.threshold_operator || '';
+            const occurrence = item.occurrence_type || 'daily';
+
+            let basisVal = 0;
+            let multiplier = 0;
+
+            switch (basis) {
+              case 'work_hours':
+                basisVal = totalWorkTime;
+                multiplier = totalWorkTime;
+                break;
+              case 'attendance_days':
+                basisVal = attendanceDaysCount;
+                multiplier = attendanceDaysCount;
+                break;
+              case 'absence_days':
+                basisVal = absenceDaysCount;
+                multiplier = absenceDaysCount;
+                break;
+              case 'attendance_rate':
+                basisVal = attendanceRate;
+                multiplier = attendanceDaysCount;
+                break;
+              case 'absence_rate':
+                basisVal = absenceRate;
+                multiplier = attendanceDaysCount;
+                break;
+              case 'meal_count':
+                basisVal = mealCount;
+                multiplier = mealCount;
+                break;
+              case 'transport_round':
+                basisVal = transportRoundCount;
+                multiplier = transportRoundCount;
+                break;
+              case 'transport_one_way':
+                basisVal = transportOneWayCount;
+                multiplier = transportOneWayCount;
+                break;
+              case 'transport_outbound':
+                basisVal = transportOutboundCount;
+                multiplier = transportOutboundCount;
+                break;
+              case 'transport_inbound':
+                basisVal = transportInboundCount;
+                multiplier = transportInboundCount;
+                break;
+              case 'manual':
+              default:
+                basisVal = 0;
+                multiplier = 0;
+                break;
+            }
+
+            let isMatched = false;
+            if (thresholdVal === null || !operator) {
+              isMatched = basis === 'manual' ? false : multiplier > 0;
+            } else {
+              switch (operator) {
+                case 'gte': isMatched = basisVal >= thresholdVal; break;
+                case 'lte': isMatched = basisVal <= thresholdVal; break;
+                case 'gt': isMatched = basisVal > thresholdVal; break;
+                case 'lt': isMatched = basisVal < thresholdVal; break;
+                case 'eq': isMatched = basisVal === thresholdVal; break;
+                default: isMatched = false; break;
+              }
+            }
+
+            if (isMatched) {
+              let amount = 0;
+              if (occurrence === 'daily') {
+                const qty = multiplier > 0 ? multiplier : 1;
+                amount = Math.round(qty * unitPrice);
+              } else {
+                amount = Math.round(unitPrice);
+              }
+              if (amount > 0) {
+                resList.push({ name: item.name, amount });
+              }
+            }
+          }
+          return resList;
+        };
+
+        const allowanceItems = evalItems(allowanceMasterList);
+        const calculatedAllowanceTotal = allowanceItems.reduce((sum, item) => sum + item.amount, 0);
+
+        const deductionItems = evalItems(deductionMasterList);
+        const calculatedDedTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
+
+        const finalOtherAllowanceTotal = dbRecord?.other_allowance_total !== undefined && dbRecord?.other_allowance_total !== null
+          ? Number(dbRecord.other_allowance_total)
+          : calculatedAllowanceTotal;
 
         const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
         const safeIncentive = Math.floor(Math.max(0, calculatedIncentive));
@@ -294,7 +466,7 @@ export function useWageSummary() {
         const dedB = null;
 
         const computedWageTotal = (basicWage || 0) + safeIncentive + finalOtherAllowanceTotal;
-        const computedDedTotal = 0;
+        const computedDedTotal = calculatedDedTotal;
         const computedPayment = computedWageTotal - computedDedTotal;
 
         const finalWorkTime = dbRecord?.work_time !== undefined && dbRecord?.work_time !== null ? Number(dbRecord.work_time) : totalWorkTime;
@@ -309,9 +481,11 @@ export function useWageSummary() {
           ? ((finalBasicWage || 0) + finalIncentiveTotal + finalOtherAllowanceTotal) 
           : (dbRecord.wage_total !== undefined && dbRecord.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal);
           
-        const finalDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : computedDedTotal;
+        const finalDedTotal = (wageConfirmed && dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null)
+          ? Number(dbRecord.deduction_total)
+          : computedDedTotal;
         
-        const finalPayment = (sumRewardUnitPrice > 0 || !dbRecord) 
+        const finalPayment = (sumRewardUnitPrice > 0 || !dbRecord || !wageConfirmed) 
           ? (finalWageTotal - finalDedTotal) 
           : (dbRecord.payment !== undefined && dbRecord.payment !== null ? Number(dbRecord.payment) : computedPayment);
 
@@ -324,8 +498,10 @@ export function useWageSummary() {
           basicWage: finalBasicWage,
           taskIncentives,
           incentiveTotal: finalIncentiveTotal,
-          otherAllowanceTotal: finalOtherAllowanceTotal,
+          allowanceItems,
+          allowanceTotal: finalOtherAllowanceTotal,
           wageTotal: finalWageTotal,
+          deductionItems,
           dedA,
           dedB,
           dedTotal: finalDedTotal,
@@ -382,7 +558,7 @@ export function useWageSummary() {
         wage_rate: r.wageRate,
         basic_wage: r.basicWage,
         incentive_total: r.incentiveTotal,
-        other_allowance_total: r.otherAllowanceTotal || 0,
+        other_allowance_total: r.allowanceTotal || 0,
         wage_total: r.wageTotal,
         deduction_total: r.dedTotal,
         payment: r.payment

@@ -87,7 +87,7 @@ export function WageSummaryPage() {
                 const totalTaskIncentives = row.taskIncentives.reduce((sum, t) => sum + (t.amount || 0), 0);
                 const deductionAmount = row.basicWage === null ? null : -Math.min(totalTaskIncentives, row.basicWage);
                 
-                const incentiveRows = row.taskIncentives.length > 0 
+                const incentiveRows = (row.taskIncentives && row.taskIncentives.length > 0) 
                   ? [
                       ...row.taskIncentives.map((t, i) => ({ 
                         subject: 'インセンティブ', 
@@ -101,18 +101,46 @@ export function WageSummaryPage() {
                       { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
                     ]
                   : [
-                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: deductionAmount, isBold: false, rowSpan: 2, hideSubject: false },
+                      { subject: 'インセンティブ', content: '（該当なし）', amount: 0, isBold: false, rowSpan: 2, hideSubject: false },
                       { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
                     ];
 
+                const allowanceRows = (row.allowanceItems && row.allowanceItems.length > 0)
+                  ? [
+                      ...row.allowanceItems.map((item, i) => ({
+                        subject: '加算手当',
+                        content: item.name,
+                        amount: item.amount,
+                        isBold: false,
+                        rowSpan: i === 0 ? row.allowanceItems.length + 1 : undefined,
+                        hideSubject: i > 0
+                      })),
+                      { subject: '加算手当', content: '合計', amount: row.allowanceTotal, isBold: true, rowSpan: undefined, hideSubject: true }
+                    ]
+                  : [
+                      { subject: '加算手当', content: '（該当なし）', amount: 0, isBold: false, rowSpan: 2, hideSubject: false },
+                      { subject: '加算手当', content: '合計', amount: row.allowanceTotal, isBold: true, rowSpan: undefined, hideSubject: true }
+                    ];
+
                 const wageItems = [
-                  { subject: '基本工賃', content: `工賃単価¥${row.wageRate?.toLocaleString() ?? 0}*作業時間${row.workTime}h`, amount: row.basicWage, isBold: false, rowSpan: 2, hideSubject: false },
+                  { subject: '基本工賃', content: `工賃単価¥${(row.wageRate ?? 0).toLocaleString()}*作業時間${row.workTime ?? 0}h`, amount: row.basicWage, isBold: false, rowSpan: 2, hideSubject: false },
                   { subject: '基本工賃', content: '合計', amount: row.basicWage, isBold: true, rowSpan: undefined, hideSubject: true },
                   ...incentiveRows,
-                  { subject: 'その他加算', content: '未設計', amount: 0, isBold: false, rowSpan: 2, hideSubject: false },
-                  { subject: 'その他加算', content: '合計', amount: 0, isBold: true, rowSpan: undefined, hideSubject: true },
+                  ...allowanceRows,
                   { subject: '工賃合計', content: '', amount: row.wageTotal, isBold: true, rowSpan: undefined, hideSubject: false },
                 ];
+
+                const deductionRows = (row.deductionItems && row.deductionItems.length > 0)
+                  ? row.deductionItems.map((item, i) => ({
+                      subject: '控除',
+                      content: item.name,
+                      amount: item.amount,
+                      isBold: false,
+                      hideSubject: i > 0
+                    }))
+                  : [
+                      { subject: '控除', content: '（該当なし）', amount: 0, isBold: false, hideSubject: false }
+                    ];
                 
                 const maxRows = wageItems.length;
                 
@@ -120,6 +148,8 @@ export function WageSummaryPage() {
                   <React.Fragment key={row.id}>
                     {wageItems.map((item, index) => {
                       const isLast = index === maxRows - 1;
+                      const dedItem = deductionRows[index];
+
                       return (
                         <tr key={`${row.id}-item-${index}`}>
                           <td style={{ borderBottom: isLast ? undefined : 'none' }}>
@@ -137,14 +167,22 @@ export function WageSummaryPage() {
                             {item.content}
                           </td>
                           <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', ...(item.isBold ? { fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' } : {}) }}>
-                            {item.amount === null ? '-' : `¥${item.amount.toLocaleString()}`}
+                            ¥{(item.amount ?? 0).toLocaleString()}
                           </td>
                           {isLast ? (
                             <>
                               <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>控除合計</td>
                               <td></td>
                               <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                                {row.dedTotal === null ? '-' : `¥${row.dedTotal.toLocaleString()}`}
+                                ¥{(row.dedTotal ?? 0).toLocaleString()}
+                              </td>
+                            </>
+                          ) : dedItem ? (
+                            <>
+                              <td style={{ borderBottom: 'none' }}>{!dedItem.hideSubject ? dedItem.subject : ''}</td>
+                              <td style={{ borderBottom: 'none' }}>{dedItem.content}</td>
+                              <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', borderBottom: 'none' }}>
+                                ¥{(dedItem.amount ?? 0).toLocaleString()}
                               </td>
                             </>
                           ) : (
@@ -156,7 +194,7 @@ export function WageSummaryPage() {
                           )}
                           {isLast ? (
                             <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', color: 'var(--color-primary)' }}>
-                              ¥{row.payment.toLocaleString()}
+                              ¥{(row.payment ?? 0).toLocaleString()}
                             </td>
                           ) : (
                             <td style={{ borderBottom: 'none' }}></td>

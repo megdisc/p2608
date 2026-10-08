@@ -495,6 +495,13 @@ INSERT INTO public.member_work_records (office_id, target_period, member_id, tas
 ('22222222-2222-2222-2222-222222222222', '2026-06-17', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 4)
 ON CONFLICT (id) DO NOTHING;
 
+-- 12.1 加算手当・控除実績 (allowance_deduction_records)
+INSERT INTO public.allowance_deduction_records (target_period, member_id, item_id, quantity, unit_price) VALUES
+('2026-06-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '44444444-2222-4444-4444-444444444403', 1, 200),
+('2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '44444444-2222-4444-4444-444444444403', 1, 200),
+('2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '44444444-2222-4444-4444-444444444403', 1, 200)
+ON CONFLICT (id) DO NOTHING;
+
 -- 13. 日次確定 (daily_record_closings)
 INSERT INTO public.daily_record_closings (target_period, is_confirmed) VALUES
 ('2026-06-15', true), ('2026-06-16', true), ('2026-06-17', true), ('2026-06-29', true), ('2026-06-30', true)

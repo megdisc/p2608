@@ -516,24 +516,12 @@ CREATE TABLE IF NOT EXISTS "public"."member_work_records" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 2.3 allowance_records (加算手当実績)
-CREATE TABLE IF NOT EXISTS "public"."allowance_records" (
+-- 2.3 allowance_deduction_records (加算手当・控除実績)
+CREATE TABLE IF NOT EXISTS "public"."allowance_deduction_records" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "target_period" DATE NOT NULL,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "allowance_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE RESTRICT,
-    "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
-    "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
-    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
-);
-
--- 2.4 deduction_records (控除実績)
-CREATE TABLE IF NOT EXISTS "public"."deduction_records" (
-    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
-    "target_period" DATE NOT NULL,
-    "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
-    "deduction_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE RESTRICT,
+    "item_id" UUID REFERENCES "public"."allowance_deduction_items"("id") ON DELETE RESTRICT,
     "quantity" NUMERIC(8,2) DEFAULT 1 NOT NULL,
     "unit_price" NUMERIC(12,2) DEFAULT 0 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
@@ -791,8 +779,10 @@ CREATE OR REPLACE VIEW "public"."staff_work_records" AS SELECT * FROM "public"."
 CREATE OR REPLACE VIEW "public"."attendance_records" AS SELECT * FROM "public"."member_attendance_records";
 CREATE OR REPLACE VIEW "public"."work_records" AS SELECT * FROM "public"."member_work_records";
 CREATE OR REPLACE VIEW "public"."daily_work_records" AS SELECT * FROM "public"."member_work_records";
-CREATE OR REPLACE VIEW "public"."daily_allowance_records" AS SELECT * FROM "public"."allowance_records";
-CREATE OR REPLACE VIEW "public"."daily_deduction_records" AS SELECT * FROM "public"."deduction_records";
+CREATE OR REPLACE VIEW "public"."daily_allowance_records" AS SELECT id, target_period, member_id, item_id AS allowance_id, quantity, unit_price, created_at, updated_at FROM "public"."allowance_deduction_records";
+CREATE OR REPLACE VIEW "public"."daily_deduction_records" AS SELECT id, target_period, member_id, item_id AS deduction_id, quantity, unit_price, created_at, updated_at FROM "public"."allowance_deduction_records";
+CREATE OR REPLACE VIEW "public"."allowance_records" AS SELECT id, target_period, member_id, item_id AS allowance_id, quantity, unit_price, created_at, updated_at FROM "public"."allowance_deduction_records";
+CREATE OR REPLACE VIEW "public"."deduction_records" AS SELECT id, target_period, member_id, item_id AS deduction_id, quantity, unit_price, created_at, updated_at FROM "public"."allowance_deduction_records";
 CREATE OR REPLACE VIEW "public"."daily_work_confirmations" AS SELECT * FROM "public"."daily_record_closings";
 CREATE OR REPLACE VIEW "public"."financial_records" AS SELECT * FROM "public"."general_financial_details";
 CREATE OR REPLACE VIEW "public"."daily_financial_records" AS SELECT * FROM "public"."general_financial_details";

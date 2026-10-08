@@ -197,6 +197,17 @@ export type MonthlyIncentiveRecordItem = {
 
 export type MonthlyIncentiveAllocationItem = MonthlyIncentiveRecordItem;
 
+export type AllowanceDeductionRecordItem = {
+  id: string;
+  targetPeriod: string;
+  memberId: string;
+  itemId: string;
+  quantity: number;
+  unitPrice: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 export type DailyAllowanceRecordItem = {
   id: string;
   workRecordId: string;

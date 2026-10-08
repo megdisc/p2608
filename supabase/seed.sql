@@ -502,10 +502,10 @@ ON CONFLICT (target_period) DO NOTHING;
 
 -- 14. 月次工賃サマリー (wage_summaries)
 INSERT INTO public.wage_summaries (id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
-('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 0, 0, 3150, 90, 3060),
-('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 0, 0, 7125, 60, 7065),
+('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 6850, 0, 10000, 90, 9910),
+('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 4875, 0, 12000, 60, 11940),
 ('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 90, 1660),
-('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 0, 0, 3500, 90, 3410)
+('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 1500, 0, 5000, 90, 4910)
 ON CONFLICT (target_period, member_id) DO UPDATE SET
   work_time = EXCLUDED.work_time,
   wage_rate = EXCLUDED.wage_rate,
@@ -543,6 +543,13 @@ INSERT INTO public.general_financial_details (id, target_period, project_id, cli
 ('f4444444-4444-4444-a444-444444444444', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 2000, '6月度食費控除'),
 ('f5555555-5555-4555-a555-555555555555', '2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 320000, 'パン販売売上'),
 ('f6666666-6666-4666-a666-666666666666', '2026-07-10', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'expense', 'production', 'manufacturing', '材料費', 80000, '製パン材料費')
+ON CONFLICT (id) DO NOTHING;
+
+-- 18. インセンティブ実績 (incentive_records)
+INSERT INTO public.incentive_records (id, target_period, member_id, task_id, allocation_amount) VALUES
+('e1111111-1111-4111-a111-111111111111', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 20000),
+('e2222222-2222-4222-a222-222222222222', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 36000),
+('e3333333-3333-4333-a333-333333333333', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 10000)
 ON CONFLICT (id) DO NOTHING;
 
 

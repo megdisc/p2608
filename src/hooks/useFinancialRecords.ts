@@ -36,7 +36,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         `, { count: 'exact' });
 
       if (options.officeId) {
-        query = query.eq('office_id', options.officeId);
+        query = query.or(`office_id.eq.${options.officeId},office_id.is.null`);
       }
 
       if (currentYear) {
@@ -63,7 +63,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
 
       let projQuery = supabase.from('projects').select('id, name, code, is_deleted, office_id').order('code', { ascending: true });
       if (options.officeId) {
-        projQuery = projQuery.eq('office_id', options.officeId);
+        projQuery = projQuery.or(`office_id.eq.${options.officeId},office_id.is.null`);
       }
 
       const [

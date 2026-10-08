@@ -543,13 +543,13 @@ INSERT INTO public.staff_qualification_settings (staff_id, qualification_id, is_
 ON CONFLICT DO NOTHING;
 
 -- 17. 収支記録 (general_financial_details)
-INSERT INTO public.general_financial_details (id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
-('f1111111-1111-4111-a111-111111111111', '2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 500000, 'ECサイト制作売上'),
-('f2222222-2222-4222-a222-222222222222', '2026-06-15', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '材料費', 50000, '開発用消耗品費'),
-('f3333333-3333-4333-a333-333333333333', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '労務費（利用者工賃）', 15000, '6月度工賃支払'),
-('f4444444-4444-4444-a444-444444444444', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 2000, '6月度食費控除'),
-('f5555555-5555-4555-a555-555555555555', '2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 320000, 'パン販売売上'),
-('f6666666-6666-4666-a666-666666666666', '2026-07-10', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'expense', 'production', 'manufacturing', '材料費', 80000, '製パン材料費')
+INSERT INTO public.general_financial_details (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
+('f1111111-1111-4111-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-06-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 500000, 'ECサイト制作売上'),
+('f2222222-2222-4222-a222-222222222222', '22222222-2222-2222-2222-222222222222', '2026-06-15', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '材料費', 50000, '開発用消耗品費'),
+('f3333333-3333-4333-a333-333333333333', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '労務費（利用者工賃）', 15000, '6月度工賃支払'),
+('f4444444-4444-4444-a444-444444444444', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 2000, '6月度食費控除'),
+('f5555555-5555-4555-a555-555555555555', '22222222-2222-2222-2222-222222222222', '2026-07-01', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 320000, 'パン販売売上'),
+('f6666666-6666-4666-a666-666666666666', '22222222-2222-2222-2222-222222222222', '2026-07-10', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'expense', 'production', 'manufacturing', '材料費', 80000, '製パン材料費')
 ON CONFLICT (id) DO NOTHING;
 
 -- 18. インセンティブ実績 (incentive_records)

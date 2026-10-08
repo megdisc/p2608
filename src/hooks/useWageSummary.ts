@@ -39,13 +39,18 @@ export function useWageSummary() {
 
   const isWageSummaryConfirmed = isWageSummaryConfirmedState;
 
-  const fetchWageSummary = useCallback(async (monthStr: string) => {
+  const fetchWageSummary = useCallback(async (monthStr: string, officeId?: string) => {
     try {
       setLoading(true);
 
       const nextMonthDate = new Date(monthStr + '-01');
       nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
       const nextMonthStr = `${nextMonthDate.getFullYear()}-${(nextMonthDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      let officeMembersQuery = supabase.from('office_member_settings').select('*');
+      if (officeId) {
+        officeMembersQuery = officeMembersQuery.eq('office_id', officeId);
+      }
 
       const [
         membersRes,
@@ -68,7 +73,7 @@ export function useWageSummary() {
         supabase.from('wage_rates').select('*').eq('is_deleted', false),
         supabase.from('member_wage_evaluations').select('*').order('created_at', { ascending: false }),
         supabase.from('projects').select(`
-          id, name, code, project_type,
+          id, name, code, project_type, office_id,
           project_tasks (
             id, name, is_deleted, is_completed, completed_at,
             project_task_assignees ( member_id, staff_id )
@@ -84,7 +89,7 @@ export function useWageSummary() {
         supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
         supabase.from('monthly_wage_summaries').select('*').eq('target_period', monthStr),
         supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
-        supabase.from('office_member_settings').select('*')
+        officeMembersQuery
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -142,12 +147,17 @@ export function useWageSummary() {
       setHasProvisionalDailyWork(provisionalDaily);
 
       const allMembers = membersRes.data || [];
-      const projects = projectsRes.data || [];
+      const projects = (projectsRes.data || []).filter((p: any) => !officeId || p.office_id === officeId);
       const allowanceMasterList = allowancesMasterRes.data || [];
       const deductionMasterList = deductionsMasterRes.data || [];
       const attendanceRecords = attendanceRes.data || [];
 
+      const activeOfficeMemberIds = new Set((officeSettingsRes.data || []).map((s: any) => s.member_id));
+
       const members = allMembers.filter((m: any) => {
+        if (officeId && !activeOfficeMemberIds.has(m.id)) {
+          return false;
+        }
         if (!m.is_deleted) return true;
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === m.id) || [];
         const totalWorkTime = memberWorks.reduce((sum: number, w: any) => sum + Number(w.work_time), 0);
@@ -547,12 +557,13 @@ export function useWageSummary() {
     return sortedData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   }, [sortedData, currentPage, pageSize]);
 
-  const confirmWageSummary = useCallback(async (monthStr: string) => {
+  const confirmWageSummary = useCallback(async (monthStr: string, officeId?: string) => {
     try {
       setLoading(true);
 
       const wageRecords = data.map(r => ({
         target_period: monthStr,
+        office_id: officeId || null,
         member_id: r.id,
         work_time: r.workTime,
         wage_rate: r.wageRate,
@@ -568,7 +579,7 @@ export function useWageSummary() {
         try {
           await supabase
             .from('monthly_wage_summaries')
-            .upsert(wageRecords, { onConflict: 'target_period,member_id' });
+            .upsert(wageRecords, { onConflict: 'office_id,target_period,member_id' });
         } catch (e) {
           console.warn('Could not upsert monthly_wage_summaries:', e);
         }
@@ -577,7 +588,7 @@ export function useWageSummary() {
       try {
         await supabase
           .from('monthly_wage_confirmations')
-          .upsert({ target_period: monthStr, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'target_period' });
+          .upsert({ target_period: monthStr, office_id: officeId || null, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'office_id,target_period' });
       } catch (e) {
         console.warn('Could not update monthly_wage_confirmations:', e);
       }
@@ -596,12 +607,13 @@ export function useWageSummary() {
       const periodDate = `${monthStr}-01`;
 
       try {
-        const { data: existingFin } = await supabase
+        let finQuery = supabase
           .from('financial_records')
           .select('id')
           .eq('target_period', periodDate)
-          .eq('subject', '労務費（利用者工賃）')
-          .limit(1);
+          .eq('subject', '労務費（利用者工賃）');
+        if (officeId) finQuery = finQuery.eq('office_id', officeId);
+        const { data: existingFin } = await finQuery.limit(1);
 
         if (existingFin && existingFin.length > 0) {
           await supabase
@@ -617,6 +629,7 @@ export function useWageSummary() {
             .from('financial_records')
             .insert({
               target_period: periodDate,
+              office_id: officeId || null,
               type: 'expense',
               subject: '労務費（利用者工賃）',
               amount: totalLaborWage,
@@ -625,12 +638,13 @@ export function useWageSummary() {
             });
         }
 
-        const { data: existingDedFin } = await supabase
+        let dedFinQuery = supabase
           .from('financial_records')
           .select('id')
           .eq('target_period', periodDate)
-          .eq('subject', '控除')
-          .limit(1);
+          .eq('subject', '控除');
+        if (officeId) dedFinQuery = dedFinQuery.eq('office_id', officeId);
+        const { data: existingDedFin } = await dedFinQuery.limit(1);
 
         if (existingDedFin && existingDedFin.length > 0) {
           await supabase
@@ -648,6 +662,7 @@ export function useWageSummary() {
             .from('financial_records')
             .insert({
               target_period: periodDate,
+              office_id: officeId || null,
               type: 'revenue',
               subject: '控除',
               amount: totalDeduction,
@@ -668,12 +683,14 @@ export function useWageSummary() {
     }
   }, [data]);
 
-  const cancelWageSummary = useCallback(async (monthStr: string) => {
+  const cancelWageSummary = useCallback(async (monthStr: string, officeId?: string) => {
     try {
       setLoading(true);
 
       try {
-        await supabase.from('monthly_wage_confirmations').delete().eq('target_period', monthStr);
+        let q = supabase.from('monthly_wage_confirmations').delete().eq('target_period', monthStr);
+        if (officeId) q = q.eq('office_id', officeId);
+        await q;
       } catch (e) {
         console.warn('Could not update wage confirmation records:', e);
       }

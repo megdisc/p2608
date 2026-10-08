@@ -24,7 +24,7 @@ export type AnnualAverageWageRow = {
   monthlyDetails: MonthlyAverageWageDetail[];
 };
 
-export function useAverageWageSummary() {
+export function useAverageWageSummary(officeId?: string) {
   const [data, setData] = useState<AnnualAverageWageRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -32,14 +32,24 @@ export function useAverageWageSummary() {
     try {
       setLoading(true);
 
+      let workQuery = supabase.from('daily_work_records').select('target_period, member_id, work_time, office_id');
+      let wageQuery = supabase.from('monthly_wage_summaries').select('target_period, payment, wage_total, member_id, office_id');
+      let finQuery = supabase.from('financial_records').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
+
+      if (officeId) {
+        workQuery = workQuery.eq('office_id', officeId);
+        wageQuery = wageQuery.eq('office_id', officeId);
+        finQuery = finQuery.eq('office_id', officeId);
+      }
+
       const [
         { data: workRecords, error: workError },
         { data: wageRecords, error: wageError },
         { data: finRecords, error: finError }
       ] = await Promise.all([
-        supabase.from('daily_work_records').select('target_period, member_id, work_time'),
-        supabase.from('monthly_wage_summaries').select('target_period, payment, wage_total, member_id'),
-        supabase.from('financial_records').select('target_period, type, subject, amount').eq('type', 'expense')
+        workQuery,
+        wageQuery,
+        finQuery
       ]);
 
       if (workError) throw workError;
@@ -143,7 +153,7 @@ export function useAverageWageSummary() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [officeId]);
 
   return {
     data,

@@ -773,6 +773,7 @@ export function ScreenCompositionPage() {
       description: '日々の出入金、材料費購入、経費発生、売上請求などの一般収支明細データ',
       columns: [
         { name: 'id', desc: '一般収支記録ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期・取引日' },
         { name: 'project_id', desc: '関連案件ID' },
         { name: 'client_id', desc: '関連取引先ID' },
@@ -807,6 +808,7 @@ export function ScreenCompositionPage() {
       description: '対象年月ごとの実績・インセンティブ分配等の確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'confirmed_by', desc: '確定職員ID' },
@@ -825,6 +827,7 @@ export function ScreenCompositionPage() {
       description: '締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
       columns: [
         { name: 'id', desc: '明細ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期' },
         { name: 'project_id', desc: '案件ID' },
         { name: 'client_id', desc: '取引先ID' },
@@ -847,6 +850,7 @@ export function ScreenCompositionPage() {
       description: '月ごとの各利用者の計算・支給工賃記録、サービス利用料控除額、およびその他控除概要（基幹親テーブル）',
       columns: [
         { name: 'id', desc: '概要ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'work_time', desc: '総作業時間' },
@@ -924,6 +928,7 @@ export function ScreenCompositionPage() {
       description: '対象年月ごとの工賃計算確定および事業活動収支の締め確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
+        { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期(YYYY-MM)' },
         { name: 'confirmed_at', desc: '確定日時' },
         { name: 'confirmed_by', desc: '確定職員ID' },

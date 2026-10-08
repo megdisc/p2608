@@ -508,12 +508,12 @@ INSERT INTO public.daily_record_closings (target_period, is_confirmed) VALUES
 ON CONFLICT (target_period) DO NOTHING;
 
 -- 14. 月次工賃サマリー (wage_summaries)
-INSERT INTO public.wage_summaries (id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
-('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 6850, 0, 10000, 90, 9910),
-('c1e12adb-6dad-415f-97e0-5a07b3949836', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 4875, 0, 12000, 60, 11940),
-('cef35b6d-7133-4d2f-880a-50c262c06f3b', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 90, 1660),
-('d7180e25-0901-4201-bcf7-b9ee5259d860', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 1500, 0, 5000, 90, 4910)
-ON CONFLICT (target_period, member_id) DO UPDATE SET
+INSERT INTO public.wage_summaries (id, office_id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
+('ad3d75e0-3cf0-42ea-800b-5e476066c58c', '22222222-2222-2222-2222-222222222222', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 31.5, 100, 3150, 6850, 0, 10000, 90, 9910),
+('c1e12adb-6dad-415f-97e0-5a07b3949836', '22222222-2222-2222-2222-222222222222', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 28.5, 250, 7125, 4875, 0, 12000, 60, 11940),
+('cef35b6d-7133-4d2f-880a-50c262c06f3b', '22222222-2222-2222-2222-222222222222', '2026-06', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 7, 250, 1750, 0, 0, 1750, 90, 1660),
+('d7180e25-0901-4201-bcf7-b9ee5259d860', '22222222-2222-2222-2222-222222222222', '2026-06', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', 7, 500, 3500, 1500, 0, 5000, 90, 4910)
+ON CONFLICT (office_id, target_period, member_id) DO UPDATE SET
   work_time = EXCLUDED.work_time,
   wage_rate = EXCLUDED.wage_rate,
   basic_wage = EXCLUDED.basic_wage,

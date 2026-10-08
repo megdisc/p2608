@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert, useOffice } from '../contexts';
 import { useFinancialSummary } from '../hooks';
 
 export function FinancialSummaryPage({ activityCategory = 'production' }: { activityCategory?: 'production' | 'welfare' }) {
+  const { selectedOfficeId } = useOffice();
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
-  const { data, loading, fetchSummary } = useFinancialSummary(currentYear, activityCategory);
+  const { data, loading, fetchSummary } = useFinancialSummary(currentYear, activityCategory, selectedOfficeId);
   const { showAlert } = useAlert();
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'period', direction: 'asc' });
 

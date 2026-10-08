@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAverageWageSummary } from '../hooks/useAverageWageSummary';
 import { MESSAGES } from '../constants';
+import { useOffice } from '../contexts';
 
 export function AverageWagePage() {
-  const { data, loading, fetchSummary } = useAverageWageSummary();
+  const { selectedOfficeId } = useOffice();
+  const { data, loading, fetchSummary } = useAverageWageSummary(selectedOfficeId);
   const [expandedYears, setExpandedYears] = useState<Record<string, boolean>>({});
 
   useEffect(() => {

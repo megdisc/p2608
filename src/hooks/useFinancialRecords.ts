@@ -7,6 +7,7 @@ export type UseFinancialRecordsOptions = {
   initialSort?: { key: string, direction: 'asc' | 'desc' };
   type?: string;
   subjects?: string[];
+  officeId?: string;
 };
 
 export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
@@ -28,11 +29,15 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     try {
       setLoading(true);
       let query = supabase.from('financial_records').select(`
-          id, target_period, type, subject, amount, remarks, activity_category, cost_category,
+          id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project:projects(id, name),
           staff:staffs(id, name),
           client:partners(id, name)
         `, { count: 'exact' });
+
+      if (options.officeId) {
+        query = query.eq('office_id', options.officeId);
+      }
 
       if (currentYear) {
         query = query.gte('target_period', `${currentYear}-01-01`).lte('target_period', `${currentYear}-12-31`);
@@ -56,6 +61,11 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       const startIdx = (page - 1) * pageSize;
       query = query.range(startIdx, startIdx + pageSize - 1);
 
+      let projQuery = supabase.from('projects').select('id, name, code, is_deleted, office_id').order('code', { ascending: true });
+      if (options.officeId) {
+        projQuery = projQuery.eq('office_id', options.officeId);
+      }
+
       const [
         { data: recData, error: recError, count },
         { data: projData, error: projError },
@@ -63,7 +73,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         { data: clientData, error: clientError },
       ] = await Promise.all([
         query,
-        supabase.from('projects').select('id, name, code, is_deleted').order('code', { ascending: true }),
+        projQuery,
         supabase.from('staffs').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true }),
         supabase.from('partners').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true })
       ]);
@@ -99,7 +109,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, sortConfig, currentYear, options.type, options.subjects]);
+  }, [page, pageSize, sortConfig, currentYear, options.type, options.subjects, options.officeId]);
 
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
@@ -108,6 +118,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     const upserts = drafts.map(d => ({
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
       target_period: d.targetPeriod || today,
+      office_id: options.officeId || null,
       project_id: d.projectId || null,
       client_id: d.clientId || null,
       type: d.type || 'revenue',

@@ -25,7 +25,7 @@ export type FinancialSummaryRow = {
   resTotal: number;
 };
 
-export function useFinancialSummary(year: string, activityCategory: 'production' | 'welfare' = 'production') {
+export function useFinancialSummary(year: string, activityCategory: 'production' | 'welfare' = 'production', officeId?: string) {
   const [data, setData] = useState<FinancialSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -34,9 +34,13 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
       setLoading(true);
       let query = supabase
         .from('financial_records')
-        .select('target_period, type, subject, amount, activity_category')
+        .select('target_period, type, subject, amount, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
+
+      if (officeId) {
+        query = query.eq('office_id', officeId);
+      }
 
       if (activityCategory === 'welfare') {
         query = query.eq('activity_category', 'welfare');
@@ -135,7 +139,7 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
     } finally {
       setLoading(false);
     }
-  }, [year, activityCategory]);
+  }, [year, activityCategory, officeId]);
 
   return {
     data,

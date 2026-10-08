@@ -3,10 +3,11 @@ import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from 
 import { MESSAGES } from '../constants';
 
 import { getCurrentJSTMonth } from '../utils';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert, useOffice } from '../contexts';
 import { useWageSummary } from '../hooks';
 
 export function WageSummaryPage() {
+  const { selectedOfficeId } = useOffice();
   const {
     loading,
     currentMonth,
@@ -26,10 +27,10 @@ export function WageSummaryPage() {
   const { showAlert } = useAlert();
 
   useEffect(() => {
-    fetchWageSummary(currentMonth).catch(() => {
+    fetchWageSummary(currentMonth, selectedOfficeId).catch(() => {
       showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
-  }, [currentMonth, fetchWageSummary, showAlert]);
+  }, [currentMonth, selectedOfficeId, fetchWageSummary, showAlert]);
 
   const handleConfirm = async () => {
     if (!canConfirmWageSummary) {
@@ -37,7 +38,7 @@ export function WageSummaryPage() {
       return;
     }
     try {
-      await confirmWageSummary(currentMonth);
+      await confirmWageSummary(currentMonth, selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS || '確定・保存が完了しました。', 'success');
     } catch {
       showAlert(MESSAGES.SAVE_ERROR || '確定処理に失敗しました。', 'error');
@@ -46,7 +47,7 @@ export function WageSummaryPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await cancelWageSummary(currentMonth);
+      await cancelWageSummary(currentMonth, selectedOfficeId);
       showAlert('確定を解除しました。', 'success');
     } catch {
       showAlert('解除処理に失敗しました。', 'error');

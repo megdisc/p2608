@@ -2,10 +2,11 @@ import { DataPage, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import type { FinancialRecordItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useFinancialRecords } from '../hooks';
 
 export function FinancialRecordPage() {
+  const { selectedOfficeId } = useOffice();
   const { 
     items, 
     totalCount,
@@ -20,7 +21,7 @@ export function FinancialRecordPage() {
     clients,
     loading, 
     fetchRecords 
-  } = useFinancialRecords();
+  } = useFinancialRecords({ officeId: selectedOfficeId });
   const { showAlert } = useAlert();
 
   useEffect(() => {

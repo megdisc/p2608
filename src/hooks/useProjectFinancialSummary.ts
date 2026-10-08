@@ -18,23 +18,31 @@ export type ProjectFinancialSummaryRow = {
   resTotal: number;
 };
 
-export function useProjectFinancialSummary(year: string) {
+export function useProjectFinancialSummary(year: string, officeId?: string) {
   const [data, setData] = useState<ProjectFinancialSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchSummary = useCallback(async () => {
     try {
       setLoading(true);
+      let projQuery = supabase.from('projects').select('id, name, code, office_id').eq('is_deleted', false).order('code', { ascending: true });
+      let recQuery = supabase
+        .from('financial_records')
+        .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
+        .gte('target_period', `${year}-01-01`)
+        .lte('target_period', `${year}-12-31`);
+
+      if (officeId) {
+        projQuery = projQuery.eq('office_id', officeId);
+        recQuery = recQuery.eq('office_id', officeId);
+      }
+
       const [
         { data: projData, error: projError },
         { data: recData, error: recError }
       ] = await Promise.all([
-        supabase.from('projects').select('id, name, code').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase
-          .from('financial_records')
-          .select('id, project_id, type, subject, amount, target_period, activity_category')
-          .gte('target_period', `${year}-01-01`)
-          .lte('target_period', `${year}-12-31`)
+        projQuery,
+        recQuery
       ]);
 
       if (projError) throw projError;
@@ -118,7 +126,7 @@ export function useProjectFinancialSummary(year: string) {
     } finally {
       setLoading(false);
     }
-  }, [year]);
+  }, [year, officeId]);
 
   return {
     data,

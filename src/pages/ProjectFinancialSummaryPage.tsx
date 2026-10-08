@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert, useOffice } from '../contexts';
 import { useProjectFinancialSummary } from '../hooks';
 
 export function ProjectFinancialSummaryPage() {
+  const { selectedOfficeId } = useOffice();
   const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear().toString());
-  const { data, loading, fetchSummary } = useProjectFinancialSummary(currentYear);
+  const { data, loading, fetchSummary } = useProjectFinancialSummary(currentYear, selectedOfficeId);
   const { showAlert } = useAlert();
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
 

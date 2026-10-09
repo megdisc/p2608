@@ -8,6 +8,7 @@ export type UseFinancialRecordsOptions = {
   type?: string;
   subjects?: string[];
   officeId?: string;
+  disableYearFilter?: boolean;
 };
 
 export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
@@ -39,7 +40,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         query = query.or(`office_id.eq.${options.officeId},office_id.is.null`);
       }
 
-      if (currentYear) {
+      if (currentYear && !options.disableYearFilter) {
         query = query.gte('target_period', `${currentYear}-01-01`).lte('target_period', `${currentYear}-12-31`);
       }
 
@@ -54,7 +55,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       if (sortConfig.key === 'projectId') dbSortKey = 'project_id';
       else if (sortConfig.key === 'clientId') dbSortKey = 'client_id';
       else if (sortConfig.key === 'recordedBy') dbSortKey = 'recorded_by';
-      else if (['targetPeriod', 'type', 'subject', 'amount', 'remarks', 'activity_category', 'cost_category'].includes(sortConfig.key)) dbSortKey = sortConfig.key === 'targetPeriod' ? 'target_period' : sortConfig.key;
+      else if (['period', 'targetPeriod', 'type', 'subject', 'amount', 'remarks', 'activity_category', 'cost_category'].includes(sortConfig.key)) dbSortKey = (sortConfig.key === 'targetPeriod' || sortConfig.key === 'period') ? 'target_period' : sortConfig.key;
 
       query = query.order(dbSortKey, { ascending: sortConfig.direction === 'asc' });
 
@@ -87,6 +88,8 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         const mapped: FinancialRecordItem[] = recData.map((r: any) => ({
           id: r.id,
           targetPeriod: r.target_period || '',
+          period: r.target_period || '',
+          recordedDate: r.target_period || '',
           projectId: r.project?.id || '',
           clientId: r.client?.id || '',
           type: r.type,
@@ -117,7 +120,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     // Process new and updated records
     const upserts = drafts.map(d => ({
       ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-      target_period: d.targetPeriod || today,
+      target_period: d.period || d.targetPeriod || today,
       office_id: options.officeId || null,
       project_id: d.projectId || null,
       client_id: d.clientId || null,

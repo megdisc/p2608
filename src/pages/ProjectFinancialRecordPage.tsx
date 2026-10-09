@@ -18,8 +18,6 @@ export function ProjectFinancialRecordPage() {
     page,
     setPage,
     handleSortChange,
-    currentYear,
-    handleYearChange,
     sortConfig,
     projects, 
     loading, 
@@ -28,7 +26,8 @@ export function ProjectFinancialRecordPage() {
   } = useFinancialRecords({ 
     initialSort: { key: 'period', direction: 'desc' },
     type: 'expense',
-    subjects: expenseSubjects
+    subjects: expenseSubjects,
+    disableYearFilter: true
   });
   const { showAlert } = useAlert();
   const { user } = useAuth();
@@ -103,31 +102,6 @@ export function ProjectFinancialRecordPage() {
     }
   ];
 
-  const confirmedMonths = useMemo<string[]>(() => {
-    try {
-      const saved = localStorage.getItem('monthly_incentive_allocation_confirmed') || localStorage.getItem('monthly_settlement_confirmed');
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return ['2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07', '2027-07'];
-  }, [items]);
-
-  const isConfirmedMonth = (item: FinancialRecordItem) => {
-    const month = (item.period || item.recordedDate || '').substring(0, 7);
-    return confirmedMonths.includes(month);
-  };
-
-  const canEditRow = (item: FinancialRecordItem) => {
-    return !isConfirmedMonth(item);
-  };
-
-  const canDeleteRow = (item: FinancialRecordItem) => {
-    return !isConfirmedMonth(item);
-  };
-
-  const hasConfirmedItemInCurrentView = useMemo(() => {
-    return sortedItems.some(item => isConfirmedMonth(item));
-  }, [sortedItems, confirmedMonths]);
-
   const handleBatchSave = async (drafts: FinancialRecordItem[], _deletedIds: string[]) => {
     try {
       const sanitizedDrafts = drafts.map(d => ({
@@ -167,9 +141,6 @@ export function ProjectFinancialRecordPage() {
       emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
       onBatchSave={handleBatchSave}
       onAddRow={handleAddRow}
-      showYearFilter={true}
-      singleYear={currentYear}
-      onSingleYearChange={handleYearChange}
       initialSort={{ key: 'period', direction: 'desc' }}
       sortConfig={sortConfig}
       hideHeader={true}
@@ -178,16 +149,7 @@ export function ProjectFinancialRecordPage() {
       currentPage={page}
       onPageChange={setPage}
       onSortChange={handleSortChange}
-      canEditRow={canEditRow}
-      canDeleteRow={canDeleteRow}
-      showRestrictionColumn={true}
-      restrictionTooltipText="確定済のため変更不可"
       highlightInputColumns={true}
-      footerLeft={hasConfirmedItemInCurrentView ? (
-        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
-          確定済のため変更不可
-        </span>
-      ) : undefined}
     />
   );
 }

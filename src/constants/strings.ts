@@ -8,6 +8,8 @@ export const WORDS_SYSTEM = {
   SYSTEM_NAME: '工賃管理システム',
 
   // モジュール名
+  INDEPENDENT_MASTER: '独立マスタ系',
+  DEPENDENT_MASTER: '従属マスタ系',
   AGGREGATION: '集計系',
   RECORDING: '記録系',
   SETTINGS: '設定系',
@@ -211,6 +213,8 @@ export const SYSTEM_NAME = WORDS_SYSTEM.SYSTEM_NAME;
 export const SYSTEM_ID = WORDS_SYSTEM.SYSTEM_ID;
 
 export const MENU_CATEGORIES = {
+  INDEPENDENT_MASTER: WORDS_SYSTEM.INDEPENDENT_MASTER,
+  DEPENDENT_MASTER: WORDS_SYSTEM.DEPENDENT_MASTER,
   MASTER: 'マスタ系',
   RECORD: 'レコード系',
   SUMMARY: '集計結果系',

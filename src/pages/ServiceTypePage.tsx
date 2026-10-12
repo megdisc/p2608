@@ -17,10 +17,10 @@ export function ServiceTypePage() {
   }, [fetchServiceTypes, showAlert]);
 
   const columns: Column<ServiceTypeItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: false, editable: true, inputType: 'text' },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: false, editable: true, inputType: 'text' },
-    { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
+    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: true, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: true, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true, editable: true, inputType: 'text' },
+    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
   ];
 
   const handleBatchSave = async (drafts: ServiceTypeItem[], deletedIds: string[]) => {
@@ -55,6 +55,7 @@ export function ServiceTypePage() {
       title="支援種別"
       data={items} 
       columns={columns} 
+      initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている支援種別がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

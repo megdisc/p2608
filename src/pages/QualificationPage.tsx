@@ -17,11 +17,11 @@ export function QualificationPage() {
   }, [fetchQualifications, showAlert]);
 
   const columns: Column<QualificationItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: false, editable: true, inputType: 'text' },
-    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: false, editable: true, inputType: 'text' },
-    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: false, editable: true, inputType: 'text' },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: false, editable: true, inputType: 'text' },
-    { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
+    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true, editable: true, inputType: 'text' },
+    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true, editable: true, inputType: 'text' },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true, editable: true, inputType: 'text' },
+    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
   ];
 
   const handleBatchSave = async (drafts: QualificationItem[], deletedIds: string[]) => {
@@ -57,6 +57,7 @@ export function QualificationPage() {
       title="資格"
       data={items} 
       columns={columns} 
+      initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている資格がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

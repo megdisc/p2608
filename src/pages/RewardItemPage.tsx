@@ -26,24 +26,29 @@ export function RewardItemPage() {
   }));
 
   const columns: Column<RewardItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: false, editable: true, inputType: 'text' },
+    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: true, editable: true, inputType: 'text' },
     { 
       key: 'service_type_id', 
       header: TABLE_COLUMNS.SERVICE_TYPE, 
-      sortable: false, 
+      sortable: true, 
+      sortKey: 'service_type_name',
       editable: true, 
       inputType: 'select',
       options: serviceTypeOptions,
+      onCellChange: (val, _item, updateRow) => {
+        const matched = serviceTypes.find(st => st.id === val);
+        updateRow({ service_type_name: matched ? matched.name : '' });
+      },
       render: (item) => {
         const matched = serviceTypes.find(st => st.id === item.service_type_id);
         return <span>{matched ? matched.name : item.service_type_name || '就労継続支援B型'}</span>;
       }
     },
-    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: false, editable: true, inputType: 'text' },
+    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: true, editable: true, inputType: 'text' },
     { 
       key: 'item_category', 
       header: TABLE_COLUMNS.TYPE, 
-      sortable: false, 
+      sortable: true, 
       editable: true, 
       inputType: 'select',
       options: [
@@ -68,7 +73,7 @@ export function RewardItemPage() {
     { 
       key: 'occurrence_type', 
       header: TABLE_COLUMNS.OCCURRENCE_TYPE, 
-      sortable: false, 
+      sortable: true, 
       editable: true, 
       inputType: 'select',
       options: [
@@ -79,10 +84,10 @@ export function RewardItemPage() {
         <span>{item.occurrence_type === 'monthly' ? '月次発生' : '日次発生'}</span>
       )
     },
-    { key: 'unit_value', header: TABLE_COLUMNS.UNIT, sortable: false, editable: true, inputType: 'number' },
-    { key: 'calc_rate', header: '定率算定率[%]', sortable: false, editable: true, inputType: 'number' },
-    { key: 'monthly_limit_count', header: '月間上限回数', sortable: false, editable: true, inputType: 'number' },
-    { key: 'is_active', header: '適用', sortable: false, editable: true, inputType: 'checkbox' },
+    { key: 'unit_value', header: TABLE_COLUMNS.UNIT, sortable: true, editable: true, inputType: 'number' },
+    { key: 'calc_rate', header: '定率算定率[%]', sortable: true, editable: true, inputType: 'number' },
+    { key: 'monthly_limit_count', header: '月間上限回数', sortable: true, editable: true, inputType: 'number' },
+    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
   ];
 
   const handleBatchSave = async (drafts: RewardItem[], deletedIds: string[]) => {
@@ -101,11 +106,13 @@ export function RewardItemPage() {
       ...(currentDrafts || []).map(i => i.code)
     ];
 
-    const defaultServiceTypeId = serviceTypes.find(st => st.code === 'type_b')?.id || serviceTypes[0]?.id || '11111111-0000-0000-0000-000000000001';
+    const defaultServiceType = serviceTypes.find(st => st.code === 'type_b') || serviceTypes[0];
+    const defaultServiceTypeId = defaultServiceType?.id || '11111111-0000-0000-0000-000000000001';
 
     return {
       id: `REW-${Date.now()}-${Math.random()}`,
       service_type_id: defaultServiceTypeId,
+      service_type_name: defaultServiceType?.name || '就労継続支援B型',
       code: generateNextUnifiedCode(existingCodes, '5211'),
       name: '',
       item_category: 'addition',
@@ -124,6 +131,7 @@ export function RewardItemPage() {
       title="加算・減算"
       data={items} 
       columns={columns} 
+      initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている加算・減算項目がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}

@@ -19,7 +19,7 @@ export function compareValues(
     if (aVal < bVal) cmp = -1;
     else if (aVal > bVal) cmp = 1;
   } else if (typeof aVal === 'string' && typeof bVal === 'string') {
-    cmp = aVal.localeCompare(bVal, 'ja');
+    cmp = aVal.localeCompare(bVal, 'ja', { numeric: true });
   } else {
     if (aVal < bVal) cmp = -1;
     else if (aVal > bVal) cmp = 1;
@@ -47,7 +47,7 @@ export function compareValues(
       bObj.assigneeYomigana;
 
     if (aYomi && bYomi) {
-      cmp = aYomi.localeCompare(bYomi, 'ja');
+      cmp = aYomi.localeCompare(bYomi, 'ja', { numeric: true });
     }
   }
 

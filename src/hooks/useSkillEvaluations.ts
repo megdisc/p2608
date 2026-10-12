@@ -35,7 +35,7 @@ export function useSkillEvaluations() {
 
       // Fetch skills
       let skillQuery = supabase
-        .from('skills')
+        .from('skill_items')
         .select('*')
         .eq('is_deleted', false);
       if (officeId) {
@@ -87,7 +87,7 @@ export function useSkillEvaluations() {
 
       // Fetch skill levels filtered by office
       let levelQuery = supabase
-        .from('skill_levels')
+        .from('skill_level_items')
         .select('*')
         .eq('is_deleted', false);
       if (officeId) {
@@ -107,7 +107,7 @@ export function useSkillEvaluations() {
 
       // Fetch all non-deleted skill levels for evaluation display lookup
       const { data: allLevelsData, error: allLevelsError } = await supabase
-        .from('skill_levels')
+        .from('skill_level_items')
         .select('*')
         .eq('is_deleted', false);
       if (!allLevelsError && allLevelsData) {

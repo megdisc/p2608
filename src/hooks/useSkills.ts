@@ -10,7 +10,7 @@ export function useSkills() {
     try {
       setLoading(true);
       let query = supabase
-        .from('skills')
+        .from('skill_items')
         .select('*')
         .eq('is_deleted', false);
 

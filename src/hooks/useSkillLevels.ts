@@ -10,7 +10,7 @@ export function useSkillLevels() {
     setLoading(true);
     try {
       let query = supabase
-        .from('skill_levels')
+        .from('skill_level_items')
         .select('*')
         .eq('is_deleted', false);
 

@@ -44,9 +44,9 @@ export function useClients() {
       });
 
       const formatted: ClientItem[] = (partnersRes.data || []).map((d: any) => {
-        const contacts: PartnerContactItem[] = (d.partner_contacts || [])
-          .filter((c: any) => !c.is_deleted)
-          .map((c: any) => ({
+        const rawContacts = (d.partner_contacts || []).filter((c: any) => !c.is_deleted);
+        rawContacts.sort((a: any, b: any) => (a.created_at || a.id || '').localeCompare(b.created_at || b.id || ''));
+        const contacts: PartnerContactItem[] = rawContacts.map((c: any) => ({
             id: c.id,
             partnerId: c.partner_id,
             contactName: c.name || '',

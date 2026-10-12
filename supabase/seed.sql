@@ -62,26 +62,57 @@ INSERT INTO public.phone_numbers (id, phone_type, phone_number) VALUES
 ('bbbbb333-3333-3333-3333-333333333333', 'phone', '03-9876-5432'),
 ('bbbbb444-4444-4444-4444-444444444444', 'fax', '03-9876-5433'),
 ('bbbbb555-5555-5555-5555-555555555555', 'phone', '03-8765-4321'),
-('bbbbb666-6666-6666-6666-666666666666', 'phone', '03-7654-3210')
-ON CONFLICT (id) DO NOTHING;
+('bbbbb666-6666-6666-6666-666666666666', 'phone', '03-7654-3210'),
+-- 取引先担当者連絡先
+('bbbbb777-1000-0000-0000-000000000001', 'phone', '03-1234-5678'),
+('bbbbb777-1000-0000-0000-000000000002', 'phone', '03-1234-5679'),
+('bbbbb777-1000-0000-0000-000000000003', 'fax', '03-1234-5680'),
+('bbbbb777-2000-0000-0000-000000000001', 'phone', '06-9876-5432'),
+('bbbbb777-2000-0000-0000-000000000002', 'phone', '06-9876-5433'),
+('bbbbb777-2000-0000-0000-000000000003', 'fax', '06-9876-5434'),
+('bbbbb777-3000-0000-0000-000000000001', 'phone', '052-111-2222')
+ON CONFLICT (id) DO UPDATE SET
+  phone_type = EXCLUDED.phone_type,
+  phone_number = EXCLUDED.phone_number;
 
 INSERT INTO public.entity_phone_settings (owner_type, owner_id, phone_number_id) VALUES
 ('office', '22222222-2222-2222-2222-222222222222', 'bbbbb333-3333-3333-3333-333333333333'),
 ('office', '22222222-2222-2222-2222-222222222222', 'bbbbb444-4444-4444-4444-444444444444'),
 ('office', '33333333-3333-3333-3333-333333333333', 'bbbbb555-5555-5555-5555-555555555555'),
-('office', '44444444-4444-4444-4444-444444444444', 'bbbbb666-6666-6666-6666-666666666666')
+('office', '44444444-4444-4444-4444-444444444444', 'bbbbb666-6666-6666-6666-666666666666'),
+-- 取引先担当者割当
+('partner_contact', 'c1000000-0000-0000-0000-000000000001', 'bbbbb777-1000-0000-0000-000000000001'),
+('partner_contact', 'c1000000-0000-0000-0000-000000000002', 'bbbbb777-1000-0000-0000-000000000002'),
+('partner_contact', 'c1000000-0000-0000-0000-000000000002', 'bbbbb777-1000-0000-0000-000000000003'),
+('partner_contact', 'c2000000-0000-0000-0000-000000000001', 'bbbbb777-2000-0000-0000-000000000001'),
+('partner_contact', 'c2000000-0000-0000-0000-000000000002', 'bbbbb777-2000-0000-0000-000000000002'),
+('partner_contact', 'c2000000-0000-0000-0000-000000000002', 'bbbbb777-2000-0000-0000-000000000003'),
+('partner_contact', 'c3000000-0000-0000-0000-000000000001', 'bbbbb777-3000-0000-0000-000000000001')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.email_addresses (id, email) VALUES
 ('ccccc222-2222-2222-2222-222222222222', 'office@mirai-fukushi.or.jp'),
 ('ccccc333-3333-3333-3333-333333333333', 'asuka@mirai-fukushi.or.jp'),
-('ccccc444-4444-4444-4444-444444444444', 'oasis@mirai-fukushi.or.jp')
-ON CONFLICT (id) DO NOTHING;
+('ccccc444-4444-4444-4444-444444444444', 'oasis@mirai-fukushi.or.jp'),
+-- 取引先担当者メール
+('ccccc777-1000-0000-0000-000000000001', 'sasaki@tech-sol.example.com'),
+('ccccc777-1000-0000-0000-000000000002', 'takahashi@tech-sol.example.com'),
+('ccccc777-2000-0000-0000-000000000001', 'shimizu@global-ind.example.com'),
+('ccccc777-2000-0000-0000-000000000002', 'watanabe@global-ind.example.com'),
+('ccccc777-3000-0000-0000-000000000001', 'sugiyama@innolab.example.com')
+ON CONFLICT (id) DO UPDATE SET
+  email = EXCLUDED.email;
 
 INSERT INTO public.entity_email_settings (owner_type, owner_id, email_address_id) VALUES
 ('office', '22222222-2222-2222-2222-222222222222', 'ccccc222-2222-2222-2222-222222222222'),
 ('office', '33333333-3333-3333-3333-333333333333', 'ccccc333-3333-3333-3333-333333333333'),
-('office', '44444444-4444-4444-4444-444444444444', 'ccccc444-4444-4444-4444-444444444444')
+('office', '44444444-4444-4444-4444-444444444444', 'ccccc444-4444-4444-4444-444444444444'),
+-- 取引先担当者割当
+('partner_contact', 'c1000000-0000-0000-0000-000000000001', 'ccccc777-1000-0000-0000-000000000001'),
+('partner_contact', 'c1000000-0000-0000-0000-000000000002', 'ccccc777-1000-0000-0000-000000000002'),
+('partner_contact', 'c2000000-0000-0000-0000-000000000001', 'ccccc777-2000-0000-0000-000000000001'),
+('partner_contact', 'c2000000-0000-0000-0000-000000000002', 'ccccc777-2000-0000-0000-000000000002'),
+('partner_contact', 'c3000000-0000-0000-0000-000000000001', 'ccccc777-3000-0000-0000-000000000001')
 ON CONFLICT (id) DO NOTHING;
 
 -- 3.1 支援種別マスタ (service_types) 全28件
@@ -317,7 +348,9 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.member_recipient_certificates (id, member_id, certificate_number, issuing_municipality, income_category, copayment_limit_amount, disability_support_class, copayment_management_type, copayment_office_id, copayment_office_code, copayment_office_name, valid_from, valid_to, remarks) VALUES
 ('99000000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2025-04-01', '2026-03-31', '継続申請済み'),
+('99000000-0000-0000-0000-000000000002', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2024-04-01', '2025-03-31', '前年度更新分'),
 ('99000000-0000-0000-0000-000000000003', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9876543210', '川崎市川崎区', 'general_1', 9300, 'class_1', 'other', NULL, '1410100001', 'ワークステーションみらい', '2025-04-01', '2026-03-31', '他法人上限額管理'),
+('99000000-0000-0000-0000-000000000012', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '9876543210', '川崎市川崎区', 'general_1', 9300, 'class_1', 'other', NULL, '1410100001', 'ワークステーションみらい', '2024-04-01', '2025-03-31', '前年度更新分'),
 ('99000000-0000-0000-0000-000000000004', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '1122334455', '東京都千代田区', 'welfare', 0, 'none', 'none', NULL, NULL, '', '2025-04-01', '2026-03-31', '新規支給決定'),
 ('99000000-0000-0000-0000-000000000005', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '5566778899', '東京都世田谷区', 'general_2', 37200, 'class_3', 'self_internal', '33333333-3333-3333-3333-333333333333', NULL, '', '2025-04-01', '2026-03-31', '自法人にて上限管理実施'),
 ('99000000-0000-0000-0000-000000000006', 'c5555555-5555-5555-5555-555555555555', '6677889900', '東京都新宿区', 'low_income', 0, 'class_1', 'self_internal', '44444444-4444-4444-4444-444444444444', NULL, '', '2025-04-01', '2026-03-31', '新規決定'),
@@ -353,6 +386,20 @@ INSERT INTO public.partners (id, code, name, yomigana, is_customer, is_subcontra
 ('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', true, true, false),
 ('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', false, true, false)
 ON CONFLICT (id) DO NOTHING;
+
+-- 9.1 取引先担当者マスタ (partner_contacts)
+INSERT INTO public.partner_contacts (id, partner_id, name, yomigana, department, position) VALUES
+('c1000000-0000-0000-0000-000000000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '佐々木凛', 'ささき りん', '営業部', '部長'),
+('c1000000-0000-0000-0000-000000000002', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '高橋健太', 'たかはし けんた', '開発部', '課長'),
+('c2000000-0000-0000-0000-000000000001', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '清水蒼', 'しみず あおい', '購買部', '主任'),
+('c2000000-0000-0000-0000-000000000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', '渡辺裕樹', 'わたなべ ひろき', '総務部', '係長'),
+('c3000000-0000-0000-0000-000000000001', '0ff5f11e-b752-4b06-aaab-86984a67eec7', '杉山結愛', 'すぎやま ゆあ', '企画部', 'マネージャー')
+ON CONFLICT (id) DO UPDATE SET
+  partner_id = EXCLUDED.partner_id,
+  name = EXCLUDED.name,
+  yomigana = EXCLUDED.yomigana,
+  department = EXCLUDED.department,
+  position = EXCLUDED.position;
 
 -- 10. スキルカテゴリ・項目マスタ (skill_categories / skill_items / skill_level_items)
 INSERT INTO public.skill_categories (id, office_id, name, description, sort_order) VALUES

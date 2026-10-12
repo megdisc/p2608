@@ -509,23 +509,38 @@ INSERT INTO public.project_tasks (id, project_id, name) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- 事業所1 (WS未来) 案件
-INSERT INTO public.projects (id, office_id, name, code, client_id, project_type) VALUES 
-('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '22222222-2222-2222-2222-222222222222', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'one-off'),
-('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '22222222-2222-2222-2222-222222222222', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing') 
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month) VALUES 
+('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '22222222-2222-2222-2222-222222222222', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'one-off', '2026-10'),
+('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '22222222-2222-2222-2222-222222222222', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing', NULL) 
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  name = EXCLUDED.name,
+  code = EXCLUDED.code,
+  client_id = EXCLUDED.client_id,
+  project_type = EXCLUDED.project_type,
+  settlement_year_month = EXCLUDED.settlement_year_month;
 
-INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES 
-('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'internal'),
-('8daa6b8b-ddb2-462a-9594-1738f004832f', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '構築・テスト', 'internal'),
-('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務', 'internal'),
-('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'internal')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.project_tasks (id, project_id, name, assignee_type, is_completed, completed_at) VALUES 
+('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'internal', true, '2026-10-10 17:00:00+09'),
+('3334e7a8-684e-4695-a503-5cccdc2b0e50', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '基本・詳細設計', 'external', true, '2026-10-15 17:00:00+09'),
+('8daa6b8b-ddb2-462a-9594-1738f004832f', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '構築・テスト', 'internal', true, '2026-10-25 17:00:00+09'),
+('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '製造業務', 'internal', false, NULL),
+('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '販売・接客業務', 'internal', false, NULL)
+ON CONFLICT (id) DO UPDATE SET
+  project_id = EXCLUDED.project_id,
+  name = EXCLUDED.name,
+  assignee_type = EXCLUDED.assignee_type,
+  is_completed = EXCLUDED.is_completed,
+  completed_at = EXCLUDED.completed_at;
 
-INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES 
-('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a'),
-('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0'),
-('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a'),
-('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0')
+INSERT INTO public.task_assignee_settings (task_id, member_id, staff_id, client_id, assignee_type) VALUES 
+('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', NULL, NULL, 'member'),
+('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', NULL, 'staff'),
+('3334e7a8-684e-4695-a503-5cccdc2b0e50', NULL, NULL, '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'outsource'),
+('8daa6b8b-ddb2-462a-9594-1738f004832f', 'e98c7634-1eb3-4e42-b062-841f39c043e0', NULL, NULL, 'member'),
+('8daa6b8b-ddb2-462a-9594-1738f004832f', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', NULL, 'staff'),
+('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', NULL, NULL, 'member'),
+('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0', NULL, NULL, 'member')
 ON CONFLICT (id) DO NOTHING;
 
 -- 事業所2 (未来ワークス) 案件
@@ -564,6 +579,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUES 
 ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'),
 ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'),
+('3334e7a8-684e-4695-a503-5cccdc2b0e50', 'ec4310ed-27ab-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'),
+('3334e7a8-684e-4695-a503-5cccdc2b0e50', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'),
 ('8daa6b8b-ddb2-462a-9594-1738f004832f', '817f8df7-05bc-4610-8a37-9609ff4ae89d', '9b139db0-a352-4f38-89c0-9dff60a4f66a'),
 ('8daa6b8b-ddb2-462a-9594-1738f004832f', 'f3b0d9b2-ab80-48e1-abf2-7f7b6653b6d2', '9b139db0-a352-4f38-89c0-9dff60a4f66a'),
 ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', '128b9cc4-7e82-4f3b-b2ab-94f83b1c67d3', 'cdfc7a4d-c124-41d3-98cb-fb1b15ad39bb'),
@@ -573,6 +590,31 @@ INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUE
 ('44444444-1111-0000-0000-000000000004', '817f8df7-4444-4610-8a37-9609ff4ae89d', 'cdfc7a4d-4444-41c3-ab5b-5136db6d75d1'),
 ('44444444-1111-0000-0000-000000000006', 'ec4310ed-4444-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-4444-41c3-ab5b-5136db6d75d1')
 ON CONFLICT (task_id, skill_id) DO NOTHING;
+
+-- 11.2 案件予算 (project_budgets)
+INSERT INTO public.project_budgets (id, project_id, task_id, category, subject, amount) VALUES 
+-- WS未来: 本社オフィスネットワーク構築 (418efd88-75c7-4b89-8fe9-f1fb40fc3f6d)
+('b1111111-0000-0000-0000-000000000001', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, 'revenue', '就労支援事業収益', 600000),
+('b1111111-0000-0000-0000-000000000002', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, 'expense', '材料費', 50000),
+('b1111111-0000-0000-0000-000000000003', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 'expense', '労務費（利用者工賃・要件定義）', 120000),
+('b1111111-0000-0000-0000-000000000004', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '3334e7a8-684e-4695-a503-5cccdc2b0e50', 'expense', '外注加工費（基本・詳細設計）', 150000),
+('b1111111-0000-0000-0000-000000000005', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '8daa6b8b-ddb2-462a-9594-1738f004832f', 'expense', '労務費（利用者工賃・構築・テスト）', 160000),
+('b1111111-0000-0000-0000-000000000006', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, 'expense', 'その他経費', 20000),
+('b1111111-0000-0000-0000-000000000007', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, 'reserve', '工賃変動積立金', 60000),
+('b1111111-0000-0000-0000-000000000008', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, 'reserve', '設備等修繕維持積立金', 40000),
+-- 未来ワークス: 支社サーバーリプレイス (52532aea-8f77-478e-ae37-c0ef57ee5cf5)
+('b2222222-0000-0000-0000-000000000001', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', NULL, 'revenue', '就労支援事業収益', 500000),
+('b2222222-0000-0000-0000-000000000002', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', NULL, 'expense', '材料費', 40000),
+('b2222222-0000-0000-0000-000000000003', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 'expense', '労務費（利用者工賃・サーバー構築）', 200000),
+('b2222222-0000-0000-0000-000000000004', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', NULL, 'expense', 'その他経費', 30000),
+('b2222222-0000-0000-0000-000000000005', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', NULL, 'reserve', '工賃変動積立金', 130000),
+('b2222222-0000-0000-0000-000000000006', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', NULL, 'reserve', '設備等修繕維持積立金', 100000)
+ON CONFLICT (id) DO UPDATE SET
+  project_id = EXCLUDED.project_id,
+  task_id = EXCLUDED.task_id,
+  category = EXCLUDED.category,
+  subject = EXCLUDED.subject,
+  amount = EXCLUDED.amount;
 
 -- 12. 事業所職員割当 (office_staff_settings)
 INSERT INTO public.office_staff_settings (office_id, staff_id, is_primary) VALUES
@@ -585,7 +627,7 @@ ON CONFLICT DO NOTHING;
 
 -- 13. 作業実績データ (member_work_records) 2026年1月〜12月 各事業所
 INSERT INTO public.member_work_records (office_id, target_period, member_id, task_id, work_time) VALUES
--- 事業所1 (WS未来) 2026年1月〜12月
+-- 事業所1 (WS未来)
 ('22222222-2222-2222-2222-222222222222', '2026-01-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4),
 ('22222222-2222-2222-2222-222222222222', '2026-01-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4),
 ('22222222-2222-2222-2222-222222222222', '2026-01-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 5),
@@ -595,6 +637,12 @@ INSERT INTO public.member_work_records (office_id, target_period, member_id, tas
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4),
 ('22222222-2222-2222-2222-222222222222', '2026-06-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 5),
 ('22222222-2222-2222-2222-222222222222', '2026-06-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 5),
+
+-- 2026年10月（精算対象作業実績）
+('22222222-2222-2222-2222-222222222222', '2026-10-05', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 5),
+('22222222-2222-2222-2222-222222222222', '2026-10-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 5),
+('22222222-2222-2222-2222-222222222222', '2026-10-15', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 6),
+('22222222-2222-2222-2222-222222222222', '2026-10-16', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 6),
 
 -- 事業所2 (未来ワークス) 2026年1月〜12月
 ('33333333-3333-3333-3333-333333333333', '2026-01-15', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 'adc26f10-909b-4ae1-b255-a86a5014dd3d', 5),
@@ -626,6 +674,8 @@ INSERT INTO public.wage_summaries (id, office_id, target_period, member_id, work
 ('a0000001-2222-42ea-800b-5e476066c582', '22222222-2222-2222-2222-222222222222', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 60, 250, 15000, 10000, 3000, 28000, 200, 27800),
 ('a0000006-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', '2026-06', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 52, 100, 5200, 8500, 3000, 16700, 200, 16500),
 ('a0000006-2222-42ea-800b-5e476066c582', '22222222-2222-2222-2222-222222222222', '2026-06', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 64, 250, 16000, 10500, 3000, 29500, 200, 29300),
+('a0000010-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', '2026-10', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 55, 100, 5500, 90000, 3000, 98500, 200, 98300),
+('a0000010-2222-42ea-800b-5e476066c582', '22222222-2222-2222-2222-222222222222', '2026-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 65, 250, 16250, 120000, 3000, 139250, 200, 139050),
 
 -- 未来ワークス
 ('a0000001-3333-42ea-800b-5e476066c581', '33333333-3333-3333-3333-333333333333', '2026-01', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', 55, 300, 16500, 7000, 3000, 26500, 200, 26300),
@@ -677,6 +727,20 @@ INSERT INTO public.general_financial_details (id, office_id, target_period, proj
 ('f1111111-2222-0615-b111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-06-15', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '事業収益', 1850000, '6月度障害福祉サービス給付費'),
 ('f1111111-2222-0630-b111-222222222222', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 4000, '6月度食費控除'),
 ('f1111111-2222-0630-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'welfare', 'manufacturing', '事業費用・経費', 1450000, '6月度福祉事業運営費用'),
+
+-- 10月 (本社オフィスネットワーク構築 最終精算)
+('f1111111-2222-1001-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 600000, '本社オフィスネットワーク構築受託売上(10月精算)'),
+('f1111111-2222-1005-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-05', 'd8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 320000, 'パン販売売上(10月)'),
+('f1111111-2222-1010-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-10', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '材料費', 50000, 'ネットワーク部材・配線資材費(10月精算)'),
+('f1111111-2222-1012-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-12', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', 'その他経費', 20000, 'ネットワーク機器設定・ツールライセンス費(10月精算)'),
+('f1111111-2222-1015-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-15', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '0ff5f11e-b752-4b06-aaab-86984a67eec7', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '外注加工費', 150000, '基本・詳細設計外部委託(10月精算)'),
+('f1111111-2222-1025-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-25', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '労務費（利用者工賃）', 210000, 'ネットワーク構築案件利用者工賃配分(10月精算)'),
+('f1111111-2222-1025-a111-222222222222', '22222222-2222-2222-2222-222222222222', '2026-10-25', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'production', 'manufacturing', '労務費（その他）', 70000, 'ネットワーク構築案件職員指導配分(10月精算)'),
+('f1111111-2222-1028-a111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-10-28', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'reserve', 'production', 'manufacturing', '工賃変動積立金', 60000, 'ネットワーク構築案件工賃変動積立(10月精算)'),
+('f1111111-2222-1028-a111-444444444444', '22222222-2222-2222-2222-222222222222', '2026-10-28', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'reserve', 'production', 'manufacturing', '設備等修繕維持積立金', 40000, 'ネットワーク構築案件設備修繕積立(10月精算)'),
+('f1111111-2222-1015-b111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10-15', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '事業収益', 1850000, '10月度障害福祉サービス給付費'),
+('f1111111-2222-1028-b111-222222222222', '22222222-2222-2222-2222-222222222222', '2026-10-28', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', '控除', 4000, '10月度食費控除'),
+('f1111111-2222-1025-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-10-25', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'expense', 'welfare', 'manufacturing', '事業費用・経費', 1450000, '10月度福祉事業運営費用'),
 
 -- 事業所2: 未来ワークスあすか (33333333-3333-3333-3333-333333333333)
 -- 1月
@@ -732,3 +796,28 @@ INSERT INTO public.general_financial_details (id, office_id, target_period, proj
 ('f3333333-4444-0628-b111-222222222222', '44444444-4444-4444-4444-444444444444', '2026-06-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', '控除', 5000, '6月度昼食代控除'),
 ('f3333333-4444-0625-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-06-25', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'expense', 'welfare', 'manufacturing', '事業費用・経費', 1680000, '6月度施設運営経費')
 ON CONFLICT (id) DO NOTHING;
+
+-- 16. 月次実績確定 (monthly_record_closings)
+-- WS未来 2026年10月精算（未確定状態: 精算ロジック検証用）
+INSERT INTO public.monthly_record_closings (id, office_id, target_period, confirmed_at, confirmed_by, is_confirmed) VALUES
+('c1111111-2222-1001-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10', '2026-10-31 18:00:00+09', NULL, false)
+ON CONFLICT (office_id, target_period) DO UPDATE SET
+  confirmed_at = EXCLUDED.confirmed_at,
+  confirmed_by = EXCLUDED.confirmed_by,
+  is_confirmed = EXCLUDED.is_confirmed;
+
+-- 17. インセンティブ実績 (incentive_records)
+-- WS未来 2026年10月精算案件のタスク別インセンティブ配分
+INSERT INTO public.incentive_records (id, target_period, member_id, task_id, allocation_amount) VALUES
+('e1111111-2222-1001-a111-111111111111', '2026-10', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 90000),
+('e1111111-2222-1002-a111-111111111111', '2026-10', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '8daa6b8b-ddb2-462a-9594-1738f004832f', 120000)
+ON CONFLICT (id) DO UPDATE SET
+  allocation_amount = EXCLUDED.allocation_amount;
+
+-- 18. インセンティブ明細 (incentive_details)
+-- 工賃サマリー(wage_summaries)とタスクの紐付け明細
+INSERT INTO public.incentive_details (id, summary_id, task_id, allocation_amount) VALUES
+('d1111111-2222-1001-a111-111111111111', 'a0000010-2222-42ea-800b-5e476066c581', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 90000),
+('d1111111-2222-1002-a111-111111111111', 'a0000010-2222-42ea-800b-5e476066c582', '8daa6b8b-ddb2-462a-9594-1738f004832f', 120000)
+ON CONFLICT (id) DO UPDATE SET
+  allocation_amount = EXCLUDED.allocation_amount;

@@ -87,6 +87,39 @@ export function ScreenCompositionPage() {
     // 1. マスタ層
     {
       layer: '1. マスタ層',
+      physicalName: 'organizations',
+      tableType: '独立マスタ',
+      logicalName: '法人',
+      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
+      columns: [
+        { name: 'id', desc: '法人ID' },
+        { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
+        { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
+        { name: 'corporate_number', desc: '法人番号（13桁）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'offices',
+      tableType: '独立マスタ',
+      logicalName: '事業所',
+      description: '法人が運営する各事業所の基本情報（多機能型事業所・地域区分単価対応）',
+      columns: [
+        { name: 'id', desc: '事業所ID' },
+        { name: 'code', desc: '事業所コード' },
+        { name: 'name', desc: '事業所名（正式名称）' },
+        { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
+        { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'service_types',
       tableType: '独立マスタ',
       logicalName: '支援種別',
@@ -118,56 +151,8 @@ export function ScreenCompositionPage() {
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'monthly_limit_count', desc: '月間算定上限回数' },
         { name: 'is_active', desc: '適用フラグ' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'qualifications',
-      tableType: '独立マスタ',
-      logicalName: '資格',
-      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
-      columns: [
-        { name: 'id', desc: '資格ID' },
-        { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
-        { name: 'name', desc: '資格・職種名称' },
-        { name: 'category', desc: '資格区分' },
-        { name: 'description', desc: '資格概要' },
-        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'organizations',
-      tableType: '独立マスタ',
-      logicalName: '法人',
-      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
-      columns: [
-        { name: 'id', desc: '法人ID' },
-        { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
-        { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
-        { name: 'corporate_number', desc: '法人番号（13桁）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'offices',
-      tableType: '独立マスタ',
-      logicalName: '事業所',
-      description: '法人が運営する各事業所の基本情報（多機能型事業所・地域区分単価対応）',
-      columns: [
-        { name: 'id', desc: '事業所ID' },
-        { name: 'code', desc: '事業所コード' },
-        { name: 'name', desc: '事業所名（正式名称）' },
-        { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
-        { name: 'unit_price', desc: '地域区分単価（1単位あたりの単価）' },
-        { name: 'service_type_ids', desc: '割当支援種別（office_service_type_settings との連動割当）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -189,43 +174,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'partners',
-      tableType: '独立マスタ',
-      logicalName: '取引先',
-      description: '取引先情報',
-      columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'code', desc: '取引先コード' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'is_other', desc: 'その他フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'partner_contacts',
-      tableType: '従属マスタ',
-      logicalName: '取引先担当者',
-      description: '取引先ごとの担当者情報（1対多。電話・FAX・メールは割当テーブルにて管理）',
-      columns: [
-        { name: 'id', desc: '担当者ID' },
-        { name: 'partner_id', desc: '取引先ID' },
-        { name: 'name', desc: '担当者名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'department', desc: '部署' },
-        { name: 'position', desc: '役職' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'addresses',
       tableType: '独立マスタ',
       logicalName: '住所',
@@ -239,6 +187,7 @@ export function ScreenCompositionPage() {
         { name: 'town_street', desc: '町名・丁目・番地' },
         { name: 'building', desc: '建物名・部屋番号' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -271,6 +220,7 @@ export function ScreenCompositionPage() {
         { name: 'phone_type', desc: '電話種別（phone: 固定電話 / mobile: 携帯電話 / fax: FAX）' },
         { name: 'phone_number', desc: '電話番号（ハイフンなし数字のみ正規化保持）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -303,6 +253,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: 'メールアドレスID' },
         { name: 'email', desc: 'メールアドレス（RFC規格・小文字正規化保持）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -327,57 +278,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'skill_categories',
-      tableType: '事業所依存マスタ',
-      logicalName: 'スキルカテゴリ',
-      description: 'スキルの分類カテゴリマスターデータ（親テーブル: skill_categories ↔ 子テーブル: skill_items の1対N関係）',
-      columns: [
-        { name: 'id', desc: 'カテゴリID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: 'カテゴリ名' },
-        { name: 'description', desc: 'カテゴリの説明' },
-        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'skill_items',
-      tableType: '事業所依存マスタ',
-      logicalName: 'スキル項目',
-      description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: 'スキルID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'category_id', desc: 'スキルカテゴリID（skill_categories参照、NULL可）' },
-        { name: 'name', desc: 'スキル名' },
-        { name: 'description', desc: 'スキルの説明' },
-        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'skill_level_items',
-      tableType: '事業所依存マスタ',
-      logicalName: 'スキルレベル項目',
-      description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: 'スキルレベルID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'level_value', desc: 'レベル数値' },
-        { name: 'description', desc: 'レベルの説明' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'wage_rate_items',
       tableType: '事業所依存マスタ',
       logicalName: '工賃単価項目',
@@ -388,6 +288,7 @@ export function ScreenCompositionPage() {
         { name: 'wage', desc: '工賃単価（円/時 または 円/日）' },
         { name: 'description', desc: '説明・摘要' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -410,6 +311,7 @@ export function ScreenCompositionPage() {
         { name: 'threshold_operator', desc: '範囲（gte: 以上 / lte: 以下 / gt: 超過 / lt: 未満 / eq: 一致）' },
         { name: 'unit_price', desc: '標準発生単価・金額（円）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -433,6 +335,60 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'skill_categories',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキルカテゴリ',
+      description: 'スキルの分類カテゴリマスターデータ（親テーブル: skill_categories ↔ 子テーブル: skill_items の1対N関係）',
+      columns: [
+        { name: 'id', desc: 'カテゴリID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'name', desc: 'カテゴリ名' },
+        { name: 'description', desc: 'カテゴリの説明' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'skill_items',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキル項目',
+      description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: 'スキルID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'category_id', desc: 'スキルカテゴリID（skill_categories参照、NULL可）' },
+        { name: 'name', desc: 'スキル名' },
+        { name: 'description', desc: 'スキルの説明' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'skill_level_items',
+      tableType: '事業所依存マスタ',
+      logicalName: 'スキルレベル項目',
+      description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: 'スキルレベルID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'level_value', desc: 'レベル数値' },
+        { name: 'description', desc: 'レベルの説明' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',
@@ -443,56 +399,7 @@ export function ScreenCompositionPage() {
         { name: 'role', desc: '権限ロール' },
         { name: 'user_type', desc: 'ユーザー種別（staff/member）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staffs',
-      tableType: '従属マスタ',
-      logicalName: '職員',
-      description: 'システムを利用する職員情報',
-      columns: [
-        { name: 'id', desc: '職員ID' },
-        { name: 'user_id', desc: '認証ユーザーID' },
-        { name: 'code', desc: '職員コード' },
-        { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'office_staff_settings',
-      tableType: '割当マスタ',
-      logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staff_qualification_settings',
-      tableType: '割当マスタ',
-      logicalName: '職員資格割当',
-      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'qualification_id', desc: '資格ID' },
-        { name: 'license_number', desc: '資格・登録番号' },
-        { name: 'acquired_on', desc: '取得年月日・修了日' },
-        { name: 'valid_until', desc: '有効期限・更新研修期限' },
-        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -510,6 +417,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '利用者名' },
         { name: 'yomigana', desc: 'ふりがな' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -536,6 +444,7 @@ export function ScreenCompositionPage() {
         { name: 'valid_to', desc: '支給決定終了日' },
         { name: 'remarks', desc: '備考・特記事項' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -585,6 +494,113 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'staffs',
+      tableType: '従属マスタ',
+      logicalName: '職員',
+      description: 'システムを利用する職員情報',
+      columns: [
+        { name: 'id', desc: '職員ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '職員コード' },
+        { name: 'name', desc: '職員名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'qualifications',
+      tableType: '独立マスタ',
+      logicalName: '資格',
+      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '資格ID' },
+        { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
+        { name: 'name', desc: '資格・職種名称' },
+        { name: 'category', desc: '資格区分' },
+        { name: 'description', desc: '資格概要' },
+        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'staff_qualification_settings',
+      tableType: '割当マスタ',
+      logicalName: '職員資格割当',
+      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'qualification_id', desc: '資格ID' },
+        { name: 'license_number', desc: '資格・登録番号' },
+        { name: 'acquired_on', desc: '取得年月日・修了日' },
+        { name: 'valid_until', desc: '有効期限・更新研修期限' },
+        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_staff_settings',
+      tableType: '割当マスタ',
+      logicalName: '事業所職員割当',
+      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'office_id', desc: '事業所ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'partners',
+      tableType: '独立マスタ',
+      logicalName: '取引先',
+      description: '取引先情報',
+      columns: [
+        { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
+        { name: 'is_other', desc: 'その他フラグ' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'partner_contacts',
+      tableType: '従属マスタ',
+      logicalName: '取引先担当者',
+      description: '取引先ごとの担当者情報（1対多。電話・FAX・メールは割当テーブルにて管理）',
+      columns: [
+        { name: 'id', desc: '担当者ID' },
+        { name: 'partner_id', desc: '取引先ID' },
+        { name: 'name', desc: '担当者名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'department', desc: '部署' },
+        { name: 'position', desc: '役職' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'projects',
       tableType: '業務マスタ',
       logicalName: '案件',
@@ -598,6 +614,7 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '案件名' },
         { name: 'project_type', desc: '案件種別' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -616,6 +633,7 @@ export function ScreenCompositionPage() {
         { name: 'assignee_type', desc: '担当者区分（内部/外部等）' },
         { name: 'is_completed', desc: '完了フラグ' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -669,7 +687,6 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-
     // 2. 日次実績層
     {
       layer: '2. 日次実績層',
@@ -762,8 +779,6 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-
-
     // 3. 月次実績層
     {
       layer: '3. 月次実績層',
@@ -817,7 +832,6 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-
     // 4. スナップショット層
     {
       layer: '4. スナップショット層',

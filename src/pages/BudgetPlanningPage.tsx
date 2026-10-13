@@ -179,7 +179,7 @@ export function BudgetPlanningPage() {
                   const client = rev.summary || draft.project.clientName;
                   items.push({
                     categoryType: 'revenue',
-                    categoryLabel: '収益',
+                    categoryLabel: WORDS_PROJECT.CATEGORY_REVENUE,
                     subject: rev.subject,
                     amount: rev.amount,
                     summary: formatSummaryDescription({ billingDest: client }),
@@ -221,7 +221,7 @@ export function BudgetPlanningPage() {
 
                   items.push({
                     categoryType: 'expense',
-                    categoryLabel: '費用',
+                    categoryLabel: WORDS_PROJECT.CATEGORY_EXPENSE,
                     subject: displaySubject,
                     amount: exp.amount,
                     summary: displaySummary,
@@ -234,7 +234,7 @@ export function BudgetPlanningPage() {
                 draft.reserves.forEach((res, idx) => {
                   items.push({
                     categoryType: 'reserve',
-                    categoryLabel: '積立金繰入額',
+                    categoryLabel: WORDS_PROJECT.CATEGORY_RESERVE,
                     subject: res.subject,
                     amount: res.amount,
                     summary: res.summary || '-',
@@ -246,7 +246,7 @@ export function BudgetPlanningPage() {
 
                 items.push({
                   categoryType: 'surplus',
-                  categoryLabel: '差額',
+                  categoryLabel: WORDS_PROJECT.CATEGORY_SURPLUS,
                   subject: '余剰',
                   amount: totalSurplus,
                   summary: '-',

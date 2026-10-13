@@ -583,7 +583,7 @@ export function RewardAllocationPage() {
               proj.revenues.forEach(rev => {
                 items.push({
                   categoryType: 'revenue',
-                  categoryLabel: '収益',
+                  categoryLabel: WORDS_PROJECT.CATEGORY_REVENUE,
                   subject: rev.subject,
                   amount: rev.amount,
                   summary: formatSummaryDescription({ billingDest: rev.billingDest }),
@@ -601,7 +601,7 @@ export function RewardAllocationPage() {
 
                 items.push({
                   categoryType: 'expense',
-                  categoryLabel: '費用',
+                  categoryLabel: WORDS_PROJECT.CATEGORY_EXPENSE,
                   subject: exp.subject,
                   amount: exp.amount,
                   summary,
@@ -615,7 +615,7 @@ export function RewardAllocationPage() {
               proj.reserves.forEach(res => {
                 items.push({
                   categoryType: 'reserve',
-                  categoryLabel: '積立金繰入額',
+                  categoryLabel: WORDS_PROJECT.CATEGORY_RESERVE,
                   subject: res.subject,
                   amount: res.amount,
                   summary: '-',
@@ -625,7 +625,7 @@ export function RewardAllocationPage() {
 
               items.push({
                 categoryType: 'surplus',
-                categoryLabel: '差額',
+                categoryLabel: WORDS_PROJECT.CATEGORY_SURPLUS,
                 subject: '余剰',
                 amount: totalSurplus,
                 summary: '-',

@@ -676,7 +676,7 @@ export function RewardAllocationPage() {
                     </td>
                     <td
                       className={
-                        !isSurplusRow
+                        !isSurplusRow && !rowItem.isAutoCalculated
                           ? (!isConfirmed
                               ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')
                               : undefined)

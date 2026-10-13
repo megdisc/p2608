@@ -641,6 +641,11 @@ export function RewardAllocationPage() {
                 const rowBorderBottom = isLastRow ? undefined : 'none';
                 const rowBg = isSurplusRow ? 'var(--color-bg-subtle, #f9fafb)' : undefined;
 
+                const prevItem = idx > 0 ? items[idx - 1] : null;
+                const nextItem = idx < totalRows - 1 ? items[idx + 1] : null;
+                const isFirstInCategory = !prevItem || prevItem.categoryType !== rowItem.categoryType;
+                const isLastInCategory = !nextItem || nextItem.categoryType !== rowItem.categoryType;
+
                 return (
                   <tr
                     key={`proj-${proj.id}-${rowItem.categoryType}-${idx}`}
@@ -655,8 +660,13 @@ export function RewardAllocationPage() {
                     <td style={{ borderBottom: rowBorderBottom }}>
                       {isFirstRow ? (proj.isOngoing ? '毎月' : '案件終了時') : ''}
                     </td>
-                    <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
-                      {rowItem.categoryLabel}
+                    <td
+                      style={{
+                        fontWeight: isSurplusRow ? 'bold' : 'normal',
+                        borderBottom: isLastInCategory ? undefined : 'none'
+                      }}
+                    >
+                      {isFirstInCategory ? rowItem.categoryLabel : ''}
                     </td>
                     <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
                       {rowItem.subject}

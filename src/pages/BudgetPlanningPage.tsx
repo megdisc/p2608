@@ -1,11 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, RadioButton, type HeaderCell } from '../components/ui';
-import { TABLE_COLUMNS, MESSAGES, WORDS_PROJECT, BUTTON_LABELS } from '../constants';
-import { isProjectFinished } from '../utils';
+import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
+import { isProjectFinished, formatSummaryDescription } from '../utils';
 
 import { useAlert } from '../contexts/AlertContext';
 
 import { useBudgetPlanning, type DetailItem, type ProjectDraft } from '../hooks';
+
+const getExpenseSortOrder = (subject: string): number => {
+  if (subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subject.startsWith('材料費')) {
+    return 1;
+  }
+  if (subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER || subject.startsWith('経費') || subject.startsWith('その他経費')) {
+    return 2;
+  }
+  if (subject.startsWith('外注加工費') || subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE) {
+    return 3;
+  }
+  if (subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || subject.startsWith('労務費（利用者工賃以外）')) {
+    return 4;
+  }
+  if (subject.startsWith('労務費（利用者工賃') || subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER) {
+    return 5;
+  }
+  return 6;
+};
 
 export function BudgetPlanningPage() {
   const { drafts, setDrafts, originalDrafts, loading, fetchBudgetPlanning, batchSaveBudgets } = useBudgetPlanning();
@@ -89,24 +108,15 @@ export function BudgetPlanningPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px', sortKey: 'code' },
-      { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'name' },
-      { label: TABLE_COLUMNS.PROJECT_TYPE, rowSpan: 2, width: '160px', sortKey: 'projectType' },
-      { label: '収益　A', colSpan: 2 },
-      { label: '費用　B', colSpan: 2 },
-      { label: '積立金　C', colSpan: 2 },
-      { label: '余剰　A-（B+C）', colSpan: 2 },
-      { label: TABLE_COLUMNS.RESTRICTION, rowSpan: 2, width: '60px' },
-    ],
-    [
-      { label: TABLE_COLUMNS.SUBJECT },
-      { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT },
-      { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT },
-      { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT },
-      { label: TABLE_COLUMNS.AMOUNT },
+      { label: TABLE_COLUMNS.PROJECT_ID, width: '90px', sortKey: 'code' },
+      { label: TABLE_COLUMNS.PROJECT_NAME, width: '160px', sortKey: 'name' },
+      { label: TABLE_COLUMNS.PROJECT_TYPE, width: '150px', sortKey: 'projectType' },
+      { label: '取引区分', width: '120px' },
+      { label: '勘定科目', width: '220px' },
+      { label: '摘要', width: '160px' },
+      { label: '金額', width: '120px' },
+      { label: '備考', width: '140px' },
+      { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
   ];
 
@@ -118,21 +128,18 @@ export function BudgetPlanningPage() {
           {paginatedDrafts.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={12} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
+                <td colSpan={9} className="empty-message">{MESSAGES.EMPTY_BUDGET}</td>
               </tr>
             </tbody>
           ) : (
               paginatedDrafts.map((draft) => {
                 const draftIndex = drafts.findIndex(d => d.project.id === draft.project.id);
                 const isFinished = isProjectFinished(draft.project);
-                const maxRows = Math.max(draft.revenues.length, draft.expenses.length, draft.reserves.length);
                 const sum = (items: DetailItem[]) => items.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
                 const sumRevenues = sum(draft.revenues);
                 const sumExpenses = sum(draft.expenses);
                 const sumReserves = sum(draft.reserves);
                 const totalSurplus = sumRevenues - (sumExpenses + sumReserves);
-
-                const rows = [];
 
                 const renderProjectTypeRadio = () => (
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center', height: '42px' }}>
@@ -155,53 +162,173 @@ export function BudgetPlanningPage() {
                   </div>
                 );
 
-                if (maxRows === 0) {
-                  rows.push(
-                    <tr key={`${draft.project.id}-total`}>
-                      <td>
-                        {draft.project.code}
+                type RowItem = {
+                  categoryType: 'revenue' | 'expense' | 'reserve' | 'surplus';
+                  categoryLabel: string;
+                  subject: string;
+                  amount: number;
+                  summary: string;
+                  remarks: string;
+                  categoryKey?: 'revenues' | 'expenses' | 'reserves';
+                  itemIndex?: number;
+                };
+
+                const items: RowItem[] = [];
+
+                draft.revenues.forEach((rev, idx) => {
+                  const client = rev.summary || draft.project.clientName;
+                  items.push({
+                    categoryType: 'revenue',
+                    categoryLabel: '収益',
+                    subject: rev.subject,
+                    amount: rev.amount,
+                    summary: formatSummaryDescription({ billingDest: client }),
+                    remarks: rev.remarks || '-',
+                    categoryKey: 'revenues',
+                    itemIndex: idx,
+                  });
+                });
+
+                const sortedExpenses = draft.expenses
+                  .map((exp, originalIdx) => ({ exp, originalIdx }))
+                  .sort((a, b) => getExpenseSortOrder(a.exp.subject) - getExpenseSortOrder(b.exp.subject));
+
+                sortedExpenses.forEach(({ exp, originalIdx }) => {
+                  let displaySubject = exp.subject;
+                  let rawTaskName = exp.summary && exp.summary !== '-' ? exp.summary : '';
+
+                  if (displaySubject.startsWith('外注加工費')) {
+                    if (!rawTaskName && displaySubject.includes('（')) {
+                      const m = displaySubject.match(/^[（\(]?外注加工費[（\(](.*?)[）\)]+$/);
+                      if (m) rawTaskName = m[1];
+                    }
+                    displaySubject = WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE;
+                  } else if (displaySubject.startsWith('労務費（利用者工賃以外）')) {
+                    displaySubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
+                  } else if (displaySubject.startsWith('労務費（利用者工賃')) {
+                    if (!rawTaskName && displaySubject.includes('・')) {
+                      const parts = displaySubject.replace(/[）\)]+$/, '').split('・');
+                      if (parts.length > 1) rawTaskName = parts.slice(1).join('・');
+                    }
+                    displaySubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER;
+                  }
+
+                  const isStaff = displaySubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
+                  const displaySummary = formatSummaryDescription({
+                    task: isStaff ? undefined : rawTaskName,
+                    isStaff,
+                  });
+
+                  items.push({
+                    categoryType: 'expense',
+                    categoryLabel: '費用',
+                    subject: displaySubject,
+                    amount: exp.amount,
+                    summary: displaySummary,
+                    remarks: exp.remarks || '-',
+                    categoryKey: 'expenses',
+                    itemIndex: originalIdx,
+                  });
+                });
+
+                draft.reserves.forEach((res, idx) => {
+                  items.push({
+                    categoryType: 'reserve',
+                    categoryLabel: '積立金繰入額',
+                    subject: res.subject,
+                    amount: res.amount,
+                    summary: res.summary || '-',
+                    remarks: res.remarks || '-',
+                    categoryKey: 'reserves',
+                    itemIndex: idx,
+                  });
+                });
+
+                items.push({
+                  categoryType: 'surplus',
+                  categoryLabel: '差額',
+                  subject: '余剰',
+                  amount: totalSurplus,
+                  summary: '-',
+                  remarks: totalSurplus !== 0 ? '余剰が¥0になるように、金額を調整してください。' : '-',
+                });
+
+                const totalRows = items.length;
+
+                const rows = items.map((rowItem, idx) => {
+                  const isFirstRow = idx === 0;
+                  const isLastRow = idx === totalRows - 1;
+                  const isSurplusRow = rowItem.categoryType === 'surplus';
+                  const rowBorderBottom = isLastRow ? undefined : 'none';
+                  const rowBg = isSurplusRow ? 'var(--color-bg-subtle, #f9fafb)' : undefined;
+
+                  return (
+                    <tr
+                      key={`${draft.project.id}-${rowItem.categoryType}-${idx}`}
+                      style={{ backgroundColor: rowBg }}
+                    >
+                      <td style={{ borderBottom: rowBorderBottom }}>
+                        {isFirstRow ? draft.project.code : ''}
                       </td>
-                      <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {isFinished ? (
-                            <Tooltip text="案件終了のため変更不可" as="span">
+                      <td style={{ borderBottom: rowBorderBottom }}>
+                        {isFirstRow ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {isFinished ? (
+                              <Tooltip text="案件終了のため変更不可" as="span">
+                                <span>{draft.project.name}</span>
+                              </Tooltip>
+                            ) : (
                               <span>{draft.project.name}</span>
-                            </Tooltip>
-                          ) : (
-                            <span>{draft.project.name}</span>
-                          )}
-                        </div>
+                            )}
+                          </div>
+                        ) : ''}
                       </td>
-                      <td className={isFinished ? undefined : "bg-input-highlight"}>
-                        {renderProjectTypeRadio()}
+                      <td
+                        className={isFirstRow && !isFinished ? "bg-input-highlight" : undefined}
+                        style={{ borderBottom: rowBorderBottom }}
+                      >
+                        {isFirstRow ? renderProjectTypeRadio() : ''}
                       </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumRevenues.toLocaleString()}</strong>
+                      <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
+                        {rowItem.categoryLabel}
                       </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumExpenses.toLocaleString()}</strong>
+                      <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
+                        {rowItem.subject}
                       </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumReserves.toLocaleString()}</strong>
+                      <td>
+                        {rowItem.summary}
                       </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ 
-                        backgroundColor: 'var(--color-bg-subtle, #f9fafb)',
-                        fontWeight: 'bold', 
-                        WebkitTextStroke: '0.5px currentColor', 
-                        textAlign: 'right', 
-                        fontVariantNumeric: 'tabular-nums', 
-                        paddingRight: '8px'
-                      }}>
-                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
-                          ¥{totalSurplus.toLocaleString()}
-                        </strong>
+                      <td
+                        className={
+                          !isSurplusRow
+                            ? (!isFinished
+                                ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')
+                                : undefined)
+                            : undefined
+                        }
+                        style={{
+                          fontWeight: isSurplusRow ? 'bold' : 'normal',
+                          textAlign: isSurplusRow ? 'right' : undefined,
+                          paddingRight: isSurplusRow ? '8px' : undefined
+                        }}
+                      >
+                        {isSurplusRow ? (
+                          <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontVariantNumeric: 'tabular-nums' }}>
+                            ¥{totalSurplus.toLocaleString()}
+                          </strong>
+                        ) : (
+                          <CurrencyInput
+                            value={rowItem.amount}
+                            onChange={(val) => handleChange(draftIndex, rowItem.categoryKey!, rowItem.itemIndex!, val)}
+                            disabled={isFinished}
+                          />
+                        )}
                       </td>
-                      <td className="sticky-right" style={{ textAlign: 'center' }}>
-                        {isFinished && (
+                      <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontSize: isSurplusRow ? '12px' : undefined }}>
+                        {rowItem.remarks}
+                      </td>
+                      <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>
+                        {isFirstRow && isFinished && (
                           <Tooltip text="案件終了のため変更不可">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -212,114 +339,7 @@ export function BudgetPlanningPage() {
                       </td>
                     </tr>
                   );
-                } else {
-                  // Details
-                  for (let i = 0; i < maxRows; i++) {
-                    const rev = draft.revenues[i];
-                    const exp = draft.expenses[i];
-                    const res = draft.reserves[i];
-                    rows.push(
-                      <tr key={`${draft.project.id}-detail-${i}`}>
-                            <td style={{ borderBottom: 'none' }}>
-                              {i === 0 ? draft.project.code : ''}
-                            </td>
-                            <td style={{ borderBottom: 'none' }}>
-                              {i === 0 ? (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                  {isFinished ? (
-                                    <Tooltip text="案件終了のため変更不可" as="span">
-                                      <span>{draft.project.name}</span>
-                                    </Tooltip>
-                                  ) : (
-                                    <span>{draft.project.name}</span>
-                                  )}
-                                </div>
-                              ) : ''}
-                            </td>
-                            <td className={i === 0 && !isFinished ? "bg-input-highlight" : undefined} style={{ borderBottom: 'none' }}>
-                              {i === 0 ? renderProjectTypeRadio() : ''}
-                            </td>
-                        <td>{rev?.subject || ''}</td>
-                        <td className={rev ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
-                          {rev ? (
-                            <CurrencyInput
-                              value={rev.amount}
-                              onChange={(val) => handleChange(draftIndex, 'revenues', i, val)}
-                              disabled={isFinished}
-                            />
-                          ) : null}
-                        </td>
-                        <td>{exp?.subject || ''}</td>
-                        <td className={exp ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
-                          {exp ? (
-                            <CurrencyInput
-                              value={exp.amount}
-                              onChange={(val) => handleChange(draftIndex, 'expenses', i, val)}
-                              disabled={isFinished}
-                            />
-                          ) : null}
-                        </td>
-                        <td>{res?.subject || ''}</td>
-                        <td className={res ? (!isFinished ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
-                          {res ? (
-                            <CurrencyInput
-                              value={res.amount}
-                              onChange={(val) => handleChange(draftIndex, 'reserves', i, val)}
-                              disabled={isFinished}
-                            />
-                          ) : null}
-                        </td>
-                        <td></td>
-                        <td></td>
-                        <td className="sticky-right" style={{ textAlign: 'center', borderBottom: 'none' }}>
-                          {i === 0 && isFinished && (
-                            <Tooltip text="案件終了のため変更不可">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                              </svg>
-                            </Tooltip>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  }
-
-                  // Total
-                  rows.push(
-                    <tr key={`${draft.project.id}-total`}>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumRevenues.toLocaleString()}</strong>
-                      </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumExpenses.toLocaleString()}</strong>
-                      </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        <strong>¥{sumReserves.toLocaleString()}</strong>
-                      </td>
-                      <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                      <td style={{ 
-                        backgroundColor: 'var(--color-bg-subtle, #f9fafb)',
-                        fontWeight: 'bold', 
-                        WebkitTextStroke: '0.5px currentColor', 
-                        textAlign: 'right', 
-                        fontVariantNumeric: 'tabular-nums', 
-                        paddingRight: '8px'
-                      }}>
-                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
-                          ¥{totalSurplus.toLocaleString()}
-                        </strong>
-                      </td>
-                      <td className="sticky-right" style={{ textAlign: 'center' }}></td>
-                    </tr>
-                  );
-                }
+                });
 
                 if (isFinished) {
                   return (

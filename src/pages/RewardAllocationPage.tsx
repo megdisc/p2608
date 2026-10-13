@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
-import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished } from '../utils';
+import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription } from '../utils';
 import { useAlert } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
@@ -277,18 +277,15 @@ export function RewardAllocationPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: TABLE_COLUMNS.PROJECT_ID, rowSpan: 2, width: '90px', sortKey: 'projectCode' },
-      { label: TABLE_COLUMNS.PROJECT_NAME, rowSpan: 2, width: '150px', sortKey: 'projectName' },
-      { label: '収益　A', colSpan: 3 },
-      { label: '費用　B', colSpan: 3 },
-      { label: '積立金　C', colSpan: 2 },
-      { label: '余剰　A-（B+C）', colSpan: 2 },
-    ],
-    [
-      { label: TABLE_COLUMNS.SUBJECT }, { label: '請求先', width: '120px' }, { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT }, { label: '支払先', width: '120px' }, { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT }, { label: TABLE_COLUMNS.AMOUNT },
-      { label: TABLE_COLUMNS.SUBJECT }, { label: TABLE_COLUMNS.AMOUNT }
+      { label: TABLE_COLUMNS.PROJECT_ID, width: '90px', sortKey: 'projectCode' },
+      { label: TABLE_COLUMNS.PROJECT_NAME, width: '160px', sortKey: 'projectName' },
+      { label: TABLE_COLUMNS.PROJECT_TYPE, width: '150px', sortKey: 'projectType' },
+      { label: '取引区分', width: '120px' },
+      { label: '勘定科目', width: '220px' },
+      { label: '摘要', width: '160px' },
+      { label: '金額', width: '120px' },
+      { label: '備考', width: '140px' },
+      { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
   ];
 
@@ -311,7 +308,7 @@ export function RewardAllocationPage() {
     });
 
     const nonLaborExpenses = [WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, WORDS_PROJECT.SUBJECT_EXPENSE_OTHER].map(subj => {
-      const recs = allExpenseRecords.filter(r => r.project_id === pid && r.subject === subj);
+      const recs = allExpenseRecords.filter(r => r.project_id === pid && (r.subject === subj || (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER && r.subject === 'その他経費')));
       let amount = 0;
       if (isOngoing) {
         amount = recs.filter(r => r.target_period && r.target_period.startsWith(currentMonth)).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
@@ -335,7 +332,8 @@ export function RewardAllocationPage() {
     const taskMap = new Map<string, { taskId: string, taskName: string, budgetAmount: number }>();
     taskBudgetItems.forEach(b => {
       if (b.taskId) {
-        const pureTaskName = b.subject
+        const rawTaskName = (b as any).summary && (b as any).summary !== '-' ? (b as any).summary : b.subject;
+        const pureTaskName = rawTaskName
           .replace(/^労務費（利用者工賃・/, '')
           .replace(/^労務費（利用者工賃）/, '')
           .replace(/^労務費（利用者工賃以外）/, '')
@@ -348,7 +346,7 @@ export function RewardAllocationPage() {
 
         taskMap.set(b.taskId, {
           taskId: b.taskId,
-          taskName: pureTaskName || b.subject,
+          taskName: pureTaskName || rawTaskName,
           budgetAmount: Number(b.amount) || 0
         });
       }
@@ -376,7 +374,6 @@ export function RewardAllocationPage() {
     });
 
     let totalProjectStaffAlloc = 0;
-    let hasInternalTasks = false;
 
     taskMap.forEach(({ taskId, taskName, budgetAmount }) => {
       const taskRecords = projRecords.filter(r => r.taskId === taskId);
@@ -396,7 +393,6 @@ export function RewardAllocationPage() {
       const totalMemberAlloc = memberPerPerson * numMembers;
       
       if (!isOutsourceTask) {
-        hasInternalTasks = true;
         const staffAlloc = budgetAmount - totalMemberAlloc;
         totalProjectStaffAlloc += staffAlloc;
       }
@@ -412,13 +408,14 @@ export function RewardAllocationPage() {
         .replace(/[）\)]+$/, '')
         .trim();
 
-      const subjectName = `労務費（利用者工賃・${cleanTaskName}）`;
+      const subjectName = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER;
 
       memberRecords.forEach(m => {
         const customVal = allocationDrafts[m.id];
         laborExpenses.push({
           id: m.id,
           subject: subjectName,
+          taskName: cleanTaskName,
           payee: m.userName,
           amount: customVal !== undefined ? customVal : memberPerPerson,
           type: 'labor',
@@ -430,7 +427,8 @@ export function RewardAllocationPage() {
         const customVal = allocationDrafts[o.id];
         laborExpenses.push({
           id: o.id,
-          subject: `外注加工費（${cleanTaskName}）`,
+          subject: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE,
+          taskName: cleanTaskName,
           payee: o.userName,
           amount: customVal !== undefined ? customVal : budgetAmount,
           type: 'labor',
@@ -439,32 +437,39 @@ export function RewardAllocationPage() {
       });
     });
 
-    if (hasInternalTasks || totalProjectStaffAlloc > 0 || allocationDrafts[`STAFF_ALLOC_${pid}`] !== undefined) {
-      const staffKey = `STAFF_ALLOC_${pid}`;
-      const customStaffVal = allocationDrafts[staffKey];
+    const staffKey = `STAFF_ALLOC_${pid}`;
+    const customStaffVal = allocationDrafts[staffKey];
 
-      laborExpenses.push({
-        id: staffKey,
-        subject: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER,
-        payee: '（職員等）',
-        amount: customStaffVal !== undefined ? customStaffVal : totalProjectStaffAlloc,
-        type: 'labor',
-        isAutoCalculated: false
-      });
-    }
+    laborExpenses.push({
+      id: staffKey,
+      subject: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER,
+      taskName: '',
+      payee: '（職員等）',
+      amount: customStaffVal !== undefined ? customStaffVal : totalProjectStaffAlloc,
+      type: 'labor',
+      isAutoCalculated: false
+    });
 
     const materialExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL);
     const otherExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);
     const restNonLabor = nonLaborExpenses.filter(e => e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);
 
-    const internalLabor = laborExpenses.filter(e => !e.subject.startsWith('外注加工費'));
-    const externalLabor = laborExpenses.filter(e => e.subject.startsWith('外注加工費'));
+    const externalLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || e.subject.startsWith('外注加工費'));
+    const staffLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || e.subject.startsWith('労務費（利用者工賃以外）'));
+    const memberLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || (!e.subject.startsWith('外注加工費') && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER && !e.subject.startsWith('労務費（利用者工賃以外）')));
 
     const expenses: any[] = [];
+    // 1. 材料費
     if (materialExpense) expenses.push(materialExpense);
-    expenses.push(...internalLabor);
-    expenses.push(...externalLabor);
+    // 2. 経費
     if (otherExpense) expenses.push(otherExpense);
+    // 3. 外注加工費
+    expenses.push(...externalLabor);
+    // 4. 労務費（利用者工賃以外）
+    expenses.push(...staffLabor);
+    // 5. 労務費（利用者工賃）
+    expenses.push(...memberLabor);
+    // 残り
     expenses.push(...restNonLabor);
 
     const reserves = (budgetDraft?.reserves || []).map(b => {
@@ -553,128 +558,185 @@ export function RewardAllocationPage() {
         <table className="inventory-table">
           <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           {displayProjects.length === 0 ? (
-            <tbody><tr><td colSpan={12} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
+            <tbody><tr><td colSpan={9} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
           ) : (
             displayProjects.map(proj => {
-              const maxRows = Math.max(1, proj.revenues.length, proj.expenses.length, proj.reserves.length);
-              
               const sumRev = proj.revenues.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
               const sumExp = proj.expenses.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
               const sumRes = proj.reserves.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
               const totalSurplus = sumRev - sumExp - sumRes;
 
-              const rows = [];
+              type FinRowItem = {
+                categoryType: 'revenue' | 'expense' | 'reserve' | 'surplus';
+                categoryLabel: string;
+                subject: string;
+                amount: number;
+                summary: string;
+                remarks: string;
+                expenseId?: string;
+                isLabor?: boolean;
+                isAutoCalculated?: boolean;
+              };
 
-              if (maxRows === 0) {
-                rows.push(
-                  <tr key={`${proj.id}-total`}>
-                    <td style={{ borderBottom: 'none' }}>
-                      {proj.code}
+              const items: FinRowItem[] = [];
+
+              proj.revenues.forEach(rev => {
+                items.push({
+                  categoryType: 'revenue',
+                  categoryLabel: '収益',
+                  subject: rev.subject,
+                  amount: rev.amount,
+                  summary: formatSummaryDescription({ billingDest: rev.billingDest }),
+                  remarks: '-',
+                });
+              });
+
+              proj.expenses.forEach(exp => {
+                const isStaff = exp.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || exp.payee === '（職員等）' || exp.payee === '職員給与等';
+                const summary = formatSummaryDescription({
+                  task: exp.taskName,
+                  payee: exp.payee,
+                  isStaff,
+                });
+
+                items.push({
+                  categoryType: 'expense',
+                  categoryLabel: '費用',
+                  subject: exp.subject,
+                  amount: exp.amount,
+                  summary,
+                  remarks: '-',
+                  expenseId: exp.id,
+                  isLabor: exp.type === 'labor',
+                  isAutoCalculated: exp.isAutoCalculated,
+                });
+              });
+
+              proj.reserves.forEach(res => {
+                items.push({
+                  categoryType: 'reserve',
+                  categoryLabel: '積立金繰入額',
+                  subject: res.subject,
+                  amount: res.amount,
+                  summary: '-',
+                  remarks: '-',
+                });
+              });
+
+              items.push({
+                categoryType: 'surplus',
+                categoryLabel: '差額',
+                subject: '余剰',
+                amount: totalSurplus,
+                summary: '-',
+                remarks: totalSurplus !== 0 ? '余剰が¥0になるように、金額を調整してください。' : '-',
+              });
+
+              const totalRows = items.length;
+
+              const rows = items.map((rowItem, idx) => {
+                const isFirstRow = idx === 0;
+                const isLastRow = idx === totalRows - 1;
+                const isSurplusRow = rowItem.categoryType === 'surplus';
+                const rowBorderBottom = isLastRow ? undefined : 'none';
+                const rowBg = isSurplusRow ? 'var(--color-bg-subtle, #f9fafb)' : undefined;
+
+                return (
+                  <tr
+                    key={`proj-${proj.id}-${rowItem.categoryType}-${idx}`}
+                    style={{ backgroundColor: rowBg }}
+                  >
+                    <td style={{ borderBottom: rowBorderBottom }}>
+                      {isFirstRow ? proj.code : ''}
                     </td>
-                    <td style={{ borderBottom: 'none' }}>
-                      {proj.name}
+                    <td style={{ borderBottom: rowBorderBottom }}>
+                      {isFirstRow ? proj.name : ''}
                     </td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      <strong>¥{sumRev.toLocaleString()}</strong>
+                    <td style={{ borderBottom: rowBorderBottom }}>
+                      {isFirstRow ? (proj.isOngoing ? '毎月' : '案件終了時') : ''}
                     </td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      <strong>¥{sumExp.toLocaleString()}</strong>
+                    <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
+                      {rowItem.categoryLabel}
                     </td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                      <strong>¥{sumRes.toLocaleString()}</strong>
+                    <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
+                      {rowItem.subject}
                     </td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                      <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
-                        ¥{totalSurplus.toLocaleString()}
-                      </strong>
+                    <td>
+                      {rowItem.summary}
+                    </td>
+                    <td
+                      className={
+                        !isSurplusRow
+                          ? (!isConfirmed
+                              ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')
+                              : undefined)
+                          : undefined
+                      }
+                      style={{
+                        fontWeight: isSurplusRow ? 'bold' : 'normal',
+                        textAlign: isSurplusRow ? 'right' : undefined,
+                        paddingRight: isSurplusRow ? '8px' : undefined
+                      }}
+                    >
+                      {rowItem.categoryType === 'revenue' ? (
+                        <CurrencyInput
+                          disabled={isConfirmed}
+                          value={rowItem.amount}
+                          onChange={val => handleFinChange(proj.id, 'revenue', rowItem.subject, val)}
+                        />
+                      ) : rowItem.categoryType === 'expense' ? (
+                        rowItem.isLabor ? (
+                          <CurrencyInput
+                            disabled={isConfirmed}
+                            value={rowItem.amount}
+                            onChange={val => handleAllocationChange(rowItem.expenseId || '', val)}
+                          />
+                        ) : rowItem.isAutoCalculated ? (
+                          <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
+                            ¥{rowItem.amount.toLocaleString()}
+                          </span>
+                        ) : (
+                          <CurrencyInput
+                            disabled={isConfirmed}
+                            value={rowItem.amount}
+                            onChange={val => handleFinChange(proj.id, 'expense', rowItem.subject, val)}
+                          />
+                        )
+                      ) : rowItem.categoryType === 'reserve' ? (
+                        <CurrencyInput
+                          disabled={isConfirmed}
+                          value={rowItem.amount}
+                          onChange={val => handleFinChange(proj.id, 'reserve', rowItem.subject, val)}
+                        />
+                      ) : (
+                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontVariantNumeric: 'tabular-nums' }}>
+                          ¥{totalSurplus.toLocaleString()}
+                        </strong>
+                      )}
+                    </td>
+                    <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontSize: isSurplusRow ? '12px' : undefined }}>
+                      {rowItem.remarks}
+                    </td>
+                    <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>
+                      {isFirstRow && (isConfirmed ? (
+                        <Tooltip text="確定済のため変更不可">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </Tooltip>
+                      ) : (proj.isFinished ? (
+                        <Tooltip text="案件終了">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                          </svg>
+                        </Tooltip>
+                      ) : null))}
                     </td>
                   </tr>
                 );
-              } else {
-                for (let i = 0; i < maxRows; i++) {
-                  const rev = proj.revenues[i];
-                  const exp = proj.expenses[i];
-                  const res = proj.reserves[i];
-
-                  const prevExp = i > 0 ? proj.expenses[i - 1] : null;
-                  const nextExp = i < proj.expenses.length - 1 ? proj.expenses[i + 1] : null;
-                  const isFirstInSubjectGroup = exp && (!prevExp || prevExp.subject !== exp.subject);
-                  const isLastInSubjectGroup = exp && (!nextExp || nextExp.subject !== exp.subject);
-  
-                  rows.push(
-                    <tr key={`proj-${proj.id}-${i}`}>
-                    <td style={{ borderBottom: 'none' }}>
-                      {i === 0 ? proj.code : ''}
-                    </td>
-                    <td style={{ borderBottom: 'none' }}>
-                      {i === 0 ? proj.name : ''}
-                    </td>
-                      
-                      {/* Revenue */}
-                      <td>{rev?.subject || ''}</td>
-                      <td>{rev ? (rev.billingDest || <span style={{ color: 'var(--color-text-muted)' }}>(未設定)</span>) : ''}</td>
-                      <td className={rev ? (!isConfirmed ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
-                        {rev ? <CurrencyInput disabled={isConfirmed} value={rev.amount} onChange={val => handleFinChange(proj.id, 'revenue', rev.subject, val)} /> : null}
-                      </td>
-  
-                      {/* Expense */}
-                      <td style={{ borderBottom: (exp && !isLastInSubjectGroup) ? 'none' : undefined }}>
-                        {isFirstInSubjectGroup ? exp.subject : ''}
-                      </td>
-                      <td>{exp?.payee || ''}</td>
-                      <td className={exp ? (exp.isAutoCalculated || isConfirmed ? undefined : (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight')) : undefined}>
-                        {exp ? (
-                          exp.type === 'labor' ? (
-                            <CurrencyInput disabled={isConfirmed} value={exp.amount} onChange={val => handleAllocationChange(exp.id, val)} />
-                          ) : exp.isAutoCalculated ? (
-                            <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
-                              ¥{exp.amount.toLocaleString()}
-                            </span>
-                          ) : (
-                            <CurrencyInput disabled={isConfirmed} value={exp.amount} onChange={val => handleFinChange(proj.id, 'expense', exp.subject, val)} />
-                          )
-                        ) : null}
-                      </td>
-  
-                      {/* Reserve */}
-                      <td>{res?.subject || ''}</td>
-                      <td className={res ? (!isConfirmed ? (totalSurplus !== 0 ? 'bg-error-highlight' : 'bg-input-highlight') : undefined) : undefined}>
-                        {res ? <CurrencyInput disabled={isConfirmed} value={res.amount} onChange={val => handleFinChange(proj.id, 'reserve', res.subject, val)} /> : null}
-                      </td>
-  
-                      {/* Surplus */}
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  );
-                }
-                
-                // Add a total row just like BudgetPlanning
-                rows.push(
-                  <tr key={`proj-${proj.id}-total`}>
-                    <td></td>
-                    <td></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}><strong>¥{sumRev.toLocaleString()}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}><strong>¥{sumExp.toLocaleString()}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}><strong>¥{sumRes.toLocaleString()}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}><strong>{WORDS_PROJECT.TOTAL}</strong></td>
-                    <td style={{ backgroundColor: 'var(--color-bg-subtle, #f9fafb)', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', textAlign: 'right', fontVariantNumeric: 'tabular-nums', paddingRight: '8px' }}>
-                      <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>¥{totalSurplus.toLocaleString()}</strong>
-                    </td>
-                  </tr>
-                );
-              }
+              });
 
               if (isConfirmed) {
                 return (

@@ -481,13 +481,18 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'member_wage_settings',
-      tableType: '評価マスタ',
+      tableType: '履歴マスタ',
       logicalName: '利用者工賃単価割当',
-      description: '利用者の工賃単価評価・割当履歴',
+      description: '利用者の工賃単価評価・割当履歴（適用期間別の単価履歴を管理）',
       columns: [
-        { name: 'id', desc: '評価ID' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'wage_rate_id', desc: '工賃単価ID' },
+        { name: 'id', desc: '割当履歴ID' },
+        { name: 'member_id', desc: '利用者ID（FK -> members.id）' },
+        { name: 'wage_rate_id', desc: '工賃単価ID（FK -> wage_rate_items.id）' },
+        { name: 'start_period', desc: '適用開始年月（YYYY-MM、当月1日より適用）' },
+        { name: 'end_period', desc: '適用終了年月（YYYY-MM、NULL: 適用継続中・無期限）' },
+        { name: 'remarks', desc: '改定理由・備考（定期昇給、能力評価見直し、規程改定等）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

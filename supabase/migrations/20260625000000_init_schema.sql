@@ -323,8 +323,14 @@ CREATE TABLE IF NOT EXISTS "public"."member_wage_settings" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "wage_rate_id" UUID REFERENCES "public"."wage_rate_items"("id") ON DELETE CASCADE,
+    "start_period" VARCHAR(7) NOT NULL,
+    "end_period" VARCHAR(7) DEFAULT NULL,
+    "remarks" TEXT,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT "member_wage_settings_member_id_start_period_key" UNIQUE ("member_id", "start_period")
 );
 
 -- 1.21 staffs (職員)

@@ -10,7 +10,7 @@ import { supabase } from '../lib';
 
 /**
  * 労務費（利用者工賃）の備考欄に表示する基本工賃の内訳テキストを計算する
- * 表示フォーマット: 基本工賃：NNNN円（@nnnn円*hh時間）
+ * 表示フォーマット: 基本工賃：NNNN円（工賃単価¥nnnn*作業時間hhh）
  * - 毎月精算案件の場合: 当該年月 (currentMonth) の作業時間のみ集計
  * - 案件終了後精算案件の場合: 全期間の作業時間を集計
  * - 対象期間中に工賃単価の改定（期間変動）がある場合は内訳を合成
@@ -81,7 +81,7 @@ export function formatBaseWageRemark({
   // 作業記録がない（0時間）場合
   if (matchedRecords.length === 0) {
     const currentWage = getWageForPeriod(currentMonth);
-    return `基本工賃：0円（@${currentWage.toLocaleString()}円*0時間）`;
+    return `基本工賃：0円（工賃単価¥${currentWage.toLocaleString()}*作業時間0h）`;
   }
 
   // 単価ごとの時間集計
@@ -104,13 +104,13 @@ export function formatBaseWageRemark({
   if (sortedWages.length === 1) {
     const w = sortedWages[0];
     const h = wageHoursMap.get(w)!;
-    detailsStr = `@${w.toLocaleString()}円*${h}時間`;
+    detailsStr = `工賃単価¥${w.toLocaleString()}*作業時間${h}h`;
   } else {
     // 期間変動により複数単価にまたがっている場合
     detailsStr = sortedWages
       .map(w => {
         const h = wageHoursMap.get(w)!;
-        return `@${w.toLocaleString()}円*${h}時間`;
+        return `工賃単価¥${w.toLocaleString()}*作業時間${h}h`;
       })
       .join(' + ');
   }
@@ -434,7 +434,7 @@ export function RewardAllocationPage() {
       { label: '勘定科目', width: '220px' },
       { label: '摘要', width: '160px' },
       { label: '金額', width: '120px' },
-      { label: '備考', width: '260px' },
+      { label: '備考', width: '300px' },
       { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
   ];
@@ -897,11 +897,7 @@ export function RewardAllocationPage() {
                         </strong>
                       )}
                     </td>
-                    <td style={{
-                      color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit',
-                      fontSize: (isSurplusRow || (rowItem.remarks && rowItem.remarks.startsWith('基本工賃：'))) ? '12px' : undefined,
-                      fontVariantNumeric: 'tabular-nums',
-                    }}>
+                    <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
                       {rowItem.remarks}
                     </td>
                     <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>

@@ -344,7 +344,7 @@ export function BudgetPlanningPage() {
                           />
                         )}
                       </td>
-                      <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontSize: isSurplusRow ? '12px' : undefined }}>
+                      <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>
                         {rowItem.remarks}
                       </td>
                       <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>

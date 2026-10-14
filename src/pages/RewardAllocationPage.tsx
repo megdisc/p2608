@@ -8,6 +8,116 @@ import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useM
 import { useBudgetPlanning } from '../hooks/useBudgetPlanning';
 import { supabase } from '../lib';
 
+/**
+ * 労務費（利用者工賃）の備考欄に表示する基本工賃の内訳テキストを計算する
+ * 表示フォーマット: 基本工賃：NNNN円（@nnnn円*hh時間）
+ * - 毎月精算案件の場合: 当該年月 (currentMonth) の作業時間のみ集計
+ * - 案件終了後精算案件の場合: 全期間の作業時間を集計
+ * - 対象期間中に工賃単価の改定（期間変動）がある場合は内訳を合成
+ */
+export function formatBaseWageRemark({
+  memberId,
+  taskId,
+  isOngoing,
+  currentMonth,
+  workRecords,
+  wageSettings,
+  wageRates,
+}: {
+  memberId: string;
+  taskId: string;
+  isOngoing: boolean;
+  currentMonth: string;
+  workRecords: { member_id: string; task_id: string; work_time: number; target_period: string }[];
+  wageSettings: { member_id: string; wage_rate_id: string; start_period: string; end_period?: string | null }[];
+  wageRates: { id: string; wage: number }[];
+}): string {
+  // 1. 対象レコードの絞り込み
+  const matchedRecords = workRecords.filter(r => {
+    if (r.member_id !== memberId || r.task_id !== taskId) return false;
+    const hours = Number(r.work_time) || 0;
+    if (hours <= 0) return false;
+
+    if (isOngoing) {
+      // 毎月精算の場合は当該年月のみ
+      const rMonth = String(r.target_period || '').substring(0, 7);
+      return rMonth === currentMonth;
+    }
+    // 案件終了後の精算案件の場合は全期間
+    return true;
+  });
+
+  // 単価マップ
+  const wageRateMap = new Map<string, number>();
+  wageRates.forEach(w => wageRateMap.set(w.id, Number(w.wage) || 0));
+
+  // 利用者の単価設定（start_period 降順）
+  const memberSettings = wageSettings
+    .filter(s => s.member_id === memberId)
+    .sort((a, b) => (b.start_period || '').localeCompare(a.start_period || ''));
+
+  // 指定年月における適用単価を取得
+  const getWageForPeriod = (ym: string): number => {
+    if (!ym) return 0;
+    const setting = memberSettings.find(s => {
+      const start = s.start_period || '';
+      const end = s.end_period || '';
+      if (start && ym < start) return false;
+      if (end && ym > end) return false;
+      return true;
+    });
+
+    if (setting && wageRateMap.has(setting.wage_rate_id)) {
+      return wageRateMap.get(setting.wage_rate_id)!;
+    }
+
+    if (memberSettings.length > 0 && wageRateMap.has(memberSettings[0].wage_rate_id)) {
+      return wageRateMap.get(memberSettings[0].wage_rate_id)!;
+    }
+
+    return 0;
+  };
+
+  // 作業記録がない（0時間）場合
+  if (matchedRecords.length === 0) {
+    const currentWage = getWageForPeriod(currentMonth);
+    return `基本工賃：0円（@${currentWage.toLocaleString()}円*0時間）`;
+  }
+
+  // 単価ごとの時間集計
+  const wageHoursMap = new Map<number, number>();
+  let totalBaseWage = 0;
+
+  matchedRecords.forEach(r => {
+    const ym = String(r.target_period || '').substring(0, 7);
+    const wage = getWageForPeriod(ym);
+    const hours = Number(r.work_time) || 0;
+
+    wageHoursMap.set(wage, (wageHoursMap.get(wage) || 0) + hours);
+    totalBaseWage += wage * hours;
+  });
+
+  // 単価昇順でソート
+  const sortedWages = Array.from(wageHoursMap.keys()).sort((a, b) => a - b);
+
+  let detailsStr = '';
+  if (sortedWages.length === 1) {
+    const w = sortedWages[0];
+    const h = wageHoursMap.get(w)!;
+    detailsStr = `@${w.toLocaleString()}円*${h}時間`;
+  } else {
+    // 期間変動により複数単価にまたがっている場合
+    detailsStr = sortedWages
+      .map(w => {
+        const h = wageHoursMap.get(w)!;
+        return `@${w.toLocaleString()}円*${h}時間`;
+      })
+      .join(' + ');
+  }
+
+  return `基本工賃：${totalBaseWage.toLocaleString()}円（${detailsStr}）`;
+}
+
 export function RewardAllocationPage() {
   const {
     displayData: progressRecords,
@@ -43,15 +153,55 @@ export function RewardAllocationPage() {
   
   const [allocationDrafts, setAllocationDrafts] = useState<Record<string, number>>({});
 
+  const [wageRates, setWageRates] = useState<{ id: string; wage: number }[]>([]);
+  const [memberWageSettings, setMemberWageSettings] = useState<{
+    member_id: string;
+    wage_rate_id: string;
+    start_period: string;
+    end_period?: string | null;
+  }[]>([]);
+  const [allWorkRecords, setAllWorkRecords] = useState<{
+    member_id: string;
+    task_id: string;
+    work_time: number;
+    target_period: string;
+  }[]>([]);
+
+  const fetchWageAndWorkRecords = useCallback(async () => {
+    try {
+      const [wagesRes, settingsRes, worksRes] = await Promise.all([
+        supabase.from('wage_rates').select('id, wage').eq('is_deleted', false),
+        supabase.from('member_wage_settings')
+          .select('id, member_id, wage_rate_id, start_period, end_period')
+          .or('is_deleted.eq.false,is_deleted.is.null')
+          .order('start_period', { ascending: false }),
+        supabase.from('daily_work_records')
+          .select('member_id, task_id, work_time, target_period'),
+      ]);
+
+      if (wagesRes.data) setWageRates(wagesRes.data.map(w => ({ id: w.id, wage: Number(w.wage) || 0 })));
+      if (settingsRes.data) setMemberWageSettings(settingsRes.data);
+      if (worksRes.data) setAllWorkRecords(worksRes.data.map(r => ({
+        member_id: r.member_id,
+        task_id: r.task_id,
+        work_time: Number(r.work_time) || 0,
+        target_period: String(r.target_period || '')
+      })));
+    } catch (err) {
+      console.error('Error fetching wage and work records:', err);
+    }
+  }, []);
+
   useEffect(() => {
     Promise.all([
       fetchProgressMasters(),
-      fetchBudgetPlanning()
+      fetchBudgetPlanning(),
+      fetchWageAndWorkRecords()
     ]).then(() => {
       fetchProgress(currentMonth);
       fetchFinancials(currentMonth);
     }).catch(console.error);
-  }, [currentMonth, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning]);
+  }, [currentMonth, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords]);
 
   useEffect(() => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
@@ -284,7 +434,7 @@ export function RewardAllocationPage() {
       { label: '勘定科目', width: '220px' },
       { label: '摘要', width: '160px' },
       { label: '金額', width: '120px' },
-      { label: '備考', width: '140px' },
+      { label: '備考', width: '260px' },
       { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
   ];
@@ -412,6 +562,18 @@ export function RewardAllocationPage() {
 
       memberRecords.forEach(m => {
         const customVal = allocationDrafts[m.id];
+        const rawMemberId = m.userId.startsWith('member_') ? m.userId.replace('member_', '') : m.userId;
+
+        const baseWageRemark = formatBaseWageRemark({
+          memberId: rawMemberId,
+          taskId: taskId,
+          isOngoing,
+          currentMonth,
+          workRecords: allWorkRecords,
+          wageSettings: memberWageSettings,
+          wageRates,
+        });
+
         laborExpenses.push({
           id: m.id,
           subject: subjectName,
@@ -419,7 +581,8 @@ export function RewardAllocationPage() {
           payee: m.userName,
           amount: customVal !== undefined ? customVal : memberPerPerson,
           type: 'labor',
-          isAutoCalculated: false
+          isAutoCalculated: false,
+          remarks: baseWageRemark,
         });
       });
 
@@ -605,7 +768,7 @@ export function RewardAllocationPage() {
                   subject: exp.subject,
                   amount: exp.amount,
                   summary,
-                  remarks: '-',
+                  remarks: exp.remarks || '-',
                   expenseId: exp.id,
                   isLabor: exp.type === 'labor',
                   isAutoCalculated: exp.isAutoCalculated,
@@ -724,7 +887,11 @@ export function RewardAllocationPage() {
                         </strong>
                       )}
                     </td>
-                    <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontSize: isSurplusRow ? '12px' : undefined }}>
+                    <td style={{
+                      color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit',
+                      fontSize: (isSurplusRow || (rowItem.remarks && rowItem.remarks.startsWith('基本工賃：'))) ? '12px' : undefined,
+                      fontVariantNumeric: 'tabular-nums',
+                    }}>
                       {rowItem.remarks}
                     </td>
                     <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>

@@ -809,6 +809,11 @@ export function RewardAllocationPage() {
                 const isFirstInCategory = !prevItem || prevItem.categoryType !== rowItem.categoryType;
                 const isLastInCategory = !nextItem || nextItem.categoryType !== rowItem.categoryType;
 
+                const isSameSubjectAsPrev = prevItem && prevItem.categoryType === rowItem.categoryType && prevItem.subject === rowItem.subject;
+                const isSameSubjectAsNext = nextItem && nextItem.categoryType === rowItem.categoryType && nextItem.subject === rowItem.subject;
+                const isFirstInSubject = !isSameSubjectAsPrev;
+                const isLastInSubject = !isSameSubjectAsNext;
+
                 return (
                   <tr
                     key={`proj-${proj.id}-${rowItem.categoryType}-${idx}`}
@@ -831,8 +836,13 @@ export function RewardAllocationPage() {
                     >
                       {isFirstInCategory ? rowItem.categoryLabel : ''}
                     </td>
-                    <td style={{ fontWeight: isSurplusRow ? 'bold' : 'normal' }}>
-                      {rowItem.subject}
+                    <td
+                      style={{
+                        fontWeight: isSurplusRow ? 'bold' : 'normal',
+                        borderBottom: isLastInSubject ? undefined : 'none'
+                      }}
+                    >
+                      {isFirstInSubject ? rowItem.subject : ''}
                     </td>
                     <td>
                       {rowItem.summary}

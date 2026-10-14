@@ -62,11 +62,11 @@ export function WageSummaryPage() {
       { label: '支給額', rowSpan: 2, width: '150px' }
     ],
     [
-      { label: '科目', width: '150px' },
-      { label: '内容' },
+      { label: '勘定科目', width: '150px' },
+      { label: '摘要' },
       { label: '金額', width: '120px' },
-      { label: '科目', width: '150px' },
-      { label: '内容' },
+      { label: '勘定科目', width: '150px' },
+      { label: '摘要' },
       { label: '金額', width: '120px' },
     ]
   ];
@@ -85,20 +85,16 @@ export function WageSummaryPage() {
               </tr>
             ) : (
               paginatedRows.map(row => {
-                const totalTaskIncentives = row.taskIncentives.reduce((sum, t) => sum + (t.amount || 0), 0);
-                const deductionAmount = row.basicWage === null ? null : -Math.min(totalTaskIncentives, row.basicWage);
-                
                 const incentiveRows = (row.taskIncentives && row.taskIncentives.length > 0) 
                   ? [
                       ...row.taskIncentives.map((t, i) => ({ 
                         subject: 'インセンティブ', 
-                        content: `${t.projectName}（${t.taskName}）`, 
+                        content: `案件：${t.projectName}、タスク：${t.taskName}`, 
                         amount: t.amount, 
                         isBold: false,
-                        rowSpan: i === 0 ? row.taskIncentives.length + 2 : undefined,
+                        rowSpan: i === 0 ? row.taskIncentives.length + 1 : undefined,
                         hideSubject: i > 0
                       })),
-                      { subject: 'インセンティブ', content: '差引（基本工賃分）', amount: deductionAmount, isBold: false, rowSpan: undefined, hideSubject: true },
                       { subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal, isBold: true, rowSpan: undefined, hideSubject: true }
                     ]
                   : [

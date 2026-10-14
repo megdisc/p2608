@@ -174,7 +174,16 @@ export function useWageSummary() {
       const memberOfficeWageMap = new Map<string, number>();
       const memberDefaultWageMap = new Map<string, number>();
 
-      (wageEvalsRes.data || []).forEach((ev: any) => {
+      const filteredWageEvals = (wageEvalsRes.data || []).filter((ev: any) => {
+        const start = ev.start_period || '';
+        const end = ev.end_period || '';
+        if (start && monthStr < start) return false;
+        if (end && monthStr > end) return false;
+        return true;
+      });
+      const evalsToUse = filteredWageEvals.length > 0 ? filteredWageEvals : (wageEvalsRes.data || []);
+
+      evalsToUse.forEach((ev: any) => {
         const wageInfo = wageRateInfoMap.get(ev.wage_rate_id);
         if (wageInfo) {
           if (!memberDefaultWageMap.has(ev.member_id)) {
@@ -293,6 +302,22 @@ export function useWageSummary() {
               }
             }
 
+            // 当該案件タスクにおける基本工賃分を計算（作業時間と工賃単価の積）
+            const taskWorks = memberWorks.filter((w: any) => w.task_id === task.id && Number(w.work_time) > 0);
+            let taskBasicWage = 0;
+            taskWorks.forEach((w: any) => {
+              const time = Number(w.work_time);
+              let rate: number | null = null;
+              if (w.office_id && memberOfficeWageMap.has(`${member.id}_${w.office_id}`)) {
+                rate = memberOfficeWageMap.get(`${member.id}_${w.office_id}`)!;
+              } else if (memberDefaultWageMap.has(member.id)) {
+                rate = memberDefaultWageMap.get(member.id)!;
+              }
+              if (rate !== null) {
+                taskBasicWage += rate * time;
+              }
+            });
+
             if (allocatedAmount > 0) {
               sumRewardUnitPrice += allocatedAmount;
               const pureTaskName = (task.name || '')
@@ -306,10 +331,12 @@ export function useWageSummary() {
                 .replace(/[）\)]+$/, '')
                 .trim();
 
+              const taskIncentiveAmount = Math.max(0, allocatedAmount - taskBasicWage);
+
               taskIncentives.push({
                 projectName: project.name || '',
                 taskName: pureTaskName || task.name || '',
-                amount: allocatedAmount
+                amount: taskIncentiveAmount
               });
             }
           }
@@ -469,8 +496,8 @@ export function useWageSummary() {
           ? Number(dbRecord.other_allowance_total)
           : calculatedAllowanceTotal;
 
-        const calculatedIncentive = sumRewardUnitPrice - (basicWage || 0);
-        const safeIncentive = Math.floor(Math.max(0, calculatedIncentive));
+        const taskIncentiveSum = taskIncentives.reduce((sum, t) => sum + t.amount, 0);
+        const safeIncentive = Math.floor(Math.max(0, taskIncentiveSum));
 
         const dedA = null;
         const dedB = null;

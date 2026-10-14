@@ -396,6 +396,25 @@ export type MemberRecipientCertificateItem = {
   is_deleted?: boolean;
 };
 
+export type MemberWageSettingItem = {
+  id: string;
+  memberId?: string;
+  wageRateId: string;
+  startPeriod: string;
+  endPeriod?: string | null;
+  remarks?: string;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
+};
+
+export type MemberWageAssignmentGridRow = {
+  id: string; // member_id
+  code: string;
+  name: string;
+  yomigana: string;
+  wageSettings: MemberWageSettingItem[];
+};
+
 export type Tab = 
   | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'project' | 'projectUser' | 'memberRecipientCertificate' | 'memberOffice' | 'skillCategory' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
   | 'screenFacility' | 'organization' | 'office' | 'officeServiceType' | 'serviceScheme'

@@ -1,10 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
 import { supabase } from '../lib';
-import type { MemberItem, BaseWageItem } from '../types';
-import { WORDS_PERSON } from '../constants';
+import type { BaseWageItem, MemberWageAssignmentGridRow, MemberWageSettingItem } from '../types';
+import { getPreviousMonth } from '../utils';
 
 export function useBaseWageAssignments() {
-  const [items, setItems] = useState<MemberItem[]>([]);
+  const [items, setItems] = useState<MemberWageAssignmentGridRow[]>([]);
   const [baseWages, setBaseWages] = useState<BaseWageItem[]>([]);
   const [loading, setLoading] = useState(true);
   const currentOfficeIdRef = useRef<string | undefined>(undefined);
@@ -13,7 +13,8 @@ export function useBaseWageAssignments() {
     currentOfficeIdRef.current = officeId;
     try {
       setLoading(true);
-      // Fetch base wages
+
+      // Fetch base wages (filtered by selected office)
       let wageQuery = supabase
         .from('wage_rates')
         .select('*')
@@ -28,8 +29,8 @@ export function useBaseWageAssignments() {
       // Fetch members
       const { data: membersData, error: membersError } = await supabase
         .from('members')
-        .select('*, users(email, role)')
-        .eq('is_deleted', false)
+        .select('*')
+        .or('is_deleted.eq.false,is_deleted.is.null')
         .order('yomigana', { ascending: true });
 
       if (membersError) throw membersError;
@@ -51,111 +52,132 @@ export function useBaseWageAssignments() {
         return memberIdsForOffice.has(m.id);
       });
 
-      // Fetch member wage evaluations
-      const { data: evaluationsData, error: evaluationsError } = await supabase
-        .from('member_wage_evaluations')
+      // Fetch member wage settings history
+      let settingsData: any[] = [];
+      const { data: sData, error: settingsError } = await supabase
+        .from('member_wage_settings')
         .select('*')
-        .order('created_at', { ascending: false });
+        .or('is_deleted.eq.false,is_deleted.is.null')
+        .order('start_period', { ascending: false });
 
-      if (evaluationsError) throw evaluationsError;
+      if (settingsError) {
+        console.warn('Could not fetch from member_wage_settings, falling back to member_wage_evaluations:', settingsError);
+        const { data: fallbackData } = await supabase
+          .from('member_wage_evaluations')
+          .select('*');
+        settingsData = fallbackData || [];
+      } else {
+        settingsData = sData || [];
+      }
 
-      const validWageRateIds = new Set((wagesData || []).map((w: any) => w.id));
+      const formatted: MemberWageAssignmentGridRow[] = targetMembers.map((m: any) => {
+        const memberWageSettings: MemberWageSettingItem[] = settingsData
+          .filter((s: any) => s.member_id === m.id && !s.is_deleted)
+          .map((s: any) => ({
+            id: s.id,
+            memberId: s.member_id,
+            wageRateId: s.wage_rate_id,
+            startPeriod: s.start_period || '',
+            endPeriod: s.end_period || '',
+            remarks: s.remarks || '',
+          }));
 
-      // Map latest office-specific evaluation to each member
-      const memberWageMap: Record<string, string> = {};
-      (evaluationsData || []).forEach((ev: any) => {
-        if (!memberWageMap[ev.member_id]) {
-          if (!officeId || validWageRateIds.has(ev.wage_rate_id)) {
-            memberWageMap[ev.member_id] = ev.wage_rate_id;
-          }
-        }
+        return {
+          id: m.id,
+          code: m.code || '',
+          name: m.name || '',
+          yomigana: m.yomigana || '',
+          wageSettings: memberWageSettings,
+        };
       });
 
       setBaseWages((wagesData || []).map((w: any) => ({
         id: w.id,
-        wage: w.wage,
-        description: w.description || ''
+        wage: Number(w.wage),
+        description: w.description || '',
       })));
 
-      setItems(targetMembers.map((m: any) => ({
-        id: m.id,
-        user_id: m.user_id,
-        code: m.code || '',
-        name: m.name,
-        yomigana: m.yomigana || '',
-        role: m.users?.role === 'Member' ? WORDS_PERSON.ROLE_MEMBER : m.users?.role || WORDS_PERSON.ROLE_MEMBER,
-        email: m.users?.email || '',
-        baseWageId: memberWageMap[m.id] || undefined
-      })));
+      setItems(formatted);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const batchSaveAssignments = async (drafts: MemberItem[]) => {
+  const batchSaveAssignments = async (drafts: MemberWageAssignmentGridRow[], deletedIds: string[]) => {
     const officeId = currentOfficeIdRef.current;
+    try {
+      const nowIso = new Date().toISOString();
 
-    // Fetch valid wage_rate_ids for the target office
-    let wageQuery = supabase
-      .from('wage_rates')
-      .select('id, office_id')
-      .eq('is_deleted', false);
-    if (officeId) {
-      wageQuery = wageQuery.or(`office_id.eq.${officeId},office_id.is.null`);
-    }
-    const { data: currentOfficeWages } = await wageQuery;
-    const officeWageIds = new Set((currentOfficeWages || []).map((w: any) => w.id));
-
-    // Fetch existing member wage evaluations for the drafts
-    const draftMemberIds = drafts.map(d => d.id);
-    let existingEvals: any[] = [];
-    if (draftMemberIds.length > 0) {
-      const { data: evals } = await supabase
-        .from('member_wage_evaluations')
-        .select('id, member_id, wage_rate_id')
-        .in('member_id', draftMemberIds)
-        .order('created_at', { ascending: false });
-      existingEvals = evals || [];
-    }
-
-    for (const d of drafts) {
-      const existingForOffice = existingEvals.find((ev: any) =>
-        ev.member_id === d.id && (!officeId || officeWageIds.has(ev.wage_rate_id))
-      );
-
-      if (d.baseWageId) {
-        if (existingForOffice) {
-          const { error } = await supabase
-            .from('member_wage_evaluations')
-            .update({
-              wage_rate_id: d.baseWageId,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', existingForOffice.id);
-
-          if (error) throw error;
-        } else {
-          const { error } = await supabase
-            .from('member_wage_evaluations')
-            .insert({
-              member_id: d.id,
-              wage_rate_id: d.baseWageId
-            });
-
-          if (error) throw error;
-        }
-      } else {
-        if (existingForOffice) {
-          const { error } = await supabase
-            .from('member_wage_evaluations')
-            .delete()
-            .eq('id', existingForOffice.id);
-
-          if (error) throw error;
+      // Handle deletions (logical deletion)
+      if (deletedIds.length > 0) {
+        const idsToDelete = deletedIds.filter(id => !id.startsWith('WAG-') && id.includes('-'));
+        if (idsToDelete.length > 0) {
+          const { error: delError } = await supabase
+            .from('member_wage_settings')
+            .update({ deleted_at: nowIso, updated_at: nowIso })
+            .in('id', idsToDelete);
+          if (delError) throw delError;
         }
       }
+
+      // Handle upserts
+      for (const draft of drafts) {
+        const memberId = draft.id;
+        if (!draft.wageSettings || draft.wageSettings.length === 0) continue;
+
+        // Filter valid settings not marked for deletion
+        const activeSettings = draft.wageSettings
+          .filter(setting => !deletedIds.includes(setting.id) && !!setting.wageRateId);
+
+        // Sort ascending by startPeriod (oldest to newest) to calculate end_period
+        const sortedActive = [...activeSettings].sort((a, b) => {
+          const aP = a.startPeriod || '9999-99';
+          const bP = b.startPeriod || '9999-99';
+          return aP.localeCompare(bP);
+        });
+
+        // Compute end_period for each active setting
+        const computedEndPeriods = new Map<string, string | null>();
+        for (let i = 0; i < sortedActive.length; i++) {
+          const curr = sortedActive[i];
+          const isLatest = i === sortedActive.length - 1;
+          if (isLatest) {
+            computedEndPeriods.set(curr.id, null);
+          } else {
+            const next = sortedActive[i + 1];
+            computedEndPeriods.set(curr.id, next.startPeriod ? getPreviousMonth(next.startPeriod) : null);
+          }
+        }
+
+        for (const setting of activeSettings) {
+          const endPeriod = computedEndPeriods.get(setting.id) ?? (setting.endPeriod || null);
+
+          const upsertData: any = {
+            member_id: memberId,
+            wage_rate_id: setting.wageRateId,
+            start_period: setting.startPeriod || nowIso.substring(0, 7),
+            end_period: endPeriod,
+            remarks: setting.remarks || null,
+            updated_at: nowIso,
+          };
+
+          if (!setting.id.startsWith('WAG-')) {
+            upsertData.id = setting.id;
+          }
+
+          const { error: upsertErr } = await supabase
+            .from('member_wage_settings')
+            .upsert(upsertData);
+
+          if (upsertErr) throw upsertErr;
+        }
+      }
+
+      await fetchAssignments(officeId);
+    } catch (err) {
+      console.error('batchSaveAssignments failed:', err);
+      throw err;
     }
-    await fetchAssignments(officeId);
   };
 
   return {
@@ -163,6 +185,6 @@ export function useBaseWageAssignments() {
     baseWages,
     loading,
     fetchAssignments,
-    batchSaveAssignments
+    batchSaveAssignments,
   };
 }

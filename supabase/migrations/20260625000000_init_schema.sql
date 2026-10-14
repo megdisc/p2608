@@ -447,7 +447,8 @@ CREATE TABLE IF NOT EXISTS "public"."task_skill_settings" (
     "skill_id" UUID REFERENCES "public"."skill_items"("id") ON DELETE CASCADE,
     "skill_level_id" UUID REFERENCES "public"."skill_level_items"("id") ON DELETE SET NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT task_skill_settings_task_id_skill_id_key UNIQUE (task_id, skill_id)
 );
 
 -- 1.26 task_assignee_settings (タスク担当者割当)

@@ -247,20 +247,7 @@ ON CONFLICT (id) DO UPDATE SET
   monthly_limit_count = EXCLUDED.monthly_limit_count,
   is_active = EXCLUDED.is_active;
 
--- 3.4 職員資格割当 (staff_qualification_settings)
-INSERT INTO public.staff_qualification_settings (id, staff_id, qualification_id, license_number, acquired_on, valid_until, is_primary) VALUES
-('55555555-1111-0000-0000-000000000001', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000001', 'SVR-2020-001', '2020-04-01', NULL, true),
-('55555555-1111-0000-0000-000000000002', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000003', 'SW-2015-1234', '2015-03-31', NULL, false),
-('55555555-1111-0000-0000-000000000003', 'de2d336b-254d-4af7-8e49-5acbda340e67', '22222222-0000-0000-0000-000000000004', 'PSW-2018-5678', '2018-03-31', NULL, true),
-('55555555-1111-0000-0000-000000000004', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000011', NULL, '2021-04-01', NULL, true),
-('55555555-1111-0000-0000-000000000005', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000012', NULL, '2021-04-01', NULL, false)
-ON CONFLICT (id) DO UPDATE SET
-  staff_id = EXCLUDED.staff_id,
-  qualification_id = EXCLUDED.qualification_id,
-  license_number = EXCLUDED.license_number,
-  acquired_on = EXCLUDED.acquired_on,
-  valid_until = EXCLUDED.valid_until,
-  is_primary = EXCLUDED.is_primary;
+
 
 -- 4. 加算手当・控除項目マスタ (allowance_deduction_items)
 INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, calc_trigger_basis, threshold_value, threshold_unit, threshold_operator, unit_price) VALUES
@@ -311,6 +298,21 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   yomigana = EXCLUDED.yomigana;
 
+-- 5.1 職員資格割当 (staff_qualification_settings)
+INSERT INTO public.staff_qualification_settings (id, staff_id, qualification_id, license_number, acquired_on, valid_until, is_primary) VALUES
+('55555555-1111-0000-0000-000000000001', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000001', 'SVR-2020-001', '2020-04-01', NULL, true),
+('55555555-1111-0000-0000-000000000002', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', '22222222-0000-0000-0000-000000000003', 'SW-2015-1234', '2015-03-31', NULL, false),
+('55555555-1111-0000-0000-000000000003', 'de2d336b-254d-4af7-8e49-5acbda340e67', '22222222-0000-0000-0000-000000000004', 'PSW-2018-5678', '2018-03-31', NULL, true),
+('55555555-1111-0000-0000-000000000004', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000011', NULL, '2021-04-01', NULL, true),
+('55555555-1111-0000-0000-000000000005', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', '22222222-0000-0000-0000-000000000012', NULL, '2021-04-01', NULL, false)
+ON CONFLICT (id) DO UPDATE SET
+  staff_id = EXCLUDED.staff_id,
+  qualification_id = EXCLUDED.qualification_id,
+  license_number = EXCLUDED.license_number,
+  acquired_on = EXCLUDED.acquired_on,
+  valid_until = EXCLUDED.valid_until,
+  is_primary = EXCLUDED.is_primary;
+
 -- 6. 工賃単価項目マスタ (wage_rate_items)
 INSERT INTO public.wage_rate_items (id, office_id, wage, description) VALUES
 ('a1b2c3d4-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 100, '新人レベル'),
@@ -344,7 +346,7 @@ INSERT INTO public.office_member_settings (office_id, member_id) VALUES
 ('33333333-3333-3333-3333-333333333333', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2'),
 ('44444444-4444-4444-4444-444444444444', 'c5555555-5555-5555-5555-555555555555'),
 ('44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 INSERT INTO public.member_recipient_certificates (id, member_id, certificate_number, issuing_municipality, income_category, copayment_limit_amount, disability_support_class, copayment_management_type, copayment_office_id, copayment_office_code, copayment_office_name, valid_from, valid_to, remarks) VALUES
 ('99000000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2025-04-01', '2026-03-31', '継続申請済み'),
@@ -548,7 +550,7 @@ INSERT INTO public.task_assignee_settings (task_id, member_id, staff_id, client_
 ('8daa6b8b-ddb2-462a-9594-1738f004832f', NULL, 'de2d336b-254d-4af7-8e49-5acbda340e67', NULL, 'staff'),
 ('e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', NULL, NULL, 'member'),
 ('1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 'e98c7634-1eb3-4e42-b062-841f39c043e0', NULL, NULL, 'member')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- 事業所2 (未来ワークス) 案件
 INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month) VALUES 
@@ -564,7 +566,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES 
 ('adc26f10-909b-4ae1-b255-a86a5014dd3d', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0'),
 ('33333333-1111-0000-0000-000000000003', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- 事業所3 (未来オアシス) 案件
 INSERT INTO public.projects (id, office_id, name, code, client_id, project_type) VALUES 
@@ -580,7 +582,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES 
 ('44444444-1111-0000-0000-000000000004', 'c5555555-5555-5555-5555-555555555555'),
 ('44444444-1111-0000-0000-000000000006', 'c6666666-6666-6666-6666-666666666666')
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- 11.1 タスクスキル要件割当 (task_skill_settings)
 INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUES 
@@ -596,7 +598,7 @@ INSERT INTO public.task_skill_settings (task_id, skill_id, skill_level_id) VALUE
 ('33333333-1111-0000-0000-000000000003', '38eb7141-3333-43d0-a6a5-7d028233eb17', 'cdfc7a4d-3333-41c3-ab5b-5136db6d75d1'),
 ('44444444-1111-0000-0000-000000000004', '817f8df7-4444-4610-8a37-9609ff4ae89d', 'cdfc7a4d-4444-41c3-ab5b-5136db6d75d1'),
 ('44444444-1111-0000-0000-000000000006', 'ec4310ed-4444-4cb7-a13a-8c937bfc2a42', 'cdfc7a4d-4444-41c3-ab5b-5136db6d75d1')
-ON CONFLICT (task_id, skill_id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- 11.2 案件予算 (project_budgets)
 INSERT INTO public.project_budgets (id, project_id, task_id, category, subject, amount) VALUES 
@@ -672,7 +674,7 @@ INSERT INTO public.member_work_records (office_id, target_period, member_id, tas
 ('44444444-4444-4444-4444-444444444444', '2026-06-16', 'c5555555-5555-5555-5555-555555555555', '44444444-1111-0000-0000-000000000004', 6),
 ('44444444-4444-4444-4444-444444444444', '2026-06-15', 'c6666666-6666-6666-6666-666666666666', '44444444-1111-0000-0000-000000000006', 5),
 ('44444444-4444-4444-4444-444444444444', '2026-06-16', 'c6666666-6666-6666-6666-666666666666', '44444444-1111-0000-0000-000000000006', 5)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
 
 -- 14. 月次工賃サマリー (wage_summaries) 各事業所 2026年1月〜12月
 INSERT INTO public.wage_summaries (id, office_id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES

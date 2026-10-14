@@ -60,6 +60,7 @@ type DataTableProps<T> = {
   footerLeft?: React.ReactNode;
   subItemsKey?: keyof T;
   onAddSubRow?: (parentId: string) => any;
+  recomputeSubItems?: (subItems: any[], parentItem: T, deletedIds: Set<string>) => any[];
   subSubItemsKey?: string;
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
   showMonthFilter?: boolean;
@@ -107,6 +108,7 @@ export function DataTable<T extends { id: string }>({
   footerLeft,
   subItemsKey,
   onAddSubRow,
+  recomputeSubItems,
   subSubItemsKey,
   onAddSubSubRow,
   showMonthFilter,
@@ -170,17 +172,29 @@ export function DataTable<T extends { id: string }>({
   const pageSize = 50;
   // Sync when parent data changes (e.g. after save)
   useEffect(() => {
-    setDraftData(data);
     const initialDeleted = new Set<string>();
     (data || []).forEach(item => {
       if ((item as any).is_deleted) {
         initialDeleted.add(item.id);
       }
     });
+
+    if (recomputeSubItems && subItemsKey) {
+      setDraftData((data || []).map(item => {
+        const subItems = ((item as any)[subItemsKey] as any[]) || [];
+        if (subItems.length > 0) {
+          return { ...item, [subItemsKey]: recomputeSubItems(subItems, item, initialDeleted) };
+        }
+        return item;
+      }));
+    } else {
+      setDraftData(data);
+    }
+
     setDeletedIds(initialDeleted);
     setNewRowIds(new Set());
     setOriginalNewRows([]);
-  }, [data]);
+  }, [data, recomputeSubItems, subItemsKey]);
 
   useEffect(() => {
     const updateWidth = () => {
@@ -331,7 +345,7 @@ export function DataTable<T extends { id: string }>({
       setDraftData(prev => prev.map(item => {
         if (item.id === parentId) {
           const subItems = ((item as any)[subItemsKey] as any[]) || [];
-          const newSubItems = subItems.map(subItem => {
+          let newSubItems = subItems.map(subItem => {
             if (subItem.id === id) {
               let updatedSubItem = { ...subItem, [key]: value };
               if (col && col.onCellChange) {
@@ -347,6 +361,9 @@ export function DataTable<T extends { id: string }>({
             }
             return subItem;
           });
+          if (recomputeSubItems) {
+            newSubItems = recomputeSubItems(newSubItems, item, deletedIds);
+          }
           return { ...item, [subItemsKey]: newSubItems };
         }
         return item;
@@ -378,6 +395,18 @@ export function DataTable<T extends { id: string }>({
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+
+      if (recomputeSubItems && subItemsKey) {
+        setDraftData(currentDraft => currentDraft.map(item => {
+          const subItems = ((item as any)[subItemsKey] as any[]) || [];
+          if (subItems.some(s => s.id === id)) {
+            const updatedSubItems = recomputeSubItems(subItems, item, next);
+            return { ...item, [subItemsKey]: updatedSubItems };
+          }
+          return item;
+        }));
+      }
+
       return next;
     });
   };
@@ -404,8 +433,12 @@ export function DataTable<T extends { id: string }>({
     const newSubRow = onAddSubRow(parentId);
     setDraftData(prev => prev.map(item => {
       if (item.id === parentId) {
-        const subItems = ((item as any)[subItemsKey] as any[]) || [];
-        return { ...item, [subItemsKey]: [...subItems, newSubRow] };
+        let subItems = ((item as any)[subItemsKey] as any[]) || [];
+        subItems = [...subItems, newSubRow];
+        if (recomputeSubItems) {
+          subItems = recomputeSubItems(subItems, item, deletedIds);
+        }
+        return { ...item, [subItemsKey]: subItems };
       }
       return item;
     }));
@@ -447,15 +480,18 @@ export function DataTable<T extends { id: string }>({
           .map(item => {
             const newItem = { ...item, is_deleted: deletedIds.has(item.id) };
             if (subItemsKey && (newItem as any)[subItemsKey]) {
-              (newItem as any)[subItemsKey] = ((newItem as any)[subItemsKey] as any[])
-                .filter(sub => !deletedIds.has(sub.id))
-                .map(sub => {
-                  const newSub = { ...sub };
-                  if (subSubItemsKey && newSub[subSubItemsKey]) {
-                    newSub[subSubItemsKey] = (newSub[subSubItemsKey] as any[]).filter(ssub => !deletedIds.has(ssub.id));
-                  }
-                  return newSub;
-                });
+              let subItems = ((newItem as any)[subItemsKey] as any[])
+                .filter(sub => !deletedIds.has(sub.id));
+              if (recomputeSubItems) {
+                subItems = recomputeSubItems(subItems, item, deletedIds);
+              }
+              (newItem as any)[subItemsKey] = subItems.map(sub => {
+                const newSub = { ...sub };
+                if (subSubItemsKey && newSub[subSubItemsKey]) {
+                  newSub[subSubItemsKey] = (newSub[subSubItemsKey] as any[]).filter(ssub => !deletedIds.has(ssub.id));
+                }
+                return newSub;
+              });
             }
             columns.forEach(col => {
               if ((col.inputType === 'number' || col.inputType === 'currency') && (newItem as any)[col.key] === '') {

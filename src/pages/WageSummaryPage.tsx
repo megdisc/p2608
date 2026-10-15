@@ -71,12 +71,13 @@ export function WageSummaryPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: '氏名', width: '180px', sortKey: 'name' },
+      { label: '利用者ID', width: '120px', sortKey: 'code' },
+      { label: '氏名', width: '160px', sortKey: 'name' },
       { label: '取引区分', width: '130px' },
-      { label: '勘定科目', width: '160px' },
+      { label: '勘定科目', width: '150px' },
       { label: '摘要' },
-      { label: '金額', width: '140px' },
-      { label: '備考', width: '140px' }
+      { label: '金額', width: '130px' },
+      { label: '備考', width: '220px' }
     ]
   ];
   if (loading) return <div>{MESSAGES.LOADING}</div>;
@@ -90,81 +91,183 @@ export function WageSummaryPage() {
           <tbody>
             {paginatedRows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="empty-message">表示するデータがありません</td>
+                <td colSpan={7} className="empty-message">表示するデータがありません</td>
               </tr>
             ) : (
               paginatedRows.map(row => {
                 type DetailItem = {
-                  category: '工賃　A' | '控除　B' | '差額　A-B';
-                  subject: string;
-                  content: string;
+                  categoryGroup: '工賃　A' | '控除　B' | '差額　A-B';
+                  categoryLabel?: string;
+                  subject?: string;
+                  content?: string;
                   amount: number;
-                  remarks: string;
+                  remarks?: string;
                   isBold?: boolean;
                   isHighlight?: boolean;
                   isTotalRow?: boolean;
                 };
 
-                const incentiveRows: DetailItem[] = (row.taskIncentives && row.taskIncentives.length > 0)
-                  ? [
-                      ...row.taskIncentives.map(t => ({
-                        category: '工賃　A' as const,
-                        subject: 'インセンティブ',
-                        content: `案件：${t.projectName}、タスク：${t.taskName}`,
-                        amount: t.amount ?? 0,
-                        remarks: '-',
-                        isBold: false
-                      })),
-                      { category: '工賃　A' as const, subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal ?? 0, remarks: '-', isBold: true }
-                    ]
-                  : [
-                      { category: '工賃　A' as const, subject: 'インセンティブ', content: '（該当なし）', amount: 0, remarks: '-', isBold: false },
-                      { category: '工賃　A' as const, subject: 'インセンティブ', content: '合計', amount: row.incentiveTotal ?? 0, remarks: '-', isBold: true }
-                    ];
+                const items: DetailItem[] = [];
 
-                const allowanceRows: DetailItem[] = (row.allowanceItems && row.allowanceItems.length > 0)
-                  ? [
-                      ...row.allowanceItems.map(item => ({
-                        category: '工賃　A' as const,
-                        subject: '加算手当',
-                        content: item.name,
-                        amount: item.amount ?? 0,
-                        remarks: '-',
-                        isBold: false
-                      })),
-                      { category: '工賃　A' as const, subject: '加算手当', content: '合計', amount: row.allowanceTotal ?? 0, remarks: '-', isBold: true }
-                    ]
-                  : [
-                      { category: '工賃　A' as const, subject: '加算手当', content: '（該当なし）', amount: 0, remarks: '-', isBold: false },
-                      { category: '工賃　A' as const, subject: '加算手当', content: '合計', amount: row.allowanceTotal ?? 0, remarks: '-', isBold: true }
-                    ];
+                // 1. 工賃　A 親行
+                items.push({
+                  categoryGroup: '工賃　A',
+                  categoryLabel: '工賃　A',
+                  subject: '',
+                  content: '',
+                  amount: row.wageTotal ?? 0,
+                  remarks: '',
+                  isBold: true,
+                  isTotalRow: true
+                });
 
-                const deductionRows: DetailItem[] = (row.deductionItems && row.deductionItems.length > 0)
-                  ? [
-                      ...row.deductionItems.map(item => ({
-                        category: '控除　B' as const,
-                        subject: '控除',
-                        content: item.name,
-                        amount: item.amount ?? 0,
-                        remarks: '-',
-                        isBold: false
-                      })),
-                      { category: '控除　B' as const, subject: '控除', content: '合計', amount: row.dedTotal ?? 0, remarks: '-', isBold: true }
-                    ]
-                  : [
-                      { category: '控除　B' as const, subject: '控除', content: '（該当なし）', amount: 0, remarks: '-', isBold: false },
-                      { category: '控除　B' as const, subject: '控除', content: '合計', amount: row.dedTotal ?? 0, remarks: '-', isBold: true }
-                    ];
+                // 2. 基本工賃行
+                let effectiveWorkTime = row.workTime ?? 0;
+                const effectiveBasicWage = row.basicWage ?? 0;
+                let effectiveWageRate = row.wageRate ?? 0;
 
-                const items: DetailItem[] = [
-                  { category: '工賃　A', subject: '基本工賃', content: `工賃単価¥${(row.wageRate ?? 0).toLocaleString()}*作業時間${row.workTime ?? 0}h`, amount: row.basicWage ?? 0, remarks: '-', isBold: false },
-                  { category: '工賃　A', subject: '基本工賃', content: '合計', amount: row.basicWage ?? 0, remarks: '-', isBold: true },
-                  ...incentiveRows,
-                  ...allowanceRows,
-                  { category: '工賃　A', subject: '工賃合計', content: '合計', amount: row.wageTotal ?? 0, remarks: '-', isBold: true, isTotalRow: true },
-                  ...deductionRows,
-                  { category: '差額　A-B', subject: '支給額', content: '差引支給額', amount: row.payment ?? 0, remarks: '-', isBold: true, isHighlight: true, isTotalRow: true }
-                ];
+                if (effectiveBasicWage > 0) {
+                  if (effectiveWageRate > 0 && effectiveWorkTime > 0 && effectiveWageRate * effectiveWorkTime === effectiveBasicWage) {
+                    // 完全に整合している
+                  } else if (effectiveWageRate > 0 && effectiveBasicWage % effectiveWageRate === 0) {
+                    effectiveWorkTime = effectiveBasicWage / effectiveWageRate;
+                  } else if (effectiveWorkTime > 0 && effectiveBasicWage % effectiveWorkTime === 0) {
+                    effectiveWageRate = effectiveBasicWage / effectiveWorkTime;
+                  } else if (effectiveWageRate > 0) {
+                    effectiveWorkTime = Math.max(1, Math.round(effectiveBasicWage / effectiveWageRate));
+                    if (effectiveWageRate * effectiveWorkTime !== effectiveBasicWage && effectiveWorkTime > 0) {
+                      effectiveWageRate = Math.round(effectiveBasicWage / effectiveWorkTime);
+                    }
+                  } else if (effectiveWorkTime > 0) {
+                    effectiveWageRate = Math.round(effectiveBasicWage / effectiveWorkTime);
+                  }
+                }
+
+                const basicWageRemark = (effectiveWorkTime > 0 && effectiveWageRate > 0)
+                  ? `工賃単価¥${effectiveWageRate.toLocaleString()}*作業時間${effectiveWorkTime}h`
+                  : (effectiveWageRate > 0 ? `工賃単価¥${effectiveWageRate.toLocaleString()}` : '');
+
+                items.push({
+                  categoryGroup: '工賃　A',
+                  categoryLabel: '',
+                  subject: '基本工賃',
+                  content: '',
+                  amount: effectiveBasicWage,
+                  remarks: basicWageRemark,
+                  isBold: false
+                });
+
+                // 3. インセンティブ合計行
+                items.push({
+                  categoryGroup: '工賃　A',
+                  categoryLabel: '',
+                  subject: 'インセンティブ',
+                  content: '',
+                  amount: row.incentiveTotal ?? 0,
+                  remarks: '',
+                  isBold: false
+                });
+
+                // 4. インセンティブ明細
+                (row.taskIncentives || []).forEach(t => {
+                  items.push({
+                    categoryGroup: '工賃　A',
+                    categoryLabel: '',
+                    subject: '',
+                    content: `案件：${t.projectName}、タスク：${t.taskName}`,
+                    amount: t.amount ?? 0,
+                    remarks: '',
+                    isBold: false
+                  });
+                });
+
+                // 5. 加算手当合計行
+                items.push({
+                  categoryGroup: '工賃　A',
+                  categoryLabel: '',
+                  subject: '加算手当',
+                  content: '',
+                  amount: row.allowanceTotal ?? 0,
+                  remarks: '',
+                  isBold: false
+                });
+
+                // 6. 加算手当明細
+                (row.allowanceItems || []).forEach(item => {
+                  items.push({
+                    categoryGroup: '工賃　A',
+                    categoryLabel: '',
+                    subject: '',
+                    content: item.name,
+                    amount: item.amount ?? 0,
+                    remarks: item.remarks || '',
+                    isBold: false
+                  });
+                });
+
+                // 7. 控除　B 親行
+                items.push({
+                  categoryGroup: '控除　B',
+                  categoryLabel: '控除　B',
+                  subject: '',
+                  content: '',
+                  amount: row.dedTotal ?? 0,
+                  remarks: '',
+                  isBold: true,
+                  isTotalRow: true
+                });
+
+                // 8. 控除明細
+                (row.deductionItems || []).forEach(item => {
+                  let remarks = item.remarks || '';
+                  if (item.amount > 0) {
+                    if (item.name.includes('昼食')) {
+                      let unit = 200;
+                      let count = Math.max(1, Math.round(item.amount / unit));
+                      if (unit * count !== item.amount) {
+                        if (item.amount % count === 0) {
+                          unit = item.amount / count;
+                        } else if (item.amount % unit === 0) {
+                          count = item.amount / unit;
+                        }
+                      }
+                      remarks = `単価¥${unit.toLocaleString()}*利用回数${count}回`;
+                    } else if (item.name.includes('飲料')) {
+                      let unit = 30;
+                      let days = Math.max(1, Math.round(item.amount / unit));
+                      if (unit * days !== item.amount) {
+                        if (item.amount % days === 0) {
+                          unit = item.amount / days;
+                        } else if (item.amount % unit === 0) {
+                          days = item.amount / unit;
+                        }
+                      }
+                      remarks = `単価¥${unit.toLocaleString()}*利用日数${days}日`;
+                    }
+                  }
+                  items.push({
+                    categoryGroup: '控除　B',
+                    categoryLabel: '',
+                    subject: '',
+                    content: item.name,
+                    amount: item.amount ?? 0,
+                    remarks: remarks || '',
+                    isBold: false
+                  });
+                });
+
+                // 9. 差額　A-B 行（支給額）
+                items.push({
+                  categoryGroup: '差額　A-B',
+                  categoryLabel: '差額　A-B',
+                  subject: '支給額',
+                  content: '',
+                  amount: row.payment ?? 0,
+                  remarks: '',
+                  isBold: true,
+                  isHighlight: true,
+                  isTotalRow: true
+                });
 
                 const totalRows = items.length;
 
@@ -173,16 +276,9 @@ export function WageSummaryPage() {
                     {items.map((item, idx) => {
                       const isFirstRow = idx === 0;
                       const isLastRow = idx === totalRows - 1;
-                      const prevItem = idx > 0 ? items[idx - 1] : null;
                       const nextItem = idx < totalRows - 1 ? items[idx + 1] : null;
 
-                      const isFirstInCategory = !prevItem || prevItem.category !== item.category;
-                      const isLastInCategory = !nextItem || nextItem.category !== item.category;
-
-                      const isSameSubjectAsPrev = prevItem && prevItem.category === item.category && prevItem.subject === item.subject;
-                      const isSameSubjectAsNext = nextItem && nextItem.category === item.category && nextItem.subject === item.subject;
-                      const isFirstInSubject = !isSameSubjectAsPrev;
-                      const isLastInSubject = !isSameSubjectAsNext;
+                      const isLastInCategory = !nextItem || nextItem.categoryGroup !== item.categoryGroup;
 
                       const rowBorderBottom = isLastRow ? undefined : 'none';
                       const rowBg = item.isTotalRow ? 'var(--color-bg-subtle, #f9fafb)' : undefined;
@@ -192,7 +288,10 @@ export function WageSummaryPage() {
                           key={`${row.id}-item-${idx}`}
                           style={{ backgroundColor: rowBg }}
                         >
-                          <td style={{ borderBottom: rowBorderBottom }}>
+                          <td style={{ backgroundColor: '#ffffff', borderBottom: rowBorderBottom }}>
+                            {isFirstRow ? row.code : ''}
+                          </td>
+                          <td style={{ backgroundColor: '#ffffff', borderBottom: rowBorderBottom }}>
                             {isFirstRow ? row.name : ''}
                           </td>
                           <td
@@ -202,24 +301,18 @@ export function WageSummaryPage() {
                               borderBottom: isLastInCategory ? undefined : 'none'
                             }}
                           >
-                            {isFirstInCategory ? item.category : ''}
+                            {item.categoryLabel || ''}
                           </td>
                           <td
                             style={{
-                              fontWeight: item.isBold ? 'bold' : 'normal',
-                              WebkitTextStroke: item.isBold ? '0.5px currentColor' : undefined,
-                              borderBottom: isLastInSubject ? undefined : 'none'
+                              fontWeight: (item.isBold && item.subject) ? 'bold' : 'normal',
+                              WebkitTextStroke: (item.isBold && item.subject) ? '0.5px currentColor' : undefined
                             }}
                           >
-                            {isFirstInSubject ? item.subject : ''}
+                            {item.subject || ''}
                           </td>
-                          <td
-                            style={{
-                              fontWeight: item.isBold ? 'bold' : 'normal',
-                              WebkitTextStroke: item.isBold ? '0.5px currentColor' : undefined
-                            }}
-                          >
-                            {item.content}
+                          <td>
+                            {item.content || ''}
                           </td>
                           <td
                             style={{
@@ -233,7 +326,7 @@ export function WageSummaryPage() {
                             ¥{(item.amount ?? 0).toLocaleString()}
                           </td>
                           <td>
-                            {item.remarks}
+                            {item.remarks || ''}
                           </td>
                         </tr>
                       );
@@ -245,65 +338,72 @@ export function WageSummaryPage() {
           </tbody>
           {sortedData.length > 0 && (
             <tfoot>
+              {/* 工賃 A */}
               <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)', borderTop: '2px solid var(--color-border)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }} rowSpan={6}>
+                <td style={{ backgroundColor: '#ffffff', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }} rowSpan={6}>
                   事業所合計
                 </td>
+                <td style={{ backgroundColor: '#ffffff' }} rowSpan={6}></td>
                 <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }} rowSpan={4}>
                   工賃　A
                 </td>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>基本工賃</td>
-                <td>合計</td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.basicWage.toLocaleString()}
-                </td>
-                <td>-</td>
-              </tr>
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>インセンティブ</td>
-                <td>合計</td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.incentiveTotal.toLocaleString()}
-                </td>
-                <td>-</td>
-              </tr>
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>加算手当</td>
-                <td>合計</td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.allowanceTotal.toLocaleString()}
-                </td>
-                <td>-</td>
-              </tr>
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>工賃合計</td>
-                <td>合計</td>
+                <td></td>
+                <td></td>
                 <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   ¥{totals.wageTotal.toLocaleString()}
                 </td>
-                <td>-</td>
+                <td></td>
               </tr>
+              {/* 基本工賃 */}
+              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
+                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>基本工賃</td>
+                <td></td>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  ¥{totals.basicWage.toLocaleString()}
+                </td>
+                <td></td>
+              </tr>
+              {/* インセンティブ */}
+              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
+                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>インセンティブ</td>
+                <td></td>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  ¥{totals.incentiveTotal.toLocaleString()}
+                </td>
+                <td></td>
+              </tr>
+              {/* 加算手当 */}
+              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
+                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>加算手当</td>
+                <td></td>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
+                  ¥{totals.allowanceTotal.toLocaleString()}
+                </td>
+                <td></td>
+              </tr>
+              {/* 控除 B */}
               <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
                 <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   控除　B
                 </td>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>控除</td>
-                <td>合計</td>
+                <td></td>
+                <td></td>
                 <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   ¥{totals.dedTotal.toLocaleString()}
                 </td>
-                <td>-</td>
+                <td></td>
               </tr>
+              {/* 差額 A-B */}
               <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)', borderBottom: '2px solid var(--color-border)' }}>
                 <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
                   差額　A-B
                 </td>
                 <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>支給額</td>
-                <td>差引支給額</td>
+                <td></td>
                 <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', color: 'var(--color-primary)' }}>
                   ¥{totals.payment.toLocaleString()}
                 </td>
-                <td>-</td>
+                <td></td>
               </tr>
             </tfoot>
           )}

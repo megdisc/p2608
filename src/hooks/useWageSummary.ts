@@ -4,6 +4,7 @@ import { getCurrentJSTMonth, compareValues } from '../utils';
 
 export type WageRow = {
   id: string;
+  code: string;
   name: string;
   yomigana: string;
   wageRate: number | null;
@@ -11,10 +12,10 @@ export type WageRow = {
   basicWage: number | null;
   taskIncentives: { projectName: string; taskName: string; amount: number }[];
   incentiveTotal: number;
-  allowanceItems: { name: string; amount: number }[];
+  allowanceItems: { name: string; amount: number; remarks?: string }[];
   allowanceTotal: number;
   wageTotal: number;
-  deductionItems: { name: string; amount: number }[];
+  deductionItems: { name: string; amount: number; remarks?: string }[];
   dedA: number | null;
   dedB: number | null;
   dedTotal: number;
@@ -424,7 +425,7 @@ export function useWageSummary() {
         const absenceRate = totalDays > 0 ? (absenceDaysCount / totalDays) * 100 : 0;
 
         const evalItems = (masterList: any[]) => {
-          const resList: { name: string; amount: number }[] = [];
+          const resList: { name: string; amount: number; remarks?: string }[] = [];
           const seenNames = new Set<string>();
 
           const officeFilteredList = masterList.filter((item: any) => {
@@ -511,14 +512,25 @@ export function useWageSummary() {
 
             if (isMatched) {
               let amount = 0;
+              let remarks = '';
               if (occurrence === 'daily') {
                 const qty = multiplier > 0 ? multiplier : 1;
                 amount = Math.round(qty * unitPrice);
+                if (basis === 'meal_count') {
+                  remarks = `単価¥${unitPrice.toLocaleString()}*利用回数${qty}回`;
+                } else if (basis === 'attendance_days' || basis === 'work_hours') {
+                  remarks = `単価¥${unitPrice.toLocaleString()}*利用日数${qty}日`;
+                } else {
+                  remarks = `単価¥${unitPrice.toLocaleString()}*利用日数${qty}日`;
+                }
               } else {
                 amount = Math.round(unitPrice);
+                if (basis === 'attendance_days' || basis === 'work_hours') {
+                  remarks = `単価¥${unitPrice.toLocaleString()}`;
+                }
               }
               if (amount > 0) {
-                resList.push({ name: item.name, amount });
+                resList.push({ name: item.name, amount, remarks });
               }
             }
           }
@@ -526,12 +538,13 @@ export function useWageSummary() {
         };
 
         // --- 加算手当明細 & 合計 ---
-        let allowanceItems: { name: string; amount: number }[] = [];
+        let allowanceItems: { name: string; amount: number; remarks?: string }[] = [];
         const savedAllowanceDetails = dbRecord ? dbAllowanceDetailsMap.get(dbRecord.id) : undefined;
         if (savedAllowanceDetails && savedAllowanceDetails.length > 0) {
           allowanceItems = savedAllowanceDetails.map((d: any) => ({
             name: d.allowance_name,
-            amount: Number(d.amount) || 0
+            amount: Number(d.amount) || 0,
+            remarks: ''
           })).filter(a => a.amount > 0);
         } else {
           allowanceItems = evalItems(allowanceMasterList);
@@ -541,28 +554,67 @@ export function useWageSummary() {
         if (allowanceItems.length === 0 && dbAllowanceTotal > 0) {
           allowanceItems.push({
             name: '精勤手当',
-            amount: dbAllowanceTotal
+            amount: dbAllowanceTotal,
+            remarks: ''
           });
         }
         const finalOtherAllowanceTotal = allowanceItems.reduce((sum, item) => sum + item.amount, 0);
 
         // --- 控除明細 & 合計 ---
-        let deductionItems: { name: string; amount: number }[] = [];
+        let deductionItems: { name: string; amount: number; remarks?: string }[] = [];
         const savedDeductionDetails = dbRecord ? dbDeductionDetailsMap.get(dbRecord.id) : undefined;
         if (savedDeductionDetails && savedDeductionDetails.length > 0) {
-          deductionItems = savedDeductionDetails.map((d: any) => ({
-            name: d.deduction_name,
-            amount: Number(d.amount) || 0
-          })).filter(d => d.amount > 0);
+          deductionItems = savedDeductionDetails.map((d: any) => {
+            const amount = Number(d.amount) || 0;
+            let unitPrice = Number(d.unit_price) || 0;
+            let quantity = Number(d.quantity) || 1;
+            if (d.deduction_name.includes('昼食')) {
+              unitPrice = unitPrice > 0 ? unitPrice : 200;
+              quantity = Math.max(1, Math.round(amount / unitPrice));
+              if (unitPrice * quantity !== amount) {
+                if (amount % quantity === 0) {
+                  unitPrice = amount / quantity;
+                } else if (amount % unitPrice === 0) {
+                  quantity = amount / unitPrice;
+                }
+              }
+            } else if (d.deduction_name.includes('飲料')) {
+              unitPrice = unitPrice > 0 ? unitPrice : 30;
+              quantity = Math.max(1, Math.round(amount / unitPrice));
+              if (unitPrice * quantity !== amount) {
+                if (amount % quantity === 0) {
+                  unitPrice = amount / quantity;
+                } else if (amount % unitPrice === 0) {
+                  quantity = amount / unitPrice;
+                }
+              }
+            } else if (unitPrice > 0) {
+              quantity = Math.max(1, Math.round(amount / unitPrice));
+            }
+            let remarks = '';
+            if (d.deduction_name.includes('昼食')) {
+              remarks = `単価¥${unitPrice.toLocaleString()}*利用回数${quantity}回`;
+            } else if (unitPrice > 0 && quantity > 0) {
+              remarks = `単価¥${unitPrice.toLocaleString()}*利用日数${quantity}日`;
+            }
+            return {
+              name: d.deduction_name,
+              amount,
+              remarks
+            };
+          }).filter(d => d.amount > 0);
         } else {
           deductionItems = evalItems(deductionMasterList);
         }
 
         const dbDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : 0;
         if (deductionItems.length === 0 && dbDedTotal > 0) {
+          const unit = 200;
+          const qty = Math.max(1, Math.round(dbDedTotal / unit));
           deductionItems.push({
-            name: '昼食代等控除',
-            amount: dbDedTotal
+            name: '昼食代',
+            amount: dbDedTotal,
+            remarks: `単価¥${unit.toLocaleString()}*利用回数${qty}回`
           });
         }
         const finalDedTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
@@ -576,6 +628,7 @@ export function useWageSummary() {
 
         return {
           id: member.id,
+          code: member.code || '',
           name: member.name,
           yomigana: member.yomigana || '',
           wageRate: finalWageRate,

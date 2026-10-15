@@ -67,7 +67,10 @@ export function useWageSummary() {
         monthlyIncentiveRecordsRes,
         wageConfirmRes,
         wageHeaderConfirmRes,
-        officeSettingsRes
+        officeSettingsRes,
+        monthlyIncentiveDetailsRes,
+        monthlyAllowanceDetailsRes,
+        monthlyDeductionDetailsRes
       ] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('wage_rates').select('*').eq('is_deleted', false),
@@ -89,7 +92,10 @@ export function useWageSummary() {
         supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
         supabase.from('monthly_wage_summaries').select('*').eq('target_period', monthStr),
         supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
-        officeMembersQuery
+        officeMembersQuery,
+        supabase.from('monthly_incentive_details').select('*'),
+        supabase.from('monthly_allowance_details').select('*'),
+        supabase.from('monthly_deduction_details').select('*')
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -202,6 +208,31 @@ export function useWageSummary() {
         (officeSettingsRes.data || []).map((s: any) => [s.member_id, s.office_id])
       );
 
+      const taskMap = new Map<string, { taskName: string; projectName: string }>();
+      (projectsRes.data || []).forEach((p: any) => {
+        (p.project_tasks || []).forEach((t: any) => {
+          taskMap.set(t.id, { taskName: t.name, projectName: p.name });
+        });
+      });
+
+      const dbIncentiveDetailsMap = new Map<string, any[]>();
+      (monthlyIncentiveDetailsRes.data || []).forEach((d: any) => {
+        if (!dbIncentiveDetailsMap.has(d.summary_id)) dbIncentiveDetailsMap.set(d.summary_id, []);
+        dbIncentiveDetailsMap.get(d.summary_id)!.push(d);
+      });
+
+      const dbAllowanceDetailsMap = new Map<string, any[]>();
+      (monthlyAllowanceDetailsRes.data || []).forEach((d: any) => {
+        if (!dbAllowanceDetailsMap.has(d.summary_id)) dbAllowanceDetailsMap.set(d.summary_id, []);
+        dbAllowanceDetailsMap.get(d.summary_id)!.push(d);
+      });
+
+      const dbDeductionDetailsMap = new Map<string, any[]>();
+      (monthlyDeductionDetailsRes.data || []).forEach((d: any) => {
+        if (!dbDeductionDetailsMap.has(d.summary_id)) dbDeductionDetailsMap.set(d.summary_id, []);
+        dbDeductionDetailsMap.get(d.summary_id)!.push(d);
+      });
+
       const rows: WageRow[] = members.map((member: any) => {
         const dbRecord: any = dbWageRecordMap.get(member.id);
         const memberWorks = workRes.data?.filter((w: any) => w.member_id === member.id) || [];
@@ -228,7 +259,7 @@ export function useWageSummary() {
           }
         });
 
-        let basicWage = hasValidRate ? Math.floor(calculatedBasicWage) : null;
+        const basicWage = hasValidRate ? Math.floor(calculatedBasicWage) : null;
         let wageRate: number | null = memberDefaultWageMap.get(member.id) ?? null;
         const primaryWorkOfficeId = memberWorks.find((w: any) => w.office_id && Number(w.work_time) > 0)?.office_id;
         const memberOfficeId = primaryWorkOfficeId || memberOfficeSettingsMap.get(member.id) || null;
@@ -237,36 +268,86 @@ export function useWageSummary() {
           wageRate = memberOfficeWageMap.get(`${member.id}_${primaryWorkOfficeId}`)!;
         }
 
-        let sumRewardUnitPrice = 0;
-        let savedAllocationDrafts: Record<string, number> = {};
-        try {
-          const savedStr = localStorage.getItem(`monthly_allocation_drafts_${monthStr}`);
-          if (savedStr) savedAllocationDrafts = JSON.parse(savedStr);
-        } catch {}
+        const finalWorkTime = dbRecord?.work_time !== undefined && dbRecord?.work_time !== null ? Number(dbRecord.work_time) : totalWorkTime;
+        const finalWageRate = dbRecord?.wage_rate !== undefined && dbRecord?.wage_rate !== null ? Number(dbRecord.wage_rate) : wageRate;
+        const finalBasicWage = dbRecord?.basic_wage !== undefined && dbRecord?.basic_wage !== null ? Number(dbRecord.basic_wage) : basicWage;
 
-        const taskIncentives: { projectName: string; taskName: string; amount: number }[] = [];
+        // --- インセンティブ明細 & 合計 ---
+        let taskIncentives: { projectName: string; taskName: string; amount: number }[] = [];
+        const savedIncentiveDetails = dbRecord ? dbIncentiveDetailsMap.get(dbRecord.id) : undefined;
 
-        for (const project of projects) {
-          const projectTasks = (project as any).project_tasks || [];
-          for (const task of projectTasks) {
-            if (task.is_deleted || task.is_canceled) continue;
+        if (savedIncentiveDetails && savedIncentiveDetails.length > 0) {
+          taskIncentives = savedIncentiveDetails.map((d: any) => {
+            const taskInfo = taskMap.get(d.task_id);
+            return {
+              projectName: taskInfo?.projectName || '精算案件',
+              taskName: taskInfo?.taskName || 'インセンティブ',
+              amount: Number(d.allocation_amount) || 0
+            };
+          }).filter(t => t.amount > 0);
+        }
 
-            const assignees = task.project_task_assignees || [];
-            const isAssigned = assignees.some((a: any) => a.member_id === member.id);
-            const memberWorksOnTask = (workRes.data || []).some((w: any) => w.member_id === member.id && w.task_id === task.id && Number(w.work_time) > 0);
+        if (taskIncentives.length === 0) {
+          let savedAllocationDrafts: Record<string, number> = {};
+          try {
+            const savedStr = localStorage.getItem(`monthly_allocation_drafts_${monthStr}`);
+            if (savedStr) savedAllocationDrafts = JSON.parse(savedStr);
+          } catch {}
 
-            if (!isAssigned && !memberWorksOnTask) continue;
+          for (const project of projects) {
+            const projectTasks = (project as any).project_tasks || [];
+            for (const task of projectTasks) {
+              if (task.is_deleted || task.is_canceled) continue;
 
-            let allocatedAmount = 0;
-            const draftKey = `TASK-${task.id}-member_${member.id}`;
-            if (savedAllocationDrafts[draftKey] !== undefined && Number(savedAllocationDrafts[draftKey]) > 0) {
-              allocatedAmount = Number(savedAllocationDrafts[draftKey]);
-            } else {
-              let taskExpenseAmt = 0;
-              const dbAlloc = (monthlyIncentiveRecordsRes.data || []).find((a: any) => a.task_id === task.id && (!a.member_id || a.member_id === member.id));
-              if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
-                taskExpenseAmt = Number(dbAlloc.allocation_amount);
+              const assignees = task.project_task_assignees || [];
+              const isAssigned = assignees.some((a: any) => a.member_id === member.id);
+              const memberWorksOnTask = (workRes.data || []).some((w: any) => w.member_id === member.id && w.task_id === task.id && Number(w.work_time) > 0);
+
+              if (!isAssigned && !memberWorksOnTask) continue;
+
+              let allocatedAmount = 0;
+              const draftKey = `TASK-${task.id}-member_${member.id}`;
+              if (savedAllocationDrafts[draftKey] !== undefined && Number(savedAllocationDrafts[draftKey]) > 0) {
+                allocatedAmount = Number(savedAllocationDrafts[draftKey]);
               } else {
+                const dbAlloc = (monthlyIncentiveRecordsRes.data || []).find((a: any) => a.task_id === task.id && (!a.member_id || a.member_id === member.id));
+                if (dbAlloc && Number(dbAlloc.allocation_amount) > 0) {
+                  // すでに確定されたメンバー配分額なのでそのまま適用
+                  allocatedAmount = Number(dbAlloc.allocation_amount);
+                } else {
+                  const pureTaskName = (task.name || '')
+                    .replace(/^労務費（利用者工賃・/, '')
+                    .replace(/^労務費（利用者工賃）/, '')
+                    .replace(/^労務費（利用者工賃以外）/, '')
+                    .replace(/^労務費・外注加工費/, '')
+                    .replace(/^労務費/, '')
+                    .replace(/^外注加工費/, '')
+                    .replace(/^[（\(]/, '')
+                    .replace(/[）\)]+$/, '')
+                    .trim();
+
+                  const finRecord = (budgetsRes.data || []).find((f: any) => 
+                    f.project_id === project.id && 
+                    f.type === 'expense' &&
+                    (
+                      f.task_id === task.id || 
+                      f.subject === `労務費（利用者工賃・${pureTaskName}）` || 
+                      f.subject === `労務費（${pureTaskName}）` || 
+                      f.subject === `労務費（${task.name}）`
+                    )
+                  );
+                  if (finRecord && Number(finRecord.amount) > 0) {
+                    const taskExpenseAmt = Number(finRecord.amount);
+                    const memberAssignees = assignees.filter((a: any) => a.member_id);
+                    const numMems = memberAssignees.length || 1;
+                    const hasStaff = assignees.some((a: any) => a.staff_id);
+                    const ratio = (numMems > 0 && hasStaff) ? 0.75 : 1.0;
+                    allocatedAmount = Math.floor(((taskExpenseAmt * ratio) / numMems) / 1000) * 1000;
+                  }
+                }
+              }
+
+              if (allocatedAmount > 0) {
                 const pureTaskName = (task.name || '')
                   .replace(/^労務費（利用者工賃・/, '')
                   .replace(/^労務費（利用者工賃）/, '')
@@ -278,69 +359,27 @@ export function useWageSummary() {
                   .replace(/[）\)]+$/, '')
                   .trim();
 
-                const finRecord = (budgetsRes.data || []).find((f: any) => 
-                  f.project_id === project.id && 
-                  f.type === 'expense' &&
-                  (
-                    f.task_id === task.id || 
-                    f.subject === `労務費（利用者工賃・${pureTaskName}）` || 
-                    f.subject === `労務費（${pureTaskName}）` || 
-                    f.subject === `労務費（${task.name}）`
-                  )
-                );
-                if (finRecord && Number(finRecord.amount) > 0) {
-                  taskExpenseAmt = Number(finRecord.amount);
-                }
+                taskIncentives.push({
+                  projectName: project.name || '',
+                  taskName: pureTaskName || task.name || '',
+                  amount: allocatedAmount
+                });
               }
-
-              if (taskExpenseAmt > 0) {
-                const memberAssignees = assignees.filter((a: any) => a.member_id);
-                const numMems = memberAssignees.length || 1;
-                const hasStaff = assignees.some((a: any) => a.staff_id);
-                const ratio = (numMems > 0 && hasStaff) ? 0.75 : 1.0;
-                allocatedAmount = Math.floor(((taskExpenseAmt * ratio) / numMems) / 1000) * 1000;
-              }
-            }
-
-            // 当該案件タスクにおける基本工賃分を計算（作業時間と工賃単価の積）
-            const taskWorks = memberWorks.filter((w: any) => w.task_id === task.id && Number(w.work_time) > 0);
-            let taskBasicWage = 0;
-            taskWorks.forEach((w: any) => {
-              const time = Number(w.work_time);
-              let rate: number | null = null;
-              if (w.office_id && memberOfficeWageMap.has(`${member.id}_${w.office_id}`)) {
-                rate = memberOfficeWageMap.get(`${member.id}_${w.office_id}`)!;
-              } else if (memberDefaultWageMap.has(member.id)) {
-                rate = memberDefaultWageMap.get(member.id)!;
-              }
-              if (rate !== null) {
-                taskBasicWage += rate * time;
-              }
-            });
-
-            if (allocatedAmount > 0) {
-              sumRewardUnitPrice += allocatedAmount;
-              const pureTaskName = (task.name || '')
-                .replace(/^労務費（利用者工賃・/, '')
-                .replace(/^労務費（利用者工賃）/, '')
-                .replace(/^労務費（利用者工賃以外）/, '')
-                .replace(/^労務費・外注加工費/, '')
-                .replace(/^労務費/, '')
-                .replace(/^外注加工費/, '')
-                .replace(/^[（\(]/, '')
-                .replace(/[）\)]+$/, '')
-                .trim();
-
-              const taskIncentiveAmount = Math.max(0, allocatedAmount - taskBasicWage);
-
-              taskIncentives.push({
-                projectName: project.name || '',
-                taskName: pureTaskName || task.name || '',
-                amount: taskIncentiveAmount
-              });
             }
           }
         }
+
+        // DBにインセンティブ合計があるのに明細が空の場合のフォールバック
+        const dbIncentiveTotal = dbRecord?.incentive_total !== undefined && dbRecord?.incentive_total !== null ? Number(dbRecord.incentive_total) : 0;
+        if (taskIncentives.length === 0 && dbIncentiveTotal > 0) {
+          taskIncentives.push({
+            projectName: '精算案件',
+            taskName: '成果インセンティブ',
+            amount: dbIncentiveTotal
+          });
+        }
+
+        const finalIncentiveTotal = taskIncentives.reduce((sum, t) => sum + t.amount, 0);
 
         // --- 加算手当 & 控除の動的計算ロジック ---
         const attendanceDates = new Set<string>();
@@ -486,45 +525,54 @@ export function useWageSummary() {
           return resList;
         };
 
-        const allowanceItems = evalItems(allowanceMasterList);
-        const calculatedAllowanceTotal = allowanceItems.reduce((sum, item) => sum + item.amount, 0);
+        // --- 加算手当明細 & 合計 ---
+        let allowanceItems: { name: string; amount: number }[] = [];
+        const savedAllowanceDetails = dbRecord ? dbAllowanceDetailsMap.get(dbRecord.id) : undefined;
+        if (savedAllowanceDetails && savedAllowanceDetails.length > 0) {
+          allowanceItems = savedAllowanceDetails.map((d: any) => ({
+            name: d.allowance_name,
+            amount: Number(d.amount) || 0
+          })).filter(a => a.amount > 0);
+        } else {
+          allowanceItems = evalItems(allowanceMasterList);
+        }
 
-        const deductionItems = evalItems(deductionMasterList);
-        const calculatedDedTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
+        const dbAllowanceTotal = dbRecord?.other_allowance_total !== undefined && dbRecord?.other_allowance_total !== null ? Number(dbRecord.other_allowance_total) : 0;
+        if (allowanceItems.length === 0 && dbAllowanceTotal > 0) {
+          allowanceItems.push({
+            name: '精勤手当',
+            amount: dbAllowanceTotal
+          });
+        }
+        const finalOtherAllowanceTotal = allowanceItems.reduce((sum, item) => sum + item.amount, 0);
 
-        const finalOtherAllowanceTotal = dbRecord?.other_allowance_total !== undefined && dbRecord?.other_allowance_total !== null
-          ? Number(dbRecord.other_allowance_total)
-          : calculatedAllowanceTotal;
+        // --- 控除明細 & 合計 ---
+        let deductionItems: { name: string; amount: number }[] = [];
+        const savedDeductionDetails = dbRecord ? dbDeductionDetailsMap.get(dbRecord.id) : undefined;
+        if (savedDeductionDetails && savedDeductionDetails.length > 0) {
+          deductionItems = savedDeductionDetails.map((d: any) => ({
+            name: d.deduction_name,
+            amount: Number(d.amount) || 0
+          })).filter(d => d.amount > 0);
+        } else {
+          deductionItems = evalItems(deductionMasterList);
+        }
 
-        const taskIncentiveSum = taskIncentives.reduce((sum, t) => sum + t.amount, 0);
-        const safeIncentive = Math.floor(Math.max(0, taskIncentiveSum));
+        const dbDedTotal = dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null ? Number(dbRecord.deduction_total) : 0;
+        if (deductionItems.length === 0 && dbDedTotal > 0) {
+          deductionItems.push({
+            name: '昼食代等控除',
+            amount: dbDedTotal
+          });
+        }
+        const finalDedTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
+
+        // --- 工賃合計 & 支給額 ---
+        const finalWageTotal = (finalBasicWage || 0) + finalIncentiveTotal + finalOtherAllowanceTotal;
+        const finalPayment = finalWageTotal - finalDedTotal;
 
         const dedA = null;
         const dedB = null;
-
-        const computedWageTotal = (basicWage || 0) + safeIncentive + finalOtherAllowanceTotal;
-        const computedDedTotal = calculatedDedTotal;
-        const computedPayment = computedWageTotal - computedDedTotal;
-
-        const finalWorkTime = dbRecord?.work_time !== undefined && dbRecord?.work_time !== null ? Number(dbRecord.work_time) : totalWorkTime;
-        const finalWageRate = dbRecord?.wage_rate !== undefined && dbRecord?.wage_rate !== null ? Number(dbRecord.wage_rate) : wageRate;
-        const finalBasicWage = dbRecord?.basic_wage !== undefined && dbRecord?.basic_wage !== null ? Number(dbRecord.basic_wage) : basicWage;
-        
-        const finalIncentiveTotal = (sumRewardUnitPrice > 0 || !dbRecord) 
-          ? safeIncentive 
-          : (dbRecord.incentive_total !== undefined && dbRecord.incentive_total !== null ? Number(dbRecord.incentive_total) : safeIncentive);
-          
-        const finalWageTotal = (sumRewardUnitPrice > 0 || !dbRecord) 
-          ? ((finalBasicWage || 0) + finalIncentiveTotal + finalOtherAllowanceTotal) 
-          : (dbRecord.wage_total !== undefined && dbRecord.wage_total !== null ? Number(dbRecord.wage_total) : computedWageTotal);
-          
-        const finalDedTotal = (wageConfirmed && dbRecord?.deduction_total !== undefined && dbRecord?.deduction_total !== null)
-          ? Number(dbRecord.deduction_total)
-          : computedDedTotal;
-        
-        const finalPayment = (sumRewardUnitPrice > 0 || !dbRecord || !wageConfirmed) 
-          ? (finalWageTotal - finalDedTotal) 
-          : (dbRecord.payment !== undefined && dbRecord.payment !== null ? Number(dbRecord.payment) : computedPayment);
 
         return {
           id: member.id,
@@ -604,9 +652,68 @@ export function useWageSummary() {
 
       if (wageRecords.length > 0) {
         try {
-          await supabase
+          const { data: insertedSummaries } = await supabase
             .from('monthly_wage_summaries')
-            .upsert(wageRecords, { onConflict: 'office_id,target_period,member_id' });
+            .upsert(wageRecords, { onConflict: 'office_id,target_period,member_id' })
+            .select('id, member_id');
+
+          const summaryMap = new Map((insertedSummaries || []).map((s: any) => [s.member_id, s.id]));
+
+          const allAllowanceDetails: any[] = [];
+          const allDeductionDetails: any[] = [];
+          const allIncentiveDetails: any[] = [];
+
+          data.forEach(r => {
+            const summaryId = summaryMap.get(r.id);
+            if (!summaryId) return;
+
+            (r.allowanceItems || []).forEach(a => {
+              allAllowanceDetails.push({
+                summary_id: summaryId,
+                allowance_name: a.name,
+                unit_price: a.amount,
+                quantity: 1,
+                amount: a.amount
+              });
+            });
+
+            (r.deductionItems || []).forEach(d => {
+              allDeductionDetails.push({
+                summary_id: summaryId,
+                deduction_name: d.name,
+                unit_price: d.amount,
+                quantity: 1,
+                amount: d.amount
+              });
+            });
+
+            (r.taskIncentives || []).forEach(t => {
+              allIncentiveDetails.push({
+                summary_id: summaryId,
+                allocation_amount: t.amount
+              });
+            });
+          });
+
+          const summaryIds = Array.from(summaryMap.values());
+          if (summaryIds.length > 0) {
+            try {
+              await supabase.from('monthly_allowance_details').delete().in('summary_id', summaryIds);
+              if (allAllowanceDetails.length > 0) {
+                await supabase.from('monthly_allowance_details').insert(allAllowanceDetails);
+              }
+              await supabase.from('monthly_deduction_details').delete().in('summary_id', summaryIds);
+              if (allDeductionDetails.length > 0) {
+                await supabase.from('monthly_deduction_details').insert(allDeductionDetails);
+              }
+              await supabase.from('monthly_incentive_details').delete().in('summary_id', summaryIds);
+              if (allIncentiveDetails.length > 0) {
+                await supabase.from('monthly_incentive_details').insert(allIncentiveDetails);
+              }
+            } catch (detailErr) {
+              console.warn('Could not sync details records:', detailErr);
+            }
+          }
         } catch (e) {
           console.warn('Could not upsert monthly_wage_summaries:', e);
         }

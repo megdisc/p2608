@@ -21,25 +21,11 @@ export function WageSummaryPage() {
     cancelWageSummary,
     totalPages,
     paginatedRows,
-    sortedData,
     canConfirmWageSummary,
     isWageSummaryConfirmed
   } = useWageSummary();
   const { showAlert } = useAlert();
 
-  const totals = React.useMemo(() => {
-    return sortedData.reduce(
-      (acc, r) => ({
-        basicWage: acc.basicWage + (r.basicWage || 0),
-        incentiveTotal: acc.incentiveTotal + (r.incentiveTotal || 0),
-        allowanceTotal: acc.allowanceTotal + (r.allowanceTotal || 0),
-        wageTotal: acc.wageTotal + (r.wageTotal || 0),
-        dedTotal: acc.dedTotal + (r.dedTotal || 0),
-        payment: acc.payment + (r.payment || 0),
-      }),
-      { basicWage: 0, incentiveTotal: 0, allowanceTotal: 0, wageTotal: 0, dedTotal: 0, payment: 0 }
-    );
-  }, [sortedData]);
 
   useEffect(() => {
     fetchWageSummary(currentMonth, selectedOfficeId).catch(() => {
@@ -336,77 +322,7 @@ export function WageSummaryPage() {
               })
             )}
           </tbody>
-          {sortedData.length > 0 && (
-            <tfoot>
-              {/* 工賃 A */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)', borderTop: '2px solid var(--color-border)' }}>
-                <td style={{ backgroundColor: '#ffffff', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }} rowSpan={6}>
-                  事業所合計
-                </td>
-                <td style={{ backgroundColor: '#ffffff' }} rowSpan={6}></td>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }} rowSpan={4}>
-                  工賃　A
-                </td>
-                <td></td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.wageTotal.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-              {/* 基本工賃 */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>基本工賃</td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.basicWage.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-              {/* インセンティブ */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>インセンティブ</td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.incentiveTotal.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-              {/* 加算手当 */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>加算手当</td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.allowanceTotal.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-              {/* 控除 B */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  控除　B
-                </td>
-                <td></td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  ¥{totals.dedTotal.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-              {/* 差額 A-B */}
-              <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)', borderBottom: '2px solid var(--color-border)' }}>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                  差額　A-B
-                </td>
-                <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>支給額</td>
-                <td></td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', color: 'var(--color-primary)' }}>
-                  ¥{totals.payment.toLocaleString()}
-                </td>
-                <td></td>
-              </tr>
-            </tfoot>
-          )}
+
         </table>
       </div>
 

@@ -137,7 +137,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'reward_items',
-      tableType: '独立マスタ',
+      tableType: '従属マスタ',
       logicalName: '加算・減算項目',
       description: '法令・報酬告示に基づく公定価格基準の体制加減算・報酬項目マスタ（給付費算定用）',
       columns: [
@@ -160,7 +160,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'office_service_type_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '事業所支援種別割当',
       description: '事業所が指定を受けて実施する支援種別および定員設定',
       columns: [
@@ -195,7 +195,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'entity_address_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '住所割当',
       description: '法人・事業所・利用者・職員・取引先等と住所の多対多割当・属性管理マスタ',
       columns: [
@@ -228,7 +228,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'entity_phone_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '電話・FAX番号割当',
       description: '事業所・利用者・職員・取引先等と電話・携帯・FAX番号の多対多割当・属性管理マスタ',
       columns: [
@@ -261,7 +261,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'entity_email_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: 'メールアドレス割当',
       description: '事業所・利用者・職員・取引先等とメールアドレスの多対多割当・属性管理マスタ',
       columns: [
@@ -279,7 +279,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'wage_rate_items',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: '工賃単価項目',
       description: '事業所に所属する工賃単価のマスターデータ（直持ち所属事業所IDで管理）',
       columns: [
@@ -296,7 +296,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'allowance_deduction_items',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: '加算手当・控除項目',
       description: '事業所に所属する事業所独自規定の加算手当および控除項目のマスターデータ（直持ち所属事業所IDで管理）',
       columns: [
@@ -319,7 +319,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'reserve_items',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: '積立金項目',
       description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備等修繕維持積立金など、直持ち所属事業所IDで管理。案件収益に対して定額/定率で設定）',
       columns: [
@@ -336,7 +336,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'skill_categories',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: 'スキルカテゴリ',
       description: 'スキルの分類カテゴリマスターデータ（親テーブル: skill_categories ↔ 子テーブル: skill_items の1対N関係）',
       columns: [
@@ -354,7 +354,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'skill_items',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: 'スキル項目',
       description: '事業所に所属するスキルのマスターデータ（タスクおよび利用者に紐付け、直持ち所属事業所IDで管理）',
       columns: [
@@ -373,7 +373,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'skill_level_items',
-      tableType: '事業所依存マスタ',
+      tableType: '従属マスタ',
       logicalName: 'スキルレベル項目',
       description: '事業所に所属するスキルレベルの定義マスターデータ（直持ち所属事業所IDで管理）',
       columns: [
@@ -452,7 +452,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'office_member_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '事業所利用者割当',
       description: '利用者と事業所の多対多割当・所属情報（多拠点利用対応）',
       columns: [
@@ -466,7 +466,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'member_skill_settings',
-      tableType: '評価マスタ',
+      tableType: '従属マスタ',
       logicalName: '利用者スキル割当',
       description: '利用者の保有スキル評価履歴',
       columns: [
@@ -481,7 +481,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'member_wage_settings',
-      tableType: '履歴マスタ',
+      tableType: '従属マスタ',
       logicalName: '利用者工賃単価割当',
       description: '利用者の工賃単価評価・割当履歴（適用期間別の単価履歴を管理）',
       columns: [
@@ -535,7 +535,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'staff_qualification_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '職員資格割当',
       description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
       columns: [
@@ -553,7 +553,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'office_staff_settings',
-      tableType: '割当マスタ',
+      tableType: '従属マスタ',
       logicalName: '事業所職員割当',
       description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
       columns: [
@@ -607,7 +607,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'projects',
-      tableType: '業務マスタ',
+      tableType: '従属マスタ',
       logicalName: '案件',
       description: '案件基本情報（事業所ごとに管理）',
       columns: [
@@ -627,7 +627,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'project_tasks',
-      tableType: '業務マスタ',
+      tableType: '従属マスタ',
       logicalName: '案件タスク',
       description: '案件内の各タスク情報',
       columns: [
@@ -646,7 +646,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'task_skill_settings',
-      tableType: '業務マスタ',
+      tableType: '従属マスタ',
       logicalName: 'タスクスキル割当',
       description: 'タスクに必要なスキルとレベル',
       columns: [
@@ -661,7 +661,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'task_assignee_settings',
-      tableType: '業務マスタ',
+      tableType: '従属マスタ',
       logicalName: 'タスク担当者割当',
       description: 'タスクの割り当て担当者',
       columns: [
@@ -678,7 +678,7 @@ export function ScreenCompositionPage() {
     {
       layer: '1. マスタ層',
       physicalName: 'project_budgets',
-      tableType: '業務マスタ',
+      tableType: '従属マスタ',
       logicalName: '案件予算',
       description: '案件の予算（売上・原価・予備費）',
       columns: [
@@ -696,7 +696,7 @@ export function ScreenCompositionPage() {
     {
       layer: '2. 日次実績層',
       physicalName: 'staff_attendance_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '職員勤務実績',
       description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種記録',
       columns: [
@@ -715,7 +715,7 @@ export function ScreenCompositionPage() {
     {
       layer: '2. 日次実績層',
       physicalName: 'member_attendance_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '利用者出欠実績',
       description: '利用者の日々の出欠・通所・欠席連絡・欠席時対応自動判定記録',
       columns: [
@@ -737,7 +737,7 @@ export function ScreenCompositionPage() {
     {
       layer: '2. 日次実績層',
       physicalName: 'member_work_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '利用者作業実績',
       description: '利用者のタスクごとの日次作業時間記録',
       columns: [
@@ -754,7 +754,7 @@ export function ScreenCompositionPage() {
     {
       layer: '2. 日次実績層',
       physicalName: 'allowance_deduction_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '加算手当・控除実績',
       description: '日次発生の加算手当・控除記録（例: 送迎利用、資格手当、昼食利用、物品購入費等）',
       columns: [
@@ -771,7 +771,7 @@ export function ScreenCompositionPage() {
     {
       layer: '2. 日次実績層',
       physicalName: 'daily_record_closings',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '日次実績確定',
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
@@ -788,7 +788,7 @@ export function ScreenCompositionPage() {
     {
       layer: '3. 月次実績層',
       physicalName: 'general_financial_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '一般収支実績',
       description: '日々の出入金、材料費購入、経費発生、売上請求などの一般収支明細データ',
       columns: [
@@ -807,7 +807,7 @@ export function ScreenCompositionPage() {
     {
       layer: '3. 月次実績層',
       physicalName: 'incentive_records',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: 'インセンティブ実績',
       description: '案件タスクの成果・貢献度に応じた各利用者の月次分配記録',
       columns: [
@@ -823,7 +823,7 @@ export function ScreenCompositionPage() {
     {
       layer: '3. 月次実績層',
       physicalName: 'monthly_record_closings',
-      tableType: 'トランザクション',
+      tableType: 'レコード',
       logicalName: '月次実績確定',
       description: '対象年月ごとの実績・インセンティブ分配等の確定状態および確定履歴',
       columns: [
@@ -841,7 +841,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'general_financial_details',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: '一般収支明細',
       description: '締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
       columns: [
@@ -864,7 +864,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'wage_summaries',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: '工賃・控除概要',
       description: '月ごとの各利用者の計算・支給工賃記録、サービス利用料控除額、およびその他控除概要（基幹親テーブル）',
       columns: [
@@ -891,7 +891,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'incentive_details',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: 'インセンティブ明細',
       description: '工賃確定時点のインセンティブ分配内訳スナップショット',
       columns: [
@@ -906,7 +906,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'allowance_details',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: '加算手当明細',
       description: '工賃確定時点のその他加算手当内訳スナップショット',
       columns: [
@@ -924,7 +924,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'deduction_details',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: '控除明細',
       description: '工賃確定時点の控除内訳スナップショット',
       columns: [
@@ -942,7 +942,7 @@ export function ScreenCompositionPage() {
     {
       layer: '4. スナップショット層',
       physicalName: 'monthly_financial_closings',
-      tableType: 'トランザクション',
+      tableType: 'スナップショット',
       logicalName: '月次収支確定',
       description: '対象年月ごとの工賃計算確定および事業活動収支の締め確定状態および確定履歴',
       columns: [
@@ -999,36 +999,6 @@ export function ScreenCompositionPage() {
           </table>
         ) : isTableComposition ? (
           <div>
-            {/* 4層アーキテクチャ概要ガイド */}
-            <div style={{
-              marginBottom: '20px',
-              padding: '16px',
-              backgroundColor: 'var(--color-bg-subtle)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border-subtle)'
-            }}>
-              <h4 style={{ margin: '0 0 12px 0', fontSize: 'var(--text-body-bold)', color: 'var(--color-text-main)' }}>
-                工賃・収支データ構造アーキテクチャ（4層パイプライン構造）
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
-                <div style={{ padding: '10px 12px', backgroundColor: '#ebf8ff', borderRadius: '6px', borderLeft: '4px solid #3182ce' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#2b6cb0' }}>1. マスタ層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>法人・事業所（地域区分）・住所/電話番号/メールアドレス・報酬体制設定・割当・受給者証（負担割合/上限額）・事業所直持ち手当/控除・積立項目・単価・利用者・職員・取引先・スキル・案件・予算等の定義（※体系テーブルは非採用とし所属事業所ID直持ちで管理）</div>
-                </div>
-                <div style={{ padding: '10px 12px', backgroundColor: '#fffaf0', borderRadius: '6px', borderLeft: '4px solid #dd6b20' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#c05621' }}>2. 日次実績層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>出欠・通所/欠席時対応記録・タスク作業実績記録・日次手当/控除記録 ➔ [日報確定]</div>
-                </div>
-                <div style={{ padding: '10px 12px', backgroundColor: '#faf5ff', borderRadius: '6px', borderLeft: '4px solid #805ad5' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#6b46c1' }}>3. 月次実績層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>日次/随時収支 ＋ インセンティブ分配 ＋ 月次サービス利用実績（単位数・全額・負担額算定） ➔ [月次確定]</div>
-                </div>
-                <div style={{ padding: '10px 12px', backgroundColor: '#f0fff4', borderRadius: '6px', borderLeft: '4px solid #38a169' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '13px', color: '#276749' }}>4. スナップショット層</div>
-                  <div style={{ fontSize: '11px', color: '#4a5568', marginTop: '4px' }}>利用者工賃明細（サービス利用料控除額含む）・収支明細スナップショット ＋ 工賃/収支締め確定の不変保存 ➔ [月次締め]</div>
-                </div>
-              </div>
-            </div>
 
             <table className="inventory-table">
               <thead>
@@ -1090,8 +1060,22 @@ export function ScreenCompositionPage() {
                                 padding: 'var(--space-1) var(--space-2)',
                                 borderRadius: 'var(--radius-sm)',
                                 fontSize: 'var(--text-caption)',
-                                backgroundColor: table.tableType.includes('マスタ') ? 'var(--palette-bluegreen-300)' : 'var(--palette-yellow-300)',
-                                color: 'var(--color-text-main)'
+                                backgroundColor:
+                                  table.tableType === '独立マスタ' ? '#ebf8ff' :
+                                  table.tableType === '従属マスタ' ? '#e6fffa' :
+                                  table.tableType === 'レコード' ? '#fffaf0' :
+                                  table.tableType === 'スナップショット' ? '#f0fff4' : 'var(--palette-bluegreen-300)',
+                                color:
+                                  table.tableType === '独立マスタ' ? '#2b6cb0' :
+                                  table.tableType === '従属マスタ' ? '#234e52' :
+                                  table.tableType === 'レコード' ? '#c05621' :
+                                  table.tableType === 'スナップショット' ? '#276749' : 'var(--color-text-main)',
+                                border: `1px solid ${
+                                  table.tableType === '独立マスタ' ? '#bee3f8' :
+                                  table.tableType === '従属マスタ' ? '#b2f5ea' :
+                                  table.tableType === 'レコード' ? '#feebc8' :
+                                  table.tableType === 'スナップショット' ? '#c6f6d5' : 'transparent'
+                                }`
                               }}>
                                 {table.tableType}
                               </span>
@@ -1125,77 +1109,7 @@ export function ScreenCompositionPage() {
               </tbody>
             </table>
 
-            {/* 5. 旧テーブル名互換ビュー */}
-            <div style={{
-              marginTop: '32px',
-              marginBottom: '16px',
-              padding: '12px 16px',
-              backgroundColor: '#edf2f7',
-              borderRadius: 'var(--radius-md)',
-              borderLeft: '4px solid #4a5568'
-            }}>
-              <h4 style={{ margin: 0, fontSize: 'var(--text-body-bold)', color: '#2d3748' }}>
-                5. 旧テーブル名互換ビュー (Backward-Compatible Views)
-              </h4>
-              <div style={{ fontSize: '12px', color: '#4a5568', marginTop: '4px' }}>
-                アプリケーション互換性維持のため、4層ベーステーブルにマッピングされたビュー群
-              </div>
-            </div>
 
-            <table className="inventory-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '25%' }}>ビュー名 (View Name)</th>
-                  <th style={{ width: '25%' }}>参照ベーステーブル (Base Table)</th>
-                  <th style={{ width: '50%' }}>説明・補足</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { name: 'users', baseTable: 'auth_users', desc: '認証ユーザー互換ビュー（is_deleted 列を deleted_at から自動計算）' },
-                  { name: 'wage_rates', baseTable: 'wage_rate_items', desc: '工賃単価互換ビュー（is_deleted 列を deleted_at から自動計算）' },
-                  { name: 'allowances', baseTable: 'allowance_items', desc: '加算手当互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
-                  { name: 'deductions', baseTable: 'deduction_items', desc: '控除互換ビュー（is_deleted, is_active 列を deleted_at から自動計算）' },
-                  { name: 'reserve_settings', baseTable: 'reserve_items', desc: '積立金設定互換ビュー' },
-                  { name: 'skill_categories_view', baseTable: 'skill_categories', desc: 'スキルカテゴリ互換ビュー' },
-                  { name: 'skills', baseTable: 'skill_items', desc: 'スキル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
-                  { name: 'skill_levels', baseTable: 'skill_level_items', desc: 'スキルレベル互換ビュー（is_deleted 列を deleted_at から自動計算）' },
-                  { name: 'member_skill_evaluations', baseTable: 'member_skill_settings', desc: '利用者スキル割当エイリアスビュー' },
-                  { name: 'member_wage_evaluations', baseTable: 'member_wage_settings', desc: '利用者工賃単価割当エイリアスビュー' },
-                  { name: 'project_task_skills', baseTable: 'task_skill_settings', desc: 'タスクスキル割当エイリアスビュー' },
-                  { name: 'project_task_assignees', baseTable: 'task_assignee_settings', desc: 'タスク担当者割当エイリアスビュー' },
-                  { name: 'service_schemes', baseTable: 'offices', desc: '給付費・工賃サービス体系互換ビュー' },
-                  { name: 'office_service_scheme_settings', baseTable: 'offices', desc: '事業所サービス体系割当互換ビュー' },
-                  { name: 'office_service_settings', baseTable: 'offices', desc: '事業所サービス設定互換ビュー' },
-                  { name: 'staff_work_records', baseTable: 'staff_attendance_records', desc: '職員勤務実績エイリアスビュー' },
-                  { name: 'attendance_records', baseTable: 'member_attendance_records', desc: '利用者出欠実績エイリアスビュー' },
-                  { name: 'work_records', baseTable: 'member_work_records', desc: '利用者作業実績エイリアスビュー' },
-                  { name: 'daily_work_records', baseTable: 'member_work_records', desc: '作業実績エイリアスビュー' },
-                  { name: 'daily_allowance_records', baseTable: 'allowance_deduction_records', desc: '加算手当実績互換ビュー' },
-                  { name: 'daily_deduction_records', baseTable: 'allowance_deduction_records', desc: '控除実績互換ビュー' },
-                  { name: 'allowance_records', baseTable: 'allowance_deduction_records', desc: '加算手当実績互換ビュー' },
-                  { name: 'deduction_records', baseTable: 'allowance_deduction_records', desc: '控除実績互換ビュー' },
-                  { name: 'daily_work_confirmations', baseTable: 'daily_record_closings', desc: '日次実績確定エイリアスビュー' },
-                  { name: 'financial_records', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
-                  { name: 'daily_financial_records', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
-                  { name: 'monthly_incentive_records', baseTable: 'incentive_records', desc: 'インセンティブ実績エイリアスビュー' },
-                  { name: 'monthly_incentive_confirmations', baseTable: 'monthly_record_closings', desc: '月次実績確定エイリアスビュー' },
-                  { name: 'monthly_wage_confirmations', baseTable: 'monthly_record_closings', desc: '月次実績確定エイリアスビュー' },
-                  { name: 'monthly_confirmation_details', baseTable: 'general_financial_details', desc: '一般収支明細エイリアスビュー' },
-                  { name: 'monthly_wage_summaries', baseTable: 'wage_summaries', desc: '工賃・控除概要エイリアスビュー' },
-                  { name: 'monthly_incentive_details', baseTable: 'incentive_details', desc: 'インセンティブ明細エイリアスビュー' },
-                  { name: 'monthly_allowance_details', baseTable: 'allowance_details', desc: '加算手当明細エイリアスビュー' },
-                  { name: 'monthly_deduction_details', baseTable: 'deduction_details', desc: '控除明細エイリアスビュー' },
-                  { name: 'monthly_financial_confirmations', baseTable: 'monthly_financial_closings', desc: '月次収支確定エイリアスビュー' },
-                ].map((v, idx) => (
-                  <tr key={idx}>
-                    <td style={{ fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>{v.name}</td>
-                    <td style={{ color: 'var(--color-text-main)' }}>{v.baseTable}</td>
-                    <td style={{ color: 'var(--color-text-main)' }}>{v.desc}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         ) : (
           <table className="inventory-table">

@@ -12,7 +12,6 @@ export type RewardItem = {
   unit_value: number;
   calc_rate: number;
   monthly_limit_count: number | null;
-  is_active: boolean;
 };
 
 export function useRewardItems() {
@@ -25,7 +24,6 @@ export function useRewardItems() {
       const { data, error } = await supabase
         .from('reward_items')
         .select('*, service_types(name)')
-        .eq('is_deleted', false)
         .order('code', { ascending: true });
 
       if (error) throw error;
@@ -40,8 +38,7 @@ export function useRewardItems() {
         occurrence_type: ri.occurrence_type || 'daily',
         unit_value: ri.unit_value ?? 0,
         calc_rate: ri.calc_rate ?? 0,
-        monthly_limit_count: ri.monthly_limit_count ?? null,
-        is_active: ri.is_active ?? true
+        monthly_limit_count: ri.monthly_limit_count ?? null
       }));
 
       setItems(formatted);
@@ -56,11 +53,14 @@ export function useRewardItems() {
   const batchSaveRewardItems = async (drafts: RewardItem[], deletedIds: string[]) => {
     try {
       if (deletedIds.length > 0) {
-        const { error } = await supabase
-          .from('reward_items')
-          .update({ deleted_at: new Date().toISOString() })
-          .in('id', deletedIds);
-        if (error) throw error;
+        const realDeletedIds = deletedIds.filter(id => !id.startsWith('REW-'));
+        if (realDeletedIds.length > 0) {
+          const { error } = await supabase
+            .from('reward_items')
+            .delete()
+            .in('id', realDeletedIds);
+          if (error) throw error;
+        }
       }
 
       const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
@@ -74,7 +74,6 @@ export function useRewardItems() {
           unit_value: Number(item.unit_value) || 0,
           calc_rate: Number(item.calc_rate) || 0,
           monthly_limit_count: item.monthly_limit_count ? Number(item.monthly_limit_count) : null,
-          is_active: item.is_active ?? true,
         };
         if (!item.id.startsWith('REW-')) {
           upsertData.id = item.id;

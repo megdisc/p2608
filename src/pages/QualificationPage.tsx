@@ -2,12 +2,11 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { QualificationItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { TABLE_COLUMNS } from '../constants';
 import { useQualifications } from '../hooks';
-import { generateNextUnifiedCode } from '../utils';
 
 export function QualificationPage() {
-  const { items, loading, fetchQualifications, batchSaveQualifications } = useQualifications();
+  const { items, loading, fetchQualifications } = useQualifications();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -17,38 +16,11 @@ export function QualificationPage() {
   }, [fetchQualifications, showAlert]);
 
   const columns: Column<QualificationItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true, editable: true, inputType: 'text' },
-    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true, editable: true, inputType: 'text' },
-    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true, editable: true, inputType: 'text' },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true, editable: true, inputType: 'text' },
-    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
+    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true },
+    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true },
+    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true },
   ];
-
-  const handleBatchSave = async (drafts: QualificationItem[], deletedIds: string[]) => {
-    try {
-      await batchSaveQualifications(drafts, deletedIds);
-      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
-    } catch (err) {
-      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
-      throw err;
-    }
-  };
-
-  const handleAdd = (currentDrafts?: QualificationItem[]) => {
-    const existingCodes = [
-      ...items.map(i => i.code),
-      ...(currentDrafts || []).map(i => i.code)
-    ];
-
-    return {
-      id: `QUAL-${Date.now()}-${Math.random()}`,
-      code: generateNextUnifiedCode(existingCodes, ''),
-      name: '',
-      category: '福祉専門職',
-      description: '',
-      is_active: true,
-    } as QualificationItem;
-  };
 
   if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
 
@@ -59,9 +31,6 @@ export function QualificationPage() {
       columns={columns} 
       initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている資格がありません" 
-      onBatchSave={handleBatchSave}
-      onAddRow={handleAdd}
-      hideDeleteColumn={true}
       hideHeader={true}
     />
   );

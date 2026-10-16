@@ -7,7 +7,6 @@ export type QualificationItem = {
   name: string;
   category: string;
   description: string;
-  is_active: boolean;
 };
 
 export function useQualifications() {
@@ -29,8 +28,7 @@ export function useQualifications() {
         code: q.code || '',
         name: q.name || '',
         category: q.category || '',
-        description: q.description || '',
-        is_active: q.is_active ?? true
+        description: q.description || ''
       }));
 
       setItems(formatted);
@@ -44,14 +42,24 @@ export function useQualifications() {
 
   const batchSaveQualifications = async (drafts: QualificationItem[], deletedIds: string[]) => {
     try {
-      for (const item of drafts) {
-        const isDeleted = deletedIds.includes(item.id);
+      if (deletedIds.length > 0) {
+        const realDeletedIds = deletedIds.filter(id => !id.startsWith('QUAL-'));
+        if (realDeletedIds.length > 0) {
+          const { error } = await supabase
+            .from('qualifications')
+            .delete()
+            .in('id', realDeletedIds);
+          if (error) throw error;
+        }
+      }
+
+      const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
+      for (const item of activeItems) {
         const upsertData: any = {
           code: item.code.trim(),
           name: item.name,
           category: item.category || null,
           description: item.description || null,
-          is_active: isDeleted ? false : (item.is_active ?? true),
         };
         if (!item.id.startsWith('QUAL-')) {
           upsertData.id = item.id;

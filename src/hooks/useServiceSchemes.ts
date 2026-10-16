@@ -41,7 +41,7 @@ export function useServiceSchemes() {
       const [schemesRes, allowDeductRes, rewardRes] = await Promise.all([
         supabase.from('service_schemes').select('*').eq('is_deleted', false).order('created_at', { ascending: true }),
         supabase.from('allowance_deduction_items').select('*, offices(name)').eq('is_deleted', false).order('created_at', { ascending: true }),
-        supabase.from('reward_items').select('*').eq('is_deleted', false).order('created_at', { ascending: true })
+        supabase.from('reward_items').select('*').order('created_at', { ascending: true })
       ]);
 
       if (schemesRes.error) throw schemesRes.error;
@@ -152,9 +152,10 @@ export function useServiceSchemes() {
   const batchSaveItems = async (drafts: ServiceDetailItem[], deletedIds: string[]) => {
     try {
       if (deletedIds.length > 0) {
+        const realDeletedIds = deletedIds.filter(id => !id.startsWith('ITM-'));
         await Promise.all([
           supabase.from('allowance_deduction_items').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds),
-          supabase.from('reward_items').update({ deleted_at: new Date().toISOString() }).in('id', deletedIds)
+          realDeletedIds.length > 0 ? supabase.from('reward_items').delete().in('id', realDeletedIds) : Promise.resolve()
         ]);
       }
 

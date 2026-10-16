@@ -2,12 +2,11 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { ServiceTypeItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { TABLE_COLUMNS } from '../constants';
 import { useServiceTypes } from '../hooks';
-import { generateNextUnifiedCode } from '../utils';
 
 export function ServiceTypePage() {
-  const { items, loading, fetchServiceTypes, batchSaveServiceTypes } = useServiceTypes();
+  const { items, loading, fetchServiceTypes } = useServiceTypes();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -17,36 +16,10 @@ export function ServiceTypePage() {
   }, [fetchServiceTypes, showAlert]);
 
   const columns: Column<ServiceTypeItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: true, editable: true, inputType: 'text' },
-    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: true, editable: true, inputType: 'text' },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true, editable: true, inputType: 'text' },
-    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
+    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: true },
+    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: true },
+    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true },
   ];
-
-  const handleBatchSave = async (drafts: ServiceTypeItem[], deletedIds: string[]) => {
-    try {
-      await batchSaveServiceTypes(drafts, deletedIds);
-      showAlert(MESSAGES.SAVE_SUCCESS, 'success');
-    } catch (err) {
-      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
-      throw err;
-    }
-  };
-
-  const handleAdd = (currentDrafts?: ServiceTypeItem[]) => {
-    const existingCodes = [
-      ...items.map(i => i.code),
-      ...(currentDrafts || []).map(i => i.code)
-    ];
-
-    return {
-      id: `ST-${Date.now()}-${Math.random()}`,
-      code: generateNextUnifiedCode(existingCodes, ''),
-      name: '',
-      description: '',
-      is_active: true,
-    } as ServiceTypeItem;
-  };
 
   if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
 
@@ -57,8 +30,6 @@ export function ServiceTypePage() {
       columns={columns} 
       initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている支援種別がありません" 
-      onBatchSave={handleBatchSave}
-      onAddRow={handleAdd}
       hideHeader={true}
     />
   );

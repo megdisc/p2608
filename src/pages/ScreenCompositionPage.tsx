@@ -129,7 +129,6 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
         { name: 'name', desc: 'サービス種類名称' },
         { name: 'description', desc: '説明・概要' },
-        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -150,9 +149,6 @@ export function ScreenCompositionPage() {
         { name: 'calc_rate', desc: '定率算定率[%]' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'monthly_limit_count', desc: '月間算定上限回数' },
-        { name: 'is_active', desc: '適用フラグ' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -527,7 +523,6 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '資格・職種名称' },
         { name: 'category', desc: '資格区分' },
         { name: 'description', desc: '資格概要' },
-        { name: 'is_active', desc: '適用フラグ（true: 適用/有効, false: 非適用/無効）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

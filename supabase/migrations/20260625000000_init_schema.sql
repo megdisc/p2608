@@ -62,7 +62,6 @@ CREATE TABLE IF NOT EXISTS "public"."service_types" (
     "code" TEXT NOT NULL UNIQUE,
     "name" TEXT NOT NULL,
     "description" TEXT,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -78,9 +77,6 @@ CREATE TABLE IF NOT EXISTS "public"."reward_items" (
     "calc_rate" NUMERIC(5,2) DEFAULT 0 NOT NULL,
     "occurrence_type" VARCHAR(20) DEFAULT 'daily' NOT NULL, -- ('daily', 'monthly')
     "monthly_limit_count" INTEGER DEFAULT NULL,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
-    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -353,7 +349,6 @@ CREATE TABLE IF NOT EXISTS "public"."qualifications" (
     "name" TEXT NOT NULL,
     "category" TEXT,
     "description" TEXT,
-    "is_active" BOOLEAN DEFAULT true NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -755,8 +750,8 @@ SELECT
     monthly_limit_count,
     true AS affects_reward_units,
     true AS is_auto_calculated,
-    deleted_at,
-    is_deleted,
+    NULL::timestamptz AS deleted_at,
+    false AS is_deleted,
     created_at,
     updated_at
 FROM "public"."reward_items"

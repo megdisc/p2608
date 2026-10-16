@@ -39,7 +39,7 @@ export function useOffices() {
         supabase.from('entity_address_settings').select('owner_id, address_id, addresses(postal_code_prefix, postal_code_suffix, prefecture, city, town_street, building)').eq('owner_type', 'office'),
         supabase.from('entity_phone_settings').select('owner_id, phone_number_id, phone_numbers(phone_type, phone_number)').eq('owner_type', 'office'),
         supabase.from('entity_email_settings').select('owner_id, email_address_id, email_addresses(email)').eq('owner_type', 'office'),
-        supabase.from('service_types').select('id, code, name').is('deleted_at', null).order('code', { ascending: true }),
+        supabase.from('service_types').select('id, code, name').order('code', { ascending: true }),
         supabase.from('office_service_type_settings').select('office_id, service_type_id')
       ]);
 

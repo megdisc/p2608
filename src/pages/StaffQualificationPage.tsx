@@ -24,7 +24,7 @@ export function StaffQualificationPage() {
       setLoading(true);
       const [staffRes, qualRes, settingsRes] = await Promise.all([
         supabase.from('staffs').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('qualifications').select('*').eq('is_active', true).order('code', { ascending: true }),
+        supabase.from('qualifications').select('*').order('code', { ascending: true }),
         supabase.from('staff_qualification_settings').select('*'),
       ]);
 

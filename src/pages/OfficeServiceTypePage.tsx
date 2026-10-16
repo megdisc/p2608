@@ -24,7 +24,7 @@ export function OfficeServiceTypePage() {
       setLoading(true);
       const [officeRes, serviceTypeRes, settingsRes] = await Promise.all([
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('service_types').select('*').eq('is_active', true).order('code', { ascending: true }),
+        supabase.from('service_types').select('*').order('code', { ascending: true }),
         supabase.from('office_service_type_settings').select('*'),
       ]);
 

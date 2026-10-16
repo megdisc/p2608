@@ -7,7 +7,6 @@ export type ServiceTypeItem = {
   code: string;
   name: string;
   description: string;
-  is_active: boolean;
 };
 
 export function useServiceTypes() {
@@ -28,8 +27,7 @@ export function useServiceTypes() {
         id: st.id,
         code: st.code || '',
         name: st.name || '',
-        description: st.description || '',
-        is_active: st.is_active ?? true
+        description: st.description || ''
       }));
 
       setItems(formatted);
@@ -60,7 +58,6 @@ export function useServiceTypes() {
           code: item.code.trim(),
           name: item.name,
           description: item.description || null,
-          is_active: item.is_active ?? true,
         };
         if (!item.id.startsWith('ST-')) {
           upsertData.id = item.id;

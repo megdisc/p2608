@@ -1,98 +1,183 @@
-import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
-import type { RewardItem } from '../hooks';
+import { useEffect, useMemo, useCallback } from 'react';
+import { DataPage, Button, type Column } from '../components';
+import type { RewardItem, ServiceTypeItem } from '../hooks';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useRewardItems, useServiceTypes } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
+type ServiceTypeWithRewardItems = ServiceTypeItem & {
+  rewardItems: RewardItem[];
+  isUnassigned?: boolean;
+};
+
 export function RewardItemPage() {
-  const { items, loading, fetchRewardItems, batchSaveRewardItems } = useRewardItems();
-  const { items: serviceTypes, fetchServiceTypes } = useServiceTypes();
+  const { items, loading: loadingItems, fetchRewardItems, batchSaveRewardItems } = useRewardItems();
+  const { items: serviceTypes, loading: loadingServiceTypes, fetchServiceTypes } = useServiceTypes();
   const { showAlert } = useAlert();
 
-  useEffect(() => {
-    Promise.all([
-      fetchRewardItems(),
-      fetchServiceTypes()
-    ]).catch(() => {
+  const loadData = useCallback(async () => {
+    try {
+      await Promise.all([
+        fetchRewardItems(),
+        fetchServiceTypes()
+      ]);
+    } catch {
       showAlert('加算・減算項目データの取得に失敗しました', 'error');
-    });
+    }
   }, [fetchRewardItems, fetchServiceTypes, showAlert]);
 
-  const serviceTypeOptions = serviceTypes.map(st => ({
-    label: st.name,
-    value: st.id
-  }));
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  const columns: Column<RewardItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.SERVICE_TYPE_CODE, sortable: true, editable: true, inputType: 'text' },
+  // 支援種別ごとの階層データ構築
+  const groupedData: ServiceTypeWithRewardItems[] = useMemo(() => {
+    const list: ServiceTypeWithRewardItems[] = [];
+
+    // 表示対象: 適用中の支援種別、またはすでに加算・減算項目が存在する支援種別
+    const sortedST = [...serviceTypes].sort((a, b) => a.code.localeCompare(b.code));
+    const targetServiceTypes = sortedST.filter(
+      st => st.is_active || items.some(ri => ri.service_type_id === st.id)
+    );
+
+    targetServiceTypes.forEach(st => {
+      const stItems = items
+        .filter(ri => ri.service_type_id === st.id)
+        .sort((a, b) => a.code.localeCompare(b.code));
+      list.push({
+        ...st,
+        rewardItems: stItems
+      });
+    });
+
+    // どの支援種別にも紐づいていない項目がある場合のフォールバック
+    const unassignedItems = items.filter(
+      ri => !targetServiceTypes.some(st => st.id === ri.service_type_id)
+    );
+    if (unassignedItems.length > 0) {
+      list.push({
+        id: 'UNASSIGNED',
+        code: '99',
+        name: '未分類',
+        description: '',
+        is_active: false,
+        isUnassigned: true,
+        rewardItems: unassignedItems
+      });
+    }
+
+    return list;
+  }, [serviceTypes, items]);
+
+  const columns: Column<ServiceTypeWithRewardItems>[] = [
     { 
-      key: 'service_type_id', 
+      key: 'name', 
       header: TABLE_COLUMNS.SERVICE_TYPE, 
-      sortable: true, 
-      sortKey: 'service_type_name',
-      editable: true, 
-      inputType: 'select',
-      options: serviceTypeOptions,
-      onCellChange: (val, _item, updateRow) => {
-        const matched = serviceTypes.find(st => st.id === val);
-        updateRow({ service_type_name: matched ? matched.name : '' });
-      },
-      render: (item) => {
-        const matched = serviceTypes.find(st => st.id === item.service_type_id);
-        return <span>{matched ? matched.name : item.service_type_name || '就労継続支援B型'}</span>;
-      }
+      editable: false, 
+      rowType: 'main',
+      style: { backgroundColor: '#ffffff' },
+      render: (item: ServiceTypeWithRewardItems) => (
+        item.isUnassigned ? (
+          <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>未分類</span>
+        ) : (
+          <span style={{ fontWeight: 500 }}>{item.name}</span>
+        )
+      )
     },
-    { key: 'name', header: TABLE_COLUMNS.SERVICE_TYPE_NAME, sortable: true, editable: true, inputType: 'text' },
+    { 
+      key: 'code', 
+      header: TABLE_COLUMNS.SERVICE_TYPE_CODE, 
+      editable: true, 
+      inputType: 'text', 
+      rowType: 'sub',
+      sortable: false,
+      mainRender: (_item, addSubRow) => (
+        <Button onClick={addSubRow}>
+          ＋ 加算・減算追加
+        </Button>
+      )
+    },
+    { 
+      key: 'name', 
+      header: TABLE_COLUMNS.SERVICE_TYPE_NAME, 
+      editable: true, 
+      inputType: 'text', 
+      rowType: 'sub',
+      sortable: false 
+    },
     { 
       key: 'item_category', 
       header: TABLE_COLUMNS.TYPE, 
-      sortable: true, 
       editable: true, 
       inputType: 'select',
       options: [
         { label: '体制加算', value: 'addition' },
         { label: '体制減算', value: 'subtraction' }
       ],
-      render: (item) => {
-        const isAddition = item.item_category === 'addition';
-        return (
-          <span style={{ 
-            padding: '2px 8px', 
-            borderRadius: '4px', 
-            fontSize: '12px',
-            backgroundColor: isAddition ? 'var(--palette-bluegreen-200)' : 'var(--palette-red-200)',
-            color: isAddition ? 'var(--palette-bluegreen-900)' : 'var(--palette-red-900)'
-          }}>
-            {isAddition ? '体制加算' : '体制減算'}
-          </span>
-        );
-      }
+      rowType: 'sub',
+      sortable: false
     },
     { 
       key: 'occurrence_type', 
       header: TABLE_COLUMNS.OCCURRENCE_TYPE, 
-      sortable: true, 
       editable: true, 
       inputType: 'select',
       options: [
         { label: '日次発生', value: 'daily' },
         { label: '月次発生', value: 'monthly' }
       ],
-      render: (item) => (
-        <span>{item.occurrence_type === 'monthly' ? '月次発生' : '日次発生'}</span>
-      )
+      rowType: 'sub',
+      sortable: false
     },
-    { key: 'unit_value', header: TABLE_COLUMNS.UNIT, sortable: true, editable: true, inputType: 'number' },
-    { key: 'calc_rate', header: '定率算定率[%]', sortable: true, editable: true, inputType: 'number' },
-    { key: 'monthly_limit_count', header: '月間上限回数', sortable: true, editable: true, inputType: 'number' },
-    { key: 'is_active', header: '適用', sortable: true, editable: true, inputType: 'checkbox' },
+    { 
+      key: 'unit_value', 
+      header: TABLE_COLUMNS.UNIT, 
+      editable: true, 
+      inputType: 'number', 
+      rowType: 'sub',
+      sortable: false 
+    },
+    { 
+      key: 'calc_rate', 
+      header: '定率算定率[%]', 
+      editable: true, 
+      inputType: 'number', 
+      rowType: 'sub',
+      sortable: false 
+    },
+    { 
+      key: 'monthly_limit_count', 
+      header: '月間上限回数', 
+      editable: true, 
+      inputType: 'number', 
+      rowType: 'sub',
+      sortable: false 
+    },
+    { 
+      key: 'is_active', 
+      header: '適用', 
+      editable: true, 
+      inputType: 'checkbox', 
+      rowType: 'sub',
+      sortable: false 
+    },
   ];
 
-  const handleBatchSave = async (drafts: RewardItem[], deletedIds: string[]) => {
+  const handleBatchSave = async (drafts: ServiceTypeWithRewardItems[], deletedIds: string[]) => {
     try {
-      await batchSaveRewardItems(drafts, deletedIds);
+      const allRewardItems: RewardItem[] = [];
+      drafts.forEach(group => {
+        (group.rewardItems || []).forEach(item => {
+          allRewardItems.push({
+            ...item,
+            service_type_id: group.isUnassigned ? item.service_type_id : group.id,
+            service_type_name: group.name,
+          });
+        });
+      });
+
+      await batchSaveRewardItems(allRewardItems, deletedIds);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
@@ -100,20 +185,16 @@ export function RewardItemPage() {
     }
   };
 
-  const handleAdd = (currentDrafts?: RewardItem[]) => {
-    const existingCodes = [
-      ...items.map(i => i.code),
-      ...(currentDrafts || []).map(i => i.code)
-    ];
-
-    const defaultServiceType = serviceTypes.find(st => st.code === 'type_b') || serviceTypes[0];
-    const defaultServiceTypeId = defaultServiceType?.id || '11111111-0000-0000-0000-000000000001';
+  const handleAddSubRow = (parentId: string) => {
+    const targetSt = serviceTypes.find(st => st.id === parentId);
+    const existingCodes = items.map(i => i.code);
+    const prefix = targetSt?.code === '21' ? '5211' : targetSt?.code === '22' ? '5221' : '5000';
 
     return {
-      id: `REW-${Date.now()}-${Math.random()}`,
-      service_type_id: defaultServiceTypeId,
-      service_type_name: defaultServiceType?.name || '就労継続支援B型',
-      code: generateNextUnifiedCode(existingCodes, '5211'),
+      id: `REW-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      service_type_id: parentId,
+      service_type_name: targetSt?.name || '',
+      code: generateNextUnifiedCode(existingCodes, prefix),
       name: '',
       item_category: 'addition',
       occurrence_type: 'daily',
@@ -124,19 +205,23 @@ export function RewardItemPage() {
     } as RewardItem;
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  const loading = loadingItems || loadingServiceTypes;
+
+  if (loading && groupedData.length === 0) return <div style={{ padding: '24px' }}>Loading...</div>;
 
   return (
     <DataPage 
       title="加算・減算"
-      data={items} 
+      data={groupedData} 
       columns={columns} 
       initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている加算・減算項目がありません" 
       onBatchSave={handleBatchSave}
-      onAddRow={handleAdd}
-      hideDeleteColumn={true}
+      subItemsKey="rewardItems"
+      onAddSubRow={handleAddSubRow}
+      canDeleteRow={() => false}
       hideHeader={true}
     />
   );
 }
+

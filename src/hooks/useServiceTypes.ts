@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
+import type { ServiceTypeTableItem } from '../types/db';
 
 export type ServiceTypeItem = {
   id: string;
@@ -23,7 +24,7 @@ export function useServiceTypes() {
 
       if (error) throw error;
 
-      const formatted: ServiceTypeItem[] = (data || []).map((st: any) => ({
+      const formatted: ServiceTypeItem[] = ((data as ServiceTypeTableItem[]) || []).map((st) => ({
         id: st.id,
         code: st.code || '',
         name: st.name || '',
@@ -42,13 +43,24 @@ export function useServiceTypes() {
 
   const batchSaveServiceTypes = async (drafts: ServiceTypeItem[], deletedIds: string[]) => {
     try {
-      for (const item of drafts) {
-        const isDeleted = deletedIds.includes(item.id);
-        const upsertData: any = {
+      if (deletedIds.length > 0) {
+        const realDeletedIds = deletedIds.filter(id => !id.startsWith('ST-'));
+        if (realDeletedIds.length > 0) {
+          const { error } = await supabase
+            .from('service_types')
+            .delete()
+            .in('id', realDeletedIds);
+          if (error) throw error;
+        }
+      }
+
+      const activeItems = drafts.filter(i => !deletedIds.includes(i.id));
+      for (const item of activeItems) {
+        const upsertData: Partial<ServiceTypeTableItem> = {
           code: item.code.trim(),
           name: item.name,
           description: item.description || null,
-          is_active: isDeleted ? false : (item.is_active ?? true),
+          is_active: item.is_active ?? true,
         };
         if (!item.id.startsWith('ST-')) {
           upsertData.id = item.id;

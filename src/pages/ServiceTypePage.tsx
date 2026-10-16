@@ -59,7 +59,6 @@ export function ServiceTypePage() {
       emptyMessage="登録されている支援種別がありません" 
       onBatchSave={handleBatchSave}
       onAddRow={handleAdd}
-      hideDeleteColumn={true}
       hideHeader={true}
     />
   );

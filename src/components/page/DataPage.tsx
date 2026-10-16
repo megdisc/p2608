@@ -35,6 +35,7 @@ type DataPageProps<T> = {
   recomputeSubItems?: (subItems: any[], parentItem: T, deletedIds: Set<string>) => any[];
   subSubItemsKey?: string;
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
+  mergeParentRow?: boolean;
   disableAddButton?: boolean;
   highlightInputColumns?: boolean;
   hideHeader?: boolean;
@@ -86,6 +87,7 @@ export function DataPage<T extends { id: string }>({
   recomputeSubItems,
   subSubItemsKey,
   onAddSubSubRow,
+  mergeParentRow,
   disableAddButton,
   highlightInputColumns,
   hideHeader,
@@ -151,6 +153,7 @@ export function DataPage<T extends { id: string }>({
         recomputeSubItems={recomputeSubItems}
         subSubItemsKey={subSubItemsKey}
         onAddSubSubRow={onAddSubSubRow}
+        mergeParentRow={mergeParentRow}
         disableAddButton={disableAddButton}
         highlightInputColumns={highlightInputColumns}
         restrictionTooltipText={restrictionTooltipText}
@@ -171,3 +174,4 @@ export function DataPage<T extends { id: string }>({
     </>
   );
 }
+

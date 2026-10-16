@@ -63,6 +63,7 @@ type DataTableProps<T> = {
   recomputeSubItems?: (subItems: any[], parentItem: T, deletedIds: Set<string>) => any[];
   subSubItemsKey?: string;
   onAddSubSubRow?: (parentId: string, subParentId: string) => any;
+  mergeParentRow?: boolean;
   showMonthFilter?: boolean;
   singleMonth?: string;
   onSingleMonthChange?: (month: string) => void;
@@ -111,6 +112,7 @@ export function DataTable<T extends { id: string }>({
   recomputeSubItems,
   subSubItemsKey,
   onAddSubSubRow,
+  mergeParentRow = false,
   showMonthFilter,
   singleMonth,
   onSingleMonthChange,
@@ -887,99 +889,120 @@ export function DataTable<T extends { id: string }>({
                 );
               };
 
+              const shouldMergeParentRow = Boolean(mergeParentRow && subItems.length > 0);
+
               return (
                 <React.Fragment key={item.id}>
-                  <tr 
-                    className={isDeleted ? 'deleted-row' : ''}
-                    onMouseEnter={(e) => {
-                      if (showRestrictionColumn && !isRowEditable) {
-                        setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: restrictionTooltipText || MESSAGES.RESTRICTED_EDIT });
-                      }
-                    }}
-                    onMouseMove={(e) => {
-                      if (showRestrictionColumn && !isRowEditable) {
-                        setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
-                      }
-                    }}
-                    onMouseLeave={() => {
-                      setTooltip(prev => ({ ...prev, visible: false }));
-                    }}
-                  >
-                    {columns.map((col, idx) => {
-                      const isMainCol = col.rowType === 'main' || col.rowType === 'both' || !col.rowType;
-                      let borderBottomStyle: string | undefined;
-                      if (isMainCol && subItems.length > 0) {
-                        borderBottomStyle = 'none';
-                      }
-                      
-                      const isColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
-                      const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
-                      
-                      const baseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
-                      const customStyle = {
-                        ...baseStyle,
-                        ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
-                      };
+                  {!shouldMergeParentRow && (
+                    <tr 
+                      className={isDeleted ? 'deleted-row' : ''}
+                      onMouseEnter={(e) => {
+                        if (showRestrictionColumn && !isRowEditable) {
+                          setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: restrictionTooltipText || MESSAGES.RESTRICTED_EDIT });
+                        }
+                      }}
+                      onMouseMove={(e) => {
+                        if (showRestrictionColumn && !isRowEditable) {
+                          setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        setTooltip(prev => ({ ...prev, visible: false }));
+                      }}
+                    >
+                      {columns.map((col, idx) => {
+                        const isMainCol = col.rowType === 'main' || col.rowType === 'both' || !col.rowType;
+                        let borderBottomStyle: string | undefined;
+                        if (isMainCol && subItems.length > 0) {
+                          borderBottomStyle = 'none';
+                        }
+                        
+                        const isColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
+                        const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
+                        
+                        const baseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
+                        const customStyle = {
+                          ...baseStyle,
+                          ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
+                        };
 
-                      if (col.rowType === 'sub') {
+                        if (col.rowType === 'sub') {
+                          return (
+                            <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
+                              {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
+                            </td>
+                          );
+                        }
+                        if (col.rowType === 'sub-sub') {
+                          return (
+                            <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
+                              {null}
+                            </td>
+                          );
+                        }
                         return (
                           <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                            {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
+                            <div style={{ 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              gap: '8px',
+                              justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : (customStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
+                            }}>
+                              {renderCellContent(col, item, false, undefined, false, undefined, item)}
+                            </div>
                           </td>
                         );
-                      }
-                      if (col.rowType === 'sub-sub') {
-                        return (
-                          <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                            {null}
-                          </td>
-                        );
-                      }
-                      return (
-                        <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                          <div style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            gap: '8px',
-                            justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : (customStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
-                          }}>
-                            {renderCellContent(col, item, false, undefined, false, undefined, item)}
-                          </div>
+                      })}
+                      {showDeleteCol && (
+                        <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
+                          {isRowDeletable && (
+                            <Input 
+                              type="checkbox" 
+                              checked={isDeleted}
+                              onChange={() => toggleDelete(item.id)}
+                              className="custom-checkbox"
+                            />
+                          )}
                         </td>
-                      );
-                    })}
-                    {showDeleteCol && (
-                      <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                        {isRowDeletable && (
-                          <Input 
-                            type="checkbox" 
-                            checked={isDeleted}
-                            onChange={() => toggleDelete(item.id)}
-                            className="custom-checkbox"
-                          />
-                        )}
-                      </td>
-                    )}
-                    {showRestrictionColumn && (
-                      <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...(subItems.length > 0 ? { borderBottom: 'none' } : {}) }}>
-                        {!isRowEditable && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                          </svg>
-                        )}
-                      </td>
-                    )}
-                  </tr>
+                      )}
+                      {showRestrictionColumn && (
+                        <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...(subItems.length > 0 ? { borderBottom: 'none' } : {}) }}>
+                          {!isRowEditable && (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  )}
 
-                  {subItems.map(subItem => {
+                  {subItems.map((subItem, subIdx) => {
                     const isSubDeleted = deletedIds.has(subItem.id);
                     const subSubItems = subSubItemsKey ? (subItem[subSubItemsKey] as any[]) || [] : [];
                     const isSubSubHidden = hideSubSubItems && hideSubSubItems(subItem);
                     const isLastSubItem = subItem === subItems[subItems.length - 1];
                     return (
                       <React.Fragment key={subItem.id}>
-                        <tr className={isSubDeleted || isDeleted ? 'deleted-row' : ''}>
+                        <tr 
+                          className={isSubDeleted || isDeleted ? 'deleted-row' : ''}
+                          onMouseEnter={(e) => {
+                            if (shouldMergeParentRow && showRestrictionColumn && !isRowEditable) {
+                              setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: restrictionTooltipText || MESSAGES.RESTRICTED_EDIT });
+                            }
+                          }}
+                          onMouseMove={(e) => {
+                            if (shouldMergeParentRow && showRestrictionColumn && !isRowEditable) {
+                              setTooltip(prev => ({ ...prev, x: e.clientX, y: e.clientY - 15 }));
+                            }
+                          }}
+                          onMouseLeave={() => {
+                            if (shouldMergeParentRow && showRestrictionColumn && !isRowEditable) {
+                              setTooltip(prev => ({ ...prev, visible: false }));
+                            }
+                          }}
+                        >
                           {columns.map((col, idx) => {
                             const isMainCol = col.rowType === 'main' || col.rowType === 'both' || !col.rowType;
                             let borderBottomStyle: string | undefined;
@@ -1009,6 +1032,37 @@ export function DataTable<T extends { id: string }>({
                                 </td>
                               );
                             }
+
+                            if (shouldMergeParentRow && (col.rowType === 'main' || !col.rowType)) {
+                              if (subIdx === 0) {
+                                const mainColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
+                                const isMainInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && mainColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
+                                const mainBaseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
+                                const mainCustomStyle = {
+                                  ...mainBaseStyle,
+                                  ...(borderBottomStyle ? { borderBottom: borderBottomStyle } : {})
+                                };
+                                return (
+                                  <td key={col.key || idx} className={`${col.className || ''} ${isMainInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={mainCustomStyle}>
+                                    <div style={{ 
+                                      display: 'flex', 
+                                      alignItems: 'center', 
+                                      gap: '8px',
+                                      justifyContent: col.className?.includes('quantity') || (mainCustomStyle as any)?.textAlign === 'right' ? 'flex-end' : (mainCustomStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
+                                    }}>
+                                      {renderCellContent(col, item, false, undefined, false, undefined, item)}
+                                    </div>
+                                  </td>
+                                );
+                              } else {
+                                return (
+                                  <td key={col.key || idx} className={col.className || ''} style={customStyle}>
+                                    {null}
+                                  </td>
+                                );
+                              }
+                            }
+
                             return (
                               <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
                                 {(col.rowType === 'sub' || col.rowType === 'both') ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null}

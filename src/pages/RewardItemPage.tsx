@@ -159,6 +159,7 @@ export function RewardItemPage() {
       initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている加算・減算項目がありません" 
       subItemsKey="rewardItems"
+      mergeParentRow={true}
       hideHeader={true}
     />
   );

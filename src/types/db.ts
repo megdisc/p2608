@@ -147,6 +147,19 @@ export type ServiceTypeTableItem = {
   code: string;
   name: string;
   description?: string;
+  personnel_cost_ratio?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RegionalGradeTableItem = {
+  id: string; // UUID
+  prefecture: string;
+  city: string;
+  grade: string;
+  premium_rate: number;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
 };

@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS "public"."service_types" (
     "code" TEXT NOT NULL UNIQUE,
     "name" TEXT NOT NULL,
     "description" TEXT,
+    "personnel_cost_ratio" NUMERIC(5,4) DEFAULT 0.5700 NOT NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
@@ -124,6 +125,20 @@ CREATE TABLE IF NOT EXISTS "public"."addresses" (
     "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
+);
+
+-- 1.2b regional_grades (所在地級数・地域区分マスタ)
+CREATE TABLE IF NOT EXISTS "public"."regional_grades" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "prefecture" VARCHAR(20) NOT NULL,
+    "city" VARCHAR(50) NOT NULL,
+    "grade" VARCHAR(20) NOT NULL,
+    "premium_rate" NUMERIC(5,4) DEFAULT 0.0000 NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT "uq_regional_grades_pref_city" UNIQUE ("prefecture", "city")
 );
 
 -- 1.3 entity_address_settings (住所割当)

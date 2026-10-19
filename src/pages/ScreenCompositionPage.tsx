@@ -144,6 +144,7 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
         { name: 'name', desc: 'サービス種類名称' },
         { name: 'description', desc: '説明・概要' },
+        { name: 'personnel_cost_ratio', desc: '支援種別人件費割合（公定価格基準。例: 就労B型は0.5700、生活介護は0.6100。地域区分単価算出用）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -230,6 +231,25 @@ export function ScreenCompositionPage() {
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'regional_grades',
+      tableType: '独立マスタ',
+      logicalName: '所在地級数（地域区分）',
+      description: '市区町村ごとの障害福祉サービス地域区分（1級地〜7級地、その他）および上乗せ割合マスタ',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '地域区分ID', status: 'added' },
+        { name: 'prefecture', desc: '都道府県名（例: 広島県）', status: 'added' },
+        { name: 'city', desc: '市区町村名（例: 広島市中区、広島市）', status: 'added' },
+        { name: 'grade', desc: '級地名称（例: 1級地〜7級地、その他）', status: 'added' },
+        { name: 'premium_rate', desc: '上乗せ割合（公務員地域手当準拠。例: 0.2000〜0.0000）', status: 'added' },
+        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {

@@ -250,22 +250,22 @@ ON CONFLICT (id) DO UPDATE SET
 
 
 -- 4. 加算手当・控除項目マスタ (allowance_deduction_items)
-INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, calc_trigger_basis, threshold_value, threshold_unit, threshold_operator, unit_price) VALUES
+INSERT INTO public.allowance_deduction_items (id, office_id, name, item_category, occurrence_type, calc_trigger_basis, threshold_value, threshold_unit, threshold_operator, unit_price, sort_order) VALUES
 -- 事業所1: ワークステーション未来
-('44444444-2222-4444-4444-444444444401', '22222222-2222-2222-2222-222222222222', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
-('44444444-2222-4444-4444-444444444402', '22222222-2222-2222-2222-222222222222', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
-('44444444-2222-4444-4444-444444444403', '22222222-2222-2222-2222-222222222222', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00),
-('44444444-2222-4444-4444-444444444404', '22222222-2222-2222-2222-222222222222', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00),
+('44444444-2222-4444-4444-444444444401', '22222222-2222-2222-2222-222222222222', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00, 0),
+('44444444-2222-4444-4444-444444444402', '22222222-2222-2222-2222-222222222222', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00, 1),
+('44444444-2222-4444-4444-444444444403', '22222222-2222-2222-2222-222222222222', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00, 0),
+('44444444-2222-4444-4444-444444444404', '22222222-2222-2222-2222-222222222222', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00, 1),
 -- 事業所2: 未来ワークスあすか
-('44444444-3333-4444-4444-444444444401', '33333333-3333-3333-3333-333333333333', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
-('44444444-3333-4444-4444-444444444402', '33333333-3333-3333-3333-333333333333', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
-('44444444-3333-4444-4444-444444444403', '33333333-3333-3333-3333-333333333333', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00),
-('44444444-3333-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00),
+('44444444-3333-4444-4444-444444444401', '33333333-3333-3333-3333-333333333333', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00, 0),
+('44444444-3333-4444-4444-444444444402', '33333333-3333-3333-3333-333333333333', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00, 1),
+('44444444-3333-4444-4444-444444444403', '33333333-3333-3333-3333-333333333333', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00, 0),
+('44444444-3333-4444-4444-444444444404', '33333333-3333-3333-3333-333333333333', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00, 1),
 -- 事業所3: 未来オアシス
-('44444444-4444-4444-4444-444444444401', '44444444-4444-4444-4444-444444444444', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00),
-('44444444-4444-4444-4444-444444444402', '44444444-4444-4444-4444-444444444444', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00),
-('44444444-4444-4444-4444-444444444403', '44444444-4444-4444-4444-444444444444', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00),
-('44444444-4444-4444-4444-444444444404', '44444444-4444-4444-4444-444444444444', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00)
+('44444444-4444-4444-4444-444444444401', '44444444-4444-4444-4444-444444444444', '精勤手当', 'allowance', 'monthly', 'attendance_days', 15.00, 'days', 'gte', 3000.00, 0),
+('44444444-4444-4444-4444-444444444402', '44444444-4444-4444-4444-444444444444', '皆勤手当', 'allowance', 'monthly', 'attendance_days', 20.00, 'days', 'gte', 2000.00, 1),
+('44444444-4444-4444-4444-444444444403', '44444444-4444-4444-4444-444444444444', '昼食代', 'deduction', 'daily', 'meal_count', NULL, 'times', '', 200.00, 0),
+('44444444-4444-4444-4444-444444444404', '44444444-4444-4444-4444-444444444444', '飲料設備代', 'deduction', 'daily', 'attendance_days', NULL, 'days', '', 30.00, 1)
 ON CONFLICT (id) DO UPDATE SET
   office_id = EXCLUDED.office_id,
   name = EXCLUDED.name,
@@ -275,7 +275,8 @@ ON CONFLICT (id) DO UPDATE SET
   threshold_value = EXCLUDED.threshold_value,
   threshold_unit = EXCLUDED.threshold_unit,
   threshold_operator = EXCLUDED.threshold_operator,
-  unit_price = EXCLUDED.unit_price;
+  unit_price = EXCLUDED.unit_price,
+  sort_order = EXCLUDED.sort_order;
 
 -- 4.1 積立金項目マスタ (reserve_items)
 INSERT INTO public.reserve_items (id, office_id, name, calc_type, fixed_amount, fixed_rate) VALUES
@@ -314,16 +315,20 @@ ON CONFLICT (id) DO UPDATE SET
   is_primary = EXCLUDED.is_primary;
 
 -- 6. 工賃単価項目マスタ (wage_rate_items)
-INSERT INTO public.wage_rate_items (id, office_id, wage, description) VALUES
-('a1b2c3d4-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 100, '新人レベル'),
-('a1b2c3d4-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 250, '中堅レベル'),
-('a1b2c3d4-0000-0000-0000-000000000003', '22222222-2222-2222-2222-222222222222', 500, 'ベテランレベル'),
-('a1b2c3d4-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 120, 'ステップ1（見習い）'),
-('a1b2c3d4-3333-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', 300, 'ステップ2（標準作業）'),
-('a1b2c3d4-3333-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', 450, 'ステップ3（熟練作業）'),
-('a1b2c3d4-4444-0000-0000-000000000001', '44444444-4444-4444-4444-444444444444', 400, '専門クリエイティブ単価'),
-('a1b2c3d4-4444-0000-0000-000000000002', '44444444-4444-4444-4444-444444444444', 800, '高度制作単価')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.wage_rate_items (id, office_id, wage, description, sort_order) VALUES
+('a1b2c3d4-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 100, '新人レベル', 0),
+('a1b2c3d4-0000-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 250, '中堅レベル', 1),
+('a1b2c3d4-0000-0000-0000-000000000003', '22222222-2222-2222-2222-222222222222', 500, 'ベテランレベル', 2),
+('a1b2c3d4-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', 120, 'ステップ1（見習い）', 0),
+('a1b2c3d4-3333-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', 300, 'ステップ2（標準作業）', 1),
+('a1b2c3d4-3333-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', 450, 'ステップ3（熟練作業）', 2),
+('a1b2c3d4-4444-0000-0000-000000000001', '44444444-4444-4444-4444-444444444444', 400, '専門クリエイティブ単価', 0),
+('a1b2c3d4-4444-0000-0000-000000000002', '44444444-4444-4444-4444-444444444444', 800, '高度制作単価', 1)
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  wage = EXCLUDED.wage,
+  description = EXCLUDED.description,
+  sort_order = EXCLUDED.sort_order;
 
 -- 7. 利用者マスタ & 事業所割当 (members / office_member_settings)
 INSERT INTO public.members (id, user_id, code, name, yomigana) VALUES

@@ -22,6 +22,7 @@ export function ReserveSettingPage() {
       header: TABLE_COLUMNS.RESERVE_TYPE,
       editable: false,
       inputType: 'text',
+      sortable: false,
       style: { width: '220px', fontWeight: 'bold' }
     },
     {
@@ -29,6 +30,7 @@ export function ReserveSettingPage() {
       header: '計算方式',
       editable: true,
       inputType: 'select',
+      sortable: false,
       options: [
         { label: '定額（円）', value: 'fixed_amount' },
         { label: '定率（%）', value: 'fixed_rate' }
@@ -43,6 +45,7 @@ export function ReserveSettingPage() {
       header: '定額金額（円）',
       editable: (item: ReserveSettingItem) => item.calcType === 'fixed_amount',
       inputType: 'currency',
+      sortable: false,
       className: 'number-column',
       style: { width: '180px', textAlign: 'right' },
       render: (item: ReserveSettingItem) => (
@@ -58,6 +61,7 @@ export function ReserveSettingPage() {
       header: '定率（%）',
       editable: (item: ReserveSettingItem) => item.calcType === 'fixed_rate',
       inputType: 'number',
+      sortable: false,
       className: 'number-column',
       style: { width: '140px', textAlign: 'right' },
       render: (item: ReserveSettingItem) => (
@@ -87,7 +91,7 @@ export function ReserveSettingPage() {
       data={items}
       columns={columns}
       emptyMessage="積立金設定が登録されていません。"
-      initialSort={{ key: 'reserveType', direction: 'asc' }}
+      initialSort={{ key: '', direction: 'asc' }}
       onBatchSave={handleBatchSave}
       hideAddButton={true}
       hideDeleteColumn={true}

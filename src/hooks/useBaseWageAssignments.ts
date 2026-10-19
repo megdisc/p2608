@@ -22,7 +22,9 @@ export function useBaseWageAssignments() {
       if (officeId) {
         wageQuery = wageQuery.or(`office_id.eq.${officeId},office_id.is.null`);
       }
-      const { data: wagesData, error: wagesError } = await wageQuery.order('wage', { ascending: true });
+      const { data: wagesData, error: wagesError } = await wageQuery
+        .order('sort_order', { ascending: true })
+        .order('wage', { ascending: true });
 
       if (wagesError) throw wagesError;
 

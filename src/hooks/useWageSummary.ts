@@ -74,7 +74,7 @@ export function useWageSummary() {
         monthlyDeductionDetailsRes
       ] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
-        supabase.from('wage_rates').select('*').eq('is_deleted', false),
+        supabase.from('wage_rates').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
         supabase.from('member_wage_evaluations').select('*').order('created_at', { ascending: false }),
         supabase.from('projects').select(`
           id, name, code, project_type, office_id,
@@ -86,8 +86,8 @@ export function useWageSummary() {
         supabase.from('financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time, office_id').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
         supabase.from('member_attendance_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
-        supabase.from('allowances').select('*').eq('is_deleted', false),
-        supabase.from('deductions').select('*').eq('is_deleted', false),
+        supabase.from('allowances').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
+        supabase.from('deductions').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
         supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_incentive_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
         supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),

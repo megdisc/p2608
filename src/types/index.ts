@@ -104,6 +104,7 @@ export type BaseWageItem = {
   id: string;
   wage: number;
   description: string;
+  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };
@@ -118,6 +119,7 @@ export type AllowanceItem = {
   threshold_unit?: string | null;
   threshold_operator?: string | null;
   unit_price: number;
+  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };
@@ -132,6 +134,7 @@ export type DeductionItem = {
   threshold_unit?: string | null;
   threshold_operator?: string | null;
   unit_price: number;
+  sort_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
 };

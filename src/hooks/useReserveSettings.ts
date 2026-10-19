@@ -51,7 +51,14 @@ export function useReserveSettings() {
         };
       });
 
-      setItems(formatted);
+      // Fixed order: 1. 工賃変動積立金, 2. 設備等修繕維持積立金
+      const sorted = [...formatted].sort((a, b) => {
+        const orderA = a.reserveType === WORDS_PROJECT.SUBJECT_RESERVE_WAGE || a.reserveType.includes('工賃変動') ? 1 : (a.reserveType === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || a.reserveType.includes('設備等修繕')) ? 2 : 3;
+        const orderB = b.reserveType === WORDS_PROJECT.SUBJECT_RESERVE_WAGE || b.reserveType.includes('工賃変動') ? 1 : (b.reserveType === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || b.reserveType.includes('設備等修繕')) ? 2 : 3;
+        return orderA - orderB;
+      });
+
+      setItems(sorted);
     } catch (error) {
       console.error(error);
       throw error;

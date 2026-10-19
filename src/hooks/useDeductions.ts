@@ -18,7 +18,9 @@ export function useDeductions() {
         query = query.eq('office_id', officeId);
       }
 
-      const { data, error } = await query.order('name', { ascending: true });
+      const { data, error } = await query
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
       
       if (error) throw error;
       
@@ -32,6 +34,7 @@ export function useDeductions() {
         threshold_unit: d.threshold_unit || '',
         threshold_operator: d.threshold_operator || '',
         unit_price: Number(d.unit_price ?? d.default_unit_price ?? 0),
+        sort_order: d.sort_order ?? 0,
       }));
       setItems(formatted);
     } catch (error) {
@@ -55,7 +58,7 @@ export function useDeductions() {
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
+      const upserts = activeItems.map((item, index) => ({
         ...(item.id.startsWith('DED-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
         name: item.name,
@@ -66,6 +69,7 @@ export function useDeductions() {
         threshold_unit: item.threshold_unit || null,
         threshold_operator: item.threshold_operator || null,
         unit_price: Number(item.unit_price || 0),
+        sort_order: item.sort_order ?? index,
       }));
 
       if (upserts.length > 0) {

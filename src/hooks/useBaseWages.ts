@@ -18,14 +18,17 @@ export function useBaseWages() {
         query = query.eq('office_id', officeId);
       }
 
-      const { data, error } = await query.order('wage', { ascending: true });
+      const { data, error } = await query
+        .order('sort_order', { ascending: true })
+        .order('wage', { ascending: true });
       
       if (error) throw error;
       
-      const formatted = (data || []).map(d => ({
+      const formatted: BaseWageItem[] = (data || []).map(d => ({
         id: d.id,
         wage: d.wage,
-        description: d.description || ''
+        description: d.description || '',
+        sort_order: d.sort_order ?? 0,
       }));
       setItems(formatted);
     } catch (error) {
@@ -46,11 +49,12 @@ export function useBaseWages() {
       }
 
       const activeItems = drafts.filter(item => !deletedIds.includes(item.id));
-      const upserts = activeItems.map(item => ({
+      const upserts = activeItems.map((item, index) => ({
         ...(item.id.startsWith('BWG-') ? {} : { id: item.id }),
         ...(officeId ? { office_id: officeId } : {}),
         wage: item.wage,
-        description: item.description
+        description: item.description,
+        sort_order: item.sort_order ?? index,
       }));
 
       if (upserts.length > 0) {

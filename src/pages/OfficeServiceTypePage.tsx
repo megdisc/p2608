@@ -13,6 +13,10 @@ type OfficeServiceTypeGridRow = {
   [serviceTypeId: string]: any;
 };
 
+export const isBTypeServiceType = (st: { code?: string; name?: string }) => {
+  return st.code === '21' || st.name === '就労継続支援B型' || st.name === '就労支援B型';
+};
+
 export function OfficeServiceTypePage() {
   const [serviceTypes, setServiceTypes] = useState<ServiceTypeTableItem[]>([]);
   const [matrixData, setMatrixData] = useState<OfficeServiceTypeGridRow[]>([]);
@@ -84,16 +88,17 @@ export function OfficeServiceTypePage() {
     ];
 
     serviceTypes.forEach(st => {
+      const isBType = isBTypeServiceType(st);
       cols.push({
         key: st.id,
         header: st.name,
         sortable: false,
-        editable: true,
+        editable: isBType,
         inputType: 'checkbox',
-        style: { textAlign: 'center' },
-        onCellChange: (newValue, _item, updateRow) => {
+        style: { textAlign: 'center', opacity: isBType ? 1 : 0.6 },
+        onCellChange: isBType ? (newValue, _item, updateRow) => {
           updateRow({ [st.id]: Boolean(newValue) });
-        },
+        } : undefined,
       });
     });
 
@@ -118,6 +123,7 @@ export function OfficeServiceTypePage() {
 
       drafts.forEach(row => {
         serviceTypes.forEach(st => {
+          if (!isBTypeServiceType(st)) return;
           const key = `${row.id}_${st.id}`;
           const isSelected = Boolean(row[st.id]);
           const existsInDb = existingMap.has(key);

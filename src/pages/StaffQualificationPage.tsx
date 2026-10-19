@@ -13,6 +13,33 @@ type StaffQualificationGridRow = {
   [qualId: string]: any;
 };
 
+export const B_TYPE_QUALIFICATION_CODES = new Set([
+  'QUAL-001',
+  'QUAL-003',
+  'QUAL-004',
+  'QUAL-005',
+  'QUAL-011',
+  'QUAL-012',
+  'QUAL-013',
+]);
+
+export const isBTypeQualification = (qual: { code?: string; name?: string }) => {
+  if (qual.code && B_TYPE_QUALIFICATION_CODES.has(qual.code)) {
+    return true;
+  }
+  const name = qual.name || '';
+  return (
+    name.includes('サービス管理責任者') ||
+    name.includes('サビ管') ||
+    name.includes('社会福祉士') ||
+    name.includes('精神保健福祉士') ||
+    name.includes('介護福祉士') ||
+    name.includes('目標工賃達成指導員') ||
+    name.startsWith('職業指導員') ||
+    name.startsWith('生活支援員')
+  );
+};
+
 export function StaffQualificationPage() {
   const [qualifications, setQualifications] = useState<QualificationTableItem[]>([]);
   const [matrixData, setMatrixData] = useState<StaffQualificationGridRow[]>([]);
@@ -84,16 +111,17 @@ export function StaffQualificationPage() {
     ];
 
     qualifications.forEach(qual => {
+      const isBType = isBTypeQualification(qual);
       cols.push({
         key: qual.id,
         header: qual.name,
         sortable: false,
-        editable: true,
+        editable: isBType,
         inputType: 'checkbox',
-        style: { textAlign: 'center' },
-        onCellChange: (newValue, _item, updateRow) => {
+        style: { textAlign: 'center', opacity: isBType ? 1 : 0.6 },
+        onCellChange: isBType ? (newValue, _item, updateRow) => {
           updateRow({ [qual.id]: Boolean(newValue) });
-        },
+        } : undefined,
       });
     });
 
@@ -118,6 +146,7 @@ export function StaffQualificationPage() {
 
       drafts.forEach(row => {
         qualifications.forEach(qual => {
+          if (!isBTypeQualification(qual)) return;
           const key = `${row.id}_${qual.id}`;
           const isSelected = Boolean(row[qual.id]);
           const existsInDb = existingMap.has(key);

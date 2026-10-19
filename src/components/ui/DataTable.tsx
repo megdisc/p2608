@@ -672,6 +672,18 @@ export function DataTable<T extends { id: string }>({
       );
     }
     
+    if (col.inputType === 'checkbox') {
+      return (
+        <input
+          type="checkbox"
+          className="custom-checkbox"
+          checked={Boolean(item[col.key])}
+          disabled={true}
+          readOnly
+        />
+      );
+    }
+    
     if (col.inputType === 'select') {
       const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
       const option = opts.find(o => o.value === item[col.key]);

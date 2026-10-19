@@ -47,6 +47,22 @@ const getFrequencyColor = (freq: string) => {
   return 'transparent';
 };
 
+interface DBColumn {
+  name: string;
+  desc: string;
+  status?: 'added' | 'modified';
+}
+
+interface DBTable {
+  layer: string;
+  physicalName: string;
+  tableType: string;
+  logicalName: string;
+  description: string;
+  columns: DBColumn[];
+  status?: 'added' | 'modified';
+}
+
 export function ScreenCompositionPage() {
   const rows = Object.values(SCREEN_CONFIGS).map(config => ({
     screen: config.screenName,
@@ -83,7 +99,7 @@ export function ScreenCompositionPage() {
     { frequency: '毎月', name: '事業活動別収支集計', description: '就労支援事業活動および福祉事業活動ごとの月次収支を集計・参照する。', implemented: true },
   ];
 
-  const dbTables = [
+  const dbTables: DBTable[] = [
     // 1. マスタ層
     {
       layer: '1. マスタ層',
@@ -138,13 +154,15 @@ export function ScreenCompositionPage() {
       physicalName: 'reward_items',
       tableType: '従属マスタ',
       logicalName: '加算・減算項目',
-      description: '法令・報酬告示に基づく公定価格基準の体制加減算・報酬項目マスタ（給付費算定用）',
+      description: '法令・報酬告示に基づく公定価格基準の基本報酬・体制加減算マスタ（給付費算定用）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '項目ID' },
         { name: 'service_type_id', desc: '所属支援種別ID' },
         { name: 'code', desc: 'サービス詳細コード（国保連給付費算定6桁コード。例: 521111: 送迎加算, 521121: 欠席時対応加算 など）' },
         { name: 'name', desc: 'サービス詳細名称' },
-        { name: 'item_category', desc: '項目区分（addition: 体制加算 / subtraction: 体制減算）' },
+        { name: 'item_category', desc: '項目区分（base_reward: 基本報酬 / addition: 体制加算 / subtraction: 体制減算）', status: 'modified' },
+        { name: 'calc_type', desc: '算定方式（fixed_units: 固定単位数 / rate_percent: 所定単位数×率 / conditional: 条件分岐算定）', status: 'added' },
         { name: 'unit_value', desc: '加減算単位数' },
         { name: 'calc_rate', desc: '定率算定率[%]' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
@@ -158,14 +176,39 @@ export function ScreenCompositionPage() {
       physicalName: 'office_service_type_settings',
       tableType: '従属マスタ',
       logicalName: '事業所支援種別割当',
-      description: '事業所が指定を受けて実施する支援種別および定員設定',
+      description: '事業所が指定を受けて実施する支援種別および定員・人員配置・報酬区分設定',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '割当ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'service_type_id', desc: '支援種別ID' },
         { name: 'capacity', desc: '利用定員（人）' },
+        { name: 'office_number', desc: '指定事業所番号（都道府県等から付与された10桁コード。国保連請求・代理受領通知書用）', status: 'added' },
+        { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1 / 10:1。基本報酬の単位数決定用）', status: 'added' },
+        { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）', status: 'added' },
+        { name: 'regional_grade', desc: '地域区分（1級地〜7級地、その他。単価補正用）', status: 'added' },
+        { name: 'unit_price_per_point', desc: '1単位あたり単価（円。例: 10.00〜11.20円。報酬算定金額計算用）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_reward_settings',
+      tableType: '従属マスタ',
+      logicalName: '事業所加算・減算届出設定',
+      description: '各事業所が都道府県・指定都市に届出を行っている体制加算・減算の適用期間設定（給付費算定の前提条件）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '届出設定ID', status: 'added' },
+        { name: 'office_id', desc: '事業所ID', status: 'added' },
+        { name: 'reward_item_id', desc: '加算・減算項目ID（reward_itemsのIDを参照）', status: 'added' },
+        { name: 'start_date', desc: '適用開始年月日', status: 'added' },
+        { name: 'end_date', desc: '適用終了年月日（NULL: 継続適用中）', status: 'added' },
+        { name: 'is_active', desc: '有効フラグ（現在有効な届出か）', status: 'added' },
+        { name: 'remarks', desc: '届出備考・特記事項', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -550,12 +593,17 @@ export function ScreenCompositionPage() {
       physicalName: 'office_staff_settings',
       tableType: '従属マスタ',
       logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報（多拠点兼務対応）',
+      description: '職員と事業所の多対多割当・所属情報および人員配置基準判定用属性',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '割当ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'staff_id', desc: '職員ID' },
         { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
+        { name: 'staff_role', desc: '配置職種区分（administrator: 管理者, service_manager: サービス管理責任者, direct_care: 生活支援員・職業指導員, target_evaluator: 目標工賃達成指導員 等）', status: 'added' },
+        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）', status: 'added' },
+        { name: 'duty_type', desc: '勤務区分（exclusive: 専従 / concurrent: 兼務）', status: 'added' },
+        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -712,7 +760,8 @@ export function ScreenCompositionPage() {
       physicalName: 'member_attendance_records',
       tableType: 'レコード',
       logicalName: '利用者出欠実績',
-      description: '利用者の日々の出欠・通所・欠席連絡・欠席時対応自動判定記録',
+      description: '利用者の日々の出欠・通所・欠席連絡・加算判定（送迎・食事・訪問・施設外就労）記録',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '出欠記録ID' },
         { name: 'office_id', desc: '対象事業所ID' },
@@ -724,6 +773,10 @@ export function ScreenCompositionPage() {
         { name: 'has_meal', desc: '食事利用フラグ' },
         { name: 'has_pickup', desc: '送迎（往路）利用フラグ' },
         { name: 'has_dropoff', desc: '送迎（復路）利用フラグ' },
+        { name: 'is_visit_supported', desc: '訪問支援加算フラグ（欠席時に居宅等を訪問して相談援助を実施した場合に算定）', status: 'added' },
+        { name: 'is_trial_use', desc: '体験利用支援加算フラグ（特別支援学校等の生徒が体験利用した場合に算定）', status: 'added' },
+        { name: 'is_offsite_work', desc: '施設外就労・施設外支援フラグ（事業所外で就労・個別支援を実施した場合の加算・減算確認用）', status: 'added' },
+        { name: 'service_hours', desc: '実サービス提供時間（時間数。短時間利用減算や報酬告示上の提供時間確認用）', status: 'added' },
         { name: 'remarks', desc: '備考・欠席理由/連絡・相談援助内容' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
@@ -936,6 +989,56 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '4. スナップショット層',
+      physicalName: 'monthly_service_billing_summaries',
+      tableType: 'スナップショット',
+      logicalName: '月次サービス費・給付費算定集計',
+      description: '利用者ごとの月次サービス利用料全額（10割・総費用額）、利用者負担額（1割・上限月額判定）、および自治体請求額（9割・介護給付費等）の確定スナップショット',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '集計ID', status: 'added' },
+        { name: 'office_id', desc: '事業所ID', status: 'added' },
+        { name: 'member_id', desc: '利用者ID', status: 'added' },
+        { name: 'target_period', desc: '対象年月（YYYY-MM）', status: 'added' },
+        { name: 'attendance_days', desc: '当月実利用日数（算定日数）', status: 'added' },
+        { name: 'base_reward_units', desc: '基本報酬算定単位数（基本報酬×日数）', status: 'added' },
+        { name: 'addition_units', desc: '加算単位数合計（送迎・食事・指導員配置・目標工賃等各種加算）', status: 'added' },
+        { name: 'subtraction_units', desc: '減算単位数合計（定員超過減算・人員欠員減算・身体拘束未実施等）', status: 'added' },
+        { name: 'total_units', desc: '総算定単位数（基本単位＋加算−減算）', status: 'added' },
+        { name: 'unit_price', desc: '地域区分1単位単価（円）', status: 'added' },
+        { name: 'total_cost_amount', desc: 'サービス費用総額（10割。総単位数 × 単価）', status: 'added' },
+        { name: 'calculated_copayment_amount', desc: '利用者負担基準額（原則1割 = 10%）', status: 'added' },
+        { name: 'copayment_limit_amount', desc: '利用者負担上限月額（受給者証記載の自己負担上限額。0円/9,300円/37,200円等）', status: 'added' },
+        { name: 'final_copayment_amount', desc: '決定利用者自己負担額（基準額と上限月額の小さい方。実際に利用者が支払うサービス利用料）', status: 'added' },
+        { name: 'benefit_billing_amount', desc: '国保連／自治体請求給付費（総額10割 − 決定自己負担額。原則9割相当）', status: 'added' },
+        { name: 'actual_expense_amount', desc: '実費費用合計（食材料費・送迎燃料費・その他自己負担実費）', status: 'added' },
+        { name: 'total_member_billed_amount', desc: '利用者総請求額（決定利用者負担額 ＋ 実費費用合計）', status: 'added' },
+        { name: 'status', desc: '確定ステータス（draft: 計算中, confirmed: 月次締め確定済み）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '4. スナップショット層',
+      physicalName: 'monthly_service_billing_details',
+      tableType: 'スナップショット',
+      logicalName: '月次サービス費算定明細',
+      description: '月次サービス費集計の内訳明細スナップショット（基本報酬・送迎加算・食事提供加算・目標工賃達成加算等の個別項目算定ログ）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '明細ID', status: 'added' },
+        { name: 'billing_summary_id', desc: '月次サービス費集計ID（monthly_service_billing_summariesのIDを参照）', status: 'added' },
+        { name: 'reward_item_id', desc: '加減算・報酬項目ID（reward_itemsのIDを参照）', status: 'added' },
+        { name: 'service_code', desc: '国保連サービス種類・項目コード（6桁コード）', status: 'added' },
+        { name: 'item_name', desc: '算定項目名称', status: 'added' },
+        { name: 'item_category', desc: '項目区分（base_reward / addition / subtraction）', status: 'added' },
+        { name: 'unit_value', desc: '単位数（1回・1日あたり単価単位数）', status: 'added' },
+        { name: 'count', desc: '算定回数・日数', status: 'added' },
+        { name: 'total_item_units', desc: '算定単位数小計（単位数 × 回数）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '4. スナップショット層',
       physicalName: 'monthly_financial_closings',
       tableType: 'スナップショット',
       logicalName: '月次収支確定',
@@ -994,6 +1097,82 @@ export function ScreenCompositionPage() {
           </table>
         ) : isTableComposition ? (
           <div>
+            <div style={{
+              marginBottom: '16px',
+              padding: '16px 20px',
+              backgroundColor: '#eff6ff',
+              border: '1px solid #bfdbfe',
+              borderRadius: '8px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span style={{ fontSize: '18px' }}>📋</span>
+                <span style={{ fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>
+                  就労継続支援B型 サービス費算定ロジック（10割・1割）対応 スキーマ改修設計
+                </span>
+              </div>
+              <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#1e40af', lineHeight: '1.6' }}>
+                本システム（就労継続支援B型）における「サービス利用料全額（10割・総費用額）」および「利用者自己負担額（原則1割・上限月額管理判定）」の自動算定ロジック構築に向けて、網羅的な条件登録に必要なテーブル・カラムの追加・変更箇所を<strong style={{ color: '#1d4ed8' }}>青色系背景</strong>で識別表示しています。
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff'
+                  }}>
+                    新規テーブル
+                  </span>
+                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算届出設定、月次集計、月次明細）</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: 'bold',
+                    backgroundColor: '#0284c7',
+                    color: '#ffffff'
+                  }}>
+                    一部変更
+                  </span>
+                  <span style={{ color: '#334155' }}>：カラム追加・改修予定の既存テーブル</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '1px 6px',
+                    borderRadius: '3px',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff'
+                  }}>
+                    追加
+                  </span>
+                  <span style={{ color: '#334155' }}>：新規追加カラム（青色背景）</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '1px 6px',
+                    borderRadius: '3px',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    backgroundColor: '#0284c7',
+                    color: '#ffffff'
+                  }}>
+                    変更
+                  </span>
+                  <span style={{ color: '#334155' }}>：定義・区分拡張カラム（青色背景）</span>
+                </div>
+              </div>
+            </div>
 
             <table className="inventory-table">
               <thead>
@@ -1030,9 +1209,34 @@ export function ScreenCompositionPage() {
                     const tableRows = table.columns.map((col, idx) => {
                       const isLastInTable = idx === table.columns.length - 1;
                       const borderBottomStyle = isLastInTable ? undefined : 'none';
+                      const isTableAdded = table.status === 'added';
+                      const isColAdded = col.status === 'added';
+                      const isColModified = col.status === 'modified';
+
+                      const rowBgColor = isTableAdded ? '#f0f7ff' : (isColAdded || isColModified) ? '#f8fafc' : undefined;
+
+                      const colNameBg = isColAdded
+                        ? '#dbeafe'
+                        : isColModified
+                          ? '#e0f2fe'
+                          : isTableAdded
+                            ? '#e0f2fe'
+                            : undefined;
+
+                      const colDescBg = isColAdded
+                        ? '#eff6ff'
+                        : isColModified
+                          ? '#f0f9ff'
+                          : isTableAdded
+                            ? '#f0f7ff'
+                            : undefined;
+
                       return (
-                        <tr key={`${i}-${idx}`}>
-                          <td style={{ borderBottom: borderBottomStyle }}>
+                        <tr key={`${i}-${idx}`} style={{ backgroundColor: rowBgColor }}>
+                          <td style={{
+                            borderBottom: borderBottomStyle,
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
+                          }}>
                             {idx === 0 ? (
                               <span style={{
                                 display: 'inline-block',
@@ -1048,7 +1252,10 @@ export function ScreenCompositionPage() {
                               </span>
                             ) : ''}
                           </td>
-                          <td style={{ borderBottom: borderBottomStyle }}>
+                          <td style={{
+                            borderBottom: borderBottomStyle,
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
+                          }}>
                             {idx === 0 ? (
                               <span style={{
                                 display: 'inline-block',
@@ -1076,14 +1283,99 @@ export function ScreenCompositionPage() {
                               </span>
                             ) : ''}
                           </td>
-                          <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
-                            {idx === 0 ? table.physicalName : ''}
+                          <td style={{
+                            borderBottom: borderBottomStyle,
+                            fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined,
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
+                          }}>
+                            {idx === 0 ? (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ color: isTableAdded ? '#1e40af' : undefined, fontWeight: 'bold' }}>
+                                  {table.physicalName}
+                                </span>
+                                {table.status === 'added' && (
+                                  <span style={{
+                                    display: 'inline-block',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    backgroundColor: '#2563eb',
+                                    color: '#ffffff'
+                                  }}>
+                                    新規
+                                  </span>
+                                )}
+                                {table.status === 'modified' && (
+                                  <span style={{
+                                    display: 'inline-block',
+                                    padding: '2px 6px',
+                                    borderRadius: '4px',
+                                    fontSize: '10px',
+                                    fontWeight: 'bold',
+                                    backgroundColor: '#0284c7',
+                                    color: '#ffffff'
+                                  }}>
+                                    一部変更
+                                  </span>
+                                )}
+                              </div>
+                            ) : ''}
                           </td>
-                          <td style={{ borderBottom: borderBottomStyle, fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined }}>
-                            {idx === 0 ? table.logicalName : ''}
+                          <td style={{
+                            borderBottom: borderBottomStyle,
+                            fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined,
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
+                          }}>
+                            {idx === 0 ? (
+                              <span style={{ color: isTableAdded ? '#1e40af' : undefined, fontWeight: 'bold' }}>
+                                {table.logicalName}
+                              </span>
+                            ) : ''}
                           </td>
-                          <td style={{ color: 'var(--color-text-main)' }}>{col.name}</td>
-                          <td style={{ color: 'var(--color-text-main)' }}>{col.desc}</td>
+                          <td style={{
+                            backgroundColor: colNameBg,
+                            borderLeft: (isColAdded || isColModified) ? '3px solid #2563eb' : (isTableAdded ? '3px solid #60a5fa' : undefined),
+                            color: (isColAdded || isTableAdded) ? '#1e3a8a' : isColModified ? '#0369a1' : 'var(--color-text-main)'
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              {isColAdded && (
+                                <span style={{
+                                  padding: '1px 5px',
+                                  borderRadius: '3px',
+                                  fontSize: '10px',
+                                  fontWeight: 'bold',
+                                  backgroundColor: '#2563eb',
+                                  color: '#ffffff',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  追加
+                                </span>
+                              )}
+                              {isColModified && (
+                                <span style={{
+                                  padding: '1px 5px',
+                                  borderRadius: '3px',
+                                  fontSize: '10px',
+                                  fontWeight: 'bold',
+                                  backgroundColor: '#0284c7',
+                                  color: '#ffffff',
+                                  whiteSpace: 'nowrap'
+                                }}>
+                                  変更
+                                </span>
+                              )}
+                              <span style={{ fontWeight: (isColAdded || isColModified || isTableAdded) ? '600' : 'normal' }}>
+                                {col.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td style={{
+                            backgroundColor: colDescBg,
+                            color: (isColAdded || isTableAdded) ? '#1e40af' : isColModified ? '#075985' : 'var(--color-text-main)'
+                          }}>
+                            {col.desc}
+                          </td>
                         </tr>
                       );
                     });
@@ -1103,8 +1395,6 @@ export function ScreenCompositionPage() {
                 })()}
               </tbody>
             </table>
-
-
           </div>
         ) : (
           <table className="inventory-table">

@@ -151,11 +151,16 @@ ON CONFLICT (id) DO UPDATE SET
   description = EXCLUDED.description,
   is_active = EXCLUDED.is_active;
 
-INSERT INTO public.office_service_type_settings (id, office_id, service_type_id, capacity) VALUES
-('33333333-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', 20),
-('33333333-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '11111111-0000-0000-0000-000000000001', 20),
-('33333333-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '11111111-0000-0000-0000-000000000001', 20)
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.office_service_type_settings (id, office_id, service_type_id, capacity, office_number, staffing_ratio, wage_achievement_tier, regional_grade, unit_price_per_point) VALUES
+('33333333-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', 20, '1310100001', '7.5:1', '4万円以上4万5千円未満', '5級地', 10.68),
+('33333333-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '11111111-0000-0000-0000-000000000001', 20, '1310100002', '7.5:1', '3万円以上3万5千円未満', '5級地', 10.68),
+('33333333-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '11111111-0000-0000-0000-000000000001', 20, '1310100003', '10:1', '2万円以上2万5千円未満', '5級地', 10.68)
+ON CONFLICT (id) DO UPDATE SET
+  office_number = EXCLUDED.office_number,
+  staffing_ratio = EXCLUDED.staffing_ratio,
+  wage_achievement_tier = EXCLUDED.wage_achievement_tier,
+  regional_grade = EXCLUDED.regional_grade,
+  unit_price_per_point = EXCLUDED.unit_price_per_point;
 
 -- 3.2 資格マスタ (qualifications) 全24件 (就労B型関連のみ is_active = true)
 INSERT INTO public.qualifications (id, code, name, category, description, is_active) VALUES

@@ -187,6 +187,8 @@ export function ScreenCompositionPage() {
         { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）', status: 'added' },
         { name: 'regional_grade', desc: '地域区分（1級地〜7級地、その他。単価補正用）', status: 'added' },
         { name: 'unit_price_per_point', desc: '1単位あたり単価（円。例: 10.00〜11.20円。報酬算定金額計算用）', status: 'added' },
+        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除用）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

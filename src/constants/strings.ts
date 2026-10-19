@@ -345,6 +345,12 @@ export const TABLE_COLUMNS = {
   SERVICE_TYPE_CODE: 'サービス種類コード',
   SERVICE_TYPE_NAME: 'サービス種類名称',
   SERVICE_TYPE: '支援種別',
+  OFFICE_NUMBER: '指定事業所番号',
+  CAPACITY: '定員',
+  STAFFING_RATIO: '人員配置基準',
+  WAGE_ACHIEVEMENT_TIER: '平均工賃月額区分',
+  REGIONAL_GRADE: '地域区分',
+  UNIT_PRICE_PER_POINT: '1単位あたり単価(円)',
   REWARD_ITEM: '加算・減算',
   QUALIFICATION: '資格',
   ORGANIZATION: '法人',
@@ -550,3 +556,43 @@ export const THRESHOLD_OPERATOR_OPTIONS = [
   { label: '未満', value: 'lt' },
   { label: '一致', value: 'eq' }
 ];
+
+export const STAFFING_RATIO_OPTIONS = [
+  { label: '7.5:1', value: '7.5:1' },
+  { label: '10:1', value: '10:1' }
+];
+
+export const REGIONAL_GRADE_OPTIONS = [
+  { label: '1級地', value: '1級地' },
+  { label: '2級地', value: '2級地' },
+  { label: '3級地', value: '3級地' },
+  { label: '4級地', value: '4級地' },
+  { label: '5級地', value: '5級地' },
+  { label: '6級地', value: '6級地' },
+  { label: '7級地', value: '7級地' },
+  { label: 'その他', value: 'その他' }
+];
+
+export const REGIONAL_GRADE_UNIT_PRICES: Record<string, number> = {
+  '1級地': 11.20,
+  '2級地': 10.96,
+  '3級地': 10.88,
+  '4級地': 10.72,
+  '5級地': 10.68,
+  '6級地': 10.42,
+  '7級地': 10.28,
+  'その他': 10.00
+};
+
+export const WAGE_ACHIEVEMENT_TIER_OPTIONS = [
+  { label: '4万5千円以上', value: '4万5千円以上' },
+  { label: '4万円以上4万5千円未満', value: '4万円以上4万5千円未満' },
+  { label: '3万5千円以上4万円未満', value: '3万5千円以上4万円未満' },
+  { label: '3万円以上3万5千円未満', value: '3万円以上3万5千円未満' },
+  { label: '2万5千円以上3万円未満', value: '2万5千円以上3万円未満' },
+  { label: '2万円以上2万5千円未満', value: '2万円以上2万5千円未満' },
+  { label: '1万5千円以上2万円未満', value: '1万5千円以上2万円未満' },
+  { label: '1万円以上1万5千円未満', value: '1万円以上1万5千円未満' },
+  { label: '1万円未満', value: '1万円未満' }
+];
+

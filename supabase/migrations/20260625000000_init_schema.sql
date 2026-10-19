@@ -92,6 +92,8 @@ CREATE TABLE IF NOT EXISTS "public"."office_service_type_settings" (
     "wage_achievement_tier" VARCHAR(50),
     "regional_grade" VARCHAR(20),
     "unit_price_per_point" NUMERIC(12,2) DEFAULT 10.00 NOT NULL,
+    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
+    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );

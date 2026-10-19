@@ -989,16 +989,16 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '4. スナップショット層',
-      physicalName: 'monthly_service_billing_summaries',
+      physicalName: 'service_billing_summaries',
       tableType: 'スナップショット',
-      logicalName: '月次サービス費・給付費算定集計',
+      logicalName: 'サービス費概要',
       description: '利用者ごとの月次サービス利用料全額（10割・総費用額）、利用者負担額（1割・上限月額判定）、および自治体請求額（9割・介護給付費等）の確定スナップショット',
       status: 'added',
       columns: [
-        { name: 'id', desc: '集計ID', status: 'added' },
+        { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID', status: 'added' },
         { name: 'member_id', desc: '利用者ID', status: 'added' },
-        { name: 'target_period', desc: '対象年月（YYYY-MM）', status: 'added' },
+        { name: 'target_period', desc: '対象時期(YYYY-MM)', status: 'added' },
         { name: 'attendance_days', desc: '当月実利用日数（算定日数）', status: 'added' },
         { name: 'base_reward_units', desc: '基本報酬算定単位数（基本報酬×日数）', status: 'added' },
         { name: 'addition_units', desc: '加算単位数合計（送迎・食事・指導員配置・目標工賃等各種加算）', status: 'added' },
@@ -1019,14 +1019,14 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '4. スナップショット層',
-      physicalName: 'monthly_service_billing_details',
+      physicalName: 'service_billing_details',
       tableType: 'スナップショット',
-      logicalName: '月次サービス費算定明細',
-      description: '月次サービス費集計の内訳明細スナップショット（基本報酬・送迎加算・食事提供加算・目標工賃達成加算等の個別項目算定ログ）',
+      logicalName: 'サービス費明細',
+      description: 'サービス費集計の内訳明細スナップショット（基本報酬・送迎加算・食事提供加算・目標工賃達成加算等の個別項目算定ログ）',
       status: 'added',
       columns: [
         { name: 'id', desc: '明細ID', status: 'added' },
-        { name: 'billing_summary_id', desc: '月次サービス費集計ID（monthly_service_billing_summariesのIDを参照）', status: 'added' },
+        { name: 'summary_id', desc: 'サービス費概要ID（service_billing_summariesのIDを参照）', status: 'added' },
         { name: 'reward_item_id', desc: '加減算・報酬項目ID（reward_itemsのIDを参照）', status: 'added' },
         { name: 'service_code', desc: '国保連サービス種類・項目コード（6桁コード）', status: 'added' },
         { name: 'item_name', desc: '算定項目名称', status: 'added' },
@@ -1127,7 +1127,7 @@ export function ScreenCompositionPage() {
                   }}>
                     新規テーブル
                   </span>
-                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算届出設定、月次集計、月次明細）</span>
+                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算届出設定、サービス費概要、サービス費明細）</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{

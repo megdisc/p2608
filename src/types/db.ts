@@ -83,7 +83,6 @@ export type OfficeTableItem = {
   code?: string;
   name: string;
   short_name?: string;
-  unit_price?: number;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;

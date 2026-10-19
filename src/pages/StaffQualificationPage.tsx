@@ -14,13 +14,24 @@ type StaffQualificationGridRow = {
 };
 
 export const B_TYPE_QUALIFICATION_CODES = new Set([
-  'QUAL-001',
-  'QUAL-003',
-  'QUAL-004',
-  'QUAL-005',
-  'QUAL-011',
-  'QUAL-012',
-  'QUAL-013',
+  'QUAL-001', // サービス管理責任者
+  'QUAL-003', // 社会福祉士
+  'QUAL-004', // 精神保健福祉士
+  'QUAL-005', // 介護福祉士
+  'QUAL-006', // 公認心理師
+  'QUAL-007', // 看護師・准看護師
+  'QUAL-008', // 理学療法士（PT）
+  'QUAL-009', // 作業療法士（OT）
+  'QUAL-010', // 言語聴覚士（ST）
+  'QUAL-011', // 目標工賃達成指導員
+  'QUAL-012', // 職業指導員
+  'QUAL-013', // 生活支援員
+  'QUAL-014', // 強度行動障害支援者養成研修修了者
+  'QUAL-022', // 喀痰吸引等研修修了者
+  'QUAL-025', // 障害者ピアサポート研修修了者
+  'QUAL-026', // 職場適応援助者（ジョブコーチ）
+  'QUAL-027', // 手話通訳士・手話通訳者・要約筆記者
+  'QUAL-028', // 管理者（就労継続支援B型）
 ]);
 
 export const isBTypeQualification = (qual: { code?: string; name?: string }) => {
@@ -34,9 +45,21 @@ export const isBTypeQualification = (qual: { code?: string; name?: string }) => 
     name.includes('社会福祉士') ||
     name.includes('精神保健福祉士') ||
     name.includes('介護福祉士') ||
+    name.includes('公認心理師') ||
+    name.includes('看護師') ||
+    name.includes('理学療法士') ||
+    name.includes('作業療法士') ||
+    name.includes('言語聴覚士') ||
     name.includes('目標工賃達成指導員') ||
     name.startsWith('職業指導員') ||
-    name.startsWith('生活支援員')
+    name.startsWith('生活支援員') ||
+    name.includes('強度行動障害') ||
+    name.includes('喀痰吸引') ||
+    name.includes('ピアサポート') ||
+    name.includes('ジョブコーチ') ||
+    name.includes('手話通訳') ||
+    name.includes('要約筆記') ||
+    name.includes('管理者')
   );
 };
 

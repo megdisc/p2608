@@ -12,7 +12,6 @@ export type OfficeItem = {
   code: string;
   name: string;
   short_name: string;
-  unit_price: number;
   postal_code_prefix: string;
   postal_code_suffix: string;
   prefecture: string;
@@ -92,7 +91,6 @@ export function useOffices() {
           code: o.code || '',
           name: o.name,
           short_name: o.short_name || '',
-          unit_price: o.unit_price ?? 10.68,
           postal_code_prefix: addr.postal_code_prefix || '',
           postal_code_suffix: addr.postal_code_suffix || '',
           prefecture: addr.prefecture || '',
@@ -132,7 +130,6 @@ export function useOffices() {
           code: item.code?.trim() || null,
           name: item.name,
           short_name: item.short_name?.trim() || null,
-          unit_price: item.unit_price || 10.68,
         };
         if (!item.id.startsWith('OFF-')) {
           upsertData.id = item.id;

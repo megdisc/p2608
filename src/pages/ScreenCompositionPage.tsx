@@ -245,18 +245,15 @@ export function ScreenCompositionPage() {
       layer: '1. マスタ層',
       physicalName: 'office_reward_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所加算・減算届出概要',
-      description: '各事業所が行政（都道府県・指定都市）に届出を行った体制等状況届出の届出単位・適用期間・特記事項ヘッダー（加算・減算項目セットの世代・履歴管理）',
+      logicalName: '事業所加算・減算概要',
+      description: '各事業所における加算・減算の有効年月・適用期間の管理（加算・減算項目セットの履歴管理）',
       status: 'added',
       columns: [
-        { name: 'id', desc: '届出概要ID', status: 'added' },
+        { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID（officesのIDを参照）', status: 'added' },
-        { name: 'start_date', desc: '適用開始年月日（月初等）', status: 'added' },
-        { name: 'end_date', desc: '適用終了年月日（NULL: 継続適用中）', status: 'added' },
-        { name: 'submission_date', desc: '届出提出年月日（行政受理日）', status: 'added' },
-        { name: 'notification_type', desc: '届出区分（regular: 定期改定, initial: 新規指定, change: 体制変更等）', status: 'added' },
-        { name: 'is_active', desc: '有効フラグ（現在有効な届出セットか）', status: 'added' },
-        { name: 'remarks', desc: '届出備考・特記事項（行政への申し送り・体制状況メモ）', status: 'added' },
+        { name: 'start_date', desc: '有効開始年月日（適用開始年月）', status: 'added' },
+        { name: 'end_date', desc: '有効終了年月日（適用終了年月。NULL: 継続中）', status: 'added' },
+        { name: 'is_active', desc: '有効フラグ（現在有効な設定か）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
@@ -265,16 +262,13 @@ export function ScreenCompositionPage() {
       layer: '1. マスタ層',
       physicalName: 'office_reward_details',
       tableType: '従属マスタ',
-      logicalName: '事業所加算・減算届出詳細',
-      description: '届出概要に紐づく個別の加算・減算対象項目明細（セット単位での複数加算登録・設定値管理）',
+      logicalName: '事業所加算・減算詳細',
+      description: '事業所加算・減算概要に紐づく対象加算・減算項目の一覧（セットを構成する各項目）',
       status: 'added',
       columns: [
-        { name: 'id', desc: '届出詳細ID', status: 'added' },
-        { name: 'summary_id', desc: '届出概要ID（office_reward_summariesのIDを参照）', status: 'added' },
+        { name: 'id', desc: '詳細ID', status: 'added' },
+        { name: 'summary_id', desc: '概要ID（office_reward_summariesのIDを参照）', status: 'added' },
         { name: 'reward_item_id', desc: '加算・減算項目ID（reward_itemsのIDを参照）', status: 'added' },
-        { name: 'setting_value', desc: '設定値（単位数・目標倍率などの補足値）', status: 'added' },
-        { name: 'condition_memo', desc: '算定要件充足状況・職員配置根拠等のメモ', status: 'added' },
-        { name: 'is_active', desc: '有効フラグ（当該届出セット内で算定対象とするか）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
@@ -1181,7 +1175,7 @@ export function ScreenCompositionPage() {
                   }}>
                     新規テーブル
                   </span>
-                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算・減算届出概要、事業所加算・減算届出詳細、サービス費概要、サービス費明細）</span>
+                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算・減算概要、事業所加算・減算詳細、サービス費概要、サービス費明細）</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{

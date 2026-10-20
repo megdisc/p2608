@@ -711,6 +711,31 @@ export function DataTable<T extends { id: string }>({
     return item[col.key];
   };
 
+  const renderCellWrapper = (content: React.ReactNode, textAlign?: string, isQuantity?: boolean) => (
+    <div style={{ 
+      display: 'flex', 
+      alignItems: 'center', 
+      height: '42px',
+      boxSizing: 'border-box',
+      gap: '8px',
+      justifyContent: isQuantity || textAlign === 'right' ? 'flex-end' : textAlign === 'center' ? 'center' : 'flex-start'
+    }}>
+      {content}
+    </div>
+  );
+
+  const renderStickyWrapper = (content: React.ReactNode) => (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '42px',
+      boxSizing: 'border-box'
+    }}>
+      {content}
+    </div>
+  );
+
   const tableStyle = { '--first-col-width': `${firstColWidth}px` } as React.CSSProperties;
   const isEditingEnabled = !!onBatchSave;
   const showDeleteCol = isEditingEnabled && !hideDeleteColumn;
@@ -876,23 +901,31 @@ export function DataTable<T extends { id: string }>({
                             
                             return (
                               <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                {col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id, item) : null}
+                                {renderCellWrapper(
+                                  col.rowType === 'sub-sub' ? renderCellContent(col, subSubItem, false, item.id, true, subItem.id, item) : null,
+                                  (customStyle as any)?.textAlign,
+                                  col.className?.includes('quantity')
+                                )}
                               </td>
                             );
                           })}
                           {showDeleteCol && (
                             <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                              <Input 
-                                type="checkbox" 
-                                checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
-                                disabled={deletedIds.has(subItem.id) || isDeleted || !isRowEditable || !isRowDeletable}
-                                onChange={() => toggleDelete(subSubItem.id)}
-                                className="custom-checkbox"
-                              />
+                              {renderStickyWrapper(
+                                <Input 
+                                  type="checkbox" 
+                                  checked={deletedIds.has(subSubItem.id) || deletedIds.has(subItem.id) || isDeleted}
+                                  disabled={deletedIds.has(subItem.id) || isDeleted || !isRowEditable || !isRowDeletable}
+                                  onChange={() => toggleDelete(subSubItem.id)}
+                                  className="custom-checkbox"
+                                />
+                              )}
                             </td>
                           )}
                           {showRestrictionColumn && (
-                            <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...((!isLastSubItem || !isLastSubSubItem) ? { borderBottom: 'none' } : {}) }}></td>
+                            <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...((!isLastSubItem || !isLastSubSubItem) ? { borderBottom: 'none' } : {}) }}>
+                              {renderStickyWrapper(null)}
+                            </td>
                           )}
                         </tr>
                       );
@@ -941,49 +974,54 @@ export function DataTable<T extends { id: string }>({
                         if (col.rowType === 'sub') {
                           return (
                             <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                              {col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null}
+                              {renderCellWrapper(
+                                col.mainRender ? col.mainRender(item, () => handleAddSubRowClick(item.id)) : null,
+                                (customStyle as any)?.textAlign,
+                                col.className?.includes('quantity')
+                              )}
                             </td>
                           );
                         }
                         if (col.rowType === 'sub-sub') {
                           return (
                             <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                              {null}
+                              {renderCellWrapper(null, (customStyle as any)?.textAlign, col.className?.includes('quantity'))}
                             </td>
                           );
                         }
                         return (
                           <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                            <div style={{ 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              gap: '8px',
-                              justifyContent: col.className?.includes('quantity') || (customStyle as any)?.textAlign === 'right' ? 'flex-end' : (customStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
-                            }}>
-                              {renderCellContent(col, item, false, undefined, false, undefined, item)}
-                            </div>
+                            {renderCellWrapper(
+                              renderCellContent(col, item, false, undefined, false, undefined, item),
+                              (customStyle as any)?.textAlign,
+                              col.className?.includes('quantity')
+                            )}
                           </td>
                         );
                       })}
                       {showDeleteCol && (
                         <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                          {isRowDeletable && (
-                            <Input 
-                              type="checkbox" 
-                              checked={isDeleted}
-                              onChange={() => toggleDelete(item.id)}
-                              className="custom-checkbox"
-                            />
+                          {renderStickyWrapper(
+                            isRowDeletable ? (
+                              <Input 
+                                type="checkbox" 
+                                checked={isDeleted}
+                                onChange={() => toggleDelete(item.id)}
+                                className="custom-checkbox"
+                              />
+                            ) : null
                           )}
                         </td>
                       )}
                       {showRestrictionColumn && (
                         <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...(subItems.length > 0 ? { borderBottom: 'none' } : {}) }}>
-                          {!isRowEditable && (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
+                          {renderStickyWrapper(
+                            !isRowEditable ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                              </svg>
+                            ) : null
                           )}
                         </td>
                       )}
@@ -1040,7 +1078,11 @@ export function DataTable<T extends { id: string }>({
                             if (col.rowType === 'sub-sub') {
                               return (
                                 <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                  {col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id), subItem) : null}
+                                  {renderCellWrapper(
+                                    col.mainRender ? col.mainRender(item, () => handleAddSubSubRowClick(item.id, subItem.id), subItem) : null,
+                                    (customStyle as any)?.textAlign,
+                                    col.className?.includes('quantity')
+                                  )}
                                 </td>
                               );
                             }
@@ -1056,20 +1098,17 @@ export function DataTable<T extends { id: string }>({
                                 };
                                 return (
                                   <td key={col.key || idx} className={`${col.className || ''} ${isMainInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={mainCustomStyle}>
-                                    <div style={{ 
-                                      display: 'flex', 
-                                      alignItems: 'center', 
-                                      gap: '8px',
-                                      justifyContent: col.className?.includes('quantity') || (mainCustomStyle as any)?.textAlign === 'right' ? 'flex-end' : (mainCustomStyle as any)?.textAlign === 'center' ? 'center' : 'flex-start'
-                                    }}>
-                                      {renderCellContent(col, item, false, undefined, false, undefined, item)}
-                                    </div>
+                                    {renderCellWrapper(
+                                      renderCellContent(col, item, false, undefined, false, undefined, item),
+                                      (mainCustomStyle as any)?.textAlign,
+                                      col.className?.includes('quantity')
+                                    )}
                                   </td>
                                 );
                               } else {
                                 return (
                                   <td key={col.key || idx} className={col.className || ''} style={customStyle}>
-                                    {null}
+                                    {renderCellWrapper(null, (customStyle as any)?.textAlign, col.className?.includes('quantity'))}
                                   </td>
                                 );
                               }
@@ -1077,23 +1116,30 @@ export function DataTable<T extends { id: string }>({
 
                             return (
                               <td key={col.key || idx} className={`${col.className || ''} ${isInputColumn ? 'bg-input-highlight' : ''}`.trim()} style={customStyle}>
-                                {(col.rowType === 'sub' || col.rowType === 'both') ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null}
+                                {renderCellWrapper(
+                                  (col.rowType === 'sub' || col.rowType === 'both') ? renderCellContent(col, subItem, true, item.id, false, undefined, item) : null,
+                                  (customStyle as any)?.textAlign,
+                                  col.className?.includes('quantity')
+                                )}
                               </td>
                             );
                           })}
                           {showDeleteCol && (
                             <td className="sticky-right" style={{ textAlign: 'center', right: showRestrictionColumn ? '40px' : '0' }}>
-                              <Input 
-                                type="checkbox" 
-                                checked={isSubDeleted || isDeleted}
-                                disabled={isDeleted}
-                                onChange={() => toggleDelete(subItem.id)}
-                                className="custom-checkbox"
-                              />
+                              {renderStickyWrapper(
+                                <Input 
+                                  type="checkbox" 
+                                  checked={isSubDeleted || isDeleted}
+                                  disabled={isDeleted}
+                                  onChange={() => toggleDelete(subItem.id)}
+                                  className="custom-checkbox"
+                                />
+                              )}
                             </td>
                           )}
                           {showRestrictionColumn && (
                             <td className="sticky-right" style={{ textAlign: 'center', right: '0', ...((!isLastSubItem || (!isSubSubHidden && subSubItems.length > 0)) ? { borderBottom: 'none' } : {}) }}>
+                              {renderStickyWrapper(null)}
                             </td>
                           )}
                         </tr>

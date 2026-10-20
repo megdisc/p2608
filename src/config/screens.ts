@@ -18,6 +18,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'serviceType', label: PAGE_NAMES.SERVICE_TYPE },
       { id: 'rewardItem', label: PAGE_NAMES.REWARD_ITEM },
       { id: 'qualification', label: PAGE_NAMES.QUALIFICATION },
+      { id: 'regionalGrade', label: PAGE_NAMES.REGIONAL_GRADE },
     ],
   },
   SCREEN_FACILITY: {

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, Button, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
+import { calculateRegionalUnitPrice } from '../utils';
 import {
   MESSAGES,
   TABLE_COLUMNS,
@@ -23,8 +24,7 @@ export type OfficeServiceTypeRow = {
   capacity: number;
   staffing_ratio: string;
   wage_achievement_tier: string;
-  regional_grade: string;
-  unit_price_per_point: number;
+  unit_price: number;
 };
 
 export type OfficeWithServiceTypes = {
@@ -35,49 +35,8 @@ export type OfficeWithServiceTypes = {
   serviceTypes: OfficeServiceTypeRow[];
 };
 
-export const isBTypeServiceType = (st: { code?: string; name?: string }) => {
+const isBTypeServiceType = (st: { code?: string; name?: string }) => {
   return st.code === '21' || st.name === '就労継続支援B型' || st.name === '就労支援B型';
-};
-
-/**
- * 事業所の所在地（都道府県・市区町村）と支援種別（人件費割合）に基づき、
- * 地域区分（級地）および1単位あたり単価（円）を自動算出する
- */
-export const calculateRegionalGradeAndUnitPrice = (
-  officeAddress: { prefecture?: string; city?: string } | undefined,
-  serviceType: ServiceTypeTableItem | undefined,
-  regionalGrades: RegionalGradeTableItem[]
-): { regional_grade: string; unit_price_per_point: number } => {
-  if (!officeAddress || !officeAddress.prefecture || !officeAddress.city) {
-    return { regional_grade: 'その他', unit_price_per_point: 10.00 };
-  }
-
-  const pref = officeAddress.prefecture.trim();
-  const city = officeAddress.city.trim();
-
-  // 1. 都道府県と市区町村の完全一致
-  let matched = regionalGrades.find(
-    rg => rg.prefecture === pref && rg.city === city
-  );
-
-  // 2. 前方一致・部分一致（「広島市中区」と「広島市」など政令指定都市等の配慮）
-  if (!matched) {
-    matched = regionalGrades.find(
-      rg => rg.prefecture === pref && (city.startsWith(rg.city) || rg.city.startsWith(city))
-    );
-  }
-
-  const grade = matched?.grade || 'その他';
-  const premiumRate = matched?.premium_rate !== undefined ? Number(matched.premium_rate) : 0;
-  const ratio = serviceType?.personnel_cost_ratio !== undefined ? Number(serviceType.personnel_cost_ratio) : 0.57;
-
-  // 1単位単価 = 10円 + 10円 × 所在地上乗せ割合 × 支援種別人件費割合 (小数第2位まで四捨五入)
-  const unitPrice = Math.round((10 + 10 * premiumRate * ratio) * 100) / 100;
-
-  return {
-    regional_grade: grade,
-    unit_price_per_point: unitPrice,
-  };
 };
 
 const generateId = () => {
@@ -150,7 +109,7 @@ export function OfficeServiceTypePage() {
           short_name: office.short_name || '',
           serviceTypes: officeSettings.map(s => {
             const st = activeSTs.find(t => t.id === s.service_type_id);
-            const derived = calculateRegionalGradeAndUnitPrice(officeAddr, st, regionalList);
+            const derived = calculateRegionalUnitPrice(officeAddr, st, regionalList);
             return {
               id: s.id || generateId(),
               office_id: office.id,
@@ -159,8 +118,7 @@ export function OfficeServiceTypePage() {
               capacity: s.capacity ?? 20,
               staffing_ratio: s.staffing_ratio || '7.5:1',
               wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
-              regional_grade: s.regional_grade || derived.regional_grade,
-              unit_price_per_point: s.unit_price_per_point ?? derived.unit_price_per_point,
+              unit_price: derived.unit_price,
             };
           }),
         };
@@ -181,7 +139,7 @@ export function OfficeServiceTypePage() {
   const handleAddSubRow = (parentId: string): OfficeServiceTypeRow => {
     const bType = serviceTypes.find(isBTypeServiceType);
     const officeAddr = officeAddressMap[parentId];
-    const derived = calculateRegionalGradeAndUnitPrice(officeAddr, bType, regionalGrades);
+    const derived = calculateRegionalUnitPrice(officeAddr, bType, regionalGrades);
     return {
       id: generateId(),
       office_id: parentId,
@@ -190,8 +148,7 @@ export function OfficeServiceTypePage() {
       capacity: 20,
       staffing_ratio: '7.5:1',
       wage_achievement_tier: '4万5千円以上',
-      regional_grade: derived.regional_grade,
-      unit_price_per_point: derived.unit_price_per_point,
+      unit_price: derived.unit_price,
     };
   };
 
@@ -231,10 +188,9 @@ export function OfficeServiceTypePage() {
           const row = rowItem as OfficeServiceTypeRow;
           const st = serviceTypes.find(s => s.id === stId);
           const officeAddr = officeAddressMap[row.office_id];
-          const derived = calculateRegionalGradeAndUnitPrice(officeAddr, st, regionalGrades);
+          const derived = calculateRegionalUnitPrice(officeAddr, st, regionalGrades);
           return {
-            regional_grade: derived.regional_grade,
-            unit_price_per_point: derived.unit_price_per_point,
+            unit_price: derived.unit_price,
           } as Partial<OfficeServiceTypeRow>;
         },
         render: (subItem: unknown) => {
@@ -286,17 +242,8 @@ export function OfficeServiceTypePage() {
         style: { minWidth: '190px' },
       },
       {
-        key: 'regional_grade',
-        header: TABLE_COLUMNS.REGIONAL_GRADE,
-        sortable: false,
-        rowType: 'sub',
-        editable: false,
-        style: { minWidth: '100px', textAlign: 'center' },
-        render: (subItem: unknown) => (subItem as OfficeServiceTypeRow).regional_grade || 'その他',
-      },
-      {
-        key: 'unit_price_per_point',
-        header: TABLE_COLUMNS.UNIT_PRICE_PER_POINT,
+        key: 'unit_price',
+        header: TABLE_COLUMNS.REGIONAL_UNIT_PRICE,
         sortable: false,
         rowType: 'sub',
         editable: false,
@@ -304,8 +251,8 @@ export function OfficeServiceTypePage() {
         style: { width: '130px', textAlign: 'right' },
         render: (subItem: unknown) => {
           const row = subItem as OfficeServiceTypeRow;
-          return row.unit_price_per_point !== undefined && row.unit_price_per_point !== null
-            ? `${Number(row.unit_price_per_point).toFixed(2)}円`
+          return row.unit_price !== undefined && row.unit_price !== null
+            ? `${Number(row.unit_price).toFixed(2)}円`
             : '';
         },
       },
@@ -333,8 +280,6 @@ export function OfficeServiceTypePage() {
         capacity: number;
         staffing_ratio: string | null;
         wage_achievement_tier: string | null;
-        regional_grade: string | null;
-        unit_price_per_point: number;
         deleted_at: null;
         updated_at: string;
       }[] = [];
@@ -350,8 +295,6 @@ export function OfficeServiceTypePage() {
               capacity: Number(st.capacity) || 0,
               staffing_ratio: st.staffing_ratio || null,
               wage_achievement_tier: st.wage_achievement_tier || null,
-              regional_grade: st.regional_grade || null,
-              unit_price_per_point: Number(st.unit_price_per_point) || 10.00,
               deleted_at: null,
               updated_at: new Date().toISOString(),
             });

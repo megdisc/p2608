@@ -64,6 +64,8 @@ export const WORDS_SYSTEM = {
   TAB_TABLE_COMPOSITION: 'テーブル構成',
   TAB_MAIN_FEATURES: '主要機能',
   TAB_WORKFLOW: 'ワークフロー',
+  REGIONAL_GRADE: '所在地級数',
+  SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',
 };
 
 // 汎用・共通の定数群
@@ -285,6 +287,8 @@ export const PAGE_NAMES = {
   ORGANIZATION: '法人',
   OFFICE: '事業所',
   RECIPIENT_CERTIFICATE: '受給者証',
+  REGIONAL_GRADE: '所在地級数',
+  SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',
 };
 
 export const TABLE_COLUMNS = {
@@ -349,7 +353,10 @@ export const TABLE_COLUMNS = {
   CAPACITY: '定員',
   STAFFING_RATIO: '人員配置基準',
   WAGE_ACHIEVEMENT_TIER: '平均工賃月額区分',
-  REGIONAL_GRADE: '地域区分',
+  REGIONAL_GRADE: '所在地級数',
+  REGIONAL_UNIT_PRICE: '地域区分単価',
+  PREMIUM_RATE: '上乗せ割合',
+  PERSONNEL_COST_RATIO: '人件費割合',
   UNIT_PRICE_PER_POINT: '1単位あたり単価(円)',
   REWARD_ITEM: '加算・減算',
   QUALIFICATION: '資格',

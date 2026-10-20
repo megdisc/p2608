@@ -100,7 +100,81 @@ export function ScreenCompositionPage() {
   ];
 
   const dbTables: DBTable[] = [
-    // 1. マスタ層
+    // 1. マスタ層（福祉制度）
+    {
+      layer: '1. マスタ層',
+      physicalName: 'service_types',
+      tableType: '独立マスタ',
+      logicalName: '支援種別',
+      description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '支援種別ID' },
+        { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
+        { name: 'name', desc: 'サービス種類名称' },
+        { name: 'description', desc: '説明・概要' },
+        { name: 'personnel_cost_ratio', desc: '支援種別人件費割合（公定価格基準。例: 就労B型は0.5700、生活介護は0.6100。地域区分単価算出用）', status: 'added' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'reward_items',
+      tableType: '従属マスタ',
+      logicalName: '加算・減算',
+      description: '法令・報酬告示に基づく公定価格基準の基本報酬・体制加減算マスタ（給付費算定用）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '項目ID' },
+        { name: 'service_type_id', desc: '所属支援種別ID' },
+        { name: 'code', desc: 'サービス詳細コード（国保連給付費算定6桁コード。例: 521111: 送迎加算, 521121: 欠席時対応加算 など）' },
+        { name: 'name', desc: 'サービス詳細名称' },
+        { name: 'item_category', desc: '項目区分（base_reward: 基本報酬 / addition: 体制加算 / subtraction: 体制減算）', status: 'modified' },
+        { name: 'calc_type', desc: '算定方式（fixed_units: 固定単位数 / rate_percent: 所定単位数×率 / conditional: 条件分岐算定）', status: 'added' },
+        { name: 'unit_value', desc: '加減算単位数' },
+        { name: 'calc_rate', desc: '定率算定率[%]' },
+        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
+        { name: 'monthly_limit_count', desc: '月間算定上限回数' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'qualifications',
+      tableType: '独立マスタ',
+      logicalName: '資格',
+      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
+      columns: [
+        { name: 'id', desc: '資格ID' },
+        { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
+        { name: 'name', desc: '資格・職種名称' },
+        { name: 'category', desc: '資格区分' },
+        { name: 'description', desc: '資格概要' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'regional_grades',
+      tableType: '独立マスタ',
+      logicalName: '所在地級数',
+      description: '市区町村ごとの障害福祉サービス所在地級数（1級地〜7級地、その他）および上乗せ割合マスタ',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '所在地級数ID', status: 'added' },
+        { name: 'prefecture', desc: '都道府県名（例: 広島県）', status: 'added' },
+        { name: 'city', desc: '市区町村名（例: 広島市中区、広島市）', status: 'added' },
+        { name: 'grade', desc: '級地名称（例: 1級地〜7級地、その他）', status: 'added' },
+        { name: 'premium_rate', desc: '上乗せ割合（公務員地域手当準拠。例: 0.2000〜0.0000）', status: 'added' },
+        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    // 施設・事業所マスタ
     {
       layer: '1. マスタ層',
       physicalName: 'organizations',
@@ -135,44 +209,6 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'service_types',
-      tableType: '独立マスタ',
-      logicalName: '支援種別',
-      description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
-      columns: [
-        { name: 'id', desc: '支援種別ID' },
-        { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
-        { name: 'name', desc: 'サービス種類名称' },
-        { name: 'description', desc: '説明・概要' },
-        { name: 'personnel_cost_ratio', desc: '支援種別人件費割合（公定価格基準。例: 就労B型は0.5700、生活介護は0.6100。地域区分単価算出用）', status: 'added' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'reward_items',
-      tableType: '従属マスタ',
-      logicalName: '加算・減算項目',
-      description: '法令・報酬告示に基づく公定価格基準の基本報酬・体制加減算マスタ（給付費算定用）',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '項目ID' },
-        { name: 'service_type_id', desc: '所属支援種別ID' },
-        { name: 'code', desc: 'サービス詳細コード（国保連給付費算定6桁コード。例: 521111: 送迎加算, 521121: 欠席時対応加算 など）' },
-        { name: 'name', desc: 'サービス詳細名称' },
-        { name: 'item_category', desc: '項目区分（base_reward: 基本報酬 / addition: 体制加算 / subtraction: 体制減算）', status: 'modified' },
-        { name: 'calc_type', desc: '算定方式（fixed_units: 固定単位数 / rate_percent: 所定単位数×率 / conditional: 条件分岐算定）', status: 'added' },
-        { name: 'unit_value', desc: '加減算単位数' },
-        { name: 'calc_rate', desc: '定率算定率[%]' },
-        { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
-        { name: 'monthly_limit_count', desc: '月間算定上限回数' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
       physicalName: 'office_service_type_settings',
       tableType: '従属マスタ',
       logicalName: '事業所支援種別割当',
@@ -186,8 +222,6 @@ export function ScreenCompositionPage() {
         { name: 'office_number', desc: '指定事業所番号（都道府県等から付与された10桁コード。国保連請求・代理受領通知書用）', status: 'added' },
         { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1 / 10:1。基本報酬の単位数決定用）', status: 'added' },
         { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）', status: 'added' },
-        { name: 'regional_grade', desc: '地域区分（1級地〜7級地、その他。単価補正用）', status: 'added' },
-        { name: 'unit_price_per_point', desc: '1単位あたり単価（円。例: 10.00〜11.20円。報酬算定金額計算用）', status: 'added' },
         { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除用）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
@@ -231,25 +265,6 @@ export function ScreenCompositionPage() {
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'regional_grades',
-      tableType: '独立マスタ',
-      logicalName: '所在地級数（地域区分）',
-      description: '市区町村ごとの障害福祉サービス地域区分（1級地〜7級地、その他）および上乗せ割合マスタ',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '地域区分ID', status: 'added' },
-        { name: 'prefecture', desc: '都道府県名（例: 広島県）', status: 'added' },
-        { name: 'city', desc: '市区町村名（例: 広島市中区、広島市）', status: 'added' },
-        { name: 'grade', desc: '級地名称（例: 1級地〜7級地、その他）', status: 'added' },
-        { name: 'premium_rate', desc: '上乗せ割合（公務員地域手当準拠。例: 0.2000〜0.0000）', status: 'added' },
-        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -573,22 +588,6 @@ export function ScreenCompositionPage() {
         { name: 'yomigana', desc: 'ふりがな' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'qualifications',
-      tableType: '独立マスタ',
-      logicalName: '資格',
-      description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
-      columns: [
-        { name: 'id', desc: '資格ID' },
-        { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
-        { name: 'name', desc: '資格・職種名称' },
-        { name: 'category', desc: '資格区分' },
-        { name: 'description', desc: '資格概要' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

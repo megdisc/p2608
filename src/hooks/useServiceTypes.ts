@@ -7,6 +7,7 @@ export type ServiceTypeItem = {
   code: string;
   name: string;
   description: string;
+  personnel_cost_ratio?: number | null;
 };
 
 export function useServiceTypes() {
@@ -27,7 +28,8 @@ export function useServiceTypes() {
         id: st.id,
         code: st.code || '',
         name: st.name || '',
-        description: st.description || ''
+        description: st.description || '',
+        personnel_cost_ratio: st.personnel_cost_ratio !== undefined && st.personnel_cost_ratio !== null ? Number(st.personnel_cost_ratio) : null,
       }));
 
       setItems(formatted);

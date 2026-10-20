@@ -6,6 +6,7 @@ import { Tabs } from '../components/ui';
 import { ServiceTypePage } from './ServiceTypePage';
 import { QualificationPage } from './QualificationPage';
 import { RewardItemPage } from './RewardItemPage';
+import { RegionalGradePage } from './RegionalGradePage';
 
 export function ScreenWelfarePage() {
   const navContext = useNavigation();
@@ -20,6 +21,8 @@ export function ScreenWelfarePage() {
         return <RewardItemPage />;
       case 'qualification':
         return <QualificationPage />;
+      case 'regionalGrade':
+        return <RegionalGradePage />;
       default:
         return <ServiceTypePage />;
     }

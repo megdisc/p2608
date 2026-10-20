@@ -172,8 +172,6 @@ export type OfficeServiceTypeSettingTableItem = {
   office_number?: string | null;
   staffing_ratio?: string | null;
   wage_achievement_tier?: string | null;
-  regional_grade?: string | null;
-  unit_price_per_point?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;

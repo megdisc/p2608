@@ -157,19 +157,32 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'regional_grades',
+      physicalName: 'regional_grade_rates',
       tableType: '独立マスタ',
-      logicalName: '所在地級数',
-      description: '市区町村ごとの障害福祉サービス所在地級数（1級地〜7級地、その他）および上乗せ割合マスタ',
+      logicalName: '所在地級数上乗せ割合',
+      description: '障害福祉サービス公定の級地（1級地〜7級地、その他）および上乗せ割合マスタ（地域手当準拠）',
       status: 'added',
       columns: [
-        { name: 'id', desc: '所在地級数ID', status: 'added' },
-        { name: 'prefecture', desc: '都道府県名（例: 広島県）', status: 'added' },
-        { name: 'city', desc: '市区町村名（例: 広島市中区、広島市）', status: 'added' },
+        { name: 'id', desc: '上乗せ割合ID', status: 'added' },
         { name: 'grade', desc: '級地名称（例: 1級地〜7級地、その他）', status: 'added' },
         { name: 'premium_rate', desc: '上乗せ割合（公務員地域手当準拠。例: 0.2000〜0.0000）', status: 'added' },
-        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列）', status: 'added' },
+        { name: 'display_order', desc: '表示順', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'regional_grade_locations',
+      tableType: '独立マスタ',
+      logicalName: '所在地級数所在地',
+      description: '市区町村ごとの障害福祉サービス所在地級数（級地）対応マスタ',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '所在地ID', status: 'added' },
+        { name: 'prefecture', desc: '都道府県名（例: 広島県）', status: 'added' },
+        { name: 'city', desc: '市区町村名（例: 広島市、安芸郡府中町）', status: 'added' },
+        { name: 'grade', desc: '級地名称（FK: regional_grade_rates.grade）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]

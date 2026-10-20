@@ -116,21 +116,27 @@ INSERT INTO public.entity_phone_settings (owner_type, owner_id, phone_number_id)
 ('partner_contact', 'c2000000-0000-0000-0000-000000000002', 'bbbbb777-2000-0000-0000-000000000003'),
 ('partner_contact', 'c3000000-0000-0000-0000-000000000001', 'bbbbb777-3000-0000-0000-000000000001');
 
--- 2.1 所在地級数マスタ (regional_grades) 広島市および周辺
-INSERT INTO public.regional_grades (prefecture, city, grade, premium_rate) VALUES
-('広島県', '広島市', '5級地', 0.1000),
-('広島県', '広島市中区', '5級地', 0.1000),
-('広島県', '広島市東区', '5級地', 0.1000),
-('広島県', '広島市南区', '5級地', 0.1000),
-('広島県', '広島市西区', '5級地', 0.1000),
-('広島県', '広島市安佐南区', '5級地', 0.1000),
-('広島県', '広島市安佐北区', '5級地', 0.1000),
-('広島県', '広島市安芸区', '5級地', 0.1000),
-('広島県', '広島市佐伯区', '5級地', 0.1000),
-('広島県', '安芸郡府中町', '5級地', 0.1000)
+-- 2.1 所在地級数上乗せ割合マスタ (regional_grade_rates)
+INSERT INTO public.regional_grade_rates (grade, premium_rate, display_order) VALUES
+('1級地', 0.2000, 1),
+('2級地', 0.1600, 2),
+('3級地', 0.1500, 3),
+('4級地', 0.1200, 4),
+('5級地', 0.1000, 5),
+('6級地', 0.0600, 6),
+('7級地', 0.0300, 7),
+('その他', 0.0000, 8)
+ON CONFLICT (grade) DO UPDATE SET
+  premium_rate = EXCLUDED.premium_rate,
+  display_order = EXCLUDED.display_order;
+
+-- 2.2 所在地級数所在地マスタ (regional_grade_locations)
+INSERT INTO public.regional_grade_locations (prefecture, city, grade) VALUES
+('広島県', '広島市', '5級地'),
+('広島県', '安芸郡府中町', '5級地'),
+('広島県', '福山市', 'その他')
 ON CONFLICT (prefecture, city) DO UPDATE SET
-  grade = EXCLUDED.grade,
-  premium_rate = EXCLUDED.premium_rate;
+  grade = EXCLUDED.grade;
 
 INSERT INTO public.email_addresses (id, email) VALUES
 ('ccccc222-2222-2222-2222-222222222222', 'office@mirai-fukushi.or.jp'),

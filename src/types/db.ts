@@ -152,12 +152,31 @@ export type ServiceTypeTableItem = {
   updated_at?: string;
 };
 
+export type RegionalGradeRateTableItem = {
+  id: string; // UUID
+  grade: string;
+  premium_rate: number;
+  display_order: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RegionalGradeLocationTableItem = {
+  id: string; // UUID
+  prefecture: string;
+  city: string;
+  grade: string;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type RegionalGradeTableItem = {
   id: string; // UUID
   prefecture: string;
   city: string;
   grade: string;
   premium_rate: number;
+  display_order?: number;
   deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;

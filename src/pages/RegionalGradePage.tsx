@@ -20,29 +20,30 @@ export function RegionalGradePage() {
       key: 'prefecture',
       header: TABLE_COLUMNS.PREFECTURE,
       sortable: true,
-      style: { width: '120px' },
     },
     {
       key: 'city',
       header: TABLE_COLUMNS.CITY,
       sortable: true,
-      style: { minWidth: '160px' },
     },
     {
       key: 'grade',
       header: TABLE_COLUMNS.REGIONAL_GRADE,
       sortable: true,
-      style: { width: '120px', textAlign: 'center' },
+      style: { textAlign: 'center' },
     },
     {
       key: 'premium_rate',
       header: TABLE_COLUMNS.PREMIUM_RATE,
       sortable: true,
       className: 'quantity',
-      style: { width: '160px', textAlign: 'right' },
+      style: { textAlign: 'right' },
       render: (item: RegionalGradeTableItem) => {
+        if (item.premium_rate === null || item.premium_rate === undefined) {
+          return '-';
+        }
         const rate = Number(item.premium_rate) || 0;
-        return `${(rate * 100).toFixed(1)}% (${rate.toFixed(4)})`;
+        return (rate * 100).toFixed(1);
       },
     },
   ];

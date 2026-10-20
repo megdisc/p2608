@@ -125,19 +125,45 @@ CREATE TABLE IF NOT EXISTS "public"."addresses" (
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );
 
--- 1.2b regional_grades (所在地級数・地域区分マスタ)
-CREATE TABLE IF NOT EXISTS "public"."regional_grades" (
+-- 1.2b regional_grade_rates (所在地級数上乗せ割合マスタ)
+CREATE TABLE IF NOT EXISTS "public"."regional_grade_rates" (
+    "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
+    "grade" VARCHAR(20) NOT NULL,
+    "premium_rate" NUMERIC(5,4) DEFAULT 0.0000 NOT NULL,
+    "display_order" INTEGER DEFAULT 0 NOT NULL,
+    "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
+    CONSTRAINT "uq_regional_grade_rates_grade" UNIQUE ("grade")
+);
+
+-- 1.2c regional_grade_locations (所在地級数所在地マスタ)
+CREATE TABLE IF NOT EXISTS "public"."regional_grade_locations" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "prefecture" VARCHAR(20) NOT NULL,
     "city" VARCHAR(50) NOT NULL,
     "grade" VARCHAR(20) NOT NULL,
-    "premium_rate" NUMERIC(5,4) DEFAULT 0.0000 NOT NULL,
-    "deleted_at" TIMESTAMPTZ DEFAULT NULL,
-    "is_deleted" BOOLEAN GENERATED ALWAYS AS (deleted_at IS NOT NULL) STORED,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
-    CONSTRAINT "uq_regional_grades_pref_city" UNIQUE ("prefecture", "city")
+    CONSTRAINT "uq_regional_grade_locations_pref_city" UNIQUE ("prefecture", "city"),
+    CONSTRAINT "fk_regional_grade_locations_grade" FOREIGN KEY ("grade")
+        REFERENCES "public"."regional_grade_rates"("grade") ON UPDATE CASCADE ON DELETE RESTRICT
 );
+
+-- 1.2d regional_grades (互換・集約ビュー)
+CREATE OR REPLACE VIEW "public"."regional_grades" AS
+SELECT
+    l.id,
+    l.prefecture,
+    l.city,
+    l.grade,
+    r.premium_rate,
+    r.display_order,
+    false AS is_deleted,
+    NULL::timestamptz AS deleted_at,
+    l.created_at,
+    l.updated_at
+FROM "public"."regional_grade_locations" l
+JOIN "public"."regional_grade_rates" r ON l.grade = r.grade;
 
 -- 1.3 entity_address_settings (住所割当)
 CREATE TABLE IF NOT EXISTS "public"."entity_address_settings" (

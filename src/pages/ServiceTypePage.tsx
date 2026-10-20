@@ -39,7 +39,7 @@ export function ServiceTypePage() {
           return '-';
         }
         const ratio = Number(item.personnel_cost_ratio) || 0;
-        return `${(ratio * 100).toFixed(1)}% (${ratio.toFixed(4)})`;
+        return (ratio * 100).toFixed(1);
       },
     },
     {

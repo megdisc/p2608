@@ -373,6 +373,8 @@ export const TABLE_COLUMNS = {
   COPAYMENT_OFFICE_NAME: '上限額管理事業所名',
   VALID_FROM: '有効期限（開始）',
   VALID_TO: '有効期限（終了）',
+  VALID_PERIOD_FROM: '有効期間（開始）',
+  VALID_PERIOD_TO: '有効期間（終了）',
 
   // 住所・連絡先
   UNIT_PRICE_REGIONAL: '地域区分単価(円)',

@@ -891,7 +891,7 @@ export function DataTable<T extends { id: string }>({
                             }
                             
                             const isColEditable = typeof col.editable === 'function' ? col.editable(subSubItem) : col.editable !== false;
-                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable && (col.rowType === 'sub-sub' || col.rowType === 'both');
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && (col.inputType || !!col.customEditRender) && isColEditable && (col.rowType === 'sub-sub' || col.rowType === 'both');
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subSubItem, draftData) : col.style;
                             const customStyle = {
@@ -963,7 +963,7 @@ export function DataTable<T extends { id: string }>({
                         }
                         
                         const isColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
-                        const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
+                        const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && (col.inputType || !!col.customEditRender) && isColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
                         
                         const baseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
                         const customStyle = {
@@ -1067,7 +1067,7 @@ export function DataTable<T extends { id: string }>({
                             }
                             
                             const isColEditable = typeof col.editable === 'function' ? col.editable(subItem) : col.editable !== false;
-                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && isColEditable && (col.rowType === 'sub' || col.rowType === 'both');
+                            const isInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && (col.inputType || !!col.customEditRender) && isColEditable && (col.rowType === 'sub' || col.rowType === 'both');
                             
                             const baseStyle = typeof col.style === 'function' ? col.style(subItem, draftData) : col.style;
                             const customStyle = {
@@ -1090,7 +1090,7 @@ export function DataTable<T extends { id: string }>({
                             if (shouldMergeParentRow && (col.rowType === 'main' || !col.rowType)) {
                               if (subIdx === 0) {
                                 const mainColEditable = typeof col.editable === 'function' ? col.editable(item) : col.editable !== false;
-                                const isMainInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && col.inputType && mainColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
+                                const isMainInputColumn = isRowEditable && highlightInputColumns && !!onBatchSave && (col.inputType || !!col.customEditRender) && mainColEditable && (col.rowType === 'main' || col.rowType === 'both' || !col.rowType);
                                 const mainBaseStyle = typeof col.style === 'function' ? col.style(item, draftData) : col.style;
                                 const mainCustomStyle = {
                                   ...mainBaseStyle,

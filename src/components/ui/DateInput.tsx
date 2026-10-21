@@ -49,9 +49,7 @@ export function DateInput({ value, onChange, className = '', style, disabled }: 
         type="date"
         value={value}
         onChange={(e) => {
-          if (e.target.value) {
-            onChange(e.target.value);
-          }
+          onChange(e.target.value || '');
         }}
         onBlur={() => setIsEditing(false)}
         className={finalClass}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, MultiSelectDropdown, type Column } from '../components';
+import { DataPage, Select, MultiSelectDropdown, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, MESSAGES } from '../constants';
@@ -185,6 +185,7 @@ export function OfficeRewardPage() {
         header: TABLE_COLUMNS.OFFICE,
         sortable: true,
         sortKey: 'office_name',
+        editable: (row: OfficeRewardRow) => row.id.startsWith('NEW-'),
         inputType: 'select',
         options: officeOptions,
         style: { minWidth: '180px' },
@@ -206,6 +207,36 @@ export function OfficeRewardPage() {
             rewardItemIds: validRewardItemIds,
           };
         },
+        customEditRender: (value: string, row: OfficeRewardRow, onChange: (newVal: string) => void) => {
+          if (!row.id.startsWith('NEW-')) {
+            const o = offices.find(off => off.id === row.office_id);
+            return <span>{o ? (o.short_name || o.name) : ''}</span>;
+          }
+          return (
+            <Select
+              value={value}
+              options={officeOptions}
+              onChange={(e) => {
+                const newOfficeId = e.target.value;
+                const setting = officeSettings.find(s => s.office_id === newOfficeId);
+                const newStId = setting ? setting.service_type_id : row.service_type_id;
+                const office = offices.find(o => o.id === newOfficeId);
+                const st = serviceTypes.find(t => t.id === newStId);
+
+                const validRewardItemIds = (row.rewardItemIds || []).filter(itemId => {
+                  const item = rewardItems.find(ri => ri.id === itemId);
+                  return item && item.service_type_id === newStId;
+                });
+
+                onChange(newOfficeId);
+                row.office_name = office ? (office.short_name || office.name) : '';
+                row.service_type_id = newStId;
+                row.service_type_name = st ? st.name : '';
+                row.rewardItemIds = validRewardItemIds;
+              }}
+            />
+          );
+        },
         render: (row: OfficeRewardRow) => {
           const o = offices.find(off => off.id === row.office_id);
           return o ? (o.short_name || o.name) : '';
@@ -216,6 +247,7 @@ export function OfficeRewardPage() {
         header: TABLE_COLUMNS.SERVICE_TYPE,
         sortable: true,
         sortKey: 'service_type_name',
+        editable: (row: OfficeRewardRow) => row.id.startsWith('NEW-'),
         inputType: 'select',
         options: (row: OfficeRewardRow) => {
           const officeSTIds = officeSettings
@@ -243,6 +275,41 @@ export function OfficeRewardPage() {
             rewardItemIds: validRewardItemIds,
           };
         },
+        customEditRender: (value: string, row: OfficeRewardRow, onChange: (newVal: string) => void) => {
+          if (!row.id.startsWith('NEW-')) {
+            const st = serviceTypes.find(s => s.id === row.service_type_id);
+            return <span>{st ? st.name : ''}</span>;
+          }
+          const officeSTIds = officeSettings
+            .filter(s => s.office_id === row.office_id)
+            .map(s => s.service_type_id);
+
+          const opts = [...serviceTypeOptions].sort((a, b) => {
+            const aIsOffice = officeSTIds.includes(a.value);
+            const bIsOffice = officeSTIds.includes(b.value);
+            if (aIsOffice && !bIsOffice) return -1;
+            if (!aIsOffice && bIsOffice) return 1;
+            return 0;
+          });
+
+          return (
+            <Select
+              value={value}
+              options={opts}
+              onChange={(e) => {
+                const newStId = e.target.value;
+                const st = serviceTypes.find(t => t.id === newStId);
+                const validRewardItemIds = (row.rewardItemIds || []).filter(itemId => {
+                  const item = rewardItems.find(ri => ri.id === itemId);
+                  return item && item.service_type_id === newStId;
+                });
+                onChange(newStId);
+                row.service_type_name = st ? st.name : '';
+                row.rewardItemIds = validRewardItemIds;
+              }}
+            />
+          );
+        },
         render: (row: OfficeRewardRow) => {
           const st = serviceTypes.find(s => s.id === row.service_type_id);
           return st ? st.name : '';
@@ -253,6 +320,7 @@ export function OfficeRewardPage() {
         header: TABLE_COLUMNS.REWARD_ITEM,
         sortable: false,
         editable: true,
+        inputType: 'select',
         style: { minWidth: '340px' },
         customEditRender: (value: string[], row: OfficeRewardRow, onChange: (newVal: string[]) => void) => {
           const availableItems = rewardItems.filter(
@@ -305,25 +373,19 @@ export function OfficeRewardPage() {
       },
       {
         key: 'valid_from',
-        header: '開始日',
-        groupHeader: '有効期間',
+        header: TABLE_COLUMNS.VALID_PERIOD_FROM,
         sortable: true,
+        editable: true,
         inputType: 'date',
-        style: { width: '130px' },
+        style: { width: '150px' },
       },
       {
         key: 'valid_to',
-        header: '終了日',
-        groupHeader: '有効期間',
+        header: TABLE_COLUMNS.VALID_PERIOD_TO,
         sortable: false,
+        editable: true,
         inputType: 'date',
-        style: { width: '130px' },
-        render: (row: OfficeRewardRow) =>
-          row.valid_to ? (
-            row.valid_to
-          ) : (
-            <span style={{ color: 'var(--color-text-muted)' }}>- (継続中)</span>
-          ),
+        style: { width: '150px' },
       },
     ];
   }, [offices, serviceTypes, rewardItems, officeSettings]);

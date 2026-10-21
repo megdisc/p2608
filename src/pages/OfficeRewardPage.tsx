@@ -61,8 +61,8 @@ export function OfficeRewardPage() {
         rewardItemsRes,
         officeSettingsRes,
       ] = await Promise.all([
-        supabase.from('office_reward_summaries').select('*').order('valid_from', { ascending: false }),
-        supabase.from('office_reward_details').select('*'),
+        supabase.from('office_reward_setting_summaries').select('*').order('valid_from', { ascending: false }),
+        supabase.from('office_reward_setting_details').select('*'),
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('service_types').select('*').order('code', { ascending: true }),
         supabase.from('reward_items').select('*').order('code', { ascending: true }),
@@ -115,7 +115,7 @@ export function OfficeRewardPage() {
         }
       });
 
-      // 2. 既存の office_reward_summaries にあるペアも確実に含める
+      // 2. 既存の office_reward_setting_summaries にあるペアも確実に含める
       summaries.forEach((s: any) => {
         if (!s.office_id || !s.service_type_id) return;
         const groupId = `${s.office_id}__${s.service_type_id}`;
@@ -319,12 +319,12 @@ export function OfficeRewardPage() {
       const realDeletedIds = deletedIds.filter(id => !id.startsWith('NEW-') && id.includes('-'));
       if (realDeletedIds.length > 0) {
         await supabase
-          .from('office_reward_details')
+          .from('office_reward_setting_details')
           .delete()
           .in('summary_id', realDeletedIds);
 
         await supabase
-          .from('office_reward_summaries')
+          .from('office_reward_setting_summaries')
           .delete()
           .in('id', realDeletedIds);
       }
@@ -351,7 +351,7 @@ export function OfficeRewardPage() {
 
           // 2a. 概要テーブルのUpsert
           const { error: summaryErr } = await supabase
-            .from('office_reward_summaries')
+            .from('office_reward_setting_summaries')
             .upsert({
               id: summaryId,
               office_id: group.office_id,
@@ -364,7 +364,7 @@ export function OfficeRewardPage() {
 
           // 2b. 詳細テーブルの同期
           await supabase
-            .from('office_reward_details')
+            .from('office_reward_setting_details')
             .delete()
             .eq('summary_id', summaryId);
 
@@ -376,7 +376,7 @@ export function OfficeRewardPage() {
             }));
 
             const { error: insDetailsErr } = await supabase
-              .from('office_reward_details')
+              .from('office_reward_setting_details')
               .insert(detailRows);
 
             if (insDetailsErr) throw insDetailsErr;

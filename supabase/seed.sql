@@ -299,8 +299,8 @@ ON CONFLICT (id) DO UPDATE SET
   calc_rate = EXCLUDED.calc_rate,
   monthly_limit_count = EXCLUDED.monthly_limit_count;
 
--- 3.4 事業所加算・減算概要 (office_reward_summaries)
-INSERT INTO public.office_reward_summaries (id, office_id, service_type_id, valid_from, valid_to) VALUES
+-- 3.4 事業所加算・減算割当概要 (office_reward_setting_summaries)
+INSERT INTO public.office_reward_setting_summaries (id, office_id, service_type_id, valid_from, valid_to) VALUES
 ('77777777-2222-0000-0000-000000000000', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2024-04-01', '2026-03-31'),
 ('77777777-2222-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-04-01', NULL),
 ('77777777-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', '11111111-0000-0000-0000-000000000001', '2026-04-01', NULL),
@@ -311,8 +311,8 @@ ON CONFLICT (id) DO UPDATE SET
   valid_from = EXCLUDED.valid_from,
   valid_to = EXCLUDED.valid_to;
 
--- 3.5 事業所加算・減算詳細 (office_reward_details)
-INSERT INTO public.office_reward_details (id, summary_id, reward_item_id) VALUES
+-- 3.5 事業所加算・減算割当詳細 (office_reward_setting_details)
+INSERT INTO public.office_reward_setting_details (id, summary_id, reward_item_id) VALUES
 -- WS未来 過去履歴 (2024-04-01 ~ 2026-03-31)
 ('77777777-2222-0000-0001-000000000001', '77777777-2222-0000-0000-000000000000', '66666666-0000-0000-0000-000000000001'),
 ('77777777-2222-0000-0001-000000000002', '77777777-2222-0000-0000-000000000000', '66666666-0000-0000-0000-000000000006'),

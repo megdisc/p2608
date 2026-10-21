@@ -243,11 +243,11 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'office_reward_summaries',
+      physicalName: 'office_reward_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所加算・減算概要',
-      description: '各事業所における加算・減算の有効年月・適用期間の管理（加算・減算項目セットの履歴管理）',
-      status: 'added',
+      logicalName: '事業所加算・減算割当概要',
+      description: '各事業所における加算・減算割当の有効年月・適用期間の管理（加算・減算項目セットの履歴管理）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID（officesのIDを参照）', status: 'added' },
@@ -260,14 +260,14 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'office_reward_details',
+      physicalName: 'office_reward_setting_details',
       tableType: '従属マスタ',
-      logicalName: '事業所加算・減算詳細',
-      description: '事業所加算・減算概要に紐づく対象加算・減算項目の一覧（セットを構成する各項目）',
-      status: 'added',
+      logicalName: '事業所加算・減算割当詳細',
+      description: '事業所加算・減算割当概要に紐づく対象加算・減算項目の一覧（セットを構成する各項目）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '詳細ID', status: 'added' },
-        { name: 'summary_id', desc: '概要ID（office_reward_summariesのIDを参照）', status: 'added' },
+        { name: 'summary_id', desc: '概要ID（office_reward_setting_summariesのIDを参照）', status: 'added' },
         { name: 'reward_item_id', desc: '加算・減算項目ID（reward_itemsのIDを参照）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }

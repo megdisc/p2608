@@ -254,9 +254,8 @@ export type OfficeRewardSummaryTableItem = {
   id: string; // UUID
   office_id: string; // UUID
   service_type_id: string; // UUID
-  start_date: string;
-  end_date?: string | null;
-  is_active: boolean;
+  valid_from: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };

@@ -252,9 +252,8 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID（officesのIDを参照）', status: 'added' },
         { name: 'service_type_id', desc: '支援種別ID（service_typesのIDを参照）', status: 'added' },
-        { name: 'start_date', desc: '有効開始年月日（適用開始年月）', status: 'added' },
-        { name: 'end_date', desc: '有効終了年月日（適用終了年月。NULL: 継続中）', status: 'added' },
-        { name: 'is_active', desc: '有効フラグ（現在有効な設定か）', status: 'added' },
+        { name: 'valid_from', desc: '有効期間（開始）', status: 'added' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]

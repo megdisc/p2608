@@ -13,9 +13,8 @@ export type OfficeRewardRow = {
   service_type_id: string;
   service_type_name?: string;
   rewardItemIds: string[];
-  start_date: string;
-  end_date: string | null;
-  is_active: boolean;
+  valid_from: string;
+  valid_to: string | null;
 };
 
 type RewardItemMinimal = {
@@ -57,7 +56,7 @@ export function OfficeRewardPage() {
         rewardItemsRes,
         officeSettingsRes
       ] = await Promise.all([
-        supabase.from('office_reward_summaries').select('*').order('start_date', { ascending: false }),
+        supabase.from('office_reward_summaries').select('*').order('valid_from', { ascending: false }),
         supabase.from('office_reward_details').select('*'),
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('service_types').select('*').order('code', { ascending: true }),
@@ -125,9 +124,8 @@ export function OfficeRewardPage() {
           service_type_id: serviceTypeId || '',
           service_type_name: st ? st.name : '',
           rewardItemIds,
-          start_date: s.start_date || getCurrentJSTDateOnly(),
-          end_date: s.end_date || null,
-          is_active: s.is_active ?? true,
+          valid_from: s.valid_from || getCurrentJSTDateOnly(),
+          valid_to: s.valid_to || null,
         };
       });
 
@@ -163,9 +161,8 @@ export function OfficeRewardPage() {
       service_type_id: defaultServiceTypeId,
       service_type_name: defaultST ? defaultST.name : '',
       rewardItemIds: [],
-      start_date: getCurrentJSTDateOnly(),
-      end_date: null,
-      is_active: true,
+      valid_from: getCurrentJSTDateOnly(),
+      valid_to: null,
     };
   };
 
@@ -307,7 +304,7 @@ export function OfficeRewardPage() {
         },
       },
       {
-        key: 'start_date',
+        key: 'valid_from',
         header: '開始日',
         groupHeader: '有効期間',
         sortable: true,
@@ -315,60 +312,18 @@ export function OfficeRewardPage() {
         style: { width: '130px' },
       },
       {
-        key: 'end_date',
+        key: 'valid_to',
         header: '終了日',
         groupHeader: '有効期間',
         sortable: false,
         inputType: 'date',
         style: { width: '130px' },
         render: (row: OfficeRewardRow) =>
-          row.end_date ? (
-            row.end_date
+          row.valid_to ? (
+            row.valid_to
           ) : (
             <span style={{ color: 'var(--color-text-muted)' }}>- (継続中)</span>
           ),
-      },
-      {
-        key: 'is_active',
-        header: TABLE_COLUMNS.STATUS,
-        sortable: true,
-        inputType: 'select',
-        options: [
-          { value: 'true', label: '有効' },
-          { value: 'false', label: '無効' },
-        ],
-        style: { width: '90px', textAlign: 'center' },
-        onCellChange: (val: any) => ({
-          is_active: val === 'true' || val === true,
-        }),
-        render: (row: OfficeRewardRow) => {
-          const active = row.is_active ?? true;
-          return active ? (
-            <span
-              style={{
-                padding: '2px 8px',
-                borderRadius: '4px',
-                fontSize: '12px',
-                backgroundColor: 'var(--palette-bluegreen-200)',
-                color: 'var(--palette-bluegreen-900)',
-              }}
-            >
-              有効
-            </span>
-          ) : (
-            <span
-              style={{
-                padding: '2px 8px',
-                borderRadius: '4px',
-                fontSize: '12px',
-                backgroundColor: 'var(--color-bg-subtle)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              無効
-            </span>
-          );
-        },
       },
     ];
   }, [offices, serviceTypes, rewardItems, officeSettings]);
@@ -402,23 +357,22 @@ export function OfficeRewardPage() {
         if (!row.service_type_id) {
           throw new Error('支援種別を選択してください');
         }
-        if (!row.start_date) {
+        if (!row.valid_from) {
           throw new Error('開始日を入力してください');
         }
-        if (row.end_date && row.end_date < row.start_date) {
+        if (row.valid_to && row.valid_to < row.valid_from) {
           throw new Error('終了日は開始日以降の日付を指定してください');
         }
 
         const summaryId = row.id.startsWith('NEW-') ? generateId() : row.id;
 
-        // 2a. 概要テーブルのUpsert
+        // 2a. 概要テーブルのUpsert（valid_from, valid_to）
         const summaryData = {
           id: summaryId,
           office_id: row.office_id,
           service_type_id: row.service_type_id,
-          start_date: row.start_date,
-          end_date: row.end_date ? String(row.end_date).trim() : null,
-          is_active: Boolean(row.is_active),
+          valid_from: row.valid_from,
+          valid_to: row.valid_to ? String(row.valid_to).trim() : null,
           updated_at: new Date().toISOString(),
         };
 

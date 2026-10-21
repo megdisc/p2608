@@ -27,7 +27,7 @@ export function StaffOfficePage() {
       const [staffRes, officeRes, settingsRes] = await Promise.all([
         supabase.from('staffs').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('office_staff_settings').select('*'),
+        supabase.from('office_staff_setting_summaries').select('*'),
       ]);
 
       if (staffRes.error) throw staffRes.error;
@@ -187,7 +187,7 @@ export function StaffOfficePage() {
   const handleBatchSave = async (drafts: StaffOfficeGridRow[]) => {
     try {
       const { data: currentSettings, error: fetchErr } = await supabase
-        .from('office_staff_settings')
+        .from('office_staff_setting_summaries')
         .select('*');
 
       if (fetchErr) throw fetchErr;
@@ -229,7 +229,7 @@ export function StaffOfficePage() {
 
       if (toDeleteIds.length > 0) {
         const { error: delErr } = await supabase
-          .from('office_staff_settings')
+          .from('office_staff_setting_summaries')
           .delete()
           .in('id', toDeleteIds);
         if (delErr) throw delErr;
@@ -237,7 +237,7 @@ export function StaffOfficePage() {
 
       for (const item of toUpdate) {
         const { error: upErr } = await supabase
-          .from('office_staff_settings')
+          .from('office_staff_setting_summaries')
           .update({ is_primary: item.is_primary })
           .eq('id', item.id);
         if (upErr) throw upErr;
@@ -245,7 +245,7 @@ export function StaffOfficePage() {
 
       if (toInsert.length > 0) {
         const { error: insErr } = await supabase
-          .from('office_staff_settings')
+          .from('office_staff_setting_summaries')
           .insert(toInsert);
         if (insErr) throw insErr;
       }

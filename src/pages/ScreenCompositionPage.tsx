@@ -638,22 +638,40 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
-      physicalName: 'office_staff_settings',
+      physicalName: 'office_staff_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報および人員配置基準判定用属性',
+      logicalName: '事業所職員割当概要',
+      description: '職員と事業所の多対多割当・雇用形態・勤務形態・所定時間および適用期間の履歴管理',
       status: 'modified',
       columns: [
-        { name: 'id', desc: '割当ID' },
+        { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'staff_id', desc: '職員ID' },
-        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
-        { name: 'staff_role', desc: '配置職種区分（administrator: 管理者, service_manager: サービス管理責任者, direct_care: 生活支援員・職業指導員, target_evaluator: 目標工賃達成指導員 等）', status: 'added' },
         { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）', status: 'added' },
-        { name: 'duty_type', desc: '勤務区分（exclusive: 専従 / concurrent: 兼務）', status: 'added' },
+        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）', status: 'added' },
         { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）', status: 'added' },
+        { name: 'is_primary', desc: '主たる事業所フラグ（true: メイン所属拠点 / false: 兼務拠点）' },
+        { name: 'valid_from', desc: '有効期間（開始）', status: 'added' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）', status: 'added' },
+        { name: 'remarks', desc: '備考', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'office_staff_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当詳細',
+      description: '事業所職員割当概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '詳細ID', status: 'added' },
+        { name: 'summary_id', desc: '概要ID（office_staff_setting_summariesのIDを参照）', status: 'added' },
+        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）', status: 'added' },
+        { name: 'is_main_role', desc: '主たる職種フラグ（true: 主職種 / false: 兼務職種）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {

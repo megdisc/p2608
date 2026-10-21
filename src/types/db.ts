@@ -133,13 +133,32 @@ export type StaffQualificationSettingTableItem = {
   updated_at?: string;
 };
 
-export type OfficeStaffSettingTableItem = {
+export type OfficeStaffSettingSummaryTableItem = {
   id?: string; // UUID
   office_id: string; // UUID
   staff_id: string; // UUID
+  employment_type?: string;
+  duty_type?: string;
+  weekly_working_hours?: number;
   is_primary: boolean;
+  valid_from: string;
+  valid_to?: string | null;
+  remarks?: string | null;
   created_at?: string;
   updated_at?: string;
+};
+
+export type OfficeStaffSettingDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID
+  staff_role: string;
+  is_main_role: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeStaffSettingTableItem = OfficeStaffSettingSummaryTableItem & {
+  staff_role?: string;
 };
 
 export type ServiceTypeTableItem = {

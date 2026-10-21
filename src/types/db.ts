@@ -250,6 +250,26 @@ export type SkillCategoryTableItem = {
   updated_at?: string;
 };
 
+export type OfficeRewardSummaryTableItem = {
+  id: string; // UUID
+  office_id: string; // UUID
+  service_type_id: string; // UUID
+  start_date: string;
+  end_date?: string | null;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeRewardDetailTableItem = {
+  id: string; // UUID
+  summary_id: string; // UUID
+  reward_item_id: string; // UUID
+  created_at?: string;
+  updated_at?: string;
+};
+
+
 
 
 

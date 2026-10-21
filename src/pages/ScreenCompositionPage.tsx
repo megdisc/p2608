@@ -251,6 +251,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID（officesのIDを参照）', status: 'added' },
+        { name: 'service_type_id', desc: '支援種別ID（service_typesのIDを参照）', status: 'added' },
         { name: 'start_date', desc: '有効開始年月日（適用開始年月）', status: 'added' },
         { name: 'end_date', desc: '有効終了年月日（適用終了年月。NULL: 継続中）', status: 'added' },
         { name: 'is_active', desc: '有効フラグ（現在有効な設定か）', status: 'added' },

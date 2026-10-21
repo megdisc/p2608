@@ -27,6 +27,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'organization', label: PAGE_NAMES.ORGANIZATION },
       { id: 'office', label: PAGE_NAMES.OFFICE },
       { id: 'officeServiceType', label: PAGE_NAMES.SERVICE_TYPE },
+      { id: 'officeReward', label: PAGE_NAMES.REWARD_ITEM },
     ],
   },
   SCREEN_CLIENT: {

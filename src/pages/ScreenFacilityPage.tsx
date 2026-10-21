@@ -6,6 +6,7 @@ import { Tabs } from '../components/ui';
 import { OrganizationPage } from './OrganizationPage';
 import { OfficePage } from './OfficePage';
 import { OfficeServiceTypePage } from './OfficeServiceTypePage';
+import { OfficeRewardPage } from './OfficeRewardPage';
 
 export function ScreenFacilityPage() {
   const navContext = useNavigation();
@@ -20,6 +21,8 @@ export function ScreenFacilityPage() {
         return <OfficePage />;
       case 'officeServiceType':
         return <OfficeServiceTypePage />;
+      case 'officeReward':
+        return <OfficeRewardPage />;
       default:
         return <OrganizationPage />;
     }

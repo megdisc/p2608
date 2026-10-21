@@ -8,6 +8,7 @@ export * from './ClientPage';
 export * from './OrganizationPage';
 export * from './OfficePage';
 export * from './OfficeServiceTypePage';
+export * from './OfficeRewardPage';
 export * from './ScreenFacilityPage';
 export * from './ServiceTypePage';
 export * from './QualificationPage';

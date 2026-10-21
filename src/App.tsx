@@ -66,7 +66,7 @@ function AppContent() {
               <ScreenClientPage />
             ) : ['screenWelfare', 'serviceType', 'qualification', 'rewardItem', 'regionalGrade'].includes(activeTab) ? (
               <ScreenWelfarePage />
-            ) : ['screenFacility', 'organization', 'office', 'serviceScheme', 'officeServiceType'].includes(activeTab) ? (
+            ) : ['screenFacility', 'organization', 'office', 'serviceScheme', 'officeServiceType', 'officeReward'].includes(activeTab) ? (
               <ScreenFacilityPage />
             ) : ['skillCategory', 'skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
               <ScreenSkillPage />

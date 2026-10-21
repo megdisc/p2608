@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, RadioButton, type Column } from '../components';
+import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
-import type { OfficeStaffSettingTableItem, OfficeTableItem, StaffTableItem } from '../types/db';
+import type { OfficeStaffSettingSummaryTableItem, OfficeTableItem, StaffTableItem } from '../types/db';
 
 type StaffOfficeGridRow = {
   id: string; // staff_id
@@ -11,7 +11,6 @@ type StaffOfficeGridRow = {
   name: string;
   yomigana: string;
   assignedOffices: Record<string, boolean>;
-  primaryOfficeId: string | null;
   [officeId: string]: any;
 };
 
@@ -36,30 +35,17 @@ export function StaffOfficePage() {
 
       const activeStaffs: StaffTableItem[] = staffRes.data || [];
       const activeOffices: OfficeTableItem[] = officeRes.data || [];
-      const settings: OfficeStaffSettingTableItem[] = settingsRes.data || [];
+      const settings: OfficeStaffSettingSummaryTableItem[] = settingsRes.data || [];
 
       setOffices(activeOffices);
 
       const rows: StaffOfficeGridRow[] = activeStaffs.map(staff => {
         const assignedMap: Record<string, boolean> = {};
-        let primaryId: string | null = null;
 
         activeOffices.forEach(office => {
           const setting = settings.find(s => s.staff_id === staff.id && s.office_id === office.id);
-          const isAssigned = !!setting;
-          assignedMap[office.id] = isAssigned;
-
-          if (setting?.is_primary) {
-            primaryId = office.id;
-          }
+          assignedMap[office.id] = !!setting;
         });
-
-        if (!primaryId) {
-          const firstAssigned = activeOffices.find(o => assignedMap[o.id]);
-          if (firstAssigned) {
-            primaryId = firstAssigned.id;
-          }
-        }
 
         return {
           id: staff.id,
@@ -67,7 +53,6 @@ export function StaffOfficePage() {
           name: staff.name,
           yomigana: staff.yomigana || '',
           assignedOffices: assignedMap,
-          primaryOfficeId: primaryId,
         };
       });
 
@@ -108,7 +93,7 @@ export function StaffOfficePage() {
         sortable: false,
         editable: true,
         inputType: 'checkbox',
-        style: { textAlign: 'center', minWidth: '120px', whiteSpace: 'nowrap' },
+        style: { textAlign: 'center', minWidth: '100px', whiteSpace: 'nowrap' },
         onCellChange: (newValue, _item, updateRow) => {
           if (newValue && typeof newValue === 'object') {
             updateRow(newValue);
@@ -118,62 +103,24 @@ export function StaffOfficePage() {
         customEditRender: (_val, item: StaffOfficeGridRow, onChange) => {
           const assignedOfficesMap = item.assignedOffices || {};
           const isAssigned = !!assignedOfficesMap[office.id];
-          const isPrimary = item.primaryOfficeId === office.id;
 
           const handleToggleAssigned = () => {
             const nextAssigned = !isAssigned;
-            const updatedAssigned = {
-              ...assignedOfficesMap,
-              [office.id]: nextAssigned,
-            };
-
-            let nextPrimary = item.primaryOfficeId;
-            if (nextAssigned) {
-              if (!nextPrimary) {
-                nextPrimary = office.id;
-              }
-            } else {
-              if (nextPrimary === office.id) {
-                const remainingOffice = offices.find(o => o.id !== office.id && updatedAssigned[o.id]);
-                nextPrimary = remainingOffice ? remainingOffice.id : null;
-              }
-            }
-
             onChange({
-              assignedOffices: updatedAssigned,
-              primaryOfficeId: nextPrimary,
-            });
-          };
-
-          const handleSetPrimary = () => {
-            const updatedAssigned = {
-              ...assignedOfficesMap,
-              [office.id]: true,
-            };
-            onChange({
-              assignedOffices: updatedAssigned,
-              primaryOfficeId: office.id,
+              assignedOffices: {
+                ...assignedOfficesMap,
+                [office.id]: nextAssigned,
+              },
             });
           };
 
           return (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', padding: '4px 0', minWidth: '100px' }}>
-              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
-                <input
-                  type="checkbox"
-                  className="custom-checkbox"
-                  checked={isAssigned}
-                  onChange={handleToggleAssigned}
-                />
-                <span>勤務</span>
-              </label>
-
-              <RadioButton
-                label="主たる事業所"
-                name={`primary_office_${item.id}`}
-                checked={isPrimary}
-                disabled={!isAssigned}
-                onChange={handleSetPrimary}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 0' }}>
+              <input
+                type="checkbox"
+                className="custom-checkbox"
+                checked={isAssigned}
+                onChange={handleToggleAssigned}
               />
             </div>
           );
@@ -192,20 +139,18 @@ export function StaffOfficePage() {
 
       if (fetchErr) throw fetchErr;
 
-      const existingMap = new Map<string, OfficeStaffSettingTableItem>();
+      const existingMap = new Map<string, OfficeStaffSettingSummaryTableItem>();
       (currentSettings || []).forEach(s => {
         existingMap.set(`${s.staff_id}_${s.office_id}`, s);
       });
 
-      const toInsert: { office_id: string; staff_id: string; is_primary: boolean }[] = [];
-      const toUpdate: { id: string; is_primary: boolean }[] = [];
+      const toInsert: { office_id: string; staff_id: string }[] = [];
       const toDeleteIds: string[] = [];
 
       drafts.forEach(row => {
         offices.forEach(office => {
           const key = `${row.id}_${office.id}`;
           const isSelected = !!row.assignedOffices[office.id];
-          const isPrimary = row.primaryOfficeId === office.id;
           const existing = existingMap.get(key);
 
           if (isSelected) {
@@ -213,12 +158,6 @@ export function StaffOfficePage() {
               toInsert.push({
                 office_id: office.id,
                 staff_id: row.id,
-                is_primary: isPrimary,
-              });
-            } else if (existing.is_primary !== isPrimary && existing.id) {
-              toUpdate.push({
-                id: existing.id,
-                is_primary: isPrimary,
               });
             }
           } else if (existing && existing.id) {
@@ -233,14 +172,6 @@ export function StaffOfficePage() {
           .delete()
           .in('id', toDeleteIds);
         if (delErr) throw delErr;
-      }
-
-      for (const item of toUpdate) {
-        const { error: upErr } = await supabase
-          .from('office_staff_setting_summaries')
-          .update({ is_primary: item.is_primary })
-          .eq('id', item.id);
-        if (upErr) throw upErr;
       }
 
       if (toInsert.length > 0) {
@@ -265,14 +196,8 @@ export function StaffOfficePage() {
       title="事業所割当"
       data={matrixData}
       columns={columns}
-      emptyMessage={
-        offices.length === 0
-          ? '登録されている事業所がありません。「施設管理」画面で事業所を登録してください。'
-          : MESSAGES.EMPTY_STAFF
-      }
-      initialSort={{ key: 'code', direction: 'asc' }}
+      emptyMessage="職員が登録されていません。"
       onBatchSave={handleBatchSave}
-      hideDeleteColumn={true}
       hideAddButton={true}
       hideHeader={true}
     />

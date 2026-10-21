@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
+import { recomputeHistoryPeriods } from '../utils';
 import type { MemberRecipientCertificateItem } from '../types';
 
 export type MemberRecipientCertificateGridRow = {
@@ -105,9 +106,14 @@ export function useRecipientCertificates() {
 
       for (const draft of drafts) {
         const memberId = draft.id;
-        if (!draft.certificates || draft.certificates.length === 0) continue;
+        // 共通履歴期間ロジックで適用期間（前日設定）を連動計算
+        const computedCertificates = recomputeHistoryPeriods(draft.certificates, {
+          fromKey: 'validFrom',
+          toKey: 'validTo',
+          deletedIds,
+        });
 
-        for (const cert of draft.certificates) {
+        for (const cert of computedCertificates) {
           if (deletedIds.includes(cert.id)) continue;
 
           let mgmtType = cert.copaymentManagementType || 'none';
@@ -125,7 +131,7 @@ export function useRecipientCertificates() {
             copayment_office_code: mgmtType === 'other' ? (cert.copaymentOfficeCode || null) : null,
             copayment_office_name: mgmtType === 'other' ? (cert.copaymentOfficeName || null) : null,
             valid_from: cert.validFrom || new Date().toISOString().substring(0, 10),
-            valid_to: cert.validTo || '2099-12-31',
+            valid_to: cert.validTo || null,
             remarks: cert.remarks || null,
           };
 

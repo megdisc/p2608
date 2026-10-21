@@ -4,6 +4,7 @@ import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks/useRecipientCertificates';
+import { recomputeHistoryPeriods } from '../utils';
 import type { MemberRecipientCertificateItem } from '../types';
 import type { OfficeTableItem } from '../types/db';
 
@@ -198,7 +199,6 @@ export function RecipientCertificatePage() {
 
   const handleAddSubRow = (_parentId: string) => {
     const today = new Date().toISOString().substring(0, 10);
-    const nextYear = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().substring(0, 10);
 
     return {
       id: `CRT-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -212,7 +212,7 @@ export function RecipientCertificatePage() {
       copaymentOfficeCode: '',
       copaymentOfficeName: '',
       validFrom: today,
-      validTo: nextYear,
+      validTo: '',
       remarks: '',
     } as MemberRecipientCertificateItem;
   };
@@ -229,6 +229,9 @@ export function RecipientCertificatePage() {
       onBatchSave={handleBatchSave}
       subItemsKey="certificates"
       onAddSubRow={handleAddSubRow}
+      recomputeSubItems={(subItems, _parent, deletedIds) =>
+        recomputeHistoryPeriods(subItems, { fromKey: 'validFrom', toKey: 'validTo', deletedIds })
+      }
       hideAddButton={true}
       hideHeader={true}
     />

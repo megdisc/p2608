@@ -160,6 +160,26 @@ export function getPreviousMonth(yearMonth: string): string {
 }
 
 /**
+ * Given a "YYYY-MM-DD" date string, returns the previous day formatted as "YYYY-MM-DD"
+ */
+export function getPreviousDay(dateStr: string): string {
+  if (!dateStr || dateStr.length < 10) return dateStr;
+  const [yStr, mStr, dStr] = dateStr.substring(0, 10).split('-');
+  const y = parseInt(yStr, 10);
+  const m = parseInt(mStr, 10);
+  const d = parseInt(dStr, 10);
+  if (isNaN(y) || isNaN(m) || isNaN(d)) return dateStr;
+  
+  const date = new Date(Date.UTC(y, m - 1, d));
+  date.setUTCDate(date.getUTCDate() - 1);
+  
+  const resY = date.getUTCFullYear();
+  const resM = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const resD = String(date.getUTCDate()).padStart(2, '0');
+  return `${resY}-${resM}-${resD}`;
+}
+
+/**
  * Returns an ISO string for database insertion, based on current time.
  */
 export function getCurrentISOString(): string {

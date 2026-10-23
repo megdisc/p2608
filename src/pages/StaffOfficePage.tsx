@@ -1,121 +1,62 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, Button, MultiSelectDropdown, type Column } from '../components';
+import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import {
-  MESSAGES,
-  TABLE_COLUMNS,
-  DUTY_TYPE_OPTIONS,
-  OFFICE_STAFF_ROLE_OPTIONS,
-} from '../constants';
-import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
-import type { OfficeTableItem, StaffTableItem } from '../types/db';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import type { OfficeStaffSettingTableItem, OfficeTableItem, StaffTableItem } from '../types/db';
 
-export type StaffOfficeSettingRow = {
-  id: string; // summary_id (UUID or NEW-xxx)
-  office_id: string;
-  staff_id: string;
-  employment_type: string;
-  duty_type: string;
-  weekly_working_hours: number | string;
-  staff_roles: string[];
-  valid_from: string;
-  valid_to: string | null;
-};
-
-export type StaffWithOfficeSettings = {
+type StaffOfficeGridRow = {
   id: string; // staff_id
   code: string;
   name: string;
   yomigana: string;
-  settings: StaffOfficeSettingRow[];
-};
-
-const deriveEmploymentType = (hours: number | string | null | undefined): string => {
-  if (hours === null || hours === undefined || hours === '') return '';
-  const num = Number(hours);
-  if (isNaN(num)) return '';
-  return num >= 40 ? 'full_time' : 'part_time';
-};
-
-const formatEmploymentType = (hours: number | string | null | undefined): string => {
-  const type = deriveEmploymentType(hours);
-  if (type === 'full_time') return '常勤';
-  if (type === 'part_time') return '非常勤';
-  return '-';
-};
-
-const generateId = () => {
-  return typeof crypto !== 'undefined' && crypto.randomUUID
-    ? crypto.randomUUID()
-    : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = (Math.random() * 16) | 0;
-        return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-      });
+  assignedOffices: Record<string, boolean>;
+  [officeId: string]: any;
 };
 
 export function StaffOfficePage() {
   const [offices, setOffices] = useState<OfficeTableItem[]>([]);
-  const [data, setData] = useState<StaffWithOfficeSettings[]>([]);
+  const [matrixData, setMatrixData] = useState<StaffOfficeGridRow[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
-  const fetchData = useCallback(async () => {
+  const fetchMatrixData = useCallback(async () => {
     try {
       setLoading(true);
-      const [staffRes, officeRes, summariesRes, detailsRes] = await Promise.all([
+      const [staffRes, officeRes, settingsRes] = await Promise.all([
         supabase.from('staffs').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('office_staff_setting_summaries').select('*').order('valid_from', { ascending: false }),
-        supabase.from('office_staff_setting_details').select('*'),
+        supabase.from('office_staff_settings').select('*'),
       ]);
 
       if (staffRes.error) throw staffRes.error;
       if (officeRes.error) throw officeRes.error;
-      if (summariesRes.error) throw summariesRes.error;
-      if (detailsRes.error) throw detailsRes.error;
+      if (settingsRes.error) throw settingsRes.error;
 
       const activeStaffs: StaffTableItem[] = staffRes.data || [];
       const activeOffices: OfficeTableItem[] = officeRes.data || [];
-      const summaries: any[] = summariesRes.data || [];
-      const details: any[] = detailsRes.data || [];
+      const settings: OfficeStaffSettingTableItem[] = settingsRes.data || [];
 
       setOffices(activeOffices);
 
-      // summary_id ごとに staff_roles を集約
-      const rolesMap = new Map<string, string[]>();
-      details.forEach(d => {
-        if (!rolesMap.has(d.summary_id)) {
-          rolesMap.set(d.summary_id, []);
-        }
-        rolesMap.get(d.summary_id)!.push(d.staff_role);
-      });
+      const rows: StaffOfficeGridRow[] = activeStaffs.map(staff => {
+        const assignedMap: Record<string, boolean> = {};
 
-      // 職員ごとに settings を集約
-      const rows: StaffWithOfficeSettings[] = activeStaffs.map(staff => {
-        const staffSummaries = summaries.filter(s => s.staff_id === staff.id);
-        const settings: StaffOfficeSettingRow[] = staffSummaries.map(s => ({
-          id: s.id,
-          office_id: s.office_id,
-          staff_id: s.staff_id,
-          employment_type: s.employment_type || deriveEmploymentType(s.weekly_working_hours),
-          duty_type: s.duty_type || 'dedicated',
-          weekly_working_hours: s.weekly_working_hours ?? '',
-          staff_roles: rolesMap.get(s.id) || [],
-          valid_from: s.valid_from,
-          valid_to: s.valid_to,
-        }));
+        activeOffices.forEach(office => {
+          const isAssigned = settings.some(s => s.staff_id === staff.id && s.office_id === office.id);
+          assignedMap[office.id] = isAssigned;
+        });
 
         return {
           id: staff.id,
           code: staff.code || '',
           name: staff.name,
           yomigana: staff.yomigana || '',
-          settings,
+          assignedOffices: assignedMap,
         };
       });
 
-      setData(rows);
+      setMatrixData(rows);
     } catch (err) {
       showAlert(err instanceof Error ? err.message : '事業所割当データの取得に失敗しました', 'error');
     } finally {
@@ -124,84 +65,17 @@ export function StaffOfficePage() {
   }, [showAlert]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchMatrixData();
+  }, [fetchMatrixData]);
 
-  const handleAddSubRow = (parentId: string): StaffOfficeSettingRow => {
-    const parent = data.find(p => p.id === parentId);
-    if (!parent) {
-      throw new Error('対象の職員が見つかりません');
-    }
-
-    const defaultOfficeId = offices[0]?.id || '';
-    const today = getCurrentJSTDateOnly();
-
-    // 既存履歴の最新開始日を確認
-    const existing = parent.settings?.filter(s => s.office_id === defaultOfficeId) || [];
-    const sortedDesc = [...existing].sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
-    let defaultStart = today;
-    if (sortedDesc.length > 0 && sortedDesc[0].valid_from >= today) {
-      const [y, m, d] = sortedDesc[0].valid_from.split('-').map(Number);
-      const nextDate = new Date(Date.UTC(y, m - 1, d + 1));
-      defaultStart = nextDate.toISOString().substring(0, 10);
-    }
-
-    return {
-      id: `NEW-${generateId()}`,
-      office_id: defaultOfficeId,
-      staff_id: parent.id,
-      employment_type: 'full_time',
-      duty_type: 'dedicated',
-      weekly_working_hours: 40,
-      staff_roles: ['life_supporter'],
-      valid_from: defaultStart,
-      valid_to: null,
-    };
-  };
-
-  const handleRecomputeSubItems = (
-    subItems: StaffOfficeSettingRow[],
-    _parent: StaffWithOfficeSettings,
-    deletedIds?: Set<string> | string[]
-  ): StaffOfficeSettingRow[] => {
-    // office_id ごとにグループ化して期間を連動計算
-    const officeGroups: Record<string, StaffOfficeSettingRow[]> = {};
-    subItems.forEach(item => {
-      const oId = item.office_id || 'unknown';
-      if (!officeGroups[oId]) officeGroups[oId] = [];
-      officeGroups[oId].push(item);
-    });
-
-    const allRecomputed: StaffOfficeSettingRow[] = [];
-    Object.values(officeGroups).forEach(group => {
-      const recomputed = recomputeHistoryPeriods(group, {
-        fromKey: 'valid_from',
-        toKey: 'valid_to',
-        deletedIds,
-      });
-      allRecomputed.push(...recomputed);
-    });
-
-    return allRecomputed.sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
-  };
-
-  const officeOptions = useMemo(() => {
-    return offices.map(o => ({
-      value: o.id,
-      label: o.short_name || o.name,
-    }));
-  }, [offices]);
-
-  const columns: Column<any>[] = useMemo(() => {
-    return [
+  const columns: Column<StaffOfficeGridRow>[] = useMemo(() => {
+    const cols: Column<StaffOfficeGridRow>[] = [
       {
         key: 'code',
         header: TABLE_COLUMNS.STAFF_ID,
         sortable: true,
         sortKey: 'code',
         editable: false,
-        rowType: 'main',
-        style: { width: '120px' },
       },
       {
         key: 'name',
@@ -209,213 +83,115 @@ export function StaffOfficePage() {
         sortable: true,
         sortKey: 'yomigana',
         editable: false,
-        rowType: 'main',
-        style: { width: '140px' },
       },
-      {
-        key: 'office_id',
-        header: TABLE_COLUMNS.OFFICE,
-        sortable: false,
-        rowType: 'sub',
-        editable: true,
-        inputType: 'select',
-        options: officeOptions,
-        style: { minWidth: '220px' },
-        mainRender: (_parentItem, addSubRow) => (
-          <Button onClick={addSubRow}>
-            ＋ 事業所追加
-          </Button>
-        ),
-        render: (subItem: StaffOfficeSettingRow) => {
-          const office = offices.find(o => o.id === subItem.office_id);
-          return office ? (office.short_name || office.name) : '-';
-        },
-      },
-      {
-        key: 'employment_type',
-        header: TABLE_COLUMNS.EMPLOYMENT_TYPE,
-        sortable: false,
-        rowType: 'sub',
-        editable: false,
-        style: { width: '100px', textAlign: 'center' },
-        render: (subItem: StaffOfficeSettingRow) => {
-          return formatEmploymentType(subItem.weekly_working_hours);
-        },
-      },
-      {
-        key: 'duty_type',
-        header: TABLE_COLUMNS.DUTY_TYPE,
-        sortable: false,
-        rowType: 'sub',
-        editable: true,
-        inputType: 'select',
-        options: DUTY_TYPE_OPTIONS,
-        style: { width: '110px' },
-      },
-      {
-        key: 'weekly_working_hours',
-        header: TABLE_COLUMNS.WEEKLY_WORKING_HOURS,
-        sortable: false,
-        rowType: 'sub',
-        editable: true,
-        inputType: 'number',
-        className: 'quantity',
-        style: { width: '130px', textAlign: 'right' },
-        onCellChange: (newVal: unknown) => {
-          const hours = Number(newVal);
-          return {
-            employment_type: deriveEmploymentType(hours),
-          } as Partial<StaffOfficeSettingRow>;
-        },
-      },
-      {
-        key: 'staff_roles',
-        header: TABLE_COLUMNS.STAFF_ROLE,
-        sortable: false,
-        rowType: 'sub',
-        editable: true,
-        style: { minWidth: '260px' },
-        customEditRender: (value: string[], _subItem: StaffOfficeSettingRow, onChange: (newVal: string[]) => void) => {
-          return (
-            <MultiSelectDropdown
-              options={OFFICE_STAFF_ROLE_OPTIONS}
-              value={value || []}
-              onChange={onChange}
-              placeholder="配置職種を選択"
-            />
-          );
-        },
-        render: (subItem: StaffOfficeSettingRow) => {
-          const selected = (subItem.staff_roles || [])
-            .map(roleVal => OFFICE_STAFF_ROLE_OPTIONS.find(opt => opt.value === roleVal)?.label)
-            .filter(Boolean);
+    ];
 
-          if (selected.length === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+    offices.forEach(office => {
+      cols.push({
+        key: office.id,
+        header: office.short_name || office.name,
+        sortable: false,
+        editable: true,
+        inputType: 'checkbox',
+        style: () => ({
+          textAlign: 'center',
+          minWidth: '120px',
+          whiteSpace: 'nowrap',
+        }),
+        onCellChange: (newValue, _item, updateRow) => {
+          if (newValue && typeof newValue === 'object') {
+            updateRow(newValue);
+            return newValue;
           }
+        },
+        customEditRender: (_val, item: StaffOfficeGridRow, onChange) => {
+          const assignedOfficesMap = item.assignedOffices || {};
+          const isAssigned = !!assignedOfficesMap[office.id];
+
+          const handleToggleAssigned = () => {
+            const updatedAssigned = {
+              ...assignedOfficesMap,
+              [office.id]: !isAssigned,
+            };
+
+            onChange({
+              assignedOffices: updatedAssigned,
+            });
+          };
 
           return (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-              {selected.map((name, i) => (
-                <span
-                  key={i}
-                  style={{
-                    background: 'var(--color-bg-subtle)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '12px',
-                    padding: '0 8px',
-                    fontSize: 'var(--text-caption)',
-                    lineHeight: '18px',
-                    display: 'inline-block',
-                  }}
-                >
-                  {name}
-                </span>
-              ))}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 0', minWidth: '100px' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '12px' }}>
+                <input
+                  type="checkbox"
+                  className="custom-checkbox"
+                  checked={isAssigned}
+                  onChange={handleToggleAssigned}
+                />
+              </label>
             </div>
           );
         },
-      },
-      {
-        key: 'valid_from',
-        header: TABLE_COLUMNS.VALID_PERIOD_FROM,
-        sortable: false,
-        rowType: 'sub',
-        editable: true,
-        inputType: 'date',
-        style: { width: '150px' },
-      },
-      {
-        key: 'valid_to',
-        header: TABLE_COLUMNS.VALID_PERIOD_TO,
-        sortable: false,
-        rowType: 'sub',
-        editable: false,
-        inputType: 'date',
-        style: { width: '150px' },
-      },
-    ];
-  }, [offices, officeOptions]);
+      });
+    });
 
-  const handleBatchSave = async (drafts: StaffWithOfficeSettings[], deletedIds: string[]) => {
+    return cols;
+  }, [offices]);
+
+  const handleBatchSave = async (drafts: StaffOfficeGridRow[]) => {
     try {
-      // 1. 削除処理
-      const realDeletedIds = deletedIds.filter(id => !id.startsWith('NEW-') && id.includes('-'));
-      if (realDeletedIds.length > 0) {
-        await supabase
-          .from('office_staff_setting_details')
-          .delete()
-          .in('summary_id', realDeletedIds);
+      const { data: currentSettings, error: fetchErr } = await supabase
+        .from('office_staff_settings')
+        .select('*');
 
-        await supabase
-          .from('office_staff_setting_summaries')
+      if (fetchErr) throw fetchErr;
+
+      const existingMap = new Map<string, OfficeStaffSettingTableItem>();
+      (currentSettings || []).forEach(s => {
+        existingMap.set(`${s.staff_id}_${s.office_id}`, s);
+      });
+
+      const toInsert: { office_id: string; staff_id: string }[] = [];
+      const toDeleteIds: string[] = [];
+
+      drafts.forEach(row => {
+        offices.forEach(office => {
+          const key = `${row.id}_${office.id}`;
+          const isSelected = !!row.assignedOffices[office.id];
+          const existing = existingMap.get(key);
+
+          if (isSelected) {
+            if (!existing) {
+              toInsert.push({
+                office_id: office.id,
+                staff_id: row.id,
+              });
+            }
+          } else if (existing && existing.id) {
+            toDeleteIds.push(existing.id);
+          }
+        });
+      });
+
+      if (toDeleteIds.length > 0) {
+        const { error: delErr } = await supabase
+          .from('office_staff_settings')
           .delete()
-          .in('id', realDeletedIds);
+          .in('id', toDeleteIds);
+        if (delErr) throw delErr;
       }
 
-      // 2. 有効な履歴の保存処理
-      for (const staff of drafts) {
-        if (!staff.settings || staff.settings.length === 0) continue;
-
-        // 同一事業所ごとに期間連動計算
-        const computedSettings = handleRecomputeSubItems(staff.settings, staff, deletedIds);
-
-        for (const setting of computedSettings) {
-          if (deletedIds.includes(setting.id)) continue;
-          if (!setting.office_id) {
-            throw new Error(`${staff.name}の事業所を選択してください`);
-          }
-          if (!setting.valid_from) {
-            throw new Error(`${staff.name}の適用開始日を入力してください`);
-          }
-
-          const summaryId = setting.id.startsWith('NEW-') ? generateId() : setting.id;
-          const validToVal = setting.valid_to ? setting.valid_to : null;
-          const weeklyHours = setting.weekly_working_hours !== '' ? Number(setting.weekly_working_hours) : null;
-          const employmentTypeVal = deriveEmploymentType(weeklyHours);
-
-          // 2a. 概要テーブルのUpsert
-          const { error: summaryErr } = await supabase
-            .from('office_staff_setting_summaries')
-            .upsert({
-              id: summaryId,
-              office_id: setting.office_id,
-              staff_id: staff.id,
-              employment_type: employmentTypeVal,
-              duty_type: setting.duty_type || 'dedicated',
-              weekly_working_hours: weeklyHours,
-              valid_from: setting.valid_from,
-              valid_to: validToVal,
-            });
-
-          if (summaryErr) throw summaryErr;
-
-          // 2b. 詳細テーブルの同期
-          await supabase
-            .from('office_staff_setting_details')
-            .delete()
-            .eq('summary_id', summaryId);
-
-          if (setting.staff_roles && setting.staff_roles.length > 0) {
-            const detailRows = setting.staff_roles.map(role => ({
-              id: generateId(),
-              summary_id: summaryId,
-              staff_role: role,
-            }));
-
-            const { error: insDetailsErr } = await supabase
-              .from('office_staff_setting_details')
-              .insert(detailRows);
-
-            if (insDetailsErr) throw insDetailsErr;
-          }
-        }
+      if (toInsert.length > 0) {
+        const { error: insErr } = await supabase
+          .from('office_staff_settings')
+          .insert(toInsert);
+        if (insErr) throw insErr;
       }
 
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
-      await fetchData();
+      await fetchMatrixData();
     } catch (err) {
-      showAlert(err instanceof Error ? err.message : '事業所職員割当データの保存に失敗しました', 'error');
+      showAlert(err instanceof Error ? err.message : MESSAGES.SAVE_ERROR, 'error');
       throw err;
     }
   };
@@ -425,13 +201,16 @@ export function StaffOfficePage() {
   return (
     <DataPage
       title="事業所割当"
-      data={data}
+      data={matrixData}
       columns={columns}
-      emptyMessage="職員が登録されていません。"
-      subItemsKey="settings"
-      onAddSubRow={handleAddSubRow}
-      recomputeSubItems={handleRecomputeSubItems}
+      emptyMessage={
+        offices.length === 0
+          ? '登録されている事業所がありません。「施設管理」画面で事業所を登録してください。'
+          : '職員が登録されていません。「職員」タブで職員を登録してください。'
+      }
+      initialSort={{ key: 'code', direction: 'asc' }}
       onBatchSave={handleBatchSave}
+      hideDeleteColumn={true}
       hideAddButton={true}
       hideHeader={true}
     />

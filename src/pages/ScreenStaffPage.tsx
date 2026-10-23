@@ -6,6 +6,7 @@ import { Tabs } from '../components/ui';
 import { StaffPage } from './StaffPage';
 import { StaffQualificationPage } from './StaffQualificationPage';
 import { StaffOfficePage } from './StaffOfficePage';
+import { StaffWorkStylePage } from './StaffWorkStylePage';
 
 export function ScreenStaffPage() {
   const navContext = useNavigation();
@@ -20,6 +21,8 @@ export function ScreenStaffPage() {
         return <StaffQualificationPage />;
       case 'staffOffice':
         return <StaffOfficePage />;
+      case 'staffWorkStyle':
+        return <StaffWorkStylePage />;
       default:
         return <StaffPage />;
     }

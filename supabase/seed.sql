@@ -408,6 +408,20 @@ ON CONFLICT (id) DO UPDATE SET
   valid_until = EXCLUDED.valid_until,
   is_primary = EXCLUDED.is_primary;
 
+-- 5.2 事業所職員割当 (office_staff_settings)
+INSERT INTO public.office_staff_settings (id, office_id, staff_id) VALUES
+-- 相澤翔太 (S-000001): WS未来, 未来ワークス
+('77777777-2222-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
+('77777777-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
+-- 井上結衣 (S-000002): WS未来
+('77777777-2222-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 'de2d336b-254d-4af7-8e49-5acbda340e67'),
+-- 上田拓海 (S-000003): 未来ワークス, 未来オアシス
+('77777777-3333-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '5ff5e55e-186f-43ce-84d2-aa751d8341b5'),
+('77777777-4444-0000-0000-000000000001', '44444444-4444-4444-4444-444444444444', '5ff5e55e-186f-43ce-84d2-aa751d8341b5')
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  staff_id = EXCLUDED.staff_id;
+
 -- 6. 工賃単価項目マスタ (wage_rate_items)
 INSERT INTO public.wage_rate_items (id, office_id, wage, description, sort_order) VALUES
 ('a1b2c3d4-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 100, '新人レベル', 0),
@@ -724,31 +738,30 @@ ON CONFLICT (id) DO UPDATE SET
   subject = EXCLUDED.subject,
   amount = EXCLUDED.amount;
 
--- 12. 事業所職員割当概要 (office_staff_setting_summaries)
-INSERT INTO public.office_staff_setting_summaries (id, office_id, staff_id, employment_type, duty_type, weekly_working_hours, valid_from, valid_to) VALUES
+-- 12. 職員勤務形態概要 (staff_work_style_summaries)
+INSERT INTO public.staff_work_style_summaries (id, office_staff_setting_id, employment_type, duty_type, weekly_working_hours, valid_from, valid_to) VALUES
 -- 相澤翔太 (S-000001): WS未来 過去履歴 (生活支援員)
-('88888888-2222-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'full_time', 'dedicated', 40.0, '2024-04-01', '2026-03-31'),
+('88888888-2222-0000-0000-000000000001', '77777777-2222-0000-0000-000000000001', 'full_time', 'dedicated', 40.0, '2024-04-01', '2026-03-31'),
 -- 相澤翔太 (S-000001): WS未来 現在 (管理者・サビ管兼務)
-('88888888-2222-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'full_time', 'dedicated', 40.0, '2026-04-01', NULL),
+('88888888-2222-0000-0000-000000000002', '77777777-2222-0000-0000-000000000001', 'full_time', 'dedicated', 40.0, '2026-04-01', NULL),
 -- 相澤翔太 (S-000001): 未来ワークス 現在 (生活支援員兼務)
-('88888888-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'part_time', 'concurrent', 8.0, '2026-04-01', NULL),
+('88888888-3333-0000-0000-000000000001', '77777777-3333-0000-0000-000000000001', 'part_time', 'concurrent', 8.0, '2026-04-01', NULL),
 -- 井上結衣 (S-000002): WS未来 現在 (職業指導員・生活支援員兼務)
-('88888888-2222-0000-0000-000000000003', '22222222-2222-2222-2222-222222222222', 'de2d336b-254d-4af7-8e49-5acbda340e67', 'full_time', 'dedicated', 40.0, '2025-04-01', NULL),
+('88888888-2222-0000-0000-000000000003', '77777777-2222-0000-0000-000000000002', 'full_time', 'dedicated', 40.0, '2025-04-01', NULL),
 -- 上田拓海 (S-000003): 未来ワークス 現在 (生活支援員専従)
-('88888888-3333-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'full_time', 'dedicated', 40.0, '2025-04-01', NULL),
+('88888888-3333-0000-0000-000000000002', '77777777-3333-0000-0000-000000000002', 'full_time', 'dedicated', 40.0, '2025-04-01', NULL),
 -- 上田拓海 (S-000003): 未来オアシス 現在 (職業指導員兼務)
-('88888888-4444-0000-0000-000000000001', '44444444-4444-4444-4444-444444444444', '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'part_time', 'concurrent', 10.0, '2025-04-01', NULL)
+('88888888-4444-0000-0000-000000000001', '77777777-4444-0000-0000-000000000001', 'part_time', 'concurrent', 10.0, '2025-04-01', NULL)
 ON CONFLICT (id) DO UPDATE SET
-  office_id = EXCLUDED.office_id,
-  staff_id = EXCLUDED.staff_id,
+  office_staff_setting_id = EXCLUDED.office_staff_setting_id,
   employment_type = EXCLUDED.employment_type,
   duty_type = EXCLUDED.duty_type,
   weekly_working_hours = EXCLUDED.weekly_working_hours,
   valid_from = EXCLUDED.valid_from,
   valid_to = EXCLUDED.valid_to;
 
--- 12.1 事業所職員割当詳細 (office_staff_setting_details)
-INSERT INTO public.office_staff_setting_details (id, summary_id, staff_role) VALUES
+-- 12.1 職員勤務形態詳細 (staff_work_style_details)
+INSERT INTO public.staff_work_style_details (id, summary_id, staff_role) VALUES
 -- 相澤翔太 WS未来 過去
 ('88888888-0001-0000-0000-000000000001', '88888888-2222-0000-0000-000000000001', 'life_supporter'),
 -- 相澤翔太 WS未来 現在 (兼務: 管理者 + サービス管理責任者)

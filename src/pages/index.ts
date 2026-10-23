@@ -1,4 +1,7 @@
 export * from './StaffPage';
+export * from './StaffOfficePage';
+export * from './StaffWorkStylePage';
+export * from './StaffQualificationPage';
 export * from './LoginPage';
 export * from './ProjectPage';
 export * from './ProjectUserPage';

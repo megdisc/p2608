@@ -286,6 +286,7 @@ export const PAGE_NAMES = {
   QUALIFICATION: '資格',
   ORGANIZATION: '法人',
   OFFICE: '事業所',
+  WORK_STYLE: '勤務形態',
   RECIPIENT_CERTIFICATE: '受給者証',
   REGIONAL_GRADE: '所在地級数',
   SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',

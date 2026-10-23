@@ -64,6 +64,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'staff', label: PAGE_NAMES.STAFF },
       { id: 'staffQualification', label: PAGE_NAMES.QUALIFICATION },
       { id: 'staffOffice', label: PAGE_NAMES.OFFICE },
+      { id: 'staffWorkStyle', label: PAGE_NAMES.WORK_STYLE },
     ],
   },
   SCREEN_USER: {

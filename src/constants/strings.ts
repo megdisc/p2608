@@ -375,6 +375,10 @@ export const TABLE_COLUMNS = {
   VALID_TO: '有効期限（終了）',
   VALID_PERIOD_FROM: '有効期間（開始）',
   VALID_PERIOD_TO: '有効期間（終了）',
+  EMPLOYMENT_TYPE: '雇用形態',
+  DUTY_TYPE: '勤務区分',
+  WEEKLY_WORKING_HOURS: '週所定労働時間',
+  STAFF_ROLE: '配置職種',
 
   // 住所・連絡先
   UNIT_PRICE_REGIONAL: '地域区分単価(円)',
@@ -604,4 +608,20 @@ export const WAGE_ACHIEVEMENT_TIER_OPTIONS = [
   { label: '1万円以上1万5千円未満', value: '1万円以上1万5千円未満' },
   { label: '1万円未満', value: '1万円未満' }
 ];
+
+export const DUTY_TYPE_OPTIONS = [
+  { label: '専従', value: 'dedicated' },
+  { label: '兼務', value: 'concurrent' },
+];
+
+export const OFFICE_STAFF_ROLE_OPTIONS = [
+  { label: '管理者', value: 'manager' },
+  { label: 'サービス管理責任者', value: 'service_admin' },
+  { label: '職業指導員', value: 'vocational_instructor' },
+  { label: '生活支援員', value: 'life_supporter' },
+  { label: '目標工賃達成指導員', value: 'target_evaluator' },
+  { label: '就労支援員', value: 'employment_supporter' },
+  { label: 'ピアサポート専門員', value: 'peer_supporter' },
+];
+
 

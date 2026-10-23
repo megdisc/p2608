@@ -1058,8 +1058,98 @@ FROM (
 CROSS JOIN (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-22'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 ON CONFLICT DO NOTHING;
+
+-- 22. 職員勤務実績 (staff_attendance_records) 2026年1月, 6月, 10月
+INSERT INTO public.staff_attendance_records (office_id, staff_id, work_date, start_time, end_time, break_minutes, assigned_role)
+-- 1. WS未来: 相澤翔太 (専従・サビ管)
+SELECT 
+  '22222222-2222-2222-2222-222222222222'::uuid,
+  '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'::uuid,
+  d::date,
+  '08:45:00'::time,
+  '17:45:00'::time,
+  60,
+  'service_admin'
+FROM (
+  SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+) days
+WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
+
+UNION ALL
+
+-- 2. WS未来: 井上結衣 (専従・職業指導員 / 生活支援員兼務)
+SELECT 
+  '22222222-2222-2222-2222-222222222222'::uuid,
+  'de2d336b-254d-4af7-8e49-5acbda340e67'::uuid,
+  d::date,
+  '09:00:00'::time,
+  '18:00:00'::time,
+  60,
+  CASE WHEN (EXTRACT(DAY FROM d)::int % 2 = 1) THEN 'vocational_instructor' ELSE 'life_supporter' END
+FROM (
+  SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+) days
+WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
+
+UNION ALL
+
+-- 3. 未来ワークス: 上田拓海 (専従・生活支援員)
+SELECT 
+  '33333333-3333-3333-3333-333333333333'::uuid,
+  '5ff5e55e-186f-43ce-84d2-aa751d8341b5'::uuid,
+  d::date,
+  '09:00:00'::time,
+  '18:00:00'::time,
+  60,
+  'life_supporter'
+FROM (
+  SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+) days
+WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
+
+UNION ALL
+
+-- 4. 未来ワークス: 相澤翔太 (兼務・生活支援員、毎週木曜)
+SELECT 
+  '33333333-3333-3333-3333-333333333333'::uuid,
+  '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'::uuid,
+  d::date,
+  '13:00:00'::time,
+  '17:00:00'::time,
+  0,
+  'life_supporter'
+FROM (
+  SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+) days
+WHERE EXTRACT(DOW FROM d) = 4
+
+UNION ALL
+
+-- 5. 未来オアシス: 上田拓海 (兼務・職業指導員、毎週金曜)
+SELECT 
+  '44444444-4444-4444-4444-444444444444'::uuid,
+  '5ff5e55e-186f-43ce-84d2-aa751d8341b5'::uuid,
+  d::date,
+  '13:00:00'::time,
+  '18:00:00'::time,
+  0,
+  'vocational_instructor'
+FROM (
+  SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+) days
+WHERE EXTRACT(DOW FROM d) = 5;
 

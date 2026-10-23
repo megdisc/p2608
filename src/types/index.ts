@@ -426,6 +426,7 @@ export type StaffAttendanceRecordRow = {
   staff_name: string;
   staff_yomigana?: string;
   default_role?: string;
+  date: string; // YYYY-MM-DD for DataTable singleDate filter
   work_date: string;
   start_time: string; // HH:mm
   end_time: string; // HH:mm

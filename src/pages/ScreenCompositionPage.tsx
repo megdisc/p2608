@@ -638,20 +638,35 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'office_staff_settings',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当',
+      description: '職員と事業所の多対多割当・所属情報（複数事業所兼務・所属定義対応。「事業所」タブで定義）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '割当ID', status: 'added' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'office_staff_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所職員割当概要',
-      description: '職員と事業所の多対多割当・雇用形態・勤務形態・所定時間および適用期間の履歴管理',
+      logicalName: '事業所職員勤務形態概要',
+      description: '事業所に所属する職員の雇用形態・勤務区分・所定時間および適用期間の履歴管理（「勤務形態」タブで管理）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）', status: 'added' },
-        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）', status: 'added' },
-        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）', status: 'added' },
-        { name: 'valid_from', desc: '有効期間（開始）', status: 'added' },
-        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）', status: 'added' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）' },
+        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
+        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
+        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
+        { name: 'valid_from', desc: '有効期間（開始）' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -660,15 +675,14 @@ export function ScreenCompositionPage() {
       layer: '1. マスタ層',
       physicalName: 'office_staff_setting_details',
       tableType: '従属マスタ',
-      logicalName: '事業所職員割当詳細',
-      description: '事業所職員割当概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応）',
-      status: 'added',
+      logicalName: '事業所職員勤務形態詳細',
+      description: '事業所職員勤務形態概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「勤務形態」タブで管理）',
       columns: [
-        { name: 'id', desc: '詳細ID', status: 'added' },
-        { name: 'summary_id', desc: '概要ID（office_staff_setting_summariesのIDを参照）', status: 'added' },
-        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（office_staff_setting_summariesのIDを参照）' },
+        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
       ]
     },
     {

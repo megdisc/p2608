@@ -21,9 +21,11 @@ export function computeActualWorkHours(start: string, end: string, breakMin: num
   return Math.round((netMinutes / 60) * 10) / 10;
 }
 
-export function useStaffAttendanceRecords() {
+export function useStaffAttendanceRecords(externalDate?: string) {
   const { selectedOfficeId } = useOffice();
-  const [currentDate, setCurrentDate] = useState<string>(getCurrentJSTDateOnly());
+  const [internalDate, setInternalDate] = useState<string>(getCurrentJSTDateOnly());
+  const currentDate = externalDate || internalDate;
+  const setCurrentDate = setInternalDate;
   const [loading, setLoading] = useState(false);
   const [records, setRecords] = useState<StaffAttendanceRecordRow[]>([]);
 

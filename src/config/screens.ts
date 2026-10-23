@@ -88,15 +88,24 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
-  SCREEN_STAFF_DAILY_REPORT: {
-    screenName: PAGE_NAMES.SCREEN_STAFF_DAILY_REPORT,
+  SCREEN_DAILY_REPORT: {
+    screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
     tabs: [
       { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
+      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
+    ],
+  },
+  SCREEN_STAFF_DAILY_REPORT: {
+    screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
+    tabs: [
+      { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
+      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
     ],
   },
   SCREEN_DAILY_WORK: {
-    screenName: PAGE_NAMES.SCREEN_DAILY_WORK,
+    screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
     tabs: [
+      { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
       { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
     ],
   },
@@ -129,9 +138,10 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 };
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
-  if (tabId === 'screenStaffDailyReport') return SCREEN_CONFIGS.SCREEN_STAFF_DAILY_REPORT;
+  if (tabId === 'screenDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
+  if (tabId === 'screenStaffDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
-  if (tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_WORK;
+  if (tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_FINANCE;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;

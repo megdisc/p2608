@@ -54,14 +54,16 @@ export type DailyFlatRecord = {
   isLastInProject?: boolean;
 };
 
-export function useDailyWorkRecords() {
+export function useDailyWorkRecords(externalDate?: string) {
   const { selectedOfficeId } = useOffice();
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<DailyAttendanceRecord[]>([]);
   const [loading, setLoading] = useState(false);
-  const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
+  const [internalDate, setInternalDate] = useState(() => getCurrentJSTDateOnly());
+  const currentDate = externalDate || internalDate;
+  const setCurrentDate = setInternalDate;
 
   const fetchMasters = useCallback(async (officeId?: string) => {
     const targetOfficeId = officeId !== undefined ? officeId : selectedOfficeId;

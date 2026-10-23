@@ -4,13 +4,21 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useAlert } from '../contexts';
 import { useDailyWorkRecords, type DailyFlatRecord } from '../hooks';
 
-export function DailyWorkRecordPage() {
+export interface DailyWorkRecordPageProps {
+  currentDate?: string;
+  onDateChange?: (date: string) => void;
+  isConfirmed?: boolean;
+  onConfirm?: () => Promise<void> | void;
+  onUnconfirm?: () => Promise<void> | void;
+}
+
+export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
   const { 
     dbMembers, 
     dbProjects, 
     loading, 
-    currentDate, 
-    setCurrentDate, 
+    currentDate: hookCurrentDate, 
+    setCurrentDate: setHookCurrentDate, 
     displayData, 
     confirmedDates,
     confirmDate,
@@ -19,8 +27,17 @@ export function DailyWorkRecordPage() {
     fetchMasters, 
     fetchRecords, 
     batchSaveDailyWorkRecords 
-  } = useDailyWorkRecords();
+  } = useDailyWorkRecords(props.currentDate);
   const { showAlert } = useAlert();
+
+  const currentDate = props.currentDate || hookCurrentDate;
+  const handleDateChange = useCallback((date: string) => {
+    if (props.onDateChange) {
+      props.onDateChange(date);
+    } else {
+      setHookCurrentDate(date);
+    }
+  }, [props, setHookCurrentDate]);
 
   useEffect(() => {
     fetchMasters().catch(() => {
@@ -36,26 +53,35 @@ export function DailyWorkRecordPage() {
   }, [currentDate, fetchRecords, showAlert]);
 
   const isConfirmed = useMemo(() => {
+    if (props.isConfirmed !== undefined) return props.isConfirmed;
     return confirmedDates.includes(currentDate);
-  }, [confirmedDates, currentDate]);
+  }, [props.isConfirmed, confirmedDates, currentDate]);
 
   const hasNonZeroRecords = useMemo(() => {
     return displayData.some(r => Number(r.workTime) > 0);
   }, [displayData]);
 
   const handleConfirm = useCallback(async () => {
+    if (props.onConfirm) {
+      await props.onConfirm();
+      return;
+    }
     if (!hasNonZeroRecords) {
       showAlert('利用記録が存在しない（またはすべて0時間の）日付は確定対象外です。', 'error');
       return;
     }
     await confirmDate(currentDate);
-    showAlert(`${currentDate}の利用記録を確定しました。`, 'success');
-  }, [hasNonZeroRecords, confirmDate, currentDate, showAlert]);
+    showAlert(`${currentDate}の日報を確定しました。`, 'success');
+  }, [props, hasNonZeroRecords, confirmDate, currentDate, showAlert]);
 
   const handleUnconfirm = useCallback(async () => {
+    if (props.onUnconfirm) {
+      await props.onUnconfirm();
+      return;
+    }
     await unconfirmDate(currentDate);
     showAlert(`${currentDate}の確定を解除しました。`, 'success');
-  }, [unconfirmDate, currentDate, showAlert]);
+  }, [props, unconfirmDate, currentDate, showAlert]);
 
   const canEditRow = useCallback(() => !isConfirmed, [isConfirmed]);
   const canDeleteRow = useCallback(() => !isConfirmed, [isConfirmed]);
@@ -368,7 +394,7 @@ export function DailyWorkRecordPage() {
       onBatchSave={handleBatchSave}
       showSingleDateFilter={true}
       singleDate={currentDate}
-      onSingleDateChange={setCurrentDate}
+      onSingleDateChange={handleDateChange}
       hideDeleteColumn={true}
       highlightInputColumns={true}
       hideHeader={true}

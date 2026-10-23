@@ -1,20 +1,60 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { DataPage, Select, Input, type Column } from '../components';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, OFFICE_STAFF_ROLE_OPTIONS } from '../constants';
 import { useAlert } from '../contexts';
-import { useStaffAttendanceRecords, computeActualWorkHours } from '../hooks';
+import { useStaffAttendanceRecords, useDailyConfirmation, computeActualWorkHours } from '../hooks';
 import type { StaffAttendanceRecordRow } from '../types';
 
-export function StaffAttendanceRecordPage() {
+export interface StaffAttendanceRecordPageProps {
+  currentDate?: string;
+  onDateChange?: (date: string) => void;
+  isConfirmed?: boolean;
+  onConfirm?: () => Promise<void> | void;
+  onUnconfirm?: () => Promise<void> | void;
+}
+
+export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps = {}) {
   const {
-    currentDate,
-    setCurrentDate,
+    currentDate: hookCurrentDate,
+    setCurrentDate: setHookCurrentDate,
     loading,
     records,
     batchSaveStaffAttendanceRecords,
-  } = useStaffAttendanceRecords();
+  } = useStaffAttendanceRecords(props.currentDate);
+
+  const currentDate = props.currentDate || hookCurrentDate;
+  const handleDateChange = useCallback((date: string) => {
+    if (props.onDateChange) {
+      props.onDateChange(date);
+    } else {
+      setHookCurrentDate(date);
+    }
+  }, [props, setHookCurrentDate]);
 
   const { showAlert } = useAlert();
+  const dailyConfirm = useDailyConfirmation(currentDate);
+  const isConfirmed = props.isConfirmed !== undefined ? props.isConfirmed : dailyConfirm.isConfirmed;
+
+  const handleConfirm = useCallback(async () => {
+    if (props.onConfirm) {
+      await props.onConfirm();
+      return;
+    }
+    await dailyConfirm.confirmDate(currentDate);
+    showAlert(`${currentDate}の日報を確定しました。`, 'success');
+  }, [props, dailyConfirm, currentDate, showAlert]);
+
+  const handleUnconfirm = useCallback(async () => {
+    if (props.onUnconfirm) {
+      await props.onUnconfirm();
+      return;
+    }
+    await dailyConfirm.unconfirmDate(currentDate);
+    showAlert(`${currentDate}の確定を解除しました。`, 'success');
+  }, [props, dailyConfirm, currentDate, showAlert]);
+
+  const canEditRow = useCallback(() => !isConfirmed, [isConfirmed]);
+  const canDeleteRow = useCallback(() => !isConfirmed, [isConfirmed]);
 
   const roleOptions = useMemo(() => {
     return [
@@ -46,13 +86,14 @@ export function StaffAttendanceRecordPage() {
       key: 'assigned_role',
       header: TABLE_COLUMNS.ASSIGNED_ROLE || '配置職種',
       sortable: false,
-      editable: true,
+      editable: () => !isConfirmed,
       inputType: 'select',
       options: roleOptions,
       render: (item, draftData, updateData) => (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Select
             value={item.assigned_role || ''}
+            disabled={isConfirmed}
             onChange={(e) => {
               const val = e.target.value;
               const next = draftData.map(d =>
@@ -71,13 +112,14 @@ export function StaffAttendanceRecordPage() {
       key: 'start_time',
       header: TABLE_COLUMNS.START_TIME || '出勤時刻',
       sortable: false,
-      editable: true,
+      editable: () => !isConfirmed,
       inputType: 'text',
       render: (item, draftData, updateData) => (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Input
             type="time"
             value={item.start_time || ''}
+            disabled={isConfirmed}
             onChange={(e) => {
               const val = e.target.value;
               const actual = computeActualWorkHours(val, item.end_time, item.break_minutes);
@@ -96,13 +138,14 @@ export function StaffAttendanceRecordPage() {
       key: 'end_time',
       header: TABLE_COLUMNS.END_TIME || '退勤時刻',
       sortable: false,
-      editable: true,
+      editable: () => !isConfirmed,
       inputType: 'text',
       render: (item, draftData, updateData) => (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Input
             type="time"
             value={item.end_time || ''}
+            disabled={isConfirmed}
             onChange={(e) => {
               const val = e.target.value;
               const actual = computeActualWorkHours(item.start_time, val, item.break_minutes);
@@ -121,7 +164,7 @@ export function StaffAttendanceRecordPage() {
       key: 'break_minutes',
       header: TABLE_COLUMNS.BREAK_MINUTES || '休憩時間(分)',
       sortable: false,
-      editable: true,
+      editable: () => !isConfirmed,
       inputType: 'number',
       render: (item, draftData, updateData) => (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -129,6 +172,7 @@ export function StaffAttendanceRecordPage() {
             type="number"
             min={0}
             step={15}
+            disabled={isConfirmed}
             value={item.break_minutes !== undefined && item.break_minutes !== null ? item.break_minutes : 60}
             onChange={(e) => {
               const val = Number(e.target.value) || 0;
@@ -169,6 +213,28 @@ export function StaffAttendanceRecordPage() {
     }
   };
 
+  const statusBadge = useMemo(() => {
+    if (records.length === 0) {
+      return (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
+          対象外
+        </span>
+      );
+    }
+    if (isConfirmed) {
+      return (
+        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+          確定済
+        </span>
+      );
+    }
+    return (
+      <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#fef3c7', color: '#92400e' }}>
+        暫定
+      </span>
+    );
+  }, [records.length, isConfirmed]);
+
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -181,12 +247,21 @@ export function StaffAttendanceRecordPage() {
       onBatchSave={handleBatchSave}
       showSingleDateFilter={true}
       singleDate={currentDate}
-      onSingleDateChange={setCurrentDate}
+      onSingleDateChange={handleDateChange}
       dateFilterKey="date"
       hideDeleteColumn={true}
       hideAddButton={true}
       highlightInputColumns={true}
       hideHeader={true}
+      canEditRow={canEditRow}
+      canDeleteRow={canDeleteRow}
+      showRestrictionColumn={true}
+      restrictionTooltipText="確定済のため変更不可"
+      isConfirmed={isConfirmed}
+      onConfirm={handleConfirm}
+      onUnconfirm={handleUnconfirm}
+      confirmDisabled={records.length === 0}
+      statusBadge={statusBadge}
     />
   );
 }

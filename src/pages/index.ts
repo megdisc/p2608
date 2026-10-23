@@ -53,3 +53,4 @@ export * from './MemberOfficePage';
 export * from './RecipientCertificatePage';
 export * from './StaffAttendanceRecordPage';
 export * from './ScreenStaffDailyReportPage';
+export * from './ScreenDailyReportPage';

@@ -51,3 +51,5 @@ export * from './DashboardPage';
 export * from './AverageWagePage';
 export * from './MemberOfficePage';
 export * from './RecipientCertificatePage';
+export * from './StaffAttendanceRecordPage';
+export * from './ScreenStaffDailyReportPage';

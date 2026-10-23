@@ -418,9 +418,27 @@ export type MemberWageAssignmentGridRow = {
   wageSettings: MemberWageSettingItem[];
 };
 
+export type StaffAttendanceRecordRow = {
+  id: string; // attendance record ID or temp id
+  office_id: string;
+  staff_id: string;
+  staff_code: string;
+  staff_name: string;
+  staff_yomigana?: string;
+  default_role?: string;
+  work_date: string;
+  start_time: string; // HH:mm
+  end_time: string; // HH:mm
+  break_minutes: number;
+  assigned_role: string;
+  actual_work_hours: number;
+  is_saved: boolean;
+};
+
 export type Tab = 
-  | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'staffWorkStyle' | 'project' | 'projectUser' | 'memberRecipientCertificate' | 'memberOffice' | 'skillCategory' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
+  | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'staffWorkStyle' | 'project' | 'projectUser' | 'memberRecipientCertificate' | 'memberOffice' | 'skillCategory' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'baseWageAssignment' | 'client' | 'staffAttendanceRecord' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'mainFeatures' | 'workflow' | 'screenStaffDailyReport' | 'screenDailyWork' | 'screenProject' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenReserve' | 'reserveSetting' | 'reserve'
   | 'screenFacility' | 'organization' | 'office' | 'officeServiceType' | 'officeReward' | 'serviceScheme'
   | 'screenWelfare' | 'serviceType' | 'qualification' | 'rewardItem' | 'regionalGrade';
+
 
 

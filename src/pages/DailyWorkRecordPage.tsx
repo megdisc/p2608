@@ -31,7 +31,7 @@ export function DailyWorkRecordPage() {
 
   useEffect(() => {
     fetchRecords(currentDate).catch(() => {
-      showAlert('作業記録の取得に失敗しました', 'error');
+      showAlert('利用記録の取得に失敗しました', 'error');
     });
   }, [currentDate, fetchRecords, showAlert]);
 
@@ -45,11 +45,11 @@ export function DailyWorkRecordPage() {
 
   const handleConfirm = useCallback(async () => {
     if (!hasNonZeroRecords) {
-      showAlert('作業記録が存在しない（またはすべて0時間の）日付は確定対象外です。', 'error');
+      showAlert('利用記録が存在しない（またはすべて0時間の）日付は確定対象外です。', 'error');
       return;
     }
     await confirmDate(currentDate);
-    showAlert(`${currentDate}の作業記録を確定しました。`, 'success');
+    showAlert(`${currentDate}の利用記録を確定しました。`, 'success');
   }, [hasNonZeroRecords, confirmDate, currentDate, showAlert]);
 
   const handleUnconfirm = useCallback(async () => {

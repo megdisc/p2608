@@ -17,6 +17,7 @@ export * from './useProjectFinancialRecords';
 export * from './useMonthlyFinancials';
 export * from './useBudgetPlanning';
 export * from './useDailyWorkRecords';
+export * from './useStaffAttendanceRecords';
 
 export * from './useProgressRecords';
 export * from './useFinancialRecords';

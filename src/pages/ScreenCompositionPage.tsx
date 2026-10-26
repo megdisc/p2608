@@ -836,7 +836,7 @@ export function ScreenCompositionPage() {
       physicalName: 'member_attendance_records',
       tableType: 'レコード',
       logicalName: '利用者出欠実績',
-      description: '利用者の日々の出欠・通所・欠席連絡・加算判定（送迎・食事・訪問・施設外就労）記録',
+      description: '利用者の日々の出欠・通所・提供時間帯（開始/終了/休憩）・欠席連絡・加算判定（送迎・食事・訪問・施設外就労）記録',
       status: 'modified',
       columns: [
         { name: 'id', desc: '出欠記録ID' },
@@ -844,6 +844,10 @@ export function ScreenCompositionPage() {
         { name: 'target_period', desc: '利用予定日（対象日）' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'status', desc: '出欠区分（present: 通所 / absent: 欠席）' },
+        { name: 'start_time', desc: 'サービス提供開始時刻（通所時刻）', status: 'added' },
+        { name: 'end_time', desc: 'サービス提供終了時刻（退所時刻）', status: 'added' },
+        { name: 'break_minutes', desc: '休憩時間（分）', status: 'added' },
+        { name: 'service_hours', desc: '実サービス提供時間（時間数。開始・終了時刻および休憩時間から自動算出。短時間利用減算や報酬告示上の提供時間確認用）', status: 'added' },
         { name: 'contact_date', desc: '欠席連絡日（連絡受付日：利用予定日との日数差で加算判定）' },
         { name: 'is_absentee_supported', desc: '欠席時対応加算適用フラグ（連絡日より自動判定＋相談援助実績・手動上書き管理用）' },
         { name: 'has_meal', desc: '食事利用フラグ' },
@@ -852,7 +856,6 @@ export function ScreenCompositionPage() {
         { name: 'is_visit_supported', desc: '訪問支援加算フラグ（欠席時に居宅等を訪問して相談援助を実施した場合に算定）', status: 'added' },
         { name: 'is_trial_use', desc: '体験利用支援加算フラグ（特別支援学校等の生徒が体験利用した場合に算定）', status: 'added' },
         { name: 'is_offsite_work', desc: '施設外就労・施設外支援フラグ（事業所外で就労・個別支援を実施した場合の加算・減算確認用）', status: 'added' },
-        { name: 'service_hours', desc: '実サービス提供時間（時間数。短時間利用減算や報酬告示上の提供時間確認用）', status: 'added' },
         { name: 'remarks', desc: '備考・欠席理由/連絡・相談援助内容' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

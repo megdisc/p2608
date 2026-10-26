@@ -1037,12 +1037,16 @@ ON CONFLICT (id) DO UPDATE SET
   amount = EXCLUDED.amount;
 
 -- 21. 利用者出欠・通所記録 (member_attendance_records) 2026年1月, 6月, 10月
-INSERT INTO public.member_attendance_records (office_id, target_period, member_id, status, has_meal, is_absentee_supported, has_pickup, has_dropoff)
+INSERT INTO public.member_attendance_records (office_id, target_period, member_id, status, start_time, end_time, break_minutes, service_hours, has_meal, is_absentee_supported, has_pickup, has_dropoff)
 SELECT 
   m.office_id,
   d::date AS target_period,
   m.member_id,
   'present' AS status,
+  '09:30:00'::time AS start_time,
+  '15:30:00'::time AS end_time,
+  60 AS break_minutes,
+  5.00 AS service_hours,
   (EXTRACT(DAY FROM d) = 15) AS has_meal,
   false AS is_absentee_supported,
   false AS has_pickup,
@@ -1064,7 +1068,7 @@ WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 ON CONFLICT DO NOTHING;
 
 -- 22. 職員勤務実績 (staff_attendance_records) 2026年1月, 6月, 10月
-INSERT INTO public.staff_attendance_records (office_id, staff_id, work_date, start_time, end_time, break_minutes, assigned_role)
+INSERT INTO public.staff_attendance_records (office_id, staff_id, work_date, start_time, end_time, break_minutes, actual_work_hours, assigned_role)
 -- 1. WS未来: 相澤翔太 (専従・サビ管)
 SELECT 
   '22222222-2222-2222-2222-222222222222'::uuid,
@@ -1073,6 +1077,7 @@ SELECT
   '08:45:00'::time,
   '17:45:00'::time,
   60,
+  8.00,
   'service_admin'
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
@@ -1091,6 +1096,7 @@ SELECT
   '09:00:00'::time,
   '18:00:00'::time,
   60,
+  8.00,
   CASE WHEN (EXTRACT(DAY FROM d)::int % 2 = 1) THEN 'vocational_instructor' ELSE 'life_supporter' END
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
@@ -1109,6 +1115,7 @@ SELECT
   '09:00:00'::time,
   '18:00:00'::time,
   60,
+  8.00,
   'life_supporter'
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
@@ -1127,6 +1134,7 @@ SELECT
   '13:00:00'::time,
   '17:00:00'::time,
   0,
+  4.00,
   'life_supporter'
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
@@ -1145,6 +1153,7 @@ SELECT
   '13:00:00'::time,
   '18:00:00'::time,
   0,
+  5.00,
   'vocational_instructor'
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL

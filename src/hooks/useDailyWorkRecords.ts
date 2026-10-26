@@ -3,6 +3,7 @@ import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import type { MemberItem, ProjectItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
+import { computeActualWorkHours } from './useStaffAttendanceRecords';
 
 export type DailyRecord = {
   id: string;
@@ -19,11 +20,18 @@ export type DailyAttendanceRecord = {
   target_period: string;
   member_id: string;
   status: string;
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes?: number;
+  service_hours?: number | null;
   contact_date?: string | null;
   is_absentee_supported: boolean;
   has_meal: boolean;
   has_pickup: boolean;
   has_dropoff: boolean;
+  is_visit_supported?: boolean;
+  is_trial_use?: boolean;
+  is_offsite_work?: boolean;
   remarks?: string | null;
 };
 
@@ -34,11 +42,18 @@ export type DailyFlatRecord = {
   userName: string;
   userYomigana: string;
   status: string;
+  startTime: string;
+  endTime: string;
+  breakMinutes: number;
+  serviceHours: number;
   contactDate: string;
   isAbsenteeSupported: boolean;
   hasMeal: boolean;
   hasPickup: boolean;
   hasDropoff: boolean;
+  isVisitSupported: boolean;
+  isTrialUse: boolean;
+  isOffsiteWork: boolean;
   remarks: string;
   date: string;
   projectId: string;
@@ -207,10 +222,9 @@ export function useDailyWorkRecords(externalDate?: string) {
     const OTHER_TASK_ID = '00000000-0000-0000-0000-000000000002';
 
     const normalizeStatus = (rawStatus?: string) => {
-      if (!rawStatus || rawStatus === 'present') return '通所利用';
-      if (rawStatus === 'absent') return '非利用／欠席';
-      if (['通所利用', '在宅利用', '施設外利用', '非利用／欠席'].includes(rawStatus)) return rawStatus;
-      return '通所利用';
+      if (!rawStatus || rawStatus === 'present' || rawStatus === '出席' || rawStatus === '通所利用') return 'present';
+      if (rawStatus === 'absent' || rawStatus === '欠席' || rawStatus === '非利用／欠席') return 'absent';
+      return 'present';
     };
 
     for (const member of dbMembers) {
@@ -219,11 +233,24 @@ export function useDailyWorkRecords(externalDate?: string) {
       
       const userAttendance = attendanceRecords.find(a => a.member_id === member.id);
       const status = normalizeStatus(userAttendance?.status);
+      const rawStart = userAttendance?.start_time ? String(userAttendance.start_time).substring(0, 5) : '';
+      const rawEnd = userAttendance?.end_time ? String(userAttendance.end_time).substring(0, 5) : '';
+      const startTime = rawStart || (status === 'present' ? '09:30' : '');
+      const endTime = rawEnd || (status === 'present' ? '15:30' : '');
+      const breakMinutes = userAttendance?.break_minutes !== undefined && userAttendance.break_minutes !== null
+        ? Number(userAttendance.break_minutes)
+        : (status === 'present' ? 60 : 0);
+      const serviceHours = userAttendance?.service_hours !== undefined && userAttendance.service_hours !== null
+        ? Number(userAttendance.service_hours)
+        : (startTime && endTime ? computeActualWorkHours(startTime, endTime, breakMinutes) : 0);
       const contactDate = userAttendance ? (userAttendance.contact_date || '') : '';
       const isAbsenteeSupported = userAttendance ? Boolean(userAttendance.is_absentee_supported) : false;
       const hasMeal = userAttendance ? Boolean(userAttendance.has_meal) : false;
       const hasPickup = userAttendance ? Boolean(userAttendance.has_pickup) : false;
       const hasDropoff = userAttendance ? Boolean(userAttendance.has_dropoff) : false;
+      const isVisitSupported = userAttendance ? Boolean(userAttendance.is_visit_supported) : false;
+      const isTrialUse = userAttendance ? Boolean(userAttendance.is_trial_use) : false;
+      const isOffsiteWork = userAttendance ? Boolean(userAttendance.is_offsite_work) : false;
       const remarks = userAttendance ? (userAttendance.remarks || '') : '';
       const userCode = (member as any).code || '';
 
@@ -239,11 +266,18 @@ export function useDailyWorkRecords(externalDate?: string) {
             userName: member.name,
             userYomigana: member.yomigana || '',
             status,
+            startTime,
+            endTime,
+            breakMinutes,
+            serviceHours,
             contactDate,
             isAbsenteeSupported,
             hasMeal,
             hasPickup,
             hasDropoff,
+            isVisitSupported,
+            isTrialUse,
+            isOffsiteWork,
             remarks,
             date: currentDate,
             projectId: OTHER_PROJECT_ID,
@@ -269,11 +303,18 @@ export function useDailyWorkRecords(externalDate?: string) {
             userName: member.name,
             userYomigana: member.yomigana || '',
             status,
+            startTime,
+            endTime,
+            breakMinutes,
+            serviceHours,
             contactDate,
             isAbsenteeSupported,
             hasMeal,
             hasPickup,
             hasDropoff,
+            isVisitSupported,
+            isTrialUse,
+            isOffsiteWork,
             remarks,
             date: currentDate,
             projectId,
@@ -300,11 +341,18 @@ export function useDailyWorkRecords(externalDate?: string) {
                 userName: member.name,
                 userYomigana: member.yomigana || '',
                 status,
+                startTime,
+                endTime,
+                breakMinutes,
+                serviceHours,
                 contactDate,
                 isAbsenteeSupported,
                 hasMeal,
                 hasPickup,
                 hasDropoff,
+                isVisitSupported,
+                isTrialUse,
+                isOffsiteWork,
                 remarks,
                 date: currentDate,
                 projectId: p.id,
@@ -327,11 +375,18 @@ export function useDailyWorkRecords(externalDate?: string) {
             userName: member.name,
             userYomigana: member.yomigana || '',
             status,
+            startTime,
+            endTime,
+            breakMinutes,
+            serviceHours,
             contactDate,
             isAbsenteeSupported,
             hasMeal,
             hasPickup,
             hasDropoff,
+            isVisitSupported,
+            isTrialUse,
+            isOffsiteWork,
             remarks,
             date: currentDate,
             projectId: OTHER_PROJECT_ID,
@@ -352,11 +407,18 @@ export function useDailyWorkRecords(externalDate?: string) {
             userName: member.name,
             userYomigana: member.yomigana || '',
             status,
+            startTime,
+            endTime,
+            breakMinutes,
+            serviceHours,
             contactDate,
             isAbsenteeSupported,
             hasMeal,
             hasPickup,
             hasDropoff,
+            isVisitSupported,
+            isTrialUse,
+            isOffsiteWork,
             remarks,
             date: currentDate,
             projectId: '',
@@ -434,21 +496,37 @@ export function useDailyWorkRecords(externalDate?: string) {
       // 1. 出欠・欠席連絡・サービス利用記録を member_attendance_records テーブルに保存
       const userAttendanceMap = new Map<string, { 
         status: string;
+        startTime?: string;
+        endTime?: string;
+        breakMinutes?: number;
+        serviceHours?: number;
         contactDate: string;
+        isAbsenteeSupported: boolean;
         hasMeal: boolean;
         hasPickup: boolean;
         hasDropoff: boolean;
+        isVisitSupported: boolean;
+        isTrialUse: boolean;
+        isOffsiteWork: boolean;
         remarks: string;
       }>();
 
       for (const r of drafts) {
         if (!userAttendanceMap.has(r.userId)) {
           userAttendanceMap.set(r.userId, {
-            status: r.status || '通所利用',
+            status: r.status || 'present',
+            startTime: r.startTime,
+            endTime: r.endTime,
+            breakMinutes: r.breakMinutes,
+            serviceHours: r.serviceHours,
             contactDate: r.contactDate || '',
+            isAbsenteeSupported: Boolean(r.isAbsenteeSupported),
             hasMeal: Boolean(r.hasMeal),
             hasPickup: Boolean(r.hasPickup),
             hasDropoff: Boolean(r.hasDropoff),
+            isVisitSupported: Boolean(r.isVisitSupported),
+            isTrialUse: Boolean(r.isTrialUse),
+            isOffsiteWork: Boolean(r.isOffsiteWork),
             remarks: r.remarks || ''
           });
         }
@@ -456,7 +534,14 @@ export function useDailyWorkRecords(externalDate?: string) {
 
       const attendanceUpserts = Array.from(userAttendanceMap.entries()).map(([memberId, s]) => {
         const existing = attendanceRecords.find(a => a.member_id === memberId && (a.office_id === selectedOfficeId || !a.office_id));
-        const isAbsenteeSupported = Boolean(s.contactDate && s.status === '非利用／欠席');
+
+        const startTime = s.startTime && s.startTime.trim() !== '' ? `${s.startTime}:00` : null;
+        const endTime = s.endTime && s.endTime.trim() !== '' ? `${s.endTime}:00` : null;
+        const breakMin = Number(s.breakMinutes) || 0;
+        const calcHours = (s.startTime && s.endTime) ? computeActualWorkHours(s.startTime, s.endTime, breakMin) : null;
+        const serviceHours = (s.serviceHours !== undefined && s.serviceHours !== null && s.serviceHours > 0)
+          ? Number(s.serviceHours)
+          : calcHours;
 
         return {
           id: existing?.id,
@@ -464,11 +549,18 @@ export function useDailyWorkRecords(externalDate?: string) {
           target_period: currentDate,
           member_id: memberId,
           status: s.status,
+          start_time: startTime,
+          end_time: endTime,
+          break_minutes: breakMin,
+          service_hours: serviceHours,
           contact_date: s.contactDate ? s.contactDate : null,
-          is_absentee_supported: isAbsenteeSupported,
+          is_absentee_supported: s.isAbsenteeSupported,
           has_meal: s.hasMeal,
           has_pickup: s.hasPickup,
           has_dropoff: s.hasDropoff,
+          is_visit_supported: s.isVisitSupported,
+          is_trial_use: s.isTrialUse,
+          is_offsite_work: s.isOffsiteWork,
           remarks: s.remarks || null
         };
       });

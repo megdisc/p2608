@@ -105,7 +105,9 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           const endTime = att.end_time ? String(att.end_time).substring(0, 5) : '';
           const breakMin = att.break_minutes ?? 60;
           const assignedRole = att.assigned_role || defaultRole;
-          const actualHours = computeActualWorkHours(startTime, endTime, breakMin);
+          const actualHours = att.actual_work_hours !== undefined && att.actual_work_hours !== null
+            ? Number(att.actual_work_hours)
+            : computeActualWorkHours(startTime, endTime, breakMin);
 
           return {
             id: att.id,
@@ -176,6 +178,11 @@ export function useStaffAttendanceRecords(externalDate?: string) {
         const hasTime = (d.start_time && d.start_time.trim() !== '') || (d.end_time && d.end_time.trim() !== '');
 
         if (hasTime) {
+          const calculatedActual = computeActualWorkHours(d.start_time, d.end_time, d.break_minutes);
+          const finalActual = (d.actual_work_hours !== undefined && d.actual_work_hours !== null && d.actual_work_hours > 0)
+            ? Number(d.actual_work_hours)
+            : calculatedActual;
+
           const payload: any = {
             office_id: d.office_id || selectedOfficeId || null,
             staff_id: d.staff_id,
@@ -184,6 +191,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             end_time: d.end_time ? `${d.end_time}:00` : null,
             break_minutes: Number(d.break_minutes) || 0,
             assigned_role: d.assigned_role || null,
+            actual_work_hours: finalActual,
           };
           if (isReal) {
             payload.id = d.id;

@@ -817,7 +817,8 @@ export function ScreenCompositionPage() {
       physicalName: 'staff_attendance_records',
       tableType: 'レコード',
       logicalName: '職員勤務実績',
-      description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種記録',
+      description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種・実労働時間記録',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '勤務記録ID' },
         { name: 'office_id', desc: '勤務事業所ID' },
@@ -826,6 +827,7 @@ export function ScreenCompositionPage() {
         { name: 'start_time', desc: '出勤時刻' },
         { name: 'end_time', desc: '退勤時刻' },
         { name: 'break_minutes', desc: '休憩時間（分）' },
+        { name: 'actual_work_hours', desc: '実労働時間（時間数。出退勤時刻および休憩時間から自動算出。常勤換算や人員配置基準判定用）', status: 'added' },
         { name: 'assigned_role', desc: '配置職種・役割（サービス管理責任者/生活支援員/職業指導員など）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

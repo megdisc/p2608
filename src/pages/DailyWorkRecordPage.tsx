@@ -598,6 +598,34 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
         return task?.task || '';
       }
     },
+    { 
+      key: 'workTime', 
+      header: TABLE_COLUMNS.WORK_TIME, 
+      sortable: false,
+      editable: (item: any) => !isConfirmed && !item.isEmptyRow,
+      inputType: 'number',
+      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
+        if (item.isEmptyRow) return '-';
+        return (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Input
+              type="number"
+              min={0}
+              step={0.5}
+              disabled={isConfirmed}
+              value={item.workTime !== undefined && item.workTime !== null ? item.workTime : 0}
+              onChange={(e) => {
+                const val = Number(e.target.value) || 0;
+                const next = draftData.map(d => d.id === item.id ? { ...d, workTime: val } : d);
+                updateData(next);
+              }}
+              style={{ width: '80px', textAlign: 'center' }}
+            />
+          </div>
+        );
+      },
+      style: { width: '110px' }
+    },
     {
       key: 'workLocationId',
       header: TABLE_COLUMNS.WORK_LOCATION || '作業場所',
@@ -627,34 +655,6 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
         );
       },
       style: { minWidth: '150px' }
-    },
-    { 
-      key: 'workTime', 
-      header: TABLE_COLUMNS.WORK_TIME, 
-      sortable: false,
-      editable: (item: any) => !isConfirmed && !item.isEmptyRow,
-      inputType: 'number',
-      render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
-        if (item.isEmptyRow) return '-';
-        return (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Input
-              type="number"
-              min={0}
-              step={0.5}
-              disabled={isConfirmed}
-              value={item.workTime !== undefined && item.workTime !== null ? item.workTime : 0}
-              onChange={(e) => {
-                const val = Number(e.target.value) || 0;
-                const next = draftData.map(d => d.id === item.id ? { ...d, workTime: val } : d);
-                updateData(next);
-              }}
-              style={{ width: '80px', textAlign: 'center' }}
-            />
-          </div>
-        );
-      },
-      style: { width: '110px' }
     },
   ];
 

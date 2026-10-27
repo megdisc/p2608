@@ -15,6 +15,9 @@ export type WageRow = {
   allowanceItems: { name: string; amount: number; remarks?: string }[];
   allowanceTotal: number;
   wageTotal: number;
+  serviceFeeCopayment: number;
+  serviceFeeRemarks?: string;
+  actualExpenseTotal: number;
   deductionItems: { name: string; amount: number; remarks?: string }[];
   dedA: number | null;
   dedB: number | null;
@@ -71,7 +74,10 @@ export function useWageSummary() {
         officeSettingsRes,
         monthlyIncentiveDetailsRes,
         monthlyAllowanceDetailsRes,
-        monthlyDeductionDetailsRes
+        monthlyDeductionDetailsRes,
+        recipientCertificatesRes,
+        serviceBillingSummariesRes,
+        staffAttendanceRes
       ] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('wage_rates').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
@@ -96,7 +102,10 @@ export function useWageSummary() {
         officeMembersQuery,
         supabase.from('monthly_incentive_details').select('*'),
         supabase.from('monthly_allowance_details').select('*'),
-        supabase.from('monthly_deduction_details').select('*')
+        supabase.from('monthly_deduction_details').select('*'),
+        supabase.from('member_recipient_certificates').select('*').or('is_deleted.eq.false,is_deleted.is.null'),
+        supabase.from('service_billing_summaries').select('*').eq('target_period', monthStr),
+        supabase.from('staff_attendance_records').select('*').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`)
       ]);
 
       if (membersRes.error) throw membersRes.error;
@@ -233,6 +242,23 @@ export function useWageSummary() {
         if (!dbDeductionDetailsMap.has(d.summary_id)) dbDeductionDetailsMap.set(d.summary_id, []);
         dbDeductionDetailsMap.get(d.summary_id)!.push(d);
       });
+
+      const memberCertMap = new Map<string, any>();
+      (recipientCertificatesRes.data || []).forEach((c: any) => {
+        const start = c.valid_from ? c.valid_from.substring(0, 7) : '1900-01';
+        const end = c.valid_to ? c.valid_to.substring(0, 7) : '2999-12';
+        if (monthStr >= start && monthStr <= end) {
+          memberCertMap.set(c.member_id, c);
+        } else if (!memberCertMap.has(c.member_id)) {
+          memberCertMap.set(c.member_id, c);
+        }
+      });
+
+      const serviceBillingMap = new Map<string, any>(
+        (serviceBillingSummariesRes.data || []).map((b: any) => [b.member_id, b])
+      );
+
+      const staffAttendanceRecords = staffAttendanceRes.data || [];
 
       const rows: WageRow[] = members.map((member: any) => {
         const dbRecord: any = dbWageRecordMap.get(member.id);
@@ -617,7 +643,75 @@ export function useWageSummary() {
             remarks: `単価¥${unit.toLocaleString()}*利用回数${qty}回`
           });
         }
-        const finalDedTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
+        const actualExpenseTotal = deductionItems.reduce((sum, item) => sum + item.amount, 0);
+
+        // --- サービス利用料 (自己負担額) ---
+        let totalMemberServiceHours = 0;
+        let serviceDaysCount = 0;
+        memberAttendances.forEach((a: any) => {
+          const sHours = a.service_hours !== undefined && a.service_hours !== null ? Number(a.service_hours) : 0;
+          if (sHours > 0) {
+            totalMemberServiceHours += sHours;
+            serviceDaysCount++;
+          }
+        });
+        const effectiveAttendanceDays = attendanceDaysCount > 0 ? attendanceDaysCount : serviceDaysCount;
+        const effectiveServiceHours = totalMemberServiceHours > 0 ? totalMemberServiceHours : effectiveAttendanceDays * 5.0;
+
+        // 職員実勤務時間の確認（人員配置基準・支援体制確認用）
+        const relevantStaffRecords = staffAttendanceRecords.filter((s: any) => !memberOfficeId || s.office_id === memberOfficeId);
+        const totalStaffActualWorkHours = relevantStaffRecords.reduce((sum: number, s: any) => sum + (Number(s.actual_work_hours) || 0), 0);
+
+        const cert = memberCertMap.get(member.id);
+        const copaymentLimit = cert?.copayment_limit_amount !== undefined && cert?.copayment_limit_amount !== null
+          ? Number(cert.copayment_limit_amount)
+          : 0;
+
+        let copaymentAmount = 0;
+        let serviceFeeRemarks = '';
+
+        const serviceBilling = serviceBillingMap.get(member.id);
+        if (serviceBilling && serviceBilling.final_copayment_amount !== undefined && serviceBilling.final_copayment_amount !== null) {
+          copaymentAmount = Number(serviceBilling.final_copayment_amount);
+          if (copaymentLimit > 0 && copaymentAmount >= copaymentLimit) {
+            serviceFeeRemarks = `負担上限月額適用（上限¥${copaymentLimit.toLocaleString()}）`;
+          } else if (copaymentLimit === 0) {
+            serviceFeeRemarks = '負担上限月額: ¥0（自己負担なし）';
+          } else {
+            serviceFeeRemarks = `利用${effectiveAttendanceDays}日（実提供${effectiveServiceHours.toFixed(1)}h）・1割負担`;
+          }
+        } else if (wageConfirmed && dbRecord && dbRecord.service_fee_copayment !== undefined && dbRecord.service_fee_copayment !== null && Number(dbRecord.service_fee_copayment) > 0) {
+          copaymentAmount = Number(dbRecord.service_fee_copayment);
+          if (copaymentLimit > 0 && copaymentAmount >= copaymentLimit) {
+            serviceFeeRemarks = `負担上限月額適用（上限¥${copaymentLimit.toLocaleString()}）`;
+          } else {
+            serviceFeeRemarks = `利用${effectiveAttendanceDays}日（実提供${effectiveServiceHours.toFixed(1)}h）・1割負担`;
+          }
+        } else {
+          // Calculate dynamically based on attendance and recipient certificate
+          if (copaymentLimit === 0) {
+            copaymentAmount = 0;
+            serviceFeeRemarks = '負担上限月額: ¥0（自己負担なし）';
+          } else if (effectiveAttendanceDays > 0) {
+            // 就労継続支援B型 人員配置基準（職員actual_work_hoursに基づく常勤換算判定）
+            const staffFte = totalStaffActualWorkHours > 0 ? totalStaffActualWorkHours / 160 : 1.0;
+            // 常勤換算1.0人以上（7.5:1配置体制）は584単位/日、標準配置は550単位/日
+            const baseDailyUnits = staffFte >= 1.0 ? 584 : 550;
+            const unitPrice = 10.0;
+            const calculatedStandardCopayment = Math.floor(effectiveAttendanceDays * baseDailyUnits * unitPrice * 0.1);
+            copaymentAmount = Math.min(calculatedStandardCopayment, copaymentLimit);
+            if (copaymentAmount >= copaymentLimit) {
+              serviceFeeRemarks = `負担上限月額適用（上限¥${copaymentLimit.toLocaleString()}）`;
+            } else {
+              serviceFeeRemarks = `利用${effectiveAttendanceDays}日（実提供${effectiveServiceHours.toFixed(1)}h）・1割負担`;
+            }
+          } else {
+            copaymentAmount = 0;
+            serviceFeeRemarks = '当月利用実績なし';
+          }
+        }
+
+        const finalDedTotal = copaymentAmount + actualExpenseTotal;
 
         // --- 工賃合計 & 支給額 ---
         const finalWageTotal = (finalBasicWage || 0) + finalIncentiveTotal + finalOtherAllowanceTotal;
@@ -639,6 +733,9 @@ export function useWageSummary() {
           allowanceItems,
           allowanceTotal: finalOtherAllowanceTotal,
           wageTotal: finalWageTotal,
+          serviceFeeCopayment: copaymentAmount,
+          serviceFeeRemarks,
+          actualExpenseTotal,
           deductionItems,
           dedA,
           dedB,
@@ -699,6 +796,7 @@ export function useWageSummary() {
         incentive_total: r.incentiveTotal,
         other_allowance_total: r.allowanceTotal || 0,
         wage_total: r.wageTotal,
+        service_fee_copayment: r.serviceFeeCopayment || 0,
         deduction_total: r.dedTotal,
         payment: r.payment
       }));

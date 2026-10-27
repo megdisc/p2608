@@ -203,7 +203,29 @@ export function WageSummaryPage() {
                   isTotalRow: true
                 });
 
-                // 8. 控除明細
+                // 8. サービス利用料行（最優先表示）
+                items.push({
+                  categoryGroup: '控除　B',
+                  categoryLabel: '',
+                  subject: 'サービス利用料',
+                  content: '',
+                  amount: row.serviceFeeCopayment ?? 0,
+                  remarks: row.serviceFeeRemarks || (row.serviceFeeCopayment > 0 ? '上限月額管理適用' : '負担上限月額: ¥0（自己負担なし）'),
+                  isBold: false
+                });
+
+                // 9. 実費控除合計行（統括科目）
+                items.push({
+                  categoryGroup: '控除　B',
+                  categoryLabel: '',
+                  subject: '実費控除',
+                  content: '',
+                  amount: row.actualExpenseTotal ?? 0,
+                  remarks: '',
+                  isBold: false
+                });
+
+                // 10. 実費控除明細（昼食代、飲料設備代等）
                 (row.deductionItems || []).forEach(item => {
                   let remarks = item.remarks || '';
                   if (item.amount > 0) {

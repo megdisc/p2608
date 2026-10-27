@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
-import { DataPage, Select, Input, type Column } from '../components';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, OFFICE_STAFF_ROLE_OPTIONS } from '../constants';
+import { DataPage, Input, type Column } from '../components';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
 import { useAlert } from '../contexts';
 import { useStaffAttendanceRecords, useDailyConfirmation, computeActualWorkHours } from '../hooks';
 import type { StaffAttendanceRecordRow } from '../types';
@@ -56,13 +56,6 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
   const canEditRow = useCallback(() => !isConfirmed, [isConfirmed]);
   const canDeleteRow = useCallback(() => !isConfirmed, [isConfirmed]);
 
-  const roleOptions = useMemo(() => {
-    return [
-      { label: '未設定', value: '' },
-      ...OFFICE_STAFF_ROLE_OPTIONS,
-    ];
-  }, []);
-
   const columns: Column<StaffAttendanceRecordRow>[] = [
     {
       key: 'staff_code',
@@ -81,32 +74,6 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       editable: false,
       render: (item) => item.staff_name,
       style: { width: '160px' },
-    },
-    {
-      key: 'assigned_role',
-      header: TABLE_COLUMNS.ASSIGNED_ROLE || '配置職種',
-      sortable: false,
-      editable: () => !isConfirmed,
-      inputType: 'select',
-      options: roleOptions,
-      render: (item, draftData, updateData) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Select
-            value={item.assigned_role || ''}
-            disabled={isConfirmed}
-            onChange={(e) => {
-              const val = e.target.value;
-              const next = draftData.map(d =>
-                d.id === item.id ? { ...d, assigned_role: val } : d
-              );
-              updateData(next);
-            }}
-            options={roleOptions}
-            style={{ width: '170px' }}
-          />
-        </div>
-      ),
-      style: { width: '190px', textAlign: 'center' },
     },
     {
       key: 'start_time',

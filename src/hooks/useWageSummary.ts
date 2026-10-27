@@ -143,7 +143,7 @@ export function useWageSummary() {
 
       // Check daily work confirmations for dates with work_time > 0
       const workRecords = workRes.data || [];
-      const confirmedDateSet = new Set((dailyConfirmRes.data || []).map((d: any) => d.date));
+      const confirmedDateSet = new Set((dailyConfirmRes.data || []).map((d: any) => d.target_period || d.date));
 
       try {
         const savedDaily = localStorage.getItem('daily_work_confirmations');
@@ -152,7 +152,7 @@ export function useWageSummary() {
         }
       } catch {}
 
-      const datesWithWork = new Set(workRecords.filter((w: any) => Number(w.work_time) > 0).map((w: any) => w.date));
+      const datesWithWork = new Set(workRecords.filter((w: any) => Number(w.work_time) > 0).map((w: any) => w.target_period || w.date));
       let provisionalDaily = false;
       for (const d of datesWithWork) {
         if (!confirmedDateSet.has(d)) {

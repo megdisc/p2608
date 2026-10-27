@@ -395,6 +395,7 @@ export function RewardAllocationPage() {
       if (prev.includes(currentMonth)) return prev;
       const next = [...prev, currentMonth];
       localStorage.setItem('monthly_incentive_allocation_confirmed', JSON.stringify(next));
+      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
       return next;
     });
 
@@ -409,6 +410,7 @@ export function RewardAllocationPage() {
     setConfirmedMonths(prev => {
       const next = prev.filter(m => m !== currentMonth);
       localStorage.setItem('monthly_incentive_allocation_confirmed', JSON.stringify(next));
+      localStorage.setItem('monthly_settlement_confirmed', JSON.stringify(next));
       return next;
     });
     showAlert(`${currentMonth}の確定を解除しました。`, 'success');

@@ -36,7 +36,6 @@ export * from './SkillEvaluationPage';
 export * from './FinancialSummaryPage';
 export * from './ProjectFinancialSummaryPage';
 export * from './ScreenCompositionPage';
-export * from './MainFeaturesPage';
 export * from './ScreenFinancePage';
 export * from './ScreenProjectPage';
 export * from './ScreenUserPage';

@@ -439,6 +439,26 @@ th.sticky-right {
   color: var(--color-text-muted) !important;
 }
 
+/* タブ構成テーブル等の行高さ自動可変対応 */
+.inventory-table.auto-height-table th,
+.inventory-table.auto-height-table td {
+  height: auto;
+  min-height: 42px;
+  max-height: none;
+  padding: var(--space-2) var(--space-3);
+  vertical-align: middle;
+}
+
+.inventory-table.auto-height-table tbody tr {
+  height: auto;
+  min-height: 42px;
+}
+
+.inventory-table.auto-height-table td > div {
+  height: auto;
+  max-height: none;
+}
+
 /* Action Buttons for DataTable */
 .action-btn {
   height: 28px;

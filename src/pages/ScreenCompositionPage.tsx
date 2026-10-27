@@ -1,49 +1,84 @@
-import { PAGE_NAMES, MENU_CATEGORIES, MENU_SUBCATEGORIES } from '../constants';
+import { useMemo } from 'react';
+import { PAGE_NAMES, MENU_CATEGORIES } from '../constants';
 import { getScreenConfigForTab, SCREEN_CONFIGS } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
-import { MainFeaturesPage } from './MainFeaturesPage';
 
-const AGGREGATION_LABEL = `${MENU_CATEGORIES.AGGREGATION}（${MENU_SUBCATEGORIES.AGGREGATION}）`;
-const RECORDING_LABEL = `${MENU_CATEGORIES.RECORDING}（${MENU_SUBCATEGORIES.RECORDING}）`;
-const SETTINGS_LABEL = `${MENU_CATEGORIES.SETTINGS}（${MENU_SUBCATEGORIES.SETTINGS}）`;
+const CATEGORY_INDEPENDENT_MASTER = MENU_CATEGORIES.INDEPENDENT_MASTER || '独立マスタ系';
+const CATEGORY_DEPENDENT_MASTER = MENU_CATEGORIES.DEPENDENT_MASTER || '従属マスタ系';
+const CATEGORY_RECORD = MENU_CATEGORIES.RECORD || 'レコード系';
+const CATEGORY_SUMMARY = MENU_CATEGORIES.SUMMARY || '集計結果系';
 
-const getCategoryLabel = (pageName: string) => {
-  const aggregations = [
-    PAGE_NAMES.FINANCIAL_RECORD,
-    PAGE_NAMES.WAGE_SUMMARY,
-    PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY,
-    PAGE_NAMES.FINANCIAL_SUMMARY,
-    PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY,
-  ];
-  const recordings = [
-    PAGE_NAMES.SKILL_EVALUATION,
-    PAGE_NAMES.BASE_WAGE_ASSIGNMENT,
-    PAGE_NAMES.PROJECT_INFO,
-    PAGE_NAMES.BUDGET_PLANNING,
-    PAGE_NAMES.ASSIGNEE_ALLOCATION,
-    PAGE_NAMES.DAILY_WORK_RECORD,
-    PAGE_NAMES.PROGRESS_RECORD,
-    PAGE_NAMES.PROJECT_FINANCIAL_RECORD,
-    PAGE_NAMES.REWARD_ALLOCATION,
+const getTabCategory = (tabId: string): string => {
+  // 1. 独立マスタ系
+  const independentMasterTabIds = [
+    'serviceType', // 福祉制度: 支援種別
+    'qualification', // 福祉制度: 資格
+    'regionalGrade', // 福祉制度: 所在地級数
+    'organization', // 施設: 法人
+    'client', // 取引先: 基本情報
+    'skillCategory', // スキル体系: カテゴリ
+    'baseWage', // 工賃・控除体系: 工賃単価
+    'allowance', // 工賃・控除体系: 加算手当
+    'deduction', // 工賃・控除体系: 控除
+    'reserveSetting', // 積立金体系: 基本情報
   ];
 
-  if (aggregations.includes(pageName)) return AGGREGATION_LABEL;
-  if (recordings.includes(pageName)) return RECORDING_LABEL;
-  return SETTINGS_LABEL;
+  // 2. 従属マスタ系
+  const dependentMasterTabIds = [
+    'rewardItem', // 福祉制度: 加算・減算
+    'office', // 施設: 事業所
+    'officeServiceType', // 施設: 支援種別
+    'officeReward', // 施設: 加算・減算
+    'skill', // スキル体系: スキル
+    'skillLevel', // スキル体系: レベル
+    'staff', // 職員: 基本情報
+    'staffQualification', // 職員: 資格
+    'staffOffice', // 職員: 所属事業所
+    'staffWorkStyle', // 職員: 勤務形態
+    'projectUser', // 利用者: 基本情報
+    'memberRecipientCertificate', // 利用者: 受給者証
+    'memberOffice', // 利用者: 事業所
+    'baseWageAssignment', // 利用者: 工賃単価
+    'project', // 案件: 基本情報
+    'budgetPlanning', // 案件: 予算
+    'assigneeAllocation', // 案件: 担当者
+  ];
+
+  // 3. レコード系
+  const recordTabIds = [
+    'skillEvaluation', // 利用者: スキル評価
+    'progressRecord', // 案件: 進捗
+    'projectFinancialRecord', // 案件: 材料費・経費記録
+    'staffAttendanceRecord', // 日報: 勤務記録
+    'dailyWorkRecord', // 日報: 利用記録
+    'financialRecord', // 収支: 収支一覧
+  ];
+
+  // 4. 集計結果系
+  const summaryTabIds = [
+    'rewardAllocation', // 案件: 精算
+    'wageSummary', // 収支: 工賃・控除明細
+    'averageWage', // 収支: 平均工賃
+    'projectFinancialSummary', // 収支: 就労支援事業活動収支（案件別）
+    'financialSummary', // 収支: 就労支援事業活動収支（期間別）
+    'welfareFinancialSummary', // 収支: 福祉事業活動収支
+    'dashboard', // ダッシュボード
+  ];
+
+  if (independentMasterTabIds.includes(tabId)) return CATEGORY_INDEPENDENT_MASTER;
+  if (dependentMasterTabIds.includes(tabId)) return CATEGORY_DEPENDENT_MASTER;
+  if (recordTabIds.includes(tabId)) return CATEGORY_RECORD;
+  if (summaryTabIds.includes(tabId)) return CATEGORY_SUMMARY;
+
+  return CATEGORY_DEPENDENT_MASTER;
 };
 
-const getCategoryColor = (label: string) => {
-  if (label === AGGREGATION_LABEL) return 'var(--palette-yellow-300)';
-  if (label === RECORDING_LABEL) return 'var(--palette-bluegreen-300)';
-  if (label === SETTINGS_LABEL) return 'var(--palette-red-300)';
-  return 'transparent';
-};
-
-const getFrequencyColor = (freq: string) => {
-  if (freq === '毎日') return 'var(--palette-bluegreen-300)';
-  if (freq === '毎月') return 'var(--palette-yellow-300)';
-  if (freq === '随時') return 'var(--palette-red-300)';
+const getCategoryColor = (category: string) => {
+  if (category === CATEGORY_INDEPENDENT_MASTER) return 'var(--palette-red-300)';
+  if (category === CATEGORY_DEPENDENT_MASTER) return 'var(--palette-blue-300)';
+  if (category === CATEGORY_RECORD) return 'var(--palette-bluegreen-300)';
+  if (category === CATEGORY_SUMMARY) return 'var(--palette-yellow-300)';
   return 'transparent';
 };
 
@@ -64,40 +99,26 @@ interface DBTable {
 }
 
 export function ScreenCompositionPage() {
-  const rows = Object.values(SCREEN_CONFIGS).map(config => ({
-    screen: config.screenName,
-    existing: config.tabs.map(t => t.label),
-  }));
+  const rows = useMemo(() => {
+    const seen = new Set<string>();
+    const list: { screen: string; tabs: { id: string; label: string }[] }[] = [];
+    for (const config of Object.values(SCREEN_CONFIGS)) {
+      if (!seen.has(config.screenName)) {
+        seen.add(config.screenName);
+        list.push({
+          screen: config.screenName,
+          tabs: config.tabs.map(t => ({ id: t.id, label: t.label })),
+        });
+      }
+    }
+    return list;
+  }, []);
 
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab);
   const displayTitle = screenConfig ? screenConfig.screenName : '画面構成表';
 
   const isTableComposition = navContext.activeTab === 'tableComposition';
-  const isMainFeatures = navContext.activeTab === 'mainFeatures';
-  const isWorkflow = navContext.activeTab === 'workflow';
-
-  const workflows = [
-    { frequency: '随時', name: '施設情報登録', description: '自施設の基本情報を登録する。', implemented: false },
-    { frequency: '随時', name: '職員情報登録', description: '職員の基本情報を管理・更新する。', implemented: true },
-    { frequency: '随時', name: '取引先情報登録', description: '取引先・顧客の基本情報を管理・更新する。', implemented: true },
-    { frequency: '随時', name: 'スキル体系登録', description: '事業所に所属する業務に必要なスキル体系およびスキルレベルを定義する。', implemented: true },
-    { frequency: '随時', name: '工賃体系登録', description: '事業所に所属する基本工賃単価、加算手当、および控除項目を一括管理する工賃体系を定義する。', implemented: true },
-    { frequency: '随時', name: '積立金体系登録', description: '事業所に所属する積立金ルール（工賃変動積立金・設備更新積立金等）および項目を定義する。', implemented: true },
-    { frequency: '随時', name: '利用者情報登録', description: '利用者の基本情報を管理・更新する。', implemented: true },
-    { frequency: '随時', name: '利用者スキル評価', description: '利用者のスキルレベルを評価する。', implemented: true },
-    { frequency: '随時', name: '利用者工賃単価評価', description: '利用者の基本工賃単価を評価・決定する。', implemented: true },
-    { frequency: '随時', name: '案件情報登録・予算編成・担当者割当', description: '案件の基本情報登録、予算計画の策定、およびタスク担当者を割り当てる。', implemented: true },
-    { frequency: '毎日', name: '作業実績記録・作業実績確定', description: '利用者の日々の作業時間を記録し、日単位で確定する。', implemented: true },
-    { frequency: '随時', name: '材料費／経費記録', description: '案件ごとの材料費や経費などを記録する。', implemented: true },
-    { frequency: '毎月', name: '材料費／経費確定', description: '月間の材料費や経費を確定する。', implemented: false },
-    { frequency: '毎月', name: '収益確定', description: '月間の収益を確定する。', implemented: false },
-    { frequency: '毎月', name: '積立金確定', description: '月間の積立金を確定する。', implemented: false },
-    { frequency: '毎月', name: '外注加工費確定', description: '月間の外注加工費を確定する。', implemented: false },
-    { frequency: '毎月', name: '工賃・控除確定', description: '各利用者の月次工賃や加算・控除を集計・確定し、収支一覧に自動同期する。', implemented: true },
-    { frequency: '毎月', name: 'インセンティブ確定', description: '各案件のタスク完了状況を確認し、月次インセンティブ分配を確定する。', implemented: true },
-    { frequency: '毎月', name: '事業活動別収支集計', description: '就労支援事業活動および福祉事業活動ごとの月次収支を集計・参照する。', implemented: true },
-  ];
 
   const dbTables: DBTable[] = [
     // 1. マスタ層（福祉制度）
@@ -1151,34 +1172,7 @@ export function ScreenCompositionPage() {
       </div>
 
       <div className="table-container">
-        {isMainFeatures ? (
-          <MainFeaturesPage />
-        ) : isWorkflow ? (
-          <table className="inventory-table">
-            <thead>
-              <tr>
-                <th style={{ width: '10%', textAlign: 'center' }}>実装</th>
-                <th style={{ width: '10%', textAlign: 'center' }}>頻度</th>
-                <th style={{ width: '30%' }}>名称</th>
-                <th style={{ width: '50%' }}>説明</th>
-              </tr>
-            </thead>
-            <tbody>
-              {workflows.map((wf, index) => (
-                <tr key={index}>
-                  <td style={{ textAlign: 'center', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
-                    {wf.implemented ? '済' : ''}
-                  </td>
-                  <td style={{ backgroundColor: getFrequencyColor(wf.frequency), textAlign: 'center', color: 'var(--color-text-main)' }}>
-                    {wf.frequency}
-                  </td>
-                  <td style={{ fontWeight: 'var(--weight-heading)' }}>{wf.name}</td>
-                  <td style={{ whiteSpace: 'normal' }}>{wf.description}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : isTableComposition ? (
+        {isTableComposition ? (
           <div>
             <div style={{
               marginBottom: '16px',
@@ -1480,41 +1474,88 @@ export function ScreenCompositionPage() {
             </table>
           </div>
         ) : (
-          <table className="inventory-table">
+          <table className="inventory-table auto-height-table">
             <thead>
               <tr>
-                <th>画面</th>
-                <th>タブ（設定系）</th>
-                <th>タブ（記録系）</th>
-                <th>タブ（集計系）</th>
+                <th style={{ width: '20%' }}>画面</th>
+                <th style={{ width: '20%' }}>{CATEGORY_INDEPENDENT_MASTER}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_DEPENDENT_MASTER}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_RECORD}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_SUMMARY}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
-                const isNoTabScreen = [PAGE_NAMES.SCREEN_DASHBOARD, 'システム構成（開発用）', PAGE_NAMES.SCREEN_COMPOSITION].includes(row.screen);
-                const activeTabs = isNoTabScreen ? [] : row.existing;
-                const settingsTabs = activeTabs.filter(item => getCategoryLabel(item) === SETTINGS_LABEL);
-                const recordingTabs = activeTabs.filter(item => getCategoryLabel(item) === RECORDING_LABEL);
-                const aggregationTabs = activeTabs.filter(item => getCategoryLabel(item) === AGGREGATION_LABEL);
+                const isNoTabScreen = ['システム構成（開発用）', PAGE_NAMES.SCREEN_COMPOSITION].includes(row.screen);
+                const activeTabs = isNoTabScreen ? [] : row.tabs;
+                const independentMasterTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_INDEPENDENT_MASTER);
+                const dependentMasterTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_DEPENDENT_MASTER);
+                const recordTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_RECORD);
+                const summaryTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_SUMMARY);
 
                 return (
-                  <tr key={i}>
-                    <td style={{ fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
+                  <tr key={i} style={{ height: 'auto', minHeight: '42px' }}>
+                    <td style={{
+                      fontWeight: 'var(--weight-heading)',
+                      backgroundColor: 'var(--color-bg-subtle)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
                       {row.screen}
                     </td>
-                    <td style={{ backgroundColor: getCategoryColor(SETTINGS_LABEL), color: 'var(--color-text-main)' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                        {settingsTabs.map(item => <div key={item}>{item}</div>)}
+                    <td style={{
+                      backgroundColor: getCategoryColor(CATEGORY_INDEPENDENT_MASTER),
+                      color: 'var(--color-text-main)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
+                        {independentMasterTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
-                    <td style={{ backgroundColor: getCategoryColor(RECORDING_LABEL), color: 'var(--color-text-main)' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                        {recordingTabs.map(item => <div key={item}>{item}</div>)}
+                    <td style={{
+                      backgroundColor: getCategoryColor(CATEGORY_DEPENDENT_MASTER),
+                      color: 'var(--color-text-main)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
+                        {dependentMasterTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
-                    <td style={{ backgroundColor: getCategoryColor(AGGREGATION_LABEL), color: 'var(--color-text-main)' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                        {aggregationTabs.map(item => <div key={item}>{item}</div>)}
+                    <td style={{
+                      backgroundColor: getCategoryColor(CATEGORY_RECORD),
+                      color: 'var(--color-text-main)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
+                        {recordTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                      </div>
+                    </td>
+                    <td style={{
+                      backgroundColor: getCategoryColor(CATEGORY_SUMMARY),
+                      color: 'var(--color-text-main)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
+                        {summaryTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                   </tr>

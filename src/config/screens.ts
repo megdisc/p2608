@@ -131,8 +131,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     tabs: [
       { id: 'screenComposition', label: PAGE_NAMES.TAB_SCREEN_COMPOSITION },
       { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },
-      { id: 'mainFeatures', label: PAGE_NAMES.TAB_MAIN_FEATURES },
-      { id: 'workflow', label: PAGE_NAMES.TAB_WORKFLOW },
     ],
   }
 };

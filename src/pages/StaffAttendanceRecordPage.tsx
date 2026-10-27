@@ -190,14 +190,14 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'actual_work_hours',
-      header: TABLE_COLUMNS.ACTUAL_WORK_HOURS || '実働時間',
+      header: TABLE_COLUMNS.STAFF_WORK_HOURS || TABLE_COLUMNS.ACTUAL_WORK_HOURS || '勤務時間 (h)',
       sortable: true,
       editable: false,
       render: (item) => {
-        if (!item.actual_work_hours || item.actual_work_hours <= 0) {
+        if (!item.actual_work_hours || Number(item.actual_work_hours) <= 0) {
           return '-';
         }
-        return `${item.actual_work_hours.toFixed(1)} 時間`;
+        return Number(item.actual_work_hours).toFixed(1);
       },
       style: { width: '120px', textAlign: 'center' },
     },

@@ -130,6 +130,8 @@ export const WORDS_TIME = {
   WORK_TIME: '作業時間 (h)',
   CURRENT_MONTH_WORK_TIME: '今月作業時間 (h)',
   CUMULATIVE_WORK_TIME: '累積作業時間 (h)',
+  SERVICE_HOURS: '利用時間 (h)',
+  STAFF_WORK_HOURS: '勤務時間 (h)',
 };
 
 // 案件・作業に関する定数群
@@ -429,7 +431,8 @@ export const TABLE_COLUMNS = {
   END_TIME: '退勤時刻',
   BREAK_MINUTES: '休憩時間(分)',
   ASSIGNED_ROLE: '配置職種',
-  ACTUAL_WORK_HOURS: '実働時間',
+  ACTUAL_WORK_HOURS: WORDS_TIME.STAFF_WORK_HOURS,
+  STAFF_WORK_HOURS: WORDS_TIME.STAFF_WORK_HOURS,
 
   // 利用者日報・利用記録
   MEMBER_CODE: '利用者ID',
@@ -440,6 +443,7 @@ export const TABLE_COLUMNS = {
   MEAL: '食事',
   PICKUP_OUTBOUND: '送迎（往路）',
   DROPOFF_INBOUND: '送迎（復路）',
+  SERVICE_HOURS: WORDS_TIME.SERVICE_HOURS,
   WORK_LOCATION: '作業場所',
   WORK_TIME: WORDS_TIME.WORK_TIME,
   NOTES: WORDS_COMMON.DESCRIPTION,

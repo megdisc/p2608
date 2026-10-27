@@ -271,13 +271,13 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'serviceHours',
-      header: '利用時間',
+      header: TABLE_COLUMNS.SERVICE_HOURS || '利用時間 (h)',
       sortable: true,
       editable: false,
       render: (item: any) => {
         if (!item.isFirstInUser) return null;
-        if (!item.serviceHours || item.serviceHours <= 0) return '-';
-        return `${Number(item.serviceHours).toFixed(1)} 時間`;
+        if (!item.serviceHours || Number(item.serviceHours) <= 0) return '-';
+        return Number(item.serviceHours).toFixed(1);
       },
       style: (item: any) => ({
         borderBottom: item.isLastInUser ? undefined : 'none',

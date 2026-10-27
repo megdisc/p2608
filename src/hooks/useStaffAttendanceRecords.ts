@@ -105,7 +105,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           const endTime = att.end_time ? String(att.end_time).substring(0, 5) : '';
           const breakMin = att.break_minutes ?? 60;
           const assignedRole = att.assigned_role || defaultRole;
-          const actualHours = att.actual_work_hours !== undefined && att.actual_work_hours !== null
+          const actualHours = (att.actual_work_hours !== undefined && att.actual_work_hours !== null && Number(att.actual_work_hours) > 0)
             ? Number(att.actual_work_hours)
             : computeActualWorkHours(startTime, endTime, breakMin);
 
@@ -163,6 +163,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
   const batchSaveStaffAttendanceRecords = async (drafts: StaffAttendanceRecordRow[], deletedIds: string[]) => {
     try {
       const upserts: any[] = [];
+      const inserts: any[] = [];
       const deletes: string[] = [];
 
       // 削除対象
@@ -179,7 +180,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
 
         if (hasTime) {
           const calculatedActual = computeActualWorkHours(d.start_time, d.end_time, d.break_minutes);
-          const finalActual = (d.actual_work_hours !== undefined && d.actual_work_hours !== null && d.actual_work_hours > 0)
+          const finalActual = (d.actual_work_hours !== undefined && d.actual_work_hours !== null && Number(d.actual_work_hours) > 0)
             ? Number(d.actual_work_hours)
             : calculatedActual;
 
@@ -195,8 +196,10 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           };
           if (isReal) {
             payload.id = d.id;
+            upserts.push(payload);
+          } else {
+            inserts.push(payload);
           }
-          upserts.push(payload);
         } else if (isReal && !hasTime) {
           // 入力が消された既存レコードは削除
           deletes.push(d.id);
@@ -216,6 +219,13 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           .from('staff_attendance_records')
           .upsert(upserts);
         if (upErr) throw upErr;
+      }
+
+      if (inserts.length > 0) {
+        const { error: inErr } = await supabase
+          .from('staff_attendance_records')
+          .insert(inserts);
+        if (inErr) throw inErr;
       }
 
       await fetchRecords(currentDate, selectedOfficeId);

@@ -868,7 +868,8 @@ export function ScreenCompositionPage() {
       physicalName: 'member_work_records',
       tableType: 'レコード',
       logicalName: '利用者作業実績',
-      description: '利用者のタスクごとの日次作業時間記録',
+      description: '利用者のタスクごとの日次作業時間・作業場所記録',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '作業記録ID' },
         { name: 'office_id', desc: '作業実施事業所ID' },
@@ -876,6 +877,7 @@ export function ScreenCompositionPage() {
         { name: 'member_id', desc: '利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'work_time', desc: '作業時間' },
+        { name: 'work_location_id', desc: '作業場所（取引先ID。施設外就労先企業等。未設定時は自事業所または未指定）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

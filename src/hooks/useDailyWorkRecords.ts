@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
-import type { MemberItem, ProjectItem } from '../types';
+import type { MemberItem, ProjectItem, ClientItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
 import { computeActualWorkHours } from './useStaffAttendanceRecords';
 
@@ -12,6 +12,7 @@ export type DailyRecord = {
   member_id: string;
   task_id: string;
   work_time: number;
+  work_location_id?: string | null;
 };
 
 export type DailyAttendanceRecord = {
@@ -60,6 +61,7 @@ export type DailyFlatRecord = {
   projectYomigana: string;
   projectType: string;
   taskId: string;
+  workLocationId?: string;
   workTime: number;
   isSaved: boolean;
   isEmptyRow?: boolean;
@@ -73,6 +75,7 @@ export function useDailyWorkRecords(externalDate?: string) {
   const { selectedOfficeId } = useOffice();
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
+  const [dbPartners, setDbPartners] = useState<ClientItem[]>([]);
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<DailyAttendanceRecord[]>([]);
   const [loading, setLoading] = useState(false);
@@ -84,19 +87,34 @@ export function useDailyWorkRecords(externalDate?: string) {
     const targetOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
     try {
       setLoading(true);
-      const [membersRes, projectsRes] = await Promise.all([
+      const [membersRes, projectsRes, partnersRes] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('projects').select(`
-          id, code, name, project_type, is_deleted,
+          id, code, name, project_type, is_deleted, client_id,
           project_tasks (
             id, name, is_deleted,
             project_task_assignees ( member_id )
           )
         `).order('code', { ascending: true }),
+        supabase.from('partners').select('*').order('code', { ascending: true }),
       ]);
 
       if (membersRes.error) throw membersRes.error;
       if (projectsRes.error) throw projectsRes.error;
+      if (partnersRes.error) throw partnersRes.error;
+
+      const partnersData: ClientItem[] = (partnersRes.data || []).map((p: any) => ({
+        id: p.id,
+        code: p.code || '',
+        name: p.name || '',
+        yomigana: p.yomigana || '',
+        isCustomer: p.is_customer,
+        isSubcontractor: p.is_subcontractor,
+        isOther: p.is_other,
+        is_deleted: p.is_deleted,
+        deleted_at: p.deleted_at
+      }));
+      setDbPartners(partnersData);
 
       // 選択された事業所に割当のある利用者を抽出
       let memberIdsForOffice: Set<string> | null = null;
@@ -127,6 +145,7 @@ export function useDailyWorkRecords(externalDate?: string) {
         code: p.code || '',
         name: p.is_deleted ? `${p.name} (削除済)` : p.name,
         is_deleted: p.is_deleted,
+        customerId: p.client_id,
         projectType: p.project_type || 'one-off',
         tasks: (p.project_tasks || [])
           .map((pt: any) => ({
@@ -284,6 +303,7 @@ export function useDailyWorkRecords(externalDate?: string) {
             projectYomigana: 'んんん',
             projectType: 'その他',
             taskId: r.task_id,
+            workLocationId: r.work_location_id || '',
             workTime: Number(r.work_time),
             isSaved: true
           });
@@ -321,6 +341,7 @@ export function useDailyWorkRecords(externalDate?: string) {
             projectYomigana: targetProject?.yomigana || '',
             projectType: targetProject?.projectType || 'one-off',
             taskId: r.task_id,
+            workLocationId: r.work_location_id || '',
             workTime: Number(r.work_time),
             isSaved: true
           });
@@ -359,6 +380,7 @@ export function useDailyWorkRecords(externalDate?: string) {
                 projectYomigana: p.yomigana || '',
                 projectType: p.projectType || 'one-off',
                 taskId: t.id,
+                workLocationId: p.customerId || '',
                 workTime: 0,
                 isSaved: false
               });
@@ -393,6 +415,7 @@ export function useDailyWorkRecords(externalDate?: string) {
             projectYomigana: 'んんん',
             projectType: 'その他',
             taskId: OTHER_TASK_ID,
+            workLocationId: '',
             workTime: 0,
             isSaved: false
           });
@@ -425,6 +448,7 @@ export function useDailyWorkRecords(externalDate?: string) {
             projectYomigana: '',
             projectType: '',
             taskId: '',
+            workLocationId: '',
             workTime: 0,
             isSaved: false,
             isEmptyRow: true
@@ -590,7 +614,8 @@ export function useDailyWorkRecords(externalDate?: string) {
               target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
-              work_time: workTimeNum
+              work_time: workTimeNum,
+              work_location_id: r.workLocationId || null
             });
           } else {
             inserts.push({
@@ -598,7 +623,8 @@ export function useDailyWorkRecords(externalDate?: string) {
               target_period: currentDate,
               member_id: r.userId,
               task_id: r.taskId,
-              work_time: workTimeNum
+              work_time: workTimeNum,
+              work_location_id: r.workLocationId || null
             });
           }
         } else if (isRealRecord && workTimeNum === 0) {
@@ -677,6 +703,7 @@ export function useDailyWorkRecords(externalDate?: string) {
   return {
     dbMembers,
     dbProjects,
+    dbPartners,
     records,
     attendanceRecords,
     loading,

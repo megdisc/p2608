@@ -583,6 +583,7 @@ CREATE TABLE IF NOT EXISTS "public"."member_work_records" (
     "member_id" UUID REFERENCES "public"."members"("id") ON DELETE CASCADE,
     "task_id" UUID REFERENCES "public"."project_tasks"("id") ON DELETE CASCADE,
     "work_time" NUMERIC(4,1) NOT NULL,
+    "work_location_id" UUID REFERENCES "public"."partners"("id") ON DELETE SET NULL,
     "created_at" TIMESTAMPTZ DEFAULT now() NOT NULL,
     "updated_at" TIMESTAMPTZ DEFAULT now() NOT NULL
 );

@@ -71,7 +71,7 @@ export type DailyFlatRecord = {
   isLastInProject?: boolean;
 };
 
-export function useDailyWorkRecords(externalDate?: string) {
+export function useDailyWorkRecords(externalDate?: string, externalIsConfirmed?: boolean) {
   const { selectedOfficeId } = useOffice();
   const [dbMembers, setDbMembers] = useState<MemberItem[]>([]);
   const [dbProjects, setDbProjects] = useState<ProjectItem[]>([]);
@@ -252,7 +252,7 @@ export function useDailyWorkRecords(externalDate?: string) {
   const displayData = useMemo(() => {
     if (dbMembers.length === 0) return [];
     
-    const isConfirmed = confirmedDates.includes(currentDate);
+    const isConfirmed = externalIsConfirmed !== undefined ? externalIsConfirmed : confirmedDates.includes(currentDate);
     const activeProjects = dbProjects;
     const flatRows: DailyFlatRecord[] = [];
 
@@ -604,7 +604,7 @@ export function useDailyWorkRecords(externalDate?: string) {
     });
 
     return finalRows;
-  }, [currentDate, dbMembers, dbProjects, records, attendanceRecords, memberExceptionSchedules, memberBasicSchedules, confirmedDates]);
+  }, [currentDate, dbMembers, dbProjects, records, attendanceRecords, memberExceptionSchedules, memberBasicSchedules, confirmedDates, externalIsConfirmed]);
 
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {

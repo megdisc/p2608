@@ -28,7 +28,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     fetchMasters, 
     fetchRecords, 
     batchSaveDailyWorkRecords 
-  } = useDailyWorkRecords(props.currentDate);
+  } = useDailyWorkRecords(props.currentDate, props.isConfirmed);
   const { showAlert } = useAlert();
 
   const currentDate = props.currentDate || hookCurrentDate;
@@ -58,22 +58,18 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     return confirmedDates.includes(currentDate);
   }, [props.isConfirmed, confirmedDates, currentDate]);
 
-  const hasNonZeroRecords = useMemo(() => {
-    return displayData.some(r => Number(r.workTime) > 0);
-  }, [displayData]);
-
   const handleConfirm = useCallback(async () => {
     if (props.onConfirm) {
       await props.onConfirm();
       return;
     }
-    if (!hasNonZeroRecords) {
-      showAlert('利用記録が存在しない（またはすべて0時間の）日付は確定対象外です。', 'error');
+    if (displayData.length === 0) {
+      showAlert('利用者が登録されていない日付は確定対象外です。', 'error');
       return;
     }
     await confirmDate(currentDate);
     showAlert(`${currentDate}の日報を確定しました。`, 'success');
-  }, [props, hasNonZeroRecords, confirmDate, currentDate, showAlert]);
+  }, [props, displayData.length, confirmDate, currentDate, showAlert]);
 
   const handleUnconfirm = useCallback(async () => {
     if (props.onUnconfirm) {
@@ -669,7 +665,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
   };
 
   const statusBadge = useMemo(() => {
-    if (!hasNonZeroRecords) {
+    if (displayData.length === 0) {
       return (
         <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
           対象外
@@ -688,7 +684,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
         暫定
       </span>
     );
-  }, [hasNonZeroRecords, isConfirmed]);
+  }, [displayData.length, isConfirmed]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -713,7 +709,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
       isConfirmed={isConfirmed}
       onConfirm={handleConfirm}
       onUnconfirm={handleUnconfirm}
-      confirmDisabled={!hasNonZeroRecords}
+      confirmDisabled={displayData.length === 0}
       statusBadge={statusBadge}
     />
   );

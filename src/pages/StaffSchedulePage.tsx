@@ -231,6 +231,7 @@ export function StaffSchedulePage() {
       {
         key: 'day_of_week',
         header: '曜日',
+        sortable: false,
         rowType: 'sub',
         editable: false,
         style: { width: '65px', textAlign: 'center' },
@@ -246,6 +247,7 @@ export function StaffSchedulePage() {
       {
         key: 'is_work_day',
         header: '勤務',
+        sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
         editable: true,
@@ -268,6 +270,7 @@ export function StaffSchedulePage() {
       {
         key: 'start_time',
         header: '始業時刻',
+        sortable: false,
         rowType: 'sub',
         inputType: 'time',
         editable: (subItem: StaffScheduleRow) => subItem.is_work_day,
@@ -280,6 +283,7 @@ export function StaffSchedulePage() {
       {
         key: 'end_time',
         header: '終業時刻',
+        sortable: false,
         rowType: 'sub',
         inputType: 'time',
         editable: (subItem: StaffScheduleRow) => subItem.is_work_day,
@@ -292,6 +296,7 @@ export function StaffSchedulePage() {
       {
         key: 'break_minutes',
         header: '休憩 (分)',
+        sortable: false,
         rowType: 'sub',
         inputType: 'number',
         editable: (subItem: StaffScheduleRow) => subItem.is_work_day,
@@ -305,6 +310,7 @@ export function StaffSchedulePage() {
       {
         key: 'scheduled_hours',
         header: '勤務時間 (h)',
+        sortable: false,
         rowType: 'sub',
         editable: false,
         style: { width: '105px', textAlign: 'right' },
@@ -316,6 +322,7 @@ export function StaffSchedulePage() {
       {
         key: 'remarks',
         header: '備考',
+        sortable: false,
         rowType: 'sub',
         inputType: 'text',
         editable: true,

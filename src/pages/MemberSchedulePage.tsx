@@ -259,6 +259,7 @@ export function MemberSchedulePage() {
       {
         key: 'day_of_week',
         header: '曜日',
+        sortable: false,
         rowType: 'sub',
         editable: false,
         style: { width: '65px', textAlign: 'center' },
@@ -274,6 +275,7 @@ export function MemberSchedulePage() {
       {
         key: 'is_scheduled',
         header: '利用',
+        sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
         editable: true,
@@ -300,6 +302,7 @@ export function MemberSchedulePage() {
       {
         key: 'status',
         header: '区分',
+        sortable: false,
         rowType: 'sub',
         inputType: 'select',
         options: STATUS_OPTIONS,
@@ -309,6 +312,7 @@ export function MemberSchedulePage() {
       {
         key: 'start_time',
         header: '開始時刻',
+        sortable: false,
         rowType: 'sub',
         inputType: 'time',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -321,6 +325,7 @@ export function MemberSchedulePage() {
       {
         key: 'end_time',
         header: '終了時刻',
+        sortable: false,
         rowType: 'sub',
         inputType: 'time',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -333,6 +338,7 @@ export function MemberSchedulePage() {
       {
         key: 'break_minutes',
         header: '休憩 (分)',
+        sortable: false,
         rowType: 'sub',
         inputType: 'number',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -346,6 +352,7 @@ export function MemberSchedulePage() {
       {
         key: 'service_hours',
         header: '提供時間 (h)',
+        sortable: false,
         rowType: 'sub',
         editable: false,
         style: { width: '105px', textAlign: 'right' },
@@ -357,6 +364,7 @@ export function MemberSchedulePage() {
       {
         key: 'has_meal',
         header: '昼食',
+        sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -365,6 +373,7 @@ export function MemberSchedulePage() {
       {
         key: 'has_pickup',
         header: '送迎(往)',
+        sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -373,6 +382,7 @@ export function MemberSchedulePage() {
       {
         key: 'has_dropoff',
         header: '送迎(復)',
+        sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
         editable: (subItem: MemberScheduleRow) => subItem.is_scheduled,
@@ -381,6 +391,7 @@ export function MemberSchedulePage() {
       {
         key: 'remarks',
         header: '備考',
+        sortable: false,
         rowType: 'sub',
         inputType: 'text',
         editable: true,

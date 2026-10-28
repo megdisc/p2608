@@ -7,6 +7,8 @@ import type { StaffExceptionScheduleTableItem, MemberExceptionScheduleTableItem 
 
 export type AttendanceDayRow = {
   id: string; // `staff-${staff_id}` or `member-${member_id}`
+  date: string; // YYYY-MM-DD (DataTable singleDate filter)
+  target_date: string; // YYYY-MM-DD
   user_type: 'staff' | 'member';
   person_id: string; // staff_id or member_id
   code: string;
@@ -24,6 +26,17 @@ export type AttendanceDayRow = {
   remarks: string;
   has_exception_record: boolean;
   exception_id?: string;
+
+  // DB読込時の初期ベースライン（変更検知用）
+  initial_is_active: boolean;
+  initial_status?: string;
+  initial_start_time: string;
+  initial_end_time: string;
+  initial_break_minutes: number;
+  initial_has_meal?: boolean;
+  initial_has_pickup?: boolean;
+  initial_has_dropoff?: boolean;
+  initial_remarks: string;
 };
 
 export interface AttendanceDayPageProps {
@@ -66,6 +79,24 @@ const computeHours = (
   return Math.round((workMins / 60) * 100) / 100;
 };
 
+// 項目が初期状態から変更されたかを判定
+const isRowChanged = (row: AttendanceDayRow): boolean => {
+  if (row.is_active !== row.initial_is_active) return true;
+  if ((row.start_time || '') !== (row.initial_start_time || '')) return true;
+  if ((row.end_time || '') !== (row.initial_end_time || '')) return true;
+  if (Number(row.break_minutes || 0) !== Number(row.initial_break_minutes || 0)) return true;
+  if ((row.remarks || '').trim() !== (row.initial_remarks || '').trim()) return true;
+
+  if (row.user_type === 'member') {
+    if ((row.status || 'present') !== (row.initial_status || 'present')) return true;
+    if (Boolean(row.has_meal) !== Boolean(row.initial_has_meal)) return true;
+    if (Boolean(row.has_pickup) !== Boolean(row.initial_has_pickup)) return true;
+    if (Boolean(row.has_dropoff) !== Boolean(row.initial_has_dropoff)) return true;
+  }
+
+  return false;
+};
+
 export function AttendanceDayPage({
   currentDate: externalDate,
   onDateChange: externalSetDate,
@@ -104,8 +135,11 @@ export function AttendanceDayPage({
     try {
       setLoading(true);
 
-      const [yStr, mStr, dStr] = currentDate.split('-');
-      const targetDateObj = new Date(parseInt(yStr, 10), parseInt(mStr, 10) - 1, parseInt(dStr, 10));
+      const dateParts = currentDate.substring(0, 10).split('-');
+      const y = parseInt(dateParts[0], 10);
+      const m = parseInt(dateParts[1], 10);
+      const d = parseInt(dateParts[2], 10);
+      const targetDateObj = new Date(y, m - 1, d);
       const dow = targetDateObj.getDay(); // 0: 日 〜 6: 土
 
       const [
@@ -152,131 +186,153 @@ export function AttendanceDayPage({
       const assignedMemberIds = new Set(assignedOfficeMembers.map(om => om.member_id));
       const targetMembers = activeMembers.filter(m => assignedMemberIds.has(m.id));
 
-      // Build unified rows
+      // Build unified rows with date: currentDate for DataTable filter
       const unifiedRows: AttendanceDayRow[] = [];
 
       // 1. Staff rows
       targetStaffs.forEach(staff => {
         const exception = staffExceptions.find(e => e.staff_id === staff.id);
+        const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
+        const isWeekday = dow >= 1 && dow <= 5;
+
+        let isActive: boolean;
+        let start: string;
+        let end: string;
+        let breakMin: number;
+        let hours: number;
+        let remarks: string;
+        let hasException = false;
+        let exceptionId: string | undefined;
+
         if (exception) {
-          const isActive = exception.is_work_day ?? true;
-          const start = formatTimeForInput(exception.start_time);
-          const end = formatTimeForInput(exception.end_time);
-          const breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
-          const hours = exception.scheduled_hours !== null && exception.scheduled_hours !== undefined
+          hasException = true;
+          exceptionId = exception.id;
+          isActive = exception.is_work_day ?? true;
+          start = formatTimeForInput(exception.start_time);
+          end = formatTimeForInput(exception.end_time);
+          breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
+          hours = exception.scheduled_hours !== null && exception.scheduled_hours !== undefined
             ? Number(exception.scheduled_hours)
             : computeHours(start, end, breakMin, isActive);
-
-          unifiedRows.push({
-            id: `staff-${staff.id}`,
-            user_type: 'staff',
-            person_id: staff.id,
-            code: staff.code || '',
-            name: staff.name,
-            yomigana: staff.yomigana || '',
-            is_active: isActive,
-            start_time: start,
-            end_time: end,
-            break_minutes: breakMin,
-            calculated_hours: hours,
-            remarks: exception.remarks || '',
-            has_exception_record: true,
-            exception_id: exception.id,
-          });
+          remarks = exception.remarks || '';
         } else {
-          const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
-          const isWeekday = dow >= 1 && dow <= 5;
-          const isActive = basic ? (basic.is_work_day ?? true) : isWeekday;
-          const start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '08:30' : '');
-          const end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '17:30' : '');
-          const breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
-          const hours = basic?.scheduled_hours !== null && basic?.scheduled_hours !== undefined
+          // 基本予定テーブルのデータをデフォルト表示
+          isActive = basic ? (basic.is_work_day ?? true) : isWeekday;
+          start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '08:30' : '');
+          end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '17:30' : '');
+          breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
+          hours = basic?.scheduled_hours !== null && basic?.scheduled_hours !== undefined
             ? Number(basic.scheduled_hours)
             : computeHours(start, end, breakMin, isActive);
-
-          unifiedRows.push({
-            id: `staff-${staff.id}`,
-            user_type: 'staff',
-            person_id: staff.id,
-            code: staff.code || '',
-            name: staff.name,
-            yomigana: staff.yomigana || '',
-            is_active: isActive,
-            start_time: start,
-            end_time: end,
-            break_minutes: breakMin,
-            calculated_hours: hours,
-            remarks: basic?.remarks || '',
-            has_exception_record: false,
-          });
+          remarks = basic?.remarks || '';
         }
+
+        unifiedRows.push({
+          id: `staff-${staff.id}`,
+          date: currentDate,
+          target_date: currentDate,
+          user_type: 'staff',
+          person_id: staff.id,
+          code: staff.code || '',
+          name: staff.name,
+          yomigana: staff.yomigana || '',
+          is_active: isActive,
+          start_time: start,
+          end_time: end,
+          break_minutes: breakMin,
+          calculated_hours: hours,
+          remarks: remarks,
+          has_exception_record: hasException,
+          exception_id: exceptionId,
+          initial_is_active: isActive,
+          initial_start_time: start,
+          initial_end_time: end,
+          initial_break_minutes: breakMin,
+          initial_remarks: remarks,
+        });
       });
 
       // 2. Member rows
       targetMembers.forEach(member => {
         const exception = memberExceptions.find(e => e.member_id === member.id);
+        const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
+        const isWeekday = dow >= 1 && dow <= 5;
+
+        let isActive: boolean;
+        let status: string;
+        let start: string;
+        let end: string;
+        let breakMin: number;
+        let hours: number;
+        let hasMeal: boolean;
+        let hasPickup: boolean;
+        let hasDropoff: boolean;
+        let remarks: string;
+        let hasException = false;
+        let exceptionId: string | undefined;
+
         if (exception) {
-          const isActive = exception.is_scheduled ?? true;
-          const status = exception.status || (isActive ? 'present' : 'absent');
-          const start = formatTimeForInput(exception.start_time);
-          const end = formatTimeForInput(exception.end_time);
-          const breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
-          const hours = exception.service_hours !== null && exception.service_hours !== undefined
+          hasException = true;
+          exceptionId = exception.id;
+          isActive = exception.is_scheduled ?? true;
+          status = exception.status || (isActive ? 'present' : 'absent');
+          start = formatTimeForInput(exception.start_time);
+          end = formatTimeForInput(exception.end_time);
+          breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
+          hours = exception.service_hours !== null && exception.service_hours !== undefined
             ? Number(exception.service_hours)
             : computeHours(start, end, breakMin, isActive);
-
-          unifiedRows.push({
-            id: `member-${member.id}`,
-            user_type: 'member',
-            person_id: member.id,
-            code: member.code || '',
-            name: member.name,
-            yomigana: member.yomigana || '',
-            is_active: isActive,
-            status: status,
-            start_time: start,
-            end_time: end,
-            break_minutes: breakMin,
-            calculated_hours: hours,
-            has_meal: exception.has_meal ?? false,
-            has_pickup: exception.has_pickup ?? false,
-            has_dropoff: exception.has_dropoff ?? false,
-            remarks: exception.remarks || '',
-            has_exception_record: true,
-            exception_id: exception.id,
-          });
+          hasMeal = exception.has_meal ?? false;
+          hasPickup = exception.has_pickup ?? false;
+          hasDropoff = exception.has_dropoff ?? false;
+          remarks = exception.remarks || '';
         } else {
-          const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
-          const isWeekday = dow >= 1 && dow <= 5;
-          const isActive = basic ? (basic.is_scheduled ?? true) : isWeekday;
-          const status = basic?.status || (isActive ? 'present' : 'absent');
-          const start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '09:30' : '');
-          const end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '15:30' : '');
-          const breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
-          const hours = basic?.service_hours !== null && basic?.service_hours !== undefined
+          // 基本予定テーブルのデータをデフォルト表示
+          isActive = basic ? (basic.is_scheduled ?? true) : isWeekday;
+          status = basic?.status || (isActive ? 'present' : 'absent');
+          start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '09:30' : '');
+          end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '15:30' : '');
+          breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
+          hours = basic?.service_hours !== null && basic?.service_hours !== undefined
             ? Number(basic.service_hours)
             : computeHours(start, end, breakMin, isActive);
-
-          unifiedRows.push({
-            id: `member-${member.id}`,
-            user_type: 'member',
-            person_id: member.id,
-            code: member.code || '',
-            name: member.name,
-            yomigana: member.yomigana || '',
-            is_active: isActive,
-            status: status,
-            start_time: start,
-            end_time: end,
-            break_minutes: breakMin,
-            calculated_hours: hours,
-            has_meal: basic?.has_meal ?? isActive,
-            has_pickup: basic?.has_pickup ?? false,
-            has_dropoff: basic?.has_dropoff ?? false,
-            remarks: basic?.remarks || '',
-            has_exception_record: false,
-          });
+          hasMeal = basic?.has_meal ?? isActive;
+          hasPickup = basic?.has_pickup ?? false;
+          hasDropoff = basic?.has_dropoff ?? false;
+          remarks = basic?.remarks || '';
         }
+
+        unifiedRows.push({
+          id: `member-${member.id}`,
+          date: currentDate,
+          target_date: currentDate,
+          user_type: 'member',
+          person_id: member.id,
+          code: member.code || '',
+          name: member.name,
+          yomigana: member.yomigana || '',
+          is_active: isActive,
+          status: status,
+          start_time: start,
+          end_time: end,
+          break_minutes: breakMin,
+          calculated_hours: hours,
+          has_meal: hasMeal,
+          has_pickup: hasPickup,
+          has_dropoff: hasDropoff,
+          remarks: remarks,
+          has_exception_record: hasException,
+          exception_id: exceptionId,
+          initial_is_active: isActive,
+          initial_status: status,
+          initial_start_time: start,
+          initial_end_time: end,
+          initial_break_minutes: breakMin,
+          initial_has_meal: hasMeal,
+          initial_has_pickup: hasPickup,
+          initial_has_dropoff: hasDropoff,
+          initial_remarks: remarks,
+        });
       });
 
       setData(unifiedRows);
@@ -293,7 +349,60 @@ export function AttendanceDayPage({
     fetchData();
   }, [fetchData]);
 
-  // Handle saving batch changes
+  // 単一行の例外登録処理
+  const handleSaveSingleRow = useCallback(
+    async (row: AttendanceDayRow) => {
+      if (!targetOfficeId || !currentDate) return;
+
+      try {
+        if (row.user_type === 'staff') {
+          const staffUpdate: Partial<StaffExceptionScheduleTableItem> = {
+            office_id: targetOfficeId,
+            staff_id: row.person_id,
+            target_date: currentDate,
+            is_work_day: row.is_active,
+            start_time: formatTimeForDb(row.start_time),
+            end_time: formatTimeForDb(row.end_time),
+            break_minutes: Number(row.break_minutes) || 0,
+            remarks: row.remarks || null,
+          };
+          const { error } = await supabase
+            .from('staff_exception_schedules')
+            .upsert([staffUpdate], { onConflict: 'office_id,staff_id,target_date' });
+          if (error) throw error;
+        } else {
+          const memberUpdate: Partial<MemberExceptionScheduleTableItem> = {
+            office_id: targetOfficeId,
+            member_id: row.person_id,
+            target_date: currentDate,
+            is_scheduled: row.is_active,
+            status: row.is_active ? (row.status || 'present') : 'absent',
+            start_time: formatTimeForDb(row.start_time),
+            end_time: formatTimeForDb(row.end_time),
+            break_minutes: Number(row.break_minutes) || 0,
+            has_meal: row.has_meal ?? false,
+            has_pickup: row.has_pickup ?? false,
+            has_dropoff: row.has_dropoff ?? false,
+            remarks: row.remarks || null,
+          };
+          const { error } = await supabase
+            .from('member_exception_schedules')
+            .upsert([memberUpdate], { onConflict: 'office_id,member_id,target_date' });
+          if (error) throw error;
+        }
+
+        showAlert(`${row.name} の例外予定を登録しました。`, 'success');
+        await fetchData();
+      } catch (err: unknown) {
+        console.error('Error saving single exception schedule:', err);
+        const errMsg = err instanceof Error ? err.message : 'エラー';
+        showAlert(`保存に失敗しました: ${errMsg}`, 'error');
+      }
+    },
+    [targetOfficeId, currentDate, showAlert, fetchData]
+  );
+
+  // 一括保存処理（項目が変更された行のみを例外予定テーブルへ登録）
   const handleBatchSave = useCallback(
     async (drafts: AttendanceDayRow[]) => {
       if (!targetOfficeId || !currentDate) return;
@@ -302,7 +411,15 @@ export function AttendanceDayPage({
         const staffUpdates: Partial<StaffExceptionScheduleTableItem>[] = [];
         const memberUpdates: Partial<MemberExceptionScheduleTableItem>[] = [];
 
-        drafts.forEach(row => {
+        // 項目が初期状態から変更された行のみを対象にする
+        const changedRows = drafts.filter(row => isRowChanged(row));
+
+        if (changedRows.length === 0) {
+          showAlert('変更された項目はありません。');
+          return;
+        }
+
+        changedRows.forEach(row => {
           if (row.user_type === 'staff') {
             staffUpdates.push({
               office_id: targetOfficeId,
@@ -346,7 +463,7 @@ export function AttendanceDayPage({
           if (memberErr) throw memberErr;
         }
 
-        showAlert(`${currentDate} の例外予定を保存しました。`, 'success');
+        showAlert(`${currentDate} の例外予定（${changedRows.length}件）を登録・保存しました。`, 'success');
         await fetchData();
       } catch (err: unknown) {
         console.error('Error saving exception schedules:', err);
@@ -357,7 +474,7 @@ export function AttendanceDayPage({
     [targetOfficeId, currentDate, showAlert, fetchData]
   );
 
-  // Revert single row exception to basic schedule (delete exception record)
+  // 例外解除処理（DBの例外レコードを削除し基本予定に戻す）
   const handleRevertException = useCallback(
     async (row: AttendanceDayRow) => {
       if (!row.has_exception_record) return;
@@ -720,21 +837,40 @@ export function AttendanceDayPage({
         key: 'schedule_state',
         header: '種別',
         sortable: false,
-        style: { width: '85px', textAlign: 'center' },
+        style: { width: '100px', textAlign: 'center' },
         render: item => {
-          if (item.has_exception_record) {
+          const changed = isRowChanged(item);
+          if (changed) {
             return (
               <span
                 style={{
-                  backgroundColor: '#fef3c7',
-                  color: '#92400e',
+                  backgroundColor: '#fef08a',
+                  color: '#854d0e',
+                  border: '1px solid #facc15',
                   padding: '2px 6px',
                   borderRadius: '10px',
                   fontSize: '11px',
                   fontWeight: 'bold',
                 }}
               >
-                例外設定
+                変更あり
+              </span>
+            );
+          }
+          if (item.has_exception_record) {
+            return (
+              <span
+                style={{
+                  backgroundColor: '#fef3c7',
+                  color: '#92400e',
+                  border: '1px solid #fde68a',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                }}
+              >
+                例外設定済
               </span>
             );
           }
@@ -775,30 +911,46 @@ export function AttendanceDayPage({
       },
       {
         key: 'action',
-        header: '例外解除',
+        header: '操作',
         sortable: false,
-        style: { width: '90px', textAlign: 'center' },
+        style: { width: '110px', textAlign: 'center' },
         render: item => {
-          if (!item.has_exception_record) {
-            return <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>-</span>;
+          const changed = isRowChanged(item);
+          if (changed) {
+            return (
+              <Button
+                variant="primary"
+                onClick={e => {
+                  e.stopPropagation();
+                  handleSaveSingleRow(item);
+                }}
+                style={{ fontSize: '11px', padding: '2px 8px' }}
+                title="この行の変更を例外予定として登録します"
+              >
+                登録
+              </Button>
+            );
           }
-          return (
-            <Button
-              variant="secondary"
-              onClick={e => {
-                e.stopPropagation();
-                handleRevertException(item);
-              }}
-              style={{ fontSize: '11px', padding: '2px 6px', color: '#b91c1c' }}
-              title="例外レコードを削除し、基本予定に戻します"
-            >
-              リセット
-            </Button>
-          );
+          if (item.has_exception_record) {
+            return (
+              <Button
+                variant="secondary"
+                onClick={e => {
+                  e.stopPropagation();
+                  handleRevertException(item);
+                }}
+                style={{ fontSize: '11px', padding: '2px 6px', color: '#b91c1c' }}
+                title="例外レコードを削除し、基本予定に戻します"
+              >
+                リセット
+              </Button>
+            );
+          }
+          return <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>-</span>;
         },
       },
     ],
-    [handleRevertException]
+    [handleSaveSingleRow, handleRevertException]
   );
 
   const headerRight = (
@@ -888,6 +1040,7 @@ export function AttendanceDayPage({
       showSingleDateFilter={true}
       singleDate={currentDate}
       onSingleDateChange={setDate}
+      dateFilterKey="date"
       headerRight={headerRight}
       onBatchSave={handleBatchSave}
       highlightInputColumns={true}

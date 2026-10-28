@@ -639,12 +639,15 @@ export function AttendanceDayPage({
         key: 'status',
         header: '区分',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
         style: { width: '115px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (item.user_type === 'staff') {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          if (!item.is_active) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>欠席</span>;
           }
           return (
             <Select
@@ -677,84 +680,97 @@ export function AttendanceDayPage({
         key: 'start_time',
         header: '開始時間',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
         style: { width: '105px', textAlign: 'center' },
-        render: (item, draftData, updateData) => (
-          <Input
-            type="time"
-            value={item.start_time}
-            disabled={!item.is_active}
-            onChange={e => {
-              const val = e.target.value;
-              const hours = computeHours(val, item.end_time, item.break_minutes, item.is_active);
-              updateData(
-                draftData.map(d =>
-                  d.id === item.id ? { ...d, start_time: val, calculated_hours: hours } : d
-                )
-              );
-            }}
-            style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
-          />
-        ),
+        render: (item, draftData, updateData) => {
+          if (!item.is_active) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          return (
+            <Input
+              type="time"
+              value={item.start_time}
+              onChange={e => {
+                const val = e.target.value;
+                const hours = computeHours(val, item.end_time, item.break_minutes, item.is_active);
+                updateData(
+                  draftData.map(d =>
+                    d.id === item.id ? { ...d, start_time: val, calculated_hours: hours } : d
+                  )
+                );
+              }}
+              style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
+            />
+          );
+        },
       },
       {
         key: 'end_time',
         header: '終了時間',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
         style: { width: '105px', textAlign: 'center' },
-        render: (item, draftData, updateData) => (
-          <Input
-            type="time"
-            value={item.end_time}
-            disabled={!item.is_active}
-            onChange={e => {
-              const val = e.target.value;
-              const hours = computeHours(item.start_time, val, item.break_minutes, item.is_active);
-              updateData(
-                draftData.map(d =>
-                  d.id === item.id ? { ...d, end_time: val, calculated_hours: hours } : d
-                )
-              );
-            }}
-            style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
-          />
-        ),
+        render: (item, draftData, updateData) => {
+          if (!item.is_active) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          return (
+            <Input
+              type="time"
+              value={item.end_time}
+              onChange={e => {
+                const val = e.target.value;
+                const hours = computeHours(item.start_time, val, item.break_minutes, item.is_active);
+                updateData(
+                  draftData.map(d =>
+                    d.id === item.id ? { ...d, end_time: val, calculated_hours: hours } : d
+                  )
+                );
+              }}
+              style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
+            />
+          );
+        },
       },
       {
         key: 'break_minutes',
         header: '休憩(分)',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'number',
         style: { width: '80px', textAlign: 'right' },
-        render: (item, draftData, updateData) => (
-          <Input
-            type="number"
-            step="15"
-            min="0"
-            max="240"
-            value={item.break_minutes ?? 0}
-            disabled={!item.is_active}
-            onChange={e => {
-              const val = Number(e.target.value) || 0;
-              const hours = computeHours(item.start_time, item.end_time, val, item.is_active);
-              updateData(
-                draftData.map(d =>
-                  d.id === item.id ? { ...d, break_minutes: val, calculated_hours: hours } : d
-                )
-              );
-            }}
-            style={{ width: '65px', textAlign: 'right', padding: '2px 4px' }}
-          />
-        ),
+        render: (item, draftData, updateData) => {
+          if (!item.is_active) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          return (
+            <Input
+              type="number"
+              step="15"
+              min="0"
+              max="240"
+              value={item.break_minutes ?? 0}
+              onChange={e => {
+                const val = Number(e.target.value) || 0;
+                const hours = computeHours(item.start_time, item.end_time, val, item.is_active);
+                updateData(
+                  draftData.map(d =>
+                    d.id === item.id ? { ...d, break_minutes: val, calculated_hours: hours } : d
+                  )
+                );
+              }}
+              style={{ width: '65px', textAlign: 'right', padding: '2px 4px' }}
+            />
+          );
+        },
       },
       {
         key: 'calculated_hours',
         header: '時間(h)',
         sortable: false,
+        editable: false,
         style: { width: '75px', textAlign: 'right' },
         render: item => {
           if (!item.is_active) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
@@ -765,18 +781,17 @@ export function AttendanceDayPage({
         key: 'has_meal',
         header: '昼食',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
         style: { width: '65px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff') {
+          if (item.user_type === 'staff' || !item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
           }
           return (
             <Input
               type="checkbox"
               checked={item.has_meal ?? false}
-              disabled={!item.is_active}
               onChange={e => {
                 const val = e.target.checked;
                 updateData(draftData.map(d => (d.id === item.id ? { ...d, has_meal: val } : d)));
@@ -789,18 +804,17 @@ export function AttendanceDayPage({
         key: 'has_pickup',
         header: '送迎(往)',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
         style: { width: '75px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff') {
+          if (item.user_type === 'staff' || !item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
           }
           return (
             <Input
               type="checkbox"
               checked={item.has_pickup ?? false}
-              disabled={!item.is_active}
               onChange={e => {
                 const val = e.target.checked;
                 updateData(draftData.map(d => (d.id === item.id ? { ...d, has_pickup: val } : d)));
@@ -813,18 +827,17 @@ export function AttendanceDayPage({
         key: 'has_dropoff',
         header: '送迎(復)',
         sortable: false,
-        editable: true,
+        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
         style: { width: '75px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff') {
+          if (item.user_type === 'staff' || !item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
           }
           return (
             <Input
               type="checkbox"
               checked={item.has_dropoff ?? false}
-              disabled={!item.is_active}
               onChange={e => {
                 const val = e.target.checked;
                 updateData(draftData.map(d => (d.id === item.id ? { ...d, has_dropoff: val } : d)));

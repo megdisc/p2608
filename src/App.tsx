@@ -15,6 +15,7 @@ import {
   ScreenWagePage,
   ScreenReservePage,
   ScreenDailyReportPage,
+  ScreenAttendancePage,
   LoginPage,
   DashboardPage
 } from './pages';
@@ -56,6 +57,8 @@ function AppContent() {
           <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
             {['dashboard'].includes(activeTab) ? (
               <DashboardPage />
+            ) : ['screenAttendance', 'attendanceMonth', 'attendanceDay'].includes(activeTab) ? (
+              <ScreenAttendancePage />
             ) : ['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? (
               <ScreenDailyReportPage />
             ) : ['projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (

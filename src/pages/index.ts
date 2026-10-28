@@ -55,3 +55,6 @@ export * from './ScreenStaffDailyReportPage';
 export * from './ScreenDailyReportPage';
 export * from './StaffSchedulePage';
 export * from './MemberSchedulePage';
+export * from './AttendanceMonthPage';
+export * from './AttendanceDayPage';
+export * from './ScreenAttendancePage';

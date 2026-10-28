@@ -86,6 +86,7 @@ type DataTableProps<T> = {
   onUnconfirm?: () => void;
   confirmDisabled?: boolean;
   statusBadge?: React.ReactNode;
+  onRowClick?: (item: T) => void;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -134,7 +135,8 @@ export function DataTable<T extends { id: string }>({
   onConfirm,
   onUnconfirm,
   confirmDisabled,
-  statusBadge
+  statusBadge,
+  onRowClick
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -940,7 +942,17 @@ export function DataTable<T extends { id: string }>({
                 <React.Fragment key={item.id}>
                   {!shouldMergeParentRow && (
                     <tr 
-                      className={isDeleted ? 'deleted-row' : ''}
+                      className={`${isDeleted ? 'deleted-row' : ''} ${onRowClick ? 'clickable-row' : ''}`.trim()}
+                      onClick={(e) => {
+                        if (onRowClick) {
+                          const target = e.target as HTMLElement;
+                          if (target.closest('button, input, select, textarea, a, .custom-checkbox, .no-row-click')) {
+                            return;
+                          }
+                          onRowClick(item);
+                        }
+                      }}
+                      style={onRowClick ? { cursor: 'pointer' } : undefined}
                       onMouseEnter={(e) => {
                         if (showRestrictionColumn && !isRowEditable) {
                           setTooltip({ visible: true, x: e.clientX, y: e.clientY - 15, text: restrictionTooltipText || MESSAGES.RESTRICTED_EDIT });

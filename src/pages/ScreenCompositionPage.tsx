@@ -49,6 +49,8 @@ const getTabCategory = (tabId: string): string => {
 
   // 3. レコード系
   const recordTabIds = [
+    'attendanceMonth', // 勤怠・出欠: 月
+    'attendanceDay', // 勤怠・出欠: 日
     'skillEvaluation', // 利用者: スキル評価
     'progressRecord', // 案件: 進捗
     'projectFinancialRecord', // 案件: 材料費・経費記録

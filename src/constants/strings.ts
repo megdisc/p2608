@@ -291,6 +291,8 @@ export const PAGE_NAMES = {
   ORGANIZATION: '法人',
   OFFICE: '事業所',
   WORK_STYLE: '勤務形態',
+  WORK_SCHEDULE: '勤務予定',
+  SERVICE_SCHEDULE: '利用予定',
   RECIPIENT_CERTIFICATE: '受給者証',
   REGIONAL_GRADE: '所在地級数',
   SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',

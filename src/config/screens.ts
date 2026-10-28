@@ -65,6 +65,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'staffQualification', label: PAGE_NAMES.QUALIFICATION },
       { id: 'staffOffice', label: PAGE_NAMES.OFFICE },
       { id: 'staffWorkStyle', label: PAGE_NAMES.WORK_STYLE },
+      { id: 'staffSchedule', label: PAGE_NAMES.WORK_SCHEDULE },
     ],
   },
   SCREEN_USER: {
@@ -73,6 +74,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'projectUser', label: PAGE_NAMES.PROJECT_USER },
       { id: 'memberRecipientCertificate', label: PAGE_NAMES.RECIPIENT_CERTIFICATE },
       { id: 'memberOffice', label: PAGE_NAMES.OFFICE },
+      { id: 'memberSchedule', label: PAGE_NAMES.SERVICE_SCHEDULE },
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
     ],

@@ -6,6 +6,7 @@ import { Tabs } from '../components/ui';
 import { ProjectUserPage } from './ProjectUserPage';
 import { RecipientCertificatePage } from './RecipientCertificatePage';
 import { MemberOfficePage } from './MemberOfficePage';
+import { MemberSchedulePage } from './MemberSchedulePage';
 import { SkillEvaluationPage } from './SkillEvaluationPage';
 import { BaseWageAssignmentPage } from './BaseWageAssignmentPage';
 
@@ -22,6 +23,8 @@ export function ScreenUserPage() {
         return <RecipientCertificatePage />;
       case 'memberOffice':
         return <MemberOfficePage />;
+      case 'memberSchedule':
+        return <MemberSchedulePage />;
       case 'skillEvaluation':
         return <SkillEvaluationPage />;
       case 'baseWageAssignment':

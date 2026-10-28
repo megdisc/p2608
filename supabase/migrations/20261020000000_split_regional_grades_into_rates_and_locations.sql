@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS "idx_regional_grade_rates_display_order"
 ON "public"."regional_grade_rates"("display_order");
 
 ALTER TABLE "public"."regional_grade_rates" ENABLE ROW LEVEL SECURITY;
-
+DROP POLICY IF EXISTS "Allow all access" ON "public"."regional_grade_rates";
 CREATE POLICY "Allow all access" ON "public"."regional_grade_rates"
 FOR ALL USING (true) WITH CHECK (true);
 
@@ -57,7 +57,7 @@ CREATE INDEX IF NOT EXISTS "idx_regional_grade_locations_grade"
 ON "public"."regional_grade_locations"("grade");
 
 ALTER TABLE "public"."regional_grade_locations" ENABLE ROW LEVEL SECURITY;
-
+DROP POLICY IF EXISTS "Allow all access" ON "public"."regional_grade_locations";
 CREATE POLICY "Allow all access" ON "public"."regional_grade_locations"
 FOR ALL USING (true) WITH CHECK (true);
 

@@ -1,4 +1,5 @@
 -- 1. Create regional_grades table (所在地級数・地域区分マスタ)
+DROP VIEW IF EXISTS "public"."regional_grades" CASCADE;
 CREATE TABLE IF NOT EXISTS "public"."regional_grades" (
     "id" UUID DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY,
     "prefecture" VARCHAR(20) NOT NULL,

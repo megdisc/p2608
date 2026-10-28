@@ -36,9 +36,11 @@ const getTabCategory = (tabId: string): string => {
     'staffQualification', // 職員: 資格
     'staffOffice', // 職員: 所属事業所
     'staffWorkStyle', // 職員: 勤務形態
+    'staffSchedule', // 職員: 勤務予定
     'projectUser', // 利用者: 基本情報
     'memberRecipientCertificate', // 利用者: 受給者証
     'memberOffice', // 利用者: 事業所
+    'memberSchedule', // 利用者: 利用予定
     'baseWageAssignment', // 利用者: 工賃単価
     'project', // 案件: 基本情報
     'budgetPlanning', // 案件: 予算

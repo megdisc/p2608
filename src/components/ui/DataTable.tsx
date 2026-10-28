@@ -31,7 +31,7 @@ export type Column<T> = {
   className?: string;
   style?: React.CSSProperties | ((item: T, draftData?: T[]) => React.CSSProperties);
   editable?: boolean | ((item: T) => boolean);
-  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'month' | 'datetime-local' | 'email' | 'password' | 'checkbox';
+  inputType?: 'text' | 'number' | 'currency' | 'select' | 'radio' | 'date' | 'month' | 'time' | 'datetime-local' | 'email' | 'password' | 'checkbox';
   options?: { label: string; value: string }[] | ((item: T) => { label: string; value: string }[]);
   onCellChange?: (newValue: any, item: T, updateRow: (updates: Partial<T>) => void) => Partial<T> | void;
   customEditRender?: (value: any, item: T, onChange: (newValue: any) => void) => React.ReactNode;

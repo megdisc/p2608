@@ -7,6 +7,7 @@ import { StaffPage } from './StaffPage';
 import { StaffQualificationPage } from './StaffQualificationPage';
 import { StaffOfficePage } from './StaffOfficePage';
 import { StaffWorkStylePage } from './StaffWorkStylePage';
+import { StaffSchedulePage } from './StaffSchedulePage';
 
 export function ScreenStaffPage() {
   const navContext = useNavigation();
@@ -23,6 +24,8 @@ export function ScreenStaffPage() {
         return <StaffOfficePage />;
       case 'staffWorkStyle':
         return <StaffWorkStylePage />;
+      case 'staffSchedule':
+        return <StaffSchedulePage />;
       default:
         return <StaffPage />;
     }

@@ -58,9 +58,9 @@ function AppContent() {
               <DashboardPage />
             ) : ['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? (
               <ScreenDailyReportPage />
-            ) : ['projectUser', 'memberRecipientCertificate', 'memberOffice', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (
+            ) : ['projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'skillEvaluation', 'baseWageAssignment', 'screenUser'].includes(activeTab) ? (
               <ScreenUserPage />
-            ) : ['staff', 'screenStaff', 'staffQualification', 'staffOffice', 'staffWorkStyle'].includes(activeTab) ? (
+            ) : ['staff', 'screenStaff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule'].includes(activeTab) ? (
               <ScreenStaffPage />
             ) : ['client', 'screenClient'].includes(activeTab) ? (
               <ScreenClientPage />

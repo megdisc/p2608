@@ -623,6 +623,32 @@ export function ScreenCompositionPage() {
     },
     {
       layer: '1. マスタ層',
+      physicalName: 'member_basic_schedules',
+      tableType: '従属マスタ',
+      logicalName: '利用者基本利用予定',
+      description: '曜日（日〜土）ごとの利用者の定例通所パターン（通所曜日・標準提供時間・食事利用・送迎利用）。日報（利用記録）の初期自動セット基準',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '基本利用予定ID', status: 'added' },
+        { name: 'office_id', desc: '対象事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'member_id', desc: '利用者ID（FK -> members.id）', status: 'added' },
+        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
+        { name: 'is_scheduled', desc: '定例利用フラグ（true: 毎週通所利用日 / false: 非通所日・休み）', status: 'added' },
+        { name: 'status', desc: '定例出欠区分（present: 通所 / offsite: 施設外就労 / remote: 在宅利用 等）', status: 'added' },
+        { name: 'start_time', desc: '基本サービス開始時刻（通所時刻。例: 09:30）', status: 'added' },
+        { name: 'end_time', desc: '基本サービス終了時刻（退所時刻。例: 15:30）', status: 'added' },
+        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
+        { name: 'service_hours', desc: '基本サービス提供時間（時間数。開始・終了時刻および休憩時間から自動算出。例: 5.00）', status: 'added' },
+        { name: 'has_meal', desc: '定例食事利用フラグ（true: 昼食あり / false: なし）', status: 'added' },
+        { name: 'has_pickup', desc: '定例送迎（往路・迎え）利用フラグ', status: 'added' },
+        { name: 'has_dropoff', desc: '定例送迎（復路・送り）利用フラグ', status: 'added' },
+        { name: 'remarks', desc: '備考・週間通所計画メモ', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
       physicalName: 'staffs',
       tableType: '従属マスタ',
       logicalName: '職員',
@@ -703,6 +729,28 @@ export function ScreenCompositionPage() {
         { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '1. マスタ層',
+      physicalName: 'staff_basic_schedules',
+      tableType: '従属マスタ',
+      logicalName: '職員基本勤務予定',
+      description: '曜日（日〜土）ごとの職員の定例勤務パターン（勤務曜日・標準出退勤時刻・休憩・所定時間）。日報（勤務記録）の初期自動セット基準',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '基本勤務予定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
+        { name: 'is_work_day', desc: '定例勤務フラグ（true: 勤務日 / false: 公休・法定休日）', status: 'added' },
+        { name: 'start_time', desc: '基本始業時刻（出勤時刻。例: 08:30）', status: 'added' },
+        { name: 'end_time', desc: '基本終業時刻（退勤時刻。例: 17:30）', status: 'added' },
+        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
+        { name: 'scheduled_hours', desc: '基本所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
+        { name: 'remarks', desc: '備考・定例勤務パターンメモ（例: 早番、遅番、通常、時短等）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -835,6 +883,28 @@ export function ScreenCompositionPage() {
     // 2. 日次実績層
     {
       layer: '2. 日次実績層',
+      physicalName: 'staff_exception_schedules',
+      tableType: 'レコード',
+      logicalName: '職員例外勤務予定',
+      description: '日別の職員勤務例外（有休・特別休暇・シフト振替・勤務時間変更）。日報（勤務記録）の自動セット時に基本予定より優先適用',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '例外勤務予定ID', status: 'added' },
+        { name: 'office_id', desc: '勤務事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'target_date', desc: '対象年月日（特定の対象日。YYYY-MM-DD）', status: 'added' },
+        { name: 'is_work_day', desc: '当日勤務フラグ（true: 勤務日 / false: 休み・休暇）', status: 'added' },
+        { name: 'start_time', desc: '変更後始業時刻（出勤時刻。休みの場合はNULL。例: 08:30）', status: 'added' },
+        { name: 'end_time', desc: '変更後終業時刻（退勤時刻。休みの場合はNULL。例: 17:30）', status: 'added' },
+        { name: 'break_minutes', desc: '変更後休憩時間（分。例: 60）', status: 'added' },
+        { name: 'scheduled_hours', desc: '変更後所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
+        { name: 'remarks', desc: '備考・変更理由メモ（例: 有休取得、シフト振替、研修参加、時短等）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      layer: '2. 日次実績層',
       physicalName: 'staff_attendance_records',
       tableType: 'レコード',
       logicalName: '職員勤務実績',
@@ -852,6 +922,32 @@ export function ScreenCompositionPage() {
         { name: 'assigned_role', desc: '配置職種・役割（サービス管理責任者/生活支援員/職業指導員など）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      layer: '2. 日次実績層',
+      physicalName: 'member_exception_schedules',
+      tableType: 'レコード',
+      logicalName: '利用者例外利用予定',
+      description: '日別の利用者利用予定変更（通所日振替・事前欠席届・通院時間変更・臨時送迎/食事変更）。日報（利用記録）の自動セット時に基本予定より優先適用',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '例外利用予定ID', status: 'added' },
+        { name: 'office_id', desc: '対象事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'member_id', desc: '利用者ID（FK -> members.id）', status: 'added' },
+        { name: 'target_date', desc: '対象年月日（特定の対象日。YYYY-MM-DD）', status: 'added' },
+        { name: 'is_scheduled', desc: '当日利用フラグ（true: 利用あり / false: 休み・事前欠席）', status: 'added' },
+        { name: 'status', desc: '当日出欠区分（present: 通所 / offsite: 施設外就労 / remote: 在宅利用 等）', status: 'added' },
+        { name: 'start_time', desc: '変更後サービス開始時刻（通所時刻。例: 10:00）', status: 'added' },
+        { name: 'end_time', desc: '変更後サービス終了時刻（退所時刻。例: 14:00）', status: 'added' },
+        { name: 'break_minutes', desc: '変更後休憩時間（分。例: 60）', status: 'added' },
+        { name: 'service_hours', desc: '当日サービス提供時間（時間数。開始・終了時刻および休憩時間から自動算出。例: 3.00）', status: 'added' },
+        { name: 'has_meal', desc: '当日食事利用フラグ（true: 昼食あり / false: なし）', status: 'added' },
+        { name: 'has_pickup', desc: '当日送迎（往路・迎え）利用フラグ', status: 'added' },
+        { name: 'has_dropoff', desc: '当日送迎（復路・送り）利用フラグ', status: 'added' },
+        { name: 'remarks', desc: '備考・変更理由メモ（例: 通院のため遅刻早退、祝日振替利用、体調不良連絡等）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {

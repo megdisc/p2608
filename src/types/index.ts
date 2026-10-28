@@ -1,4 +1,6 @@
 
+export * from './db';
+
 export interface UserItem {
   id: string;
   email?: string;

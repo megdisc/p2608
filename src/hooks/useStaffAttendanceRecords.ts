@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTDateOnly } from '../utils';
-import type { StaffAttendanceRecordRow } from '../types';
+import type { StaffAttendanceRecordRow, StaffBasicScheduleTableItem, StaffExceptionScheduleTableItem } from '../types';
 
 export function computeActualWorkHours(start: string, end: string, breakMin: number | string): number {
   if (!start || !end) return 0;
@@ -80,20 +80,49 @@ export function useStaffAttendanceRecords(externalDate?: string) {
         }
       }
 
-      // 3. 当日の勤務実績レコード (staff_attendance_records) の取得
-      let query = supabase
+      // 3. 当日の勤務実績レコード (staff_attendance_records) および基本・例外予定の取得
+      const [yStr, mStr, dStr] = date.split('-');
+      const dow = new Date(Number(yStr), Number(mStr) - 1, Number(dStr)).getDay();
+
+      let attQuery = supabase
         .from('staff_attendance_records')
         .select('*')
         .eq('work_date', date);
 
+      let excQuery = supabase
+        .from('staff_exception_schedules')
+        .select('*')
+        .eq('target_date', date);
+
+      let basicQuery = supabase
+        .from('staff_basic_schedules')
+        .select('*')
+        .eq('day_of_week', dow);
+
       if (officeId) {
-        query = query.eq('office_id', officeId);
+        attQuery = attQuery.eq('office_id', officeId);
+        excQuery = excQuery.eq('office_id', officeId);
+        basicQuery = basicQuery.eq('office_id', officeId);
       }
 
-      const attendanceRes = await query;
+      const [attendanceRes, excRes, basicRes] = await Promise.all([
+        attQuery,
+        excQuery,
+        basicQuery,
+      ]);
+
       if (attendanceRes.error) throw attendanceRes.error;
+      if (excRes.error) throw excRes.error;
+      if (basicRes.error) throw basicRes.error;
+
       const dbAttendance = attendanceRes.data || [];
       const attendanceMap = new Map(dbAttendance.map((a: any) => [a.staff_id, a]));
+
+      const dbExceptions: StaffExceptionScheduleTableItem[] = excRes.data || [];
+      const exceptionMap = new Map<string, StaffExceptionScheduleTableItem>(dbExceptions.map((e) => [e.staff_id, e]));
+
+      const dbBasics: StaffBasicScheduleTableItem[] = basicRes.data || [];
+      const basicMap = new Map<string, StaffBasicScheduleTableItem>(dbBasics.map((b) => [b.staff_id, b]));
 
       // 4. 行データのマッピング
       const rows: StaffAttendanceRecordRow[] = targetStaffs.map(staff => {
@@ -127,6 +156,53 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             is_saved: true,
           };
         } else {
+          // デフォルト入力状態: 例外予定優先、次に基本予定
+          const exc = exceptionMap.get(staff.id);
+          const basic = basicMap.get(staff.id);
+
+          let startTime = '';
+          let endTime = '';
+          let breakMin = 60;
+          let actualHours = 0;
+
+          if (exc) {
+            const isWorkDay = exc.is_work_day ?? true;
+            if (isWorkDay) {
+              startTime = exc.start_time ? String(exc.start_time).substring(0, 5) : '08:30';
+              endTime = exc.end_time ? String(exc.end_time).substring(0, 5) : '17:30';
+              breakMin = exc.break_minutes ?? 60;
+              actualHours = (exc.scheduled_hours !== undefined && exc.scheduled_hours !== null && Number(exc.scheduled_hours) > 0)
+                ? Number(exc.scheduled_hours)
+                : computeActualWorkHours(startTime, endTime, breakMin);
+            } else {
+              startTime = '';
+              endTime = '';
+              breakMin = 0;
+              actualHours = 0;
+            }
+          } else if (basic) {
+            const isWorkDay = basic.is_work_day ?? true;
+            if (isWorkDay) {
+              startTime = basic.start_time ? String(basic.start_time).substring(0, 5) : '08:30';
+              endTime = basic.end_time ? String(basic.end_time).substring(0, 5) : '17:30';
+              breakMin = basic.break_minutes ?? 60;
+              actualHours = (basic.scheduled_hours !== undefined && basic.scheduled_hours !== null && Number(basic.scheduled_hours) > 0)
+                ? Number(basic.scheduled_hours)
+                : computeActualWorkHours(startTime, endTime, breakMin);
+            } else {
+              startTime = '';
+              endTime = '';
+              breakMin = 0;
+              actualHours = 0;
+            }
+          } else {
+            // 基本予定・例外予定ともに登録がない場合
+            startTime = '';
+            endTime = '';
+            breakMin = 60;
+            actualHours = 0;
+          }
+
           return {
             id: `TMP-${staff.id}`,
             office_id: officeId || '',
@@ -137,11 +213,11 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             default_role: defaultRole,
             date: date,
             work_date: date,
-            start_time: '',
-            end_time: '',
-            break_minutes: 60,
+            start_time: startTime,
+            end_time: endTime,
+            break_minutes: breakMin,
             assigned_role: defaultRole,
-            actual_work_hours: 0,
+            actual_work_hours: actualHours,
             is_saved: false,
           };
         }

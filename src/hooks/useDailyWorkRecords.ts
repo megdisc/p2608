@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
-import type { MemberItem, ProjectItem, ClientItem } from '../types';
+import type { MemberItem, ProjectItem, ClientItem, MemberBasicScheduleTableItem, MemberExceptionScheduleTableItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
 import { computeActualWorkHours } from './useStaffAttendanceRecords';
 
@@ -78,6 +78,8 @@ export function useDailyWorkRecords(externalDate?: string) {
   const [dbPartners, setDbPartners] = useState<ClientItem[]>([]);
   const [records, setRecords] = useState<DailyRecord[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<DailyAttendanceRecord[]>([]);
+  const [memberExceptionSchedules, setMemberExceptionSchedules] = useState<MemberExceptionScheduleTableItem[]>([]);
+  const [memberBasicSchedules, setMemberBasicSchedules] = useState<MemberBasicScheduleTableItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [internalDate, setInternalDate] = useState(() => getCurrentJSTDateOnly());
   const currentDate = externalDate || internalDate;
@@ -174,21 +176,38 @@ export function useDailyWorkRecords(externalDate?: string) {
       setLoading(true);
       let workQuery = supabase.from('daily_work_records').select('*').eq('target_period', date);
       let attendanceQuery = supabase.from('member_attendance_records').select('*').eq('target_period', date);
+      let exceptionQuery = supabase.from('member_exception_schedules').select('*').eq('target_date', date);
+      let basicQuery = supabase.from('member_basic_schedules').select('*');
 
       if (targetOfficeId) {
         workQuery = workQuery.or(`office_id.eq.${targetOfficeId},office_id.is.null`);
         attendanceQuery = attendanceQuery.or(`office_id.eq.${targetOfficeId},office_id.is.null`);
+        exceptionQuery = exceptionQuery.eq('office_id', targetOfficeId);
+        basicQuery = basicQuery.eq('office_id', targetOfficeId);
       }
 
-      const [workRes, attendanceRes] = await Promise.all([workQuery, attendanceQuery]);
+      const [workRes, attendanceRes, exceptionRes, basicRes] = await Promise.all([
+        workQuery,
+        attendanceQuery,
+        exceptionQuery,
+        basicQuery,
+      ]);
 
       if (workRes.error) throw workRes.error;
       if (attendanceRes.error && attendanceRes.error.code !== 'PGRST116') {
         console.warn('Warning fetching attendance records:', attendanceRes.error);
       }
+      if (exceptionRes.error) {
+        console.warn('Warning fetching member exception schedules:', exceptionRes.error);
+      }
+      if (basicRes.error) {
+        console.warn('Warning fetching member basic schedules:', basicRes.error);
+      }
 
       setRecords(workRes.data || []);
       setAttendanceRecords(attendanceRes.data || []);
+      setMemberExceptionSchedules(exceptionRes.data || []);
+      setMemberBasicSchedules(basicRes.data || []);
     } catch (error) {
       console.error('Error fetching records:', error);
       throw error;
@@ -246,31 +265,107 @@ export function useDailyWorkRecords(externalDate?: string) {
       return 'present';
     };
 
+    const [yStr, mStr, dStr] = currentDate.split('-');
+    const dow = new Date(Number(yStr), Number(mStr) - 1, Number(dStr)).getDay();
+    const isWeekday = dow >= 1 && dow <= 5;
+
     for (const member of dbMembers) {
       const userRecords = records.filter(r => r.member_id === member.id);
       if (member.is_deleted && userRecords.length === 0) continue;
       
       const userAttendance = attendanceRecords.find(a => a.member_id === member.id);
-      const status = normalizeStatus(userAttendance?.status);
-      const rawStart = userAttendance?.start_time ? String(userAttendance.start_time).substring(0, 5) : '';
-      const rawEnd = userAttendance?.end_time ? String(userAttendance.end_time).substring(0, 5) : '';
-      const startTime = rawStart || (status === 'present' ? '09:30' : '');
-      const endTime = rawEnd || (status === 'present' ? '15:30' : '');
-      const breakMinutes = userAttendance?.break_minutes !== undefined && userAttendance.break_minutes !== null
-        ? Number(userAttendance.break_minutes)
-        : (status === 'present' ? 60 : 0);
-      const serviceHours = userAttendance?.service_hours !== undefined && userAttendance.service_hours !== null
-        ? Number(userAttendance.service_hours)
-        : (startTime && endTime ? computeActualWorkHours(startTime, endTime, breakMinutes) : 0);
-      const contactDate = userAttendance ? (userAttendance.contact_date || '') : '';
-      const isAbsenteeSupported = userAttendance ? Boolean(userAttendance.is_absentee_supported) : false;
-      const hasMeal = userAttendance ? Boolean(userAttendance.has_meal) : false;
-      const hasPickup = userAttendance ? Boolean(userAttendance.has_pickup) : false;
-      const hasDropoff = userAttendance ? Boolean(userAttendance.has_dropoff) : false;
-      const isVisitSupported = userAttendance ? Boolean(userAttendance.is_visit_supported) : false;
-      const isTrialUse = userAttendance ? Boolean(userAttendance.is_trial_use) : false;
-      const isOffsiteWork = userAttendance ? Boolean(userAttendance.is_offsite_work) : false;
-      const remarks = userAttendance ? (userAttendance.remarks || '') : '';
+
+      let status: string;
+      let startTime: string;
+      let endTime: string;
+      let breakMinutes: number;
+      let serviceHours: number;
+      let contactDate = '';
+      let isAbsenteeSupported = false;
+      let hasMeal = false;
+      let hasPickup = false;
+      let hasDropoff = false;
+      let isVisitSupported = false;
+      let isTrialUse = false;
+      let isOffsiteWork = false;
+      let remarks = '';
+
+      if (userAttendance) {
+        status = normalizeStatus(userAttendance.status);
+        const rawStart = userAttendance.start_time ? String(userAttendance.start_time).substring(0, 5) : '';
+        const rawEnd = userAttendance.end_time ? String(userAttendance.end_time).substring(0, 5) : '';
+        startTime = rawStart || (status === 'present' ? '09:30' : '');
+        endTime = rawEnd || (status === 'present' ? '15:30' : '');
+        breakMinutes = userAttendance.break_minutes !== undefined && userAttendance.break_minutes !== null
+          ? Number(userAttendance.break_minutes)
+          : (status === 'present' ? 60 : 0);
+        serviceHours = userAttendance.service_hours !== undefined && userAttendance.service_hours !== null
+          ? Number(userAttendance.service_hours)
+          : (startTime && endTime ? computeActualWorkHours(startTime, endTime, breakMinutes) : 0);
+        contactDate = userAttendance.contact_date || '';
+        isAbsenteeSupported = Boolean(userAttendance.is_absentee_supported);
+        hasMeal = Boolean(userAttendance.has_meal);
+        hasPickup = Boolean(userAttendance.has_pickup);
+        hasDropoff = Boolean(userAttendance.has_dropoff);
+        isVisitSupported = Boolean(userAttendance.is_visit_supported);
+        isTrialUse = Boolean(userAttendance.is_trial_use);
+        isOffsiteWork = Boolean(userAttendance.is_offsite_work);
+        remarks = userAttendance.remarks || '';
+      } else {
+        // デフォルト入力状態: 例外予定優先、次に基本予定
+        const exception = memberExceptionSchedules.find(e => e.member_id === member.id);
+        const basic = memberBasicSchedules.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
+
+        if (exception) {
+          const isScheduled = exception.is_scheduled ?? true;
+          status = isScheduled ? normalizeStatus(exception.status) : 'absent';
+          const rawStart = exception.start_time ? String(exception.start_time).substring(0, 5) : '';
+          const rawEnd = exception.end_time ? String(exception.end_time).substring(0, 5) : '';
+          startTime = status === 'present' ? (rawStart || '09:30') : '';
+          endTime = status === 'present' ? (rawEnd || '15:30') : '';
+          breakMinutes = status === 'present'
+            ? (exception.break_minutes !== undefined && exception.break_minutes !== null ? Number(exception.break_minutes) : 60)
+            : 0;
+          serviceHours = status === 'present'
+            ? ((exception.service_hours !== undefined && exception.service_hours !== null && Number(exception.service_hours) > 0)
+              ? Number(exception.service_hours)
+              : (startTime && endTime ? computeActualWorkHours(startTime, endTime, breakMinutes) : 0))
+            : 0;
+          hasMeal = status === 'present' ? Boolean(exception.has_meal) : false;
+          hasPickup = status === 'present' ? Boolean(exception.has_pickup) : false;
+          hasDropoff = status === 'present' ? Boolean(exception.has_dropoff) : false;
+          remarks = exception.remarks || '';
+        } else if (basic) {
+          const isScheduled = basic.is_scheduled ?? true;
+          status = isScheduled ? normalizeStatus(basic.status) : 'absent';
+          const rawStart = basic.start_time ? String(basic.start_time).substring(0, 5) : '';
+          const rawEnd = basic.end_time ? String(basic.end_time).substring(0, 5) : '';
+          startTime = status === 'present' ? (rawStart || '09:30') : '';
+          endTime = status === 'present' ? (rawEnd || '15:30') : '';
+          breakMinutes = status === 'present'
+            ? (basic.break_minutes !== undefined && basic.break_minutes !== null ? Number(basic.break_minutes) : 60)
+            : 0;
+          serviceHours = status === 'present'
+            ? ((basic.service_hours !== undefined && basic.service_hours !== null && Number(basic.service_hours) > 0)
+              ? Number(basic.service_hours)
+              : (startTime && endTime ? computeActualWorkHours(startTime, endTime, breakMinutes) : 0))
+            : 0;
+          hasMeal = status === 'present' ? Boolean(basic.has_meal) : false;
+          hasPickup = status === 'present' ? Boolean(basic.has_pickup) : false;
+          hasDropoff = status === 'present' ? Boolean(basic.has_dropoff) : false;
+          remarks = basic.remarks || '';
+        } else {
+          status = isWeekday ? 'present' : 'absent';
+          startTime = isWeekday ? '09:30' : '';
+          endTime = isWeekday ? '15:30' : '';
+          breakMinutes = isWeekday ? 60 : 0;
+          serviceHours = isWeekday ? 5.0 : 0;
+          hasMeal = false;
+          hasPickup = false;
+          hasDropoff = false;
+          remarks = '';
+        }
+      }
       const userCode = (member as any).code || '';
 
       const taskMap = new Map<string, DailyFlatRecord>();
@@ -509,7 +604,7 @@ export function useDailyWorkRecords(externalDate?: string) {
     });
 
     return finalRows;
-  }, [currentDate, dbMembers, dbProjects, records, attendanceRecords, confirmedDates]);
+  }, [currentDate, dbMembers, dbProjects, records, attendanceRecords, memberExceptionSchedules, memberBasicSchedules, confirmedDates]);
 
   const batchSaveDailyWorkRecords = async (drafts: DailyFlatRecord[], deletedIds: string[]) => {
     try {

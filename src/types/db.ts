@@ -291,6 +291,75 @@ export type OfficeRewardDetailTableItem = {
   updated_at?: string;
 };
 
+// スケジュール（基本予定・例外予定）
+export type StaffBasicScheduleTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  staff_id: string; // UUID
+  day_of_week: number; // 0: 日曜日 〜 6: 土曜日
+  is_work_day: boolean;
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes: number;
+  scheduled_hours?: number | null; // 自動算出
+  remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type StaffExceptionScheduleTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  staff_id: string; // UUID
+  target_date: string; // YYYY-MM-DD
+  is_work_day: boolean;
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes: number;
+  scheduled_hours?: number | null; // 自動算出
+  remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MemberBasicScheduleTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  member_id: string; // UUID
+  day_of_week: number; // 0: 日曜日 〜 6: 土曜日
+  is_scheduled: boolean;
+  status: string; // 'present' | 'absent' | 'offsite' | 'remote' 等
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes: number;
+  service_hours?: number | null; // 自動算出
+  has_meal: boolean;
+  has_pickup: boolean;
+  has_dropoff: boolean;
+  remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MemberExceptionScheduleTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  member_id: string; // UUID
+  target_date: string; // YYYY-MM-DD
+  is_scheduled: boolean;
+  status: string; // 'present' | 'absent' | 'offsite' | 'remote' 等
+  start_time?: string | null;
+  end_time?: string | null;
+  break_minutes: number;
+  service_hours?: number | null; // 自動算出
+  has_meal: boolean;
+  has_pickup: boolean;
+  has_dropoff: boolean;
+  remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 
 
 

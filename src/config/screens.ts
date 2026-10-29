@@ -97,6 +97,13 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'attendanceDay', label: PAGE_NAMES.ATTENDANCE_DAY },
     ],
   },
+  SCREEN_CALENDAR_DAILY_REPORT: {
+    screenName: PAGE_NAMES.SCREEN_CALENDAR_DAILY_REPORT,
+    tabs: [
+      { id: 'calendarDailyReportCalendar', label: PAGE_NAMES.TAB_CALENDAR },
+      { id: 'calendarDailyReportDay', label: PAGE_NAMES.TAB_DAILY_REPORT },
+    ],
+  },
   SCREEN_DAILY_REPORT: {
     screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
     tabs: [
@@ -145,6 +152,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 };
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
+  if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR_DAILY_REPORT;
   if (tabId === 'screenAttendance' || tabId === 'attendanceMonth' || tabId === 'attendanceDay') return SCREEN_CONFIGS.SCREEN_ATTENDANCE;
   if (tabId === 'screenDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenStaffDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;

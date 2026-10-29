@@ -49,6 +49,8 @@ const getTabCategory = (tabId: string): string => {
 
   // 3. レコード系
   const recordTabIds = [
+    'calendarDailyReportCalendar', // カレンダー・日報: カレンダー
+    'calendarDailyReportDay', // カレンダー・日報: 日報
     'attendanceMonth', // 勤怠・出欠: 月
     'attendanceDay', // 勤怠・出欠: 日
     'skillEvaluation', // 利用者: スキル評価

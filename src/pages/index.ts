@@ -58,3 +58,6 @@ export * from './MemberSchedulePage';
 export * from './AttendanceMonthPage';
 export * from './AttendanceDayPage';
 export * from './ScreenAttendancePage';
+export * from './CalendarDailyReportCalendarPage';
+export * from './CalendarDailyReportDayPage';
+export * from './ScreenCalendarDailyReportPage';

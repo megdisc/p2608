@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, Button, Input, Select, type Column } from '../components';
+import { DataPage, Input, Select, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice, useAlert } from '../contexts';
 import { getCurrentJSTDateOnly } from '../utils';
@@ -349,59 +349,6 @@ export function AttendanceDayPage({
     fetchData();
   }, [fetchData]);
 
-  // 単一行の例外登録処理
-  const handleSaveSingleRow = useCallback(
-    async (row: AttendanceDayRow) => {
-      if (!targetOfficeId || !currentDate) return;
-
-      try {
-        if (row.user_type === 'staff') {
-          const staffUpdate: Partial<StaffExceptionScheduleTableItem> = {
-            office_id: targetOfficeId,
-            staff_id: row.person_id,
-            target_date: currentDate,
-            is_work_day: row.is_active,
-            start_time: formatTimeForDb(row.start_time),
-            end_time: formatTimeForDb(row.end_time),
-            break_minutes: Number(row.break_minutes) || 0,
-            remarks: row.remarks || null,
-          };
-          const { error } = await supabase
-            .from('staff_exception_schedules')
-            .upsert([staffUpdate], { onConflict: 'office_id,staff_id,target_date' });
-          if (error) throw error;
-        } else {
-          const memberUpdate: Partial<MemberExceptionScheduleTableItem> = {
-            office_id: targetOfficeId,
-            member_id: row.person_id,
-            target_date: currentDate,
-            is_scheduled: row.is_active,
-            status: row.is_active ? (row.status || 'present') : 'absent',
-            start_time: formatTimeForDb(row.start_time),
-            end_time: formatTimeForDb(row.end_time),
-            break_minutes: Number(row.break_minutes) || 0,
-            has_meal: row.has_meal ?? false,
-            has_pickup: row.has_pickup ?? false,
-            has_dropoff: row.has_dropoff ?? false,
-            remarks: row.remarks || null,
-          };
-          const { error } = await supabase
-            .from('member_exception_schedules')
-            .upsert([memberUpdate], { onConflict: 'office_id,member_id,target_date' });
-          if (error) throw error;
-        }
-
-        showAlert(`${row.name} の例外予定を登録しました。`, 'success');
-        await fetchData();
-      } catch (err: unknown) {
-        console.error('Error saving single exception schedule:', err);
-        const errMsg = err instanceof Error ? err.message : 'エラー';
-        showAlert(`保存に失敗しました: ${errMsg}`, 'error');
-      }
-    },
-    [targetOfficeId, currentDate, showAlert, fetchData]
-  );
-
   // 一括保存処理（項目が変更された行のみを例外予定テーブルへ登録）
   const handleBatchSave = useCallback(
     async (drafts: AttendanceDayRow[]) => {
@@ -469,41 +416,6 @@ export function AttendanceDayPage({
         console.error('Error saving exception schedules:', err);
         const errMsg = err instanceof Error ? err.message : 'エラー';
         showAlert(`保存に失敗しました: ${errMsg}`, 'error');
-      }
-    },
-    [targetOfficeId, currentDate, showAlert, fetchData]
-  );
-
-  // 例外解除処理（DBの例外レコードを削除し基本予定に戻す）
-  const handleRevertException = useCallback(
-    async (row: AttendanceDayRow) => {
-      if (!row.has_exception_record) return;
-
-      try {
-        if (row.user_type === 'staff') {
-          const { error } = await supabase
-            .from('staff_exception_schedules')
-            .delete()
-            .eq('office_id', targetOfficeId)
-            .eq('staff_id', row.person_id)
-            .eq('target_date', currentDate);
-          if (error) throw error;
-        } else {
-          const { error } = await supabase
-            .from('member_exception_schedules')
-            .delete()
-            .eq('office_id', targetOfficeId)
-            .eq('member_id', row.person_id)
-            .eq('target_date', currentDate);
-          if (error) throw error;
-        }
-
-        showAlert(`${row.name} の例外設定を解除し、基本予定に戻しました。`, 'success');
-        await fetchData();
-      } catch (err: unknown) {
-        console.error('Error reverting exception schedule:', err);
-        const errMsg = err instanceof Error ? err.message : 'エラー';
-        showAlert(`例外の解除に失敗しました: ${errMsg}`, 'error');
       }
     },
     [targetOfficeId, currentDate, showAlert, fetchData]
@@ -879,46 +791,8 @@ export function AttendanceDayPage({
           />
         ),
       },
-      {
-        key: 'action',
-        header: '操作',
-        sortable: false,
-        style: { width: '110px', textAlign: 'center' },
-        render: item => {
-          const changed = isRowChanged(item);
-          if (changed) {
-            return (
-              <Button
-                variant="primary"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleSaveSingleRow(item);
-                }}
-                title="この行の変更を例外予定として登録します"
-              >
-                登録
-              </Button>
-            );
-          }
-          if (item.has_exception_record) {
-            return (
-              <Button
-                variant="danger"
-                onClick={e => {
-                  e.stopPropagation();
-                  handleRevertException(item);
-                }}
-                title="例外レコードを削除し、基本予定に戻します"
-              >
-                リセット
-              </Button>
-            );
-          }
-          return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
-        },
-      },
     ],
-    [handleSaveSingleRow, handleRevertException]
+    []
   );
 
   const headerRight = (

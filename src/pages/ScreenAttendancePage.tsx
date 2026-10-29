@@ -12,10 +12,10 @@ export function ScreenAttendancePage() {
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_ATTENDANCE;
   const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_ATTENDANCE;
 
-  // 画面表示時のデフォルト表示タブは月タブとする
+  // 画面表示時のデフォルト表示タブは日タブとする
   useEffect(() => {
     if (navContext.activeTab === 'screenAttendance') {
-      navContext.setActiveTab('attendanceMonth');
+      navContext.setActiveTab('attendanceDay');
     }
   }, [navContext]);
 
@@ -48,23 +48,23 @@ export function ScreenAttendancePage() {
           {screenConfig && (
             <Tabs
               tabs={screenConfig.tabs}
-              activeTab={navContext.activeTab === 'attendanceDay' ? 'attendanceDay' : 'attendanceMonth'}
+              activeTab={navContext.activeTab === 'attendanceMonth' ? 'attendanceMonth' : 'attendanceDay'}
               onChange={navContext.setActiveTab}
             />
           )}
         </div>
       </div>
 
-      {navContext.activeTab === 'attendanceDay' ? (
-        <AttendanceDayPage
-          currentDate={currentDate}
-          onDateChange={handleDateChange}
-        />
-      ) : (
+      {navContext.activeTab === 'attendanceMonth' ? (
         <AttendanceMonthPage
           currentMonth={currentMonth}
           onMonthChange={setCurrentMonth}
           onSelectDate={handleSelectDateFromMonth}
+        />
+      ) : (
+        <AttendanceDayPage
+          currentDate={currentDate}
+          onDateChange={handleDateChange}
         />
       )}
     </>

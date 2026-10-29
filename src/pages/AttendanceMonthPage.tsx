@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, Button, type Column } from '../components';
+import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
@@ -18,8 +18,6 @@ export type AttendanceMonthSummaryRow = {
   meal_count: number;
   pickup_count: number;
   dropoff_count: number;
-  exception_count: number;
-  remarks: string;
 };
 
 export interface AttendanceMonthPageProps {
@@ -134,19 +132,15 @@ export function AttendanceMonthPage({
 
         // Staff calculations
         let workingStaffCount = 0;
-        let dayStaffExceptions = 0;
-        const dayStaffRemarks: string[] = [];
 
         targetStaffs.forEach(staff => {
           const ex = staffExceptions.find(e => e.staff_id === staff.id && e.target_date === dateStr);
           if (ex) {
-            dayStaffExceptions++;
-            if (ex.is_work_day) workingStaffCount++;
-            if (ex.remarks) dayStaffRemarks.push(`${staff.name}: ${ex.remarks}`);
+            if (ex.is_work_day ?? true) workingStaffCount++;
           } else {
             const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
             if (basic) {
-              if (basic.is_work_day) workingStaffCount++;
+              if (basic.is_work_day ?? true) workingStaffCount++;
             } else {
               // Default weekday work
               if (dow >= 1 && dow <= 5) workingStaffCount++;
@@ -159,25 +153,29 @@ export function AttendanceMonthPage({
         let mealCount = 0;
         let pickupCount = 0;
         let dropoffCount = 0;
-        let dayMemberExceptions = 0;
-        const dayMemberRemarks: string[] = [];
 
         targetMembers.forEach(member => {
           const ex = memberExceptions.find(e => e.member_id === member.id && e.target_date === dateStr);
           if (ex) {
-            dayMemberExceptions++;
-            if (ex.is_scheduled && ex.status !== 'absent') attendingMemberCount++;
-            if (ex.has_meal && ex.is_scheduled && ex.status !== 'absent') mealCount++;
-            if (ex.has_pickup && ex.is_scheduled && ex.status !== 'absent') pickupCount++;
-            if (ex.has_dropoff && ex.is_scheduled && ex.status !== 'absent') dropoffCount++;
-            if (ex.remarks) dayMemberRemarks.push(`${member.name}: ${ex.remarks}`);
+            const isActive = ex.is_scheduled ?? true;
+            const isAttending = isActive && ex.status !== 'absent';
+            if (isAttending) {
+              attendingMemberCount++;
+              if (ex.has_meal) mealCount++;
+              if (ex.has_pickup) pickupCount++;
+              if (ex.has_dropoff) dropoffCount++;
+            }
           } else {
             const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
             if (basic) {
-              if (basic.is_scheduled && basic.status !== 'absent') attendingMemberCount++;
-              if (basic.has_meal && basic.is_scheduled && basic.status !== 'absent') mealCount++;
-              if (basic.has_pickup && basic.is_scheduled && basic.status !== 'absent') pickupCount++;
-              if (basic.has_dropoff && basic.is_scheduled && basic.status !== 'absent') dropoffCount++;
+              const isActive = basic.is_scheduled ?? true;
+              const isAttending = isActive && basic.status !== 'absent';
+              if (isAttending) {
+                attendingMemberCount++;
+                if (basic.has_meal ?? true) mealCount++;
+                if (basic.has_pickup) pickupCount++;
+                if (basic.has_dropoff) dropoffCount++;
+              }
             } else {
               if (dow >= 1 && dow <= 5) {
                 attendingMemberCount++;
@@ -186,9 +184,6 @@ export function AttendanceMonthPage({
             }
           }
         });
-
-        const totalExceptions = dayStaffExceptions + dayMemberExceptions;
-        const combinedRemarks = [...dayStaffRemarks, ...dayMemberRemarks].join(' / ');
 
         let dayColor: string | undefined;
         if (dow === 0) dayColor = '#ef4444'; // 日
@@ -208,8 +203,6 @@ export function AttendanceMonthPage({
           meal_count: mealCount,
           pickup_count: pickupCount,
           dropoff_count: dropoffCount,
-          exception_count: totalExceptions,
-          remarks: combinedRemarks,
         });
       }
 
@@ -318,60 +311,8 @@ export function AttendanceMonthPage({
           );
         },
       },
-      {
-        key: 'exception_count',
-        header: '例外予定',
-        sortable: false,
-        style: { width: '130px', textAlign: 'center' },
-        render: item => {
-          if (item.exception_count === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>基本予定</span>;
-          }
-          return (
-            <span
-              style={{
-                backgroundColor: 'var(--color-bg-input-highlight)',
-                color: 'var(--palette-yellow-700)',
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-full)',
-                fontWeight: 'bold',
-              }}
-            >
-              例外 {item.exception_count}件
-            </span>
-          );
-        },
-      },
-      {
-        key: 'remarks',
-        header: '備考・特記事項',
-        sortable: false,
-        style: { minWidth: '180px' },
-        render: item => (
-          <span style={{ color: item.remarks ? 'inherit' : 'var(--color-text-muted)' }}>
-            {item.remarks || '-'}
-          </span>
-        ),
-      },
-      {
-        key: 'action',
-        header: '操作',
-        sortable: false,
-        style: { width: '110px', textAlign: 'center' },
-        render: item => (
-          <Button
-            variant="secondary"
-            onClick={e => {
-              e.stopPropagation();
-              onSelectDate(item.date);
-            }}
-          >
-            日詳細へ →
-          </Button>
-        ),
-      },
     ],
-    [todayStr, onSelectDate]
+    [todayStr]
   );
 
   const handleRowClick = useCallback(

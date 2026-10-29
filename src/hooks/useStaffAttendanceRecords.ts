@@ -153,6 +153,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             break_minutes: breakMin,
             assigned_role: assignedRole,
             actual_work_hours: actualHours,
+            remarks: att.remarks || '',
             is_saved: true,
           };
         } else {
@@ -164,8 +165,10 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           let endTime = '';
           let breakMin = 60;
           let actualHours = 0;
+          let remarks = '';
 
           if (exc) {
+            remarks = exc.remarks || '';
             const isWorkDay = exc.is_work_day ?? true;
             if (isWorkDay) {
               startTime = exc.start_time ? String(exc.start_time).substring(0, 5) : '08:30';
@@ -181,6 +184,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
               actualHours = 0;
             }
           } else if (basic) {
+            remarks = basic.remarks || '';
             const isWorkDay = basic.is_work_day ?? true;
             if (isWorkDay) {
               startTime = basic.start_time ? String(basic.start_time).substring(0, 5) : '08:30';
@@ -201,6 +205,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             endTime = '';
             breakMin = 60;
             actualHours = 0;
+            remarks = '';
           }
 
           return {
@@ -218,6 +223,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             break_minutes: breakMin,
             assigned_role: defaultRole,
             actual_work_hours: actualHours,
+            remarks: remarks,
             is_saved: false,
           };
         }
@@ -269,6 +275,7 @@ export function useStaffAttendanceRecords(externalDate?: string) {
             break_minutes: Number(d.break_minutes) || 0,
             assigned_role: d.assigned_role || null,
             actual_work_hours: finalActual,
+            remarks: d.remarks && d.remarks.trim() !== '' ? d.remarks.trim() : null,
           };
           if (isReal) {
             payload.id = d.id;

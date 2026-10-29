@@ -168,6 +168,32 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       },
       style: { width: '120px', textAlign: 'center' },
     },
+    {
+      key: 'remarks',
+      header: '備考・特記事項',
+      sortable: false,
+      editable: () => !isConfirmed,
+      inputType: 'text',
+      render: (item, draftData, updateData) => (
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Input
+            type="text"
+            disabled={isConfirmed}
+            value={item.remarks || ''}
+            placeholder="特記事項・理由等"
+            onChange={(e) => {
+              const val = e.target.value;
+              const next = draftData.map(d =>
+                d.id === item.id ? { ...d, remarks: val } : d
+              );
+              updateData(next);
+            }}
+            style={{ width: '100%', minWidth: '140px' }}
+          />
+        </div>
+      ),
+      style: { minWidth: '150px' },
+    },
   ];
 
   const handleBatchSave = async (drafts: StaffAttendanceRecordRow[], deletedIds: string[]) => {

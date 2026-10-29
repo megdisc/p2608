@@ -162,7 +162,7 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
         endTime: staff.end_time || '',
         breakMinutes: staff.break_minutes ?? 60,
         hours: staff.actual_work_hours || 0,
-        remarks: staff.assigned_role || '',
+        remarks: staff.remarks || '',
       });
     });
 
@@ -824,8 +824,9 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
           start_time: s.startTime || '',
           end_time: s.endTime || '',
           break_minutes: s.breakMinutes ?? 60,
-          assigned_role: s.remarks || orig?.assigned_role || '',
+          assigned_role: orig?.assigned_role || '',
           actual_work_hours: s.hours || 0,
+          remarks: s.remarks || '',
           is_saved: orig?.is_saved || false,
         });
       });

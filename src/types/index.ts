@@ -435,6 +435,7 @@ export type StaffAttendanceRecordRow = {
   break_minutes: number;
   assigned_role: string;
   actual_work_hours: number;
+  remarks?: string;
   is_saved: boolean;
 };
 

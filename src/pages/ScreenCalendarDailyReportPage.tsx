@@ -14,10 +14,10 @@ export function ScreenCalendarDailyReportPage() {
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_CALENDAR_DAILY_REPORT;
   const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_CALENDAR_DAILY_REPORT || 'カレンダー・日報';
 
-  // 画面表示時のデフォルト表示タブはカレンダータブとする
+  // 画面表示時のデフォルト表示タブは日報タブとする
   useEffect(() => {
     if (navContext.activeTab === 'screenCalendarDailyReport') {
-      navContext.setActiveTab('calendarDailyReportCalendar');
+      navContext.setActiveTab('calendarDailyReportDay');
     }
   }, [navContext]);
 
@@ -71,26 +71,26 @@ export function ScreenCalendarDailyReportPage() {
           {screenConfig && (
             <Tabs
               tabs={screenConfig.tabs}
-              activeTab={navContext.activeTab === 'calendarDailyReportDay' ? 'calendarDailyReportDay' : 'calendarDailyReportCalendar'}
+              activeTab={navContext.activeTab === 'calendarDailyReportCalendar' ? 'calendarDailyReportCalendar' : 'calendarDailyReportDay'}
               onChange={navContext.setActiveTab}
             />
           )}
         </div>
       </div>
 
-      {navContext.activeTab === 'calendarDailyReportDay' ? (
+      {navContext.activeTab === 'calendarDailyReportCalendar' ? (
+        <CalendarDailyReportCalendarPage
+          currentMonth={currentMonth}
+          onMonthChange={setCurrentMonth}
+          onSelectDate={handleSelectDateFromCalendar}
+        />
+      ) : (
         <CalendarDailyReportDayPage
           currentDate={currentDate}
           onDateChange={handleDateChange}
           isConfirmed={isConfirmed}
           onConfirm={handleConfirm}
           onUnconfirm={handleUnconfirm}
-        />
-      ) : (
-        <CalendarDailyReportCalendarPage
-          currentMonth={currentMonth}
-          onMonthChange={setCurrentMonth}
-          onSelectDate={handleSelectDateFromCalendar}
         />
       )}
     </>

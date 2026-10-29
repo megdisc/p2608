@@ -236,24 +236,19 @@ export function AttendanceMonthPage({
         render: item => {
           const isToday = item.date === todayStr;
           return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  fontWeight: isToday ? 'bold' : '500',
-                  color: isToday ? 'var(--color-primary)' : 'inherit',
-                }}
-              >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
+              <span style={{ fontWeight: isToday ? 'bold' : 'normal' }}>
                 {item.date}
               </span>
               {isToday && (
                 <span
                   style={{
-                    backgroundColor: '#dbeafe',
-                    color: '#1d4ed8',
-                    fontSize: '11px',
+                    backgroundColor: 'var(--palette-blue-300)',
+                    color: 'var(--palette-blue-700)',
+                    fontSize: 'var(--text-micro)',
                     fontWeight: 'bold',
                     padding: '1px 6px',
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-full)',
                   }}
                 >
                   今日
@@ -278,10 +273,10 @@ export function AttendanceMonthPage({
         key: 'staff_working_count',
         header: '職員出勤予定',
         sortable: false,
-        style: { width: '120px', textAlign: 'center' },
+        style: { width: '130px', textAlign: 'center' },
         render: item => (
-          <span style={{ fontWeight: '500' }}>
-            {item.staff_working_count} <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>/ {item.total_staff}名</span>
+          <span>
+            {item.staff_working_count} <span style={{ color: 'var(--color-text-muted)' }}>/ {item.total_staff}名</span>
           </span>
         ),
       },
@@ -289,10 +284,10 @@ export function AttendanceMonthPage({
         key: 'member_attending_count',
         header: '利用者通所予定',
         sortable: false,
-        style: { width: '130px', textAlign: 'center' },
+        style: { width: '140px', textAlign: 'center' },
         render: item => (
-          <span style={{ fontWeight: '500' }}>
-            {item.member_attending_count} <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>/ {item.total_member}名</span>
+          <span>
+            {item.member_attending_count} <span style={{ color: 'var(--color-text-muted)' }}>/ {item.total_member}名</span>
           </span>
         ),
       },
@@ -311,14 +306,14 @@ export function AttendanceMonthPage({
         key: 'transport',
         header: '送迎予定（往 / 復）',
         sortable: false,
-        style: { width: '150px', textAlign: 'center' },
+        style: { width: '160px', textAlign: 'center' },
         render: item => {
           if (item.pickup_count === 0 && item.dropoff_count === 0) {
             return <span>-</span>;
           }
           return (
-            <span style={{ fontSize: '13px' }}>
-              往: <strong style={{ color: 'var(--color-primary)' }}>{item.pickup_count}</strong>名 / 復: <strong style={{ color: 'var(--color-primary)' }}>{item.dropoff_count}</strong>名
+            <span>
+              往: <strong>{item.pickup_count}</strong>名 / 復: <strong>{item.dropoff_count}</strong>名
             </span>
           );
         },
@@ -330,18 +325,16 @@ export function AttendanceMonthPage({
         style: { width: '130px', textAlign: 'center' },
         render: item => {
           if (item.exception_count === 0) {
-            return <span style={{ color: 'var(--color-text-muted)', fontSize: '13px' }}>基本予定</span>;
+            return <span style={{ color: 'var(--color-text-muted)' }}>基本予定</span>;
           }
           return (
             <span
               style={{
-                backgroundColor: '#fef3c7',
-                color: '#92400e',
+                backgroundColor: 'var(--color-bg-input-highlight)',
+                color: 'var(--palette-yellow-700)',
                 padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
+                borderRadius: 'var(--radius-full)',
                 fontWeight: 'bold',
-                display: 'inline-block',
               }}
             >
               例外 {item.exception_count}件
@@ -355,7 +348,7 @@ export function AttendanceMonthPage({
         sortable: false,
         style: { minWidth: '180px' },
         render: item => (
-          <span style={{ fontSize: '13px', color: item.remarks ? 'inherit' : 'var(--color-text-muted)' }}>
+          <span style={{ color: item.remarks ? 'inherit' : 'var(--color-text-muted)' }}>
             {item.remarks || '-'}
           </span>
         ),
@@ -372,7 +365,6 @@ export function AttendanceMonthPage({
               e.stopPropagation();
               onSelectDate(item.date);
             }}
-            style={{ fontSize: '12px', padding: '3px 10px' }}
           >
             日詳細へ →
           </Button>
@@ -389,7 +381,7 @@ export function AttendanceMonthPage({
     [onSelectDate]
   );
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <DataPage

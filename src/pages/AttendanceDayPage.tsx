@@ -547,40 +547,9 @@ export function AttendanceDayPage({
         header: '識別',
         sortable: true,
         style: { width: '85px', textAlign: 'center' },
-        render: item => {
-          if (item.user_type === 'staff') {
-            return (
-              <span
-                style={{
-                  backgroundColor: '#eff6ff',
-                  color: '#1d4ed8',
-                  border: '1px solid #bfdbfe',
-                  padding: '2px 8px',
-                  borderRadius: '12px',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                }}
-              >
-                職員
-              </span>
-            );
-          }
-          return (
-            <span
-              style={{
-                backgroundColor: '#ecfdf5',
-                color: '#047857',
-                border: '1px solid #a7f3d0',
-                padding: '2px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-              }}
-            >
-              利用者
-            </span>
-          );
-        },
+        render: item => (
+          <span>{item.user_type === 'staff' ? '職員' : '利用者'}</span>
+        ),
       },
       {
         key: 'code',
@@ -595,7 +564,7 @@ export function AttendanceDayPage({
         sortable: true,
         sortKey: 'yomigana',
         style: { width: '130px' },
-        render: item => <span style={{ fontWeight: '500' }}>{item.name}</span>,
+        render: item => item.name,
       },
       {
         key: 'is_active',
@@ -603,9 +572,9 @@ export function AttendanceDayPage({
         sortable: false,
         editable: true,
         inputType: 'text',
-        style: { width: '100px', textAlign: 'center' },
+        style: { width: '110px', textAlign: 'center' },
         render: (item, draftData, updateData) => (
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', cursor: 'pointer' }}>
             <Input
               type="checkbox"
               checked={item.is_active}
@@ -629,7 +598,7 @@ export function AttendanceDayPage({
                 );
               }}
             />
-            <span style={{ fontSize: '13px', fontWeight: item.is_active ? 'bold' : 'normal', color: item.is_active ? 'inherit' : 'var(--color-text-muted)' }}>
+            <span style={{ fontWeight: item.is_active ? 'var(--weight-heading)' : 'normal', color: item.is_active ? 'inherit' : 'var(--color-text-muted)' }}>
               {item.user_type === 'staff' ? (item.is_active ? '出勤' : '休み') : (item.is_active ? '利用' : '休み')}
             </span>
           </label>
@@ -641,7 +610,7 @@ export function AttendanceDayPage({
         sortable: false,
         editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
-        style: { width: '115px', textAlign: 'center' },
+        style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (item.user_type === 'staff') {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
@@ -671,7 +640,7 @@ export function AttendanceDayPage({
                   )
                 );
               }}
-              style={{ fontSize: '12px', padding: '2px 4px' }}
+              style={{ width: '95px' }}
             />
           );
         },
@@ -682,7 +651,7 @@ export function AttendanceDayPage({
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
-        style: { width: '105px', textAlign: 'center' },
+        style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
@@ -700,7 +669,7 @@ export function AttendanceDayPage({
                   )
                 );
               }}
-              style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
+              style={{ width: '105px', textAlign: 'center' }}
             />
           );
         },
@@ -711,7 +680,7 @@ export function AttendanceDayPage({
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
-        style: { width: '105px', textAlign: 'center' },
+        style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
@@ -729,7 +698,7 @@ export function AttendanceDayPage({
                   )
                 );
               }}
-              style={{ width: '95px', textAlign: 'center', padding: '2px 4px' }}
+              style={{ width: '105px', textAlign: 'center' }}
             />
           );
         },
@@ -740,7 +709,7 @@ export function AttendanceDayPage({
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'number',
-        style: { width: '80px', textAlign: 'right' },
+        style: { width: '90px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
@@ -761,7 +730,7 @@ export function AttendanceDayPage({
                   )
                 );
               }}
-              style={{ width: '65px', textAlign: 'right', padding: '2px 4px' }}
+              style={{ width: '75px', textAlign: 'center' }}
             />
           );
         },
@@ -771,10 +740,10 @@ export function AttendanceDayPage({
         header: '時間(h)',
         sortable: false,
         editable: false,
-        style: { width: '75px', textAlign: 'right' },
+        style: { width: '85px', textAlign: 'right' },
         render: item => {
           if (!item.is_active) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
-          return <span style={{ fontWeight: 'bold' }}>{Number(item.calculated_hours || 0).toFixed(2)}</span>;
+          return Number(item.calculated_hours || 0).toFixed(2);
         },
       },
       {
@@ -857,13 +826,11 @@ export function AttendanceDayPage({
             return (
               <span
                 style={{
-                  backgroundColor: '#fef08a',
-                  color: '#854d0e',
-                  border: '1px solid #facc15',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
+                  backgroundColor: 'var(--color-bg-input-highlight)',
+                  color: 'var(--palette-yellow-700)',
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  fontWeight: 'var(--weight-heading)',
                 }}
               >
                 変更あり
@@ -874,13 +841,11 @@ export function AttendanceDayPage({
             return (
               <span
                 style={{
-                  backgroundColor: '#fef3c7',
-                  color: '#92400e',
-                  border: '1px solid #fde68a',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
+                  backgroundColor: 'var(--palette-blue-300)',
+                  color: 'var(--palette-blue-700)',
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-full)',
+                  fontWeight: 'var(--weight-heading)',
                 }}
               >
                 例外設定済
@@ -888,15 +853,7 @@ export function AttendanceDayPage({
             );
           }
           return (
-            <span
-              style={{
-                backgroundColor: '#f3f4f6',
-                color: '#6b7280',
-                padding: '2px 6px',
-                borderRadius: '10px',
-                fontSize: '11px',
-              }}
-            >
+            <span style={{ color: 'var(--color-text-muted)' }}>
               基本予定
             </span>
           );
@@ -918,7 +875,7 @@ export function AttendanceDayPage({
               const val = e.target.value;
               updateData(draftData.map(d => (d.id === item.id ? { ...d, remarks: val } : d)));
             }}
-            style={{ width: '100%', padding: '2px 6px', fontSize: '13px' }}
+            style={{ width: '100%' }}
           />
         ),
       },
@@ -937,7 +894,6 @@ export function AttendanceDayPage({
                   e.stopPropagation();
                   handleSaveSingleRow(item);
                 }}
-                style={{ fontSize: '11px', padding: '2px 8px' }}
                 title="この行の変更を例外予定として登録します"
               >
                 登録
@@ -947,19 +903,18 @@ export function AttendanceDayPage({
           if (item.has_exception_record) {
             return (
               <Button
-                variant="secondary"
+                variant="danger"
                 onClick={e => {
                   e.stopPropagation();
                   handleRevertException(item);
                 }}
-                style={{ fontSize: '11px', padding: '2px 6px', color: '#b91c1c' }}
                 title="例外レコードを削除し、基本予定に戻します"
               >
                 リセット
               </Button>
             );
           }
-          return <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>-</span>;
+          return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
         },
       },
     ],
@@ -967,21 +922,22 @@ export function AttendanceDayPage({
   );
 
   const headerRight = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
       {/* Quick filter pills */}
-      <div style={{ display: 'inline-flex', backgroundColor: 'var(--color-bg-secondary)', borderRadius: '20px', padding: '2px' }}>
+      <div style={{ display: 'inline-flex', backgroundColor: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-full)', padding: '2px', border: '1px solid var(--color-border)' }}>
         <button
           type="button"
           onClick={() => setFilterType('all')}
           style={{
             border: 'none',
-            background: filterType === 'all' ? 'var(--color-primary)' : 'transparent',
-            color: filterType === 'all' ? '#fff' : 'inherit',
-            fontWeight: filterType === 'all' ? 'bold' : 'normal',
-            padding: '4px 12px',
-            borderRadius: '16px',
-            fontSize: '12px',
+            background: filterType === 'all' ? 'var(--color-bg-inverse)' : 'transparent',
+            color: filterType === 'all' ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+            fontWeight: filterType === 'all' ? 'var(--weight-heading)' : 'normal',
+            padding: 'var(--space-1) var(--space-3)',
+            borderRadius: 'var(--radius-full)',
+            fontSize: 'var(--text-body)',
             cursor: 'pointer',
+            transition: 'all 0.2s',
           }}
         >
           全員 ({data.length})
@@ -991,13 +947,14 @@ export function AttendanceDayPage({
           onClick={() => setFilterType('staff')}
           style={{
             border: 'none',
-            background: filterType === 'staff' ? 'var(--color-primary)' : 'transparent',
-            color: filterType === 'staff' ? '#fff' : 'inherit',
-            fontWeight: filterType === 'staff' ? 'bold' : 'normal',
-            padding: '4px 12px',
-            borderRadius: '16px',
-            fontSize: '12px',
+            background: filterType === 'staff' ? 'var(--color-bg-inverse)' : 'transparent',
+            color: filterType === 'staff' ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+            fontWeight: filterType === 'staff' ? 'var(--weight-heading)' : 'normal',
+            padding: 'var(--space-1) var(--space-3)',
+            borderRadius: 'var(--radius-full)',
+            fontSize: 'var(--text-body)',
             cursor: 'pointer',
+            transition: 'all 0.2s',
           }}
         >
           職員 ({stats.totalStaff})
@@ -1007,13 +964,14 @@ export function AttendanceDayPage({
           onClick={() => setFilterType('member')}
           style={{
             border: 'none',
-            background: filterType === 'member' ? 'var(--color-primary)' : 'transparent',
-            color: filterType === 'member' ? '#fff' : 'inherit',
-            fontWeight: filterType === 'member' ? 'bold' : 'normal',
-            padding: '4px 12px',
-            borderRadius: '16px',
-            fontSize: '12px',
+            background: filterType === 'member' ? 'var(--color-bg-inverse)' : 'transparent',
+            color: filterType === 'member' ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+            fontWeight: filterType === 'member' ? 'var(--weight-heading)' : 'normal',
+            padding: 'var(--space-1) var(--space-3)',
+            borderRadius: 'var(--radius-full)',
+            fontSize: 'var(--text-body)',
             cursor: 'pointer',
+            transition: 'all 0.2s',
           }}
         >
           利用者 ({stats.totalMember})
@@ -1021,24 +979,24 @@ export function AttendanceDayPage({
       </div>
 
       {/* Summary indicators */}
-      <div style={{ display: 'flex', gap: '12px', fontSize: '13px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center', fontSize: 'var(--text-body)' }}>
         <span style={{ color: 'var(--color-text-muted)' }}>
-          出勤職員: <strong>{stats.workingStaff}</strong> / {stats.totalStaff}名
+          出勤職員: <strong style={{ color: 'var(--color-text-main)' }}>{stats.workingStaff}</strong> / {stats.totalStaff}名
         </span>
         <span style={{ color: 'var(--color-text-muted)' }}>
-          通所利用者: <strong>{stats.attendingMember}</strong> / {stats.totalMember}名
+          通所利用者: <strong style={{ color: 'var(--color-text-main)' }}>{stats.attendingMember}</strong> / {stats.totalMember}名
         </span>
         <span style={{ color: 'var(--color-text-muted)' }}>
-          昼食: <strong>{stats.mealCount}</strong>食
+          昼食: <strong style={{ color: 'var(--color-text-main)' }}>{stats.mealCount}</strong>食
         </span>
         <span style={{ color: 'var(--color-text-muted)' }}>
-          送迎: 往<strong>{stats.pickupCount}</strong> / 復<strong>{stats.dropoffCount}</strong>名
+          送迎: 往<strong style={{ color: 'var(--color-text-main)' }}>{stats.pickupCount}</strong> / 復<strong style={{ color: 'var(--color-text-main)' }}>{stats.dropoffCount}</strong>名
         </span>
       </div>
     </div>
   );
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
 
   return (
     <DataPage

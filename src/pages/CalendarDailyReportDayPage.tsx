@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { DataPage, Input, Select, DateInput, type Column } from '../components';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import {
   useStaffAttendanceRecords,
   useDailyWorkRecords,
@@ -21,6 +21,7 @@ export interface CalendarDailyReportDayPageProps {
 
 export type UnifiedDailyReportRow = {
   id: string; // `staff-${staff_id}` or `member-${member_id}-${index}`
+  date: string; // 日付 (DataTable singleDateFilter 用)
   userType: 'staff' | 'member';
   personId: string; // staff_id or userId
   userCode: string;
@@ -58,6 +59,7 @@ export type UnifiedDailyReportRow = {
 };
 
 export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProps = {}) {
+  const { selectedOfficeId } = useOffice();
   const { showAlert } = useAlert();
   const [filterType, setFilterType] = useState<'all' | 'staff' | 'member'>('all');
 
@@ -103,16 +105,16 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
   );
 
   useEffect(() => {
-    fetchMasters().catch(() => {
+    fetchMasters(selectedOfficeId).catch(() => {
       showAlert('マスタデータ取得に失敗しました', 'error');
     });
-  }, [fetchMasters, showAlert]);
+  }, [fetchMasters, selectedOfficeId, showAlert]);
 
   useEffect(() => {
-    fetchMemberRecords(currentDate).catch(() => {
+    fetchMemberRecords(currentDate, selectedOfficeId).catch(() => {
       showAlert('利用記録の取得に失敗しました', 'error');
     });
-  }, [currentDate, fetchMemberRecords, showAlert]);
+  }, [currentDate, selectedOfficeId, fetchMemberRecords, showAlert]);
 
   const handleConfirm = useCallback(async () => {
     if (props.onConfirm) {
@@ -147,6 +149,7 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
     staffRecords.forEach(staff => {
       list.push({
         id: `staff-${staff.staff_id}`,
+        date: currentDate,
         userType: 'staff',
         personId: staff.staff_id,
         userCode: staff.staff_code || '',
@@ -168,13 +171,14 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
       const dbMem = dbMembers.find(m => m.id === member.userId);
       list.push({
         id: member.id,
+        date: currentDate,
         userType: 'member',
         personId: member.userId,
         userCode: member.userCode || dbMem?.code || '',
-        userName: dbMem?.name || member.userId,
+        userName: member.userName || dbMem?.name || member.userId,
         userYomigana: member.userYomigana || dbMem?.yomigana || '',
-        isFirstInUser: member.isFirstInUser,
-        isLastInUser: member.isLastInUser,
+        isFirstInUser: member.isFirstInUser ?? true,
+        isLastInUser: member.isLastInUser ?? true,
         isFirstInProject: member.isFirstInProject,
         isLastInProject: member.isLastInProject,
         isEmptyRow: member.isEmptyRow,
@@ -200,7 +204,7 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
     });
 
     return list;
-  }, [staffRecords, memberRows, dbMembers]);
+  }, [staffRecords, memberRows, dbMembers, currentDate]);
 
   // クイックフィルター適用
   const filteredData = useMemo(() => {
@@ -972,6 +976,7 @@ export function CalendarDailyReportDayPage(props: CalendarDailyReportDayPageProp
       title={PAGE_NAMES.TAB_DAILY_REPORT || '日報'}
       data={filteredData}
       columns={columns}
+      initialSort={{ key: 'userCode', direction: 'asc' }}
       emptyMessage="所属職員および利用者が登録されていません。"
       onBatchSave={handleBatchSave}
       showSingleDateFilter={true}

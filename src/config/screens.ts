@@ -99,7 +99,8 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_SCHEDULE: {
     screenName: PAGE_NAMES.SCREEN_SCHEDULE,
     tabs: [
-      { id: 'attendanceDay', label: PAGE_NAMES.TAB_SCHEDULE },
+      { id: 'scheduleStaff', label: PAGE_NAMES.TAB_STAFF },
+      { id: 'scheduleMember', label: PAGE_NAMES.TAB_MEMBER },
     ],
   },
   SCREEN_DAILY_REPORT: {
@@ -137,7 +138,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenCalendar' || tabId === 'attendanceMonth') return SCREEN_CONFIGS.SCREEN_CALENDAR;
-  if (tabId === 'screenSchedule' || tabId === 'attendanceDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
+  if (tabId === 'screenSchedule' || tabId === 'attendanceDay' || tabId === 'scheduleStaff' || tabId === 'scheduleMember') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
   if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenAttendance') return SCREEN_CONFIGS.SCREEN_CALENDAR;
   if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR;

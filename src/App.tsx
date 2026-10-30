@@ -60,7 +60,7 @@ function AppContent() {
               <DashboardPage />
             ) : ['screenCalendar', 'calendarMonth', 'attendanceMonth'].includes(activeTab) ? (
               <ScreenCalendarPage />
-            ) : ['screenSchedule', 'scheduleDay', 'attendanceDay', 'screenAttendance'].includes(activeTab) ? (
+            ) : ['screenSchedule', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenAttendance'].includes(activeTab) ? (
               <ScreenSchedulePage />
             ) : ['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? (
               <ScreenDailyReportPage />

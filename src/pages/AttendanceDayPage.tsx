@@ -42,6 +42,7 @@ export type AttendanceDayRow = {
 export interface AttendanceDayPageProps {
   currentDate?: string;
   onDateChange?: (date: string) => void;
+  targetType?: 'staff' | 'member';
 }
 
 const STATUS_OPTIONS = [
@@ -100,6 +101,7 @@ const isRowChanged = (row: AttendanceDayRow): boolean => {
 export function AttendanceDayPage({
   currentDate: externalDate,
   onDateChange: externalSetDate,
+  targetType,
 }: AttendanceDayPageProps) {
   const { selectedOfficeId, offices } = useOffice();
   const { showAlert } = useAlert();
@@ -141,199 +143,205 @@ export function AttendanceDayPage({
       const d = parseInt(dateParts[2], 10);
       const targetDateObj = new Date(y, m - 1, d);
       const dow = targetDateObj.getDay(); // 0: 日 〜 6: 土
+      const isWeekday = dow >= 1 && dow <= 5;
 
-      const [
-        staffRes,
-        officeStaffRes,
-        staffBasicRes,
-        staffExceptionRes,
-        memberRes,
-        officeMemberRes,
-        memberBasicRes,
-        memberExceptionRes,
-      ] = await Promise.all([
-        supabase.from('staffs').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
-        supabase.from('office_staff_settings').select('*').eq('office_id', targetOfficeId),
-        supabase.from('staff_basic_schedules').select('*').eq('office_id', targetOfficeId),
-        supabase
-          .from('staff_exception_schedules')
-          .select('*')
-          .eq('office_id', targetOfficeId)
-          .eq('target_date', currentDate),
-        supabase.from('members').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
-        supabase.from('office_member_settings').select('*').eq('office_id', targetOfficeId),
-        supabase.from('member_basic_schedules').select('*').eq('office_id', targetOfficeId),
-        supabase
-          .from('member_exception_schedules')
-          .select('*')
-          .eq('office_id', targetOfficeId)
-          .eq('target_date', currentDate),
-      ]);
-
-      const activeStaffs = staffRes.data || [];
-      const assignedOfficeStaffs = officeStaffRes.data || [];
-      const staffBasics = staffBasicRes.data || [];
-      const staffExceptions = staffExceptionRes.data || [];
-
-      const activeMembers = memberRes.data || [];
-      const assignedOfficeMembers = officeMemberRes.data || [];
-      const memberBasics = memberBasicRes.data || [];
-      const memberExceptions = memberExceptionRes.data || [];
-
-      const assignedStaffIds = new Set(assignedOfficeStaffs.map(os => os.staff_id));
-      const targetStaffs = activeStaffs.filter(s => assignedStaffIds.has(s.id));
-
-      const assignedMemberIds = new Set(assignedOfficeMembers.map(om => om.member_id));
-      const targetMembers = activeMembers.filter(m => assignedMemberIds.has(m.id));
-
-      // Build unified rows with date: currentDate for DataTable filter
       const unifiedRows: AttendanceDayRow[] = [];
 
-      // 1. Staff rows
-      targetStaffs.forEach(staff => {
-        const exception = staffExceptions.find(e => e.staff_id === staff.id);
-        const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
-        const isWeekday = dow >= 1 && dow <= 5;
+      // 1. Staff query & row generation
+      if (targetType !== 'member') {
+        const [
+          staffRes,
+          officeStaffRes,
+          staffBasicRes,
+          staffExceptionRes,
+        ] = await Promise.all([
+          supabase.from('staffs').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
+          supabase.from('office_staff_settings').select('*').eq('office_id', targetOfficeId),
+          supabase.from('staff_basic_schedules').select('*').eq('office_id', targetOfficeId),
+          supabase
+            .from('staff_exception_schedules')
+            .select('*')
+            .eq('office_id', targetOfficeId)
+            .eq('target_date', currentDate),
+        ]);
 
-        let isActive: boolean;
-        let start: string;
-        let end: string;
-        let breakMin: number;
-        let hours: number;
-        let remarks: string;
-        let hasException = false;
-        let exceptionId: string | undefined;
+        const activeStaffs = staffRes.data || [];
+        const assignedOfficeStaffs = officeStaffRes.data || [];
+        const staffBasics = staffBasicRes.data || [];
+        const staffExceptions = staffExceptionRes.data || [];
 
-        if (exception) {
-          hasException = true;
-          exceptionId = exception.id;
-          isActive = exception.is_work_day ?? true;
-          start = formatTimeForInput(exception.start_time);
-          end = formatTimeForInput(exception.end_time);
-          breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
-          hours = exception.scheduled_hours !== null && exception.scheduled_hours !== undefined
-            ? Number(exception.scheduled_hours)
-            : computeHours(start, end, breakMin, isActive);
-          remarks = exception.remarks || '';
-        } else {
-          // 基本予定テーブルのデータをデフォルト表示
-          isActive = basic ? (basic.is_work_day ?? true) : isWeekday;
-          start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '08:30' : '');
-          end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '17:30' : '');
-          breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
-          hours = basic?.scheduled_hours !== null && basic?.scheduled_hours !== undefined
-            ? Number(basic.scheduled_hours)
-            : computeHours(start, end, breakMin, isActive);
-          remarks = basic?.remarks || '';
-        }
+        const assignedStaffIds = new Set(assignedOfficeStaffs.map(os => os.staff_id));
+        const targetStaffs = activeStaffs.filter(s => assignedStaffIds.has(s.id));
 
-        unifiedRows.push({
-          id: `staff-${staff.id}`,
-          date: currentDate,
-          target_date: currentDate,
-          user_type: 'staff',
-          person_id: staff.id,
-          code: staff.code || '',
-          name: staff.name,
-          yomigana: staff.yomigana || '',
-          is_active: isActive,
-          start_time: start,
-          end_time: end,
-          break_minutes: breakMin,
-          calculated_hours: hours,
-          remarks: remarks,
-          has_exception_record: hasException,
-          exception_id: exceptionId,
-          initial_is_active: isActive,
-          initial_start_time: start,
-          initial_end_time: end,
-          initial_break_minutes: breakMin,
-          initial_remarks: remarks,
+        targetStaffs.forEach(staff => {
+          const exception = staffExceptions.find(e => e.staff_id === staff.id);
+          const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
+
+          let isActive: boolean;
+          let start: string;
+          let end: string;
+          let breakMin: number;
+          let hours: number;
+          let remarks: string;
+          let hasException = false;
+          let exceptionId: string | undefined;
+
+          if (exception) {
+            hasException = true;
+            exceptionId = exception.id;
+            isActive = exception.is_work_day ?? true;
+            start = formatTimeForInput(exception.start_time);
+            end = formatTimeForInput(exception.end_time);
+            breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
+            hours = exception.scheduled_hours !== null && exception.scheduled_hours !== undefined
+              ? Number(exception.scheduled_hours)
+              : computeHours(start, end, breakMin, isActive);
+            remarks = exception.remarks || '';
+          } else {
+            // 基本予定テーブルのデータをデフォルト表示
+            isActive = basic ? (basic.is_work_day ?? true) : isWeekday;
+            start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '08:30' : '');
+            end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '17:30' : '');
+            breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
+            hours = basic?.scheduled_hours !== null && basic?.scheduled_hours !== undefined
+              ? Number(basic.scheduled_hours)
+              : computeHours(start, end, breakMin, isActive);
+            remarks = basic?.remarks || '';
+          }
+
+          unifiedRows.push({
+            id: `staff-${staff.id}`,
+            date: currentDate,
+            target_date: currentDate,
+            user_type: 'staff',
+            person_id: staff.id,
+            code: staff.code || '',
+            name: staff.name,
+            yomigana: staff.yomigana || '',
+            is_active: isActive,
+            start_time: start,
+            end_time: end,
+            break_minutes: breakMin,
+            calculated_hours: hours,
+            remarks: remarks,
+            has_exception_record: hasException,
+            exception_id: exceptionId,
+            initial_is_active: isActive,
+            initial_start_time: start,
+            initial_end_time: end,
+            initial_break_minutes: breakMin,
+            initial_remarks: remarks,
+          });
         });
-      });
+      }
 
-      // 2. Member rows
-      targetMembers.forEach(member => {
-        const exception = memberExceptions.find(e => e.member_id === member.id);
-        const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
-        const isWeekday = dow >= 1 && dow <= 5;
+      // 2. Member query & row generation
+      if (targetType !== 'staff') {
+        const [
+          memberRes,
+          officeMemberRes,
+          memberBasicRes,
+          memberExceptionRes,
+        ] = await Promise.all([
+          supabase.from('members').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
+          supabase.from('office_member_settings').select('*').eq('office_id', targetOfficeId),
+          supabase.from('member_basic_schedules').select('*').eq('office_id', targetOfficeId),
+          supabase
+            .from('member_exception_schedules')
+            .select('*')
+            .eq('office_id', targetOfficeId)
+            .eq('target_date', currentDate),
+        ]);
 
-        let isActive: boolean;
-        let status: string;
-        let start: string;
-        let end: string;
-        let breakMin: number;
-        let hours: number;
-        let hasMeal: boolean;
-        let hasPickup: boolean;
-        let hasDropoff: boolean;
-        let remarks: string;
-        let hasException = false;
-        let exceptionId: string | undefined;
+        const activeMembers = memberRes.data || [];
+        const assignedOfficeMembers = officeMemberRes.data || [];
+        const memberBasics = memberBasicRes.data || [];
+        const memberExceptions = memberExceptionRes.data || [];
 
-        if (exception) {
-          hasException = true;
-          exceptionId = exception.id;
-          isActive = exception.is_scheduled ?? true;
-          status = exception.status || (isActive ? 'present' : 'absent');
-          start = formatTimeForInput(exception.start_time);
-          end = formatTimeForInput(exception.end_time);
-          breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
-          hours = exception.service_hours !== null && exception.service_hours !== undefined
-            ? Number(exception.service_hours)
-            : computeHours(start, end, breakMin, isActive);
-          hasMeal = exception.has_meal ?? false;
-          hasPickup = exception.has_pickup ?? false;
-          hasDropoff = exception.has_dropoff ?? false;
-          remarks = exception.remarks || '';
-        } else {
-          // 基本予定テーブルのデータをデフォルト表示
-          isActive = basic ? (basic.is_scheduled ?? true) : isWeekday;
-          status = basic?.status || (isActive ? 'present' : 'absent');
-          start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '09:30' : '');
-          end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '15:30' : '');
-          breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
-          hours = basic?.service_hours !== null && basic?.service_hours !== undefined
-            ? Number(basic.service_hours)
-            : computeHours(start, end, breakMin, isActive);
-          hasMeal = basic?.has_meal ?? isActive;
-          hasPickup = basic?.has_pickup ?? false;
-          hasDropoff = basic?.has_dropoff ?? false;
-          remarks = basic?.remarks || '';
-        }
+        const assignedMemberIds = new Set(assignedOfficeMembers.map(om => om.member_id));
+        const targetMembers = activeMembers.filter(m => assignedMemberIds.has(m.id));
 
-        unifiedRows.push({
-          id: `member-${member.id}`,
-          date: currentDate,
-          target_date: currentDate,
-          user_type: 'member',
-          person_id: member.id,
-          code: member.code || '',
-          name: member.name,
-          yomigana: member.yomigana || '',
-          is_active: isActive,
-          status: status,
-          start_time: start,
-          end_time: end,
-          break_minutes: breakMin,
-          calculated_hours: hours,
-          has_meal: hasMeal,
-          has_pickup: hasPickup,
-          has_dropoff: hasDropoff,
-          remarks: remarks,
-          has_exception_record: hasException,
-          exception_id: exceptionId,
-          initial_is_active: isActive,
-          initial_status: status,
-          initial_start_time: start,
-          initial_end_time: end,
-          initial_break_minutes: breakMin,
-          initial_has_meal: hasMeal,
-          initial_has_pickup: hasPickup,
-          initial_has_dropoff: hasDropoff,
-          initial_remarks: remarks,
+        targetMembers.forEach(member => {
+          const exception = memberExceptions.find(e => e.member_id === member.id);
+          const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
+
+          let isActive: boolean;
+          let status: string;
+          let start: string;
+          let end: string;
+          let breakMin: number;
+          let hours: number;
+          let hasMeal: boolean;
+          let hasPickup: boolean;
+          let hasDropoff: boolean;
+          let remarks: string;
+          let hasException = false;
+          let exceptionId: string | undefined;
+
+          if (exception) {
+            hasException = true;
+            exceptionId = exception.id;
+            isActive = exception.is_scheduled ?? true;
+            status = exception.status || (isActive ? 'present' : 'absent');
+            start = formatTimeForInput(exception.start_time);
+            end = formatTimeForInput(exception.end_time);
+            breakMin = exception.break_minutes ?? (isActive ? 60 : 0);
+            hours = exception.service_hours !== null && exception.service_hours !== undefined
+              ? Number(exception.service_hours)
+              : computeHours(start, end, breakMin, isActive);
+            hasMeal = exception.has_meal ?? false;
+            hasPickup = exception.has_pickup ?? false;
+            hasDropoff = exception.has_dropoff ?? false;
+            remarks = exception.remarks || '';
+          } else {
+            // 基本予定テーブルのデータをデフォルト表示
+            isActive = basic ? (basic.is_scheduled ?? true) : isWeekday;
+            status = basic?.status || (isActive ? 'present' : 'absent');
+            start = basic ? formatTimeForInput(basic.start_time) : (isActive ? '09:30' : '');
+            end = basic ? formatTimeForInput(basic.end_time) : (isActive ? '15:30' : '');
+            breakMin = basic ? (basic.break_minutes ?? 60) : (isActive ? 60 : 0);
+            hours = basic?.service_hours !== null && basic?.service_hours !== undefined
+              ? Number(basic.service_hours)
+              : computeHours(start, end, breakMin, isActive);
+            hasMeal = basic?.has_meal ?? isActive;
+            hasPickup = basic?.has_pickup ?? false;
+            hasDropoff = basic?.has_dropoff ?? false;
+            remarks = basic?.remarks || '';
+          }
+
+          unifiedRows.push({
+            id: `member-${member.id}`,
+            date: currentDate,
+            target_date: currentDate,
+            user_type: 'member',
+            person_id: member.id,
+            code: member.code || '',
+            name: member.name,
+            yomigana: member.yomigana || '',
+            is_active: isActive,
+            status: status,
+            start_time: start,
+            end_time: end,
+            break_minutes: breakMin,
+            calculated_hours: hours,
+            has_meal: hasMeal,
+            has_pickup: hasPickup,
+            has_dropoff: hasDropoff,
+            remarks: remarks,
+            has_exception_record: hasException,
+            exception_id: exceptionId,
+            initial_is_active: isActive,
+            initial_status: status,
+            initial_start_time: start,
+            initial_end_time: end,
+            initial_break_minutes: breakMin,
+            initial_has_meal: hasMeal,
+            initial_has_pickup: hasPickup,
+            initial_has_dropoff: hasDropoff,
+            initial_remarks: remarks,
+          });
         });
-      });
+      }
 
       setData(unifiedRows);
     } catch (err) {
@@ -342,7 +350,7 @@ export function AttendanceDayPage({
     } finally {
       setLoading(false);
     }
-  }, [targetOfficeId, currentDate, showAlert]);
+  }, [targetOfficeId, currentDate, targetType, showAlert]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -410,7 +418,8 @@ export function AttendanceDayPage({
           if (memberErr) throw memberErr;
         }
 
-        showAlert(`${currentDate} の例外予定（${changedRows.length}件）を登録・保存しました。`, 'success');
+        const typeLabel = targetType === 'staff' ? '職員' : targetType === 'member' ? '利用者' : '';
+        showAlert(`${currentDate} の${typeLabel}例外予定（${changedRows.length}件）を登録・保存しました。`, 'success');
         await fetchData();
       } catch (err: unknown) {
         console.error('Error saving exception schedules:', err);
@@ -418,15 +427,16 @@ export function AttendanceDayPage({
         showAlert(`保存に失敗しました: ${errMsg}`, 'error');
       }
     },
-    [targetOfficeId, currentDate, showAlert, fetchData]
+    [targetOfficeId, currentDate, targetType, showAlert, fetchData]
   );
 
   // Filtered rows by user_type
   const filteredData = useMemo(() => {
+    if (targetType) return data;
     if (filterType === 'staff') return data.filter(d => d.user_type === 'staff');
     if (filterType === 'member') return data.filter(d => d.user_type === 'member');
     return data;
-  }, [data, filterType]);
+  }, [data, targetType, filterType]);
 
   // Aggregate stats
   const stats = useMemo(() => {
@@ -452,9 +462,12 @@ export function AttendanceDayPage({
     };
   }, [data]);
 
-  const columns: Column<AttendanceDayRow>[] = useMemo(
-    () => [
-      {
+  const columns: Column<AttendanceDayRow>[] = useMemo(() => {
+    const cols: Column<AttendanceDayRow>[] = [];
+
+    // targetType未指定の場合のみ「識別」列を表示
+    if (!targetType) {
+      cols.push({
         key: 'user_type',
         header: '識別',
         sortable: true,
@@ -462,7 +475,10 @@ export function AttendanceDayPage({
         render: item => (
           <span>{item.user_type === 'staff' ? '職員' : '利用者'}</span>
         ),
-      },
+      });
+    }
+
+    cols.push(
       {
         key: 'code',
         header: 'コード',
@@ -480,7 +496,7 @@ export function AttendanceDayPage({
       },
       {
         key: 'is_active',
-        header: '予定 / 出勤',
+        header: targetType === 'staff' ? '出勤' : (targetType === 'member' ? '予定' : '予定 / 出勤'),
         sortable: false,
         editable: true,
         inputType: 'text',
@@ -515,8 +531,12 @@ export function AttendanceDayPage({
             </span>
           </label>
         ),
-      },
-      {
+      }
+    );
+
+    // 区分列（職員単独タブでは非表示）
+    if (targetType !== 'staff') {
+      cols.push({
         key: 'status',
         header: '区分',
         sortable: false,
@@ -556,7 +576,10 @@ export function AttendanceDayPage({
             />
           );
         },
-      },
+      });
+    }
+
+    cols.push(
       {
         key: 'start_time',
         header: '開始時間',
@@ -657,76 +680,85 @@ export function AttendanceDayPage({
           if (!item.is_active) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
           return Number(item.calculated_hours || 0).toFixed(2);
         },
-      },
-      {
-        key: 'has_meal',
-        header: '昼食',
-        sortable: false,
-        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
-        inputType: 'text',
-        style: { width: '65px', textAlign: 'center' },
-        render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff' || !item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
-          }
-          return (
-            <Input
-              type="checkbox"
-              checked={item.has_meal ?? false}
-              onChange={e => {
-                const val = e.target.checked;
-                updateData(draftData.map(d => (d.id === item.id ? { ...d, has_meal: val } : d)));
-              }}
-            />
-          );
+      }
+    );
+
+    // 利用者用列（昼食、送迎）
+    if (targetType !== 'staff') {
+      cols.push(
+        {
+          key: 'has_meal',
+          header: '昼食',
+          sortable: false,
+          editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
+          inputType: 'text',
+          style: { width: '65px', textAlign: 'center' },
+          render: (item, draftData, updateData) => {
+            if (item.user_type === 'staff' || !item.is_active) {
+              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            }
+            return (
+              <Input
+                type="checkbox"
+                checked={item.has_meal ?? false}
+                onChange={e => {
+                  const val = e.target.checked;
+                  updateData(draftData.map(d => (d.id === item.id ? { ...d, has_meal: val } : d)));
+                }}
+              />
+            );
+          },
         },
-      },
-      {
-        key: 'has_pickup',
-        header: '送迎(往)',
-        sortable: false,
-        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
-        inputType: 'text',
-        style: { width: '75px', textAlign: 'center' },
-        render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff' || !item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
-          }
-          return (
-            <Input
-              type="checkbox"
-              checked={item.has_pickup ?? false}
-              onChange={e => {
-                const val = e.target.checked;
-                updateData(draftData.map(d => (d.id === item.id ? { ...d, has_pickup: val } : d)));
-              }}
-            />
-          );
+        {
+          key: 'has_pickup',
+          header: '送迎(往)',
+          sortable: false,
+          editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
+          inputType: 'text',
+          style: { width: '75px', textAlign: 'center' },
+          render: (item, draftData, updateData) => {
+            if (item.user_type === 'staff' || !item.is_active) {
+              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            }
+            return (
+              <Input
+                type="checkbox"
+                checked={item.has_pickup ?? false}
+                onChange={e => {
+                  const val = e.target.checked;
+                  updateData(draftData.map(d => (d.id === item.id ? { ...d, has_pickup: val } : d)));
+                }}
+              />
+            );
+          },
         },
-      },
-      {
-        key: 'has_dropoff',
-        header: '送迎(復)',
-        sortable: false,
-        editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
-        inputType: 'text',
-        style: { width: '75px', textAlign: 'center' },
-        render: (item, draftData, updateData) => {
-          if (item.user_type === 'staff' || !item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
-          }
-          return (
-            <Input
-              type="checkbox"
-              checked={item.has_dropoff ?? false}
-              onChange={e => {
-                const val = e.target.checked;
-                updateData(draftData.map(d => (d.id === item.id ? { ...d, has_dropoff: val } : d)));
-              }}
-            />
-          );
-        },
-      },
+        {
+          key: 'has_dropoff',
+          header: '送迎(復)',
+          sortable: false,
+          editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
+          inputType: 'text',
+          style: { width: '75px', textAlign: 'center' },
+          render: (item, draftData, updateData) => {
+            if (item.user_type === 'staff' || !item.is_active) {
+              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            }
+            return (
+              <Input
+                type="checkbox"
+                checked={item.has_dropoff ?? false}
+                onChange={e => {
+                  const val = e.target.checked;
+                  updateData(draftData.map(d => (d.id === item.id ? { ...d, has_dropoff: val } : d)));
+                }}
+              />
+            );
+          },
+        }
+      );
+    }
+
+    cols.push(
       {
         key: 'schedule_state',
         header: '種別',
@@ -790,12 +822,13 @@ export function AttendanceDayPage({
             style={{ width: '100%' }}
           />
         ),
-      },
-    ],
-    []
-  );
+      }
+    );
 
-  const headerRight = (
+    return cols;
+  }, [targetType]);
+
+  const headerRight = targetType ? undefined : (
     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
       {/* Quick filter pills */}
       <div style={{ display: 'inline-flex', backgroundColor: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-full)', padding: '2px', border: '1px solid var(--color-border)' }}>
@@ -880,6 +913,10 @@ export function AttendanceDayPage({
       emptyMessage={
         !targetOfficeId
           ? 'サイドバー上部で事業所を選択してください。'
+          : targetType === 'staff'
+          ? `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）の所属職員がいません。`
+          : targetType === 'member'
+          ? `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）の所属利用者がいません。`
           : `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）の所属者がいません。`
       }
       showSingleDateFilter={true}

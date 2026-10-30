@@ -11,10 +11,10 @@ export function ScreenSchedulePage() {
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_SCHEDULE;
   const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_SCHEDULE || '予定';
 
-  // 画面表示時のデフォルト表示タブは予定タブとする
+  // 画面表示時のデフォルト表示タブは職員タブとする
   useEffect(() => {
-    if (navContext.activeTab === 'screenSchedule') {
-      navContext.setActiveTab('attendanceDay');
+    if (navContext.activeTab === 'screenSchedule' || navContext.activeTab === 'attendanceDay') {
+      navContext.setActiveTab('scheduleStaff');
     }
   }, [navContext]);
 
@@ -25,6 +25,9 @@ export function ScreenSchedulePage() {
     setCurrentDate(date);
   }, []);
 
+  const activeTab = navContext.activeTab === 'scheduleMember' ? 'scheduleMember' : 'scheduleStaff';
+  const targetType = activeTab === 'scheduleMember' ? 'member' : 'staff';
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
@@ -33,7 +36,7 @@ export function ScreenSchedulePage() {
           {screenConfig && (
             <Tabs
               tabs={screenConfig.tabs}
-              activeTab="attendanceDay"
+              activeTab={activeTab}
               onChange={navContext.setActiveTab}
             />
           )}
@@ -41,6 +44,8 @@ export function ScreenSchedulePage() {
       </div>
 
       <AttendanceDayPage
+        key={targetType}
+        targetType={targetType}
         currentDate={currentDate}
         onDateChange={handleDateChange}
       />

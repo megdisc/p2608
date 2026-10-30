@@ -421,21 +421,21 @@ th.sticky-right {
   color: var(--color-text-muted) !important;
 }
 
-/* カレンダー画面等の本日行ハイライト */
+/* カレンダー画面等の本日行ハイライト（黄色系） */
 .inventory-table tbody tr.today-row td {
-  background-color: var(--palette-blue-300);
+  background-color: var(--palette-yellow-300);
 }
 
 .inventory-table tbody tr.today-row td.sticky-right {
-  background-color: var(--palette-blue-300);
+  background-color: var(--palette-yellow-300);
 }
 
 .inventory-table tbody tr.today-row.clickable-row:hover td {
-  background-color: #cfcfff;
+  background-color: #fff6a8;
 }
 
 .inventory-table tbody tr.today-row.clickable-row:hover td.sticky-right {
-  background-color: #cfcfff;
+  background-color: #fff6a8;
 }
 
 .item-id {

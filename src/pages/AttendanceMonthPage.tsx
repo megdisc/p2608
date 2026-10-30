@@ -136,6 +136,38 @@ export function AttendanceMonthPage({
       const assignedMemberIds = new Set(assignedOfficeMembers.map(om => om.member_id));
       const targetMembers = activeMembers.filter(m => assignedMemberIds.has(m.id));
 
+      // 当月内の確定日リストを抽出
+      const monthConfirmedDates: string[] = [];
+      for (let day = 1; day <= lastDay; day++) {
+        const dayStr = String(day).padStart(2, '0');
+        const dateStr = `${currentMonth}-${dayStr}`;
+        if (confirmedSet.has(dateStr)) {
+          monthConfirmedDates.push(dateStr);
+        }
+      }
+
+      // 確定日が存在する場合のみ、極小負荷で実績記録テーブルから必要カラムのみを取得
+      let staffAttendanceRecords: { work_date: string; staff_id: string; start_time: string | null; actual_work_hours: number | null }[] = [];
+      let memberAttendanceRecords: { target_period: string; member_id: string; status: string; has_meal: boolean; has_pickup: boolean; has_dropoff: boolean }[] = [];
+
+      if (monthConfirmedDates.length > 0) {
+        const [staffAttRes, memberAttRes] = await Promise.all([
+          supabase
+            .from('staff_attendance_records')
+            .select('work_date, staff_id, start_time, actual_work_hours')
+            .eq('office_id', targetOfficeId)
+            .in('work_date', monthConfirmedDates),
+          supabase
+            .from('member_attendance_records')
+            .select('target_period, member_id, status, has_meal, has_pickup, has_dropoff')
+            .eq('office_id', targetOfficeId)
+            .in('target_period', monthConfirmedDates),
+        ]);
+
+        if (staffAttRes.data) staffAttendanceRecords = staffAttRes.data;
+        if (memberAttRes.data) memberAttendanceRecords = memberAttRes.data;
+      }
+
       // Build daily summary rows
       const dailyRows: AttendanceMonthSummaryRow[] = [];
 
@@ -145,81 +177,117 @@ export function AttendanceMonthPage({
         const dateObj = new Date(year, month - 1, day);
         const dow = dateObj.getDay();
 
-        // Staff calculations
-        let workingStaffCount = 0;
-
-        targetStaffs.forEach(staff => {
-          const ex = staffExceptions.find(e => e.staff_id === staff.id && e.target_date === dateStr);
-          if (ex) {
-            if (ex.is_work_day ?? true) workingStaffCount++;
-          } else {
-            const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
-            if (basic) {
-              if (basic.is_work_day ?? true) workingStaffCount++;
-            } else {
-              // Default weekday work
-              if (dow >= 1 && dow <= 5) workingStaffCount++;
-            }
-          }
-        });
-
-        // Member calculations
-        let attendingMemberCount = 0;
-        let mealCount = 0;
-        let pickupCount = 0;
-        let dropoffCount = 0;
-
-        targetMembers.forEach(member => {
-          const ex = memberExceptions.find(e => e.member_id === member.id && e.target_date === dateStr);
-          if (ex) {
-            const isActive = ex.is_scheduled ?? true;
-            const isAttending = isActive && ex.status !== 'absent';
-            if (isAttending) {
-              attendingMemberCount++;
-              if (ex.has_meal) mealCount++;
-              if (ex.has_pickup) pickupCount++;
-              if (ex.has_dropoff) dropoffCount++;
-            }
-          } else {
-            const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
-            if (basic) {
-              const isActive = basic.is_scheduled ?? true;
-              const isAttending = isActive && basic.status !== 'absent';
-              if (isAttending) {
-                attendingMemberCount++;
-                if (basic.has_meal ?? true) mealCount++;
-                if (basic.has_pickup) pickupCount++;
-                if (basic.has_dropoff) dropoffCount++;
-              }
-            } else {
-              if (dow >= 1 && dow <= 5) {
-                attendingMemberCount++;
-                mealCount++;
-              }
-            }
-          }
-        });
-
         let dayColor: string | undefined;
         if (dow === 0) dayColor = '#ef4444'; // 日
         if (dow === 6) dayColor = '#3b82f6'; // 土
 
-        dailyRows.push({
-          id: dateStr,
-          date: dateStr,
-          displayDate: `${month}/${day}`,
-          day_of_week: dow,
-          day_name: DAY_LABELS[dow],
-          day_color: dayColor,
-          total_staff: targetStaffs.length,
-          staff_working_count: workingStaffCount,
-          total_member: targetMembers.length,
-          member_attending_count: attendingMemberCount,
-          meal_count: mealCount,
-          pickup_count: pickupCount,
-          dropoff_count: dropoffCount,
-          is_confirmed: confirmedSet.has(dateStr),
-        });
+        const isConfirmed = confirmedSet.has(dateStr);
+
+        if (isConfirmed) {
+          // 確定済: 実績記録テーブルから集計
+          const dayStaffAtts = staffAttendanceRecords.filter(a => a.work_date === dateStr && assignedStaffIds.has(a.staff_id));
+          const workingStaffCount = dayStaffAtts.filter(a => {
+            if (a.actual_work_hours !== null && a.actual_work_hours !== undefined) {
+              return Number(a.actual_work_hours) > 0;
+            }
+            return Boolean(a.start_time);
+          }).length;
+
+          const dayMemberAtts = memberAttendanceRecords.filter(m => m.target_period === dateStr && assignedMemberIds.has(m.member_id));
+          const attendingMembers = dayMemberAtts.filter(m => m.status !== 'absent');
+          const attendingMemberCount = attendingMembers.length;
+          const mealCount = attendingMembers.filter(m => Boolean(m.has_meal)).length;
+          const pickupCount = attendingMembers.filter(m => Boolean(m.has_pickup)).length;
+          const dropoffCount = attendingMembers.filter(m => Boolean(m.has_dropoff)).length;
+
+          dailyRows.push({
+            id: dateStr,
+            date: dateStr,
+            displayDate: `${month}/${day}`,
+            day_of_week: dow,
+            day_name: DAY_LABELS[dow],
+            day_color: dayColor,
+            total_staff: targetStaffs.length,
+            staff_working_count: workingStaffCount,
+            total_member: targetMembers.length,
+            member_attending_count: attendingMemberCount,
+            meal_count: mealCount,
+            pickup_count: pickupCount,
+            dropoff_count: dropoffCount,
+            is_confirmed: true,
+          });
+        } else {
+          // 未確定: 基本予定・例外予定から集計
+          let workingStaffCount = 0;
+
+          targetStaffs.forEach(staff => {
+            const ex = staffExceptions.find(e => e.staff_id === staff.id && e.target_date === dateStr);
+            if (ex) {
+              if (ex.is_work_day ?? true) workingStaffCount++;
+            } else {
+              const basic = staffBasics.find(b => b.staff_id === staff.id && Number(b.day_of_week) === dow);
+              if (basic) {
+                if (basic.is_work_day ?? true) workingStaffCount++;
+              } else {
+                // Default weekday work
+                if (dow >= 1 && dow <= 5) workingStaffCount++;
+              }
+            }
+          });
+
+          let attendingMemberCount = 0;
+          let mealCount = 0;
+          let pickupCount = 0;
+          let dropoffCount = 0;
+
+          targetMembers.forEach(member => {
+            const ex = memberExceptions.find(e => e.member_id === member.id && e.target_date === dateStr);
+            if (ex) {
+              const isActive = ex.is_scheduled ?? true;
+              const isAttending = isActive && ex.status !== 'absent';
+              if (isAttending) {
+                attendingMemberCount++;
+                if (ex.has_meal) mealCount++;
+                if (ex.has_pickup) pickupCount++;
+                if (ex.has_dropoff) dropoffCount++;
+              }
+            } else {
+              const basic = memberBasics.find(b => b.member_id === member.id && Number(b.day_of_week) === dow);
+              if (basic) {
+                const isActive = basic.is_scheduled ?? true;
+                const isAttending = isActive && basic.status !== 'absent';
+                if (isAttending) {
+                  attendingMemberCount++;
+                  if (basic.has_meal ?? true) mealCount++;
+                  if (basic.has_pickup) pickupCount++;
+                  if (basic.has_dropoff) dropoffCount++;
+                }
+              } else {
+                if (dow >= 1 && dow <= 5) {
+                  attendingMemberCount++;
+                  mealCount++;
+                }
+              }
+            }
+          });
+
+          dailyRows.push({
+            id: dateStr,
+            date: dateStr,
+            displayDate: `${month}/${day}`,
+            day_of_week: dow,
+            day_name: DAY_LABELS[dow],
+            day_color: dayColor,
+            total_staff: targetStaffs.length,
+            staff_working_count: workingStaffCount,
+            total_member: targetMembers.length,
+            member_attending_count: attendingMemberCount,
+            meal_count: mealCount,
+            pickup_count: pickupCount,
+            dropoff_count: dropoffCount,
+            is_confirmed: false,
+          });
+        }
       }
 
       setRows(dailyRows);

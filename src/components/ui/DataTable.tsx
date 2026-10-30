@@ -87,6 +87,7 @@ type DataTableProps<T> = {
   confirmDisabled?: boolean;
   statusBadge?: React.ReactNode;
   onRowClick?: (item: T) => void;
+  rowClassName?: (item: T) => string | undefined;
 };
 
 export function DataTable<T extends { id: string }>({ 
@@ -136,7 +137,8 @@ export function DataTable<T extends { id: string }>({
   onUnconfirm,
   confirmDisabled,
   statusBadge,
-  onRowClick
+  onRowClick,
+  rowClassName
 }: DataTableProps<T>) {
   const [firstColWidth, setFirstColWidth] = useState(0);
   const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, text: string }>({ visible: false, x: 0, y: 0, text: '' });
@@ -942,7 +944,7 @@ export function DataTable<T extends { id: string }>({
                 <React.Fragment key={item.id}>
                   {!shouldMergeParentRow && (
                     <tr 
-                      className={`${isDeleted ? 'deleted-row' : ''} ${onRowClick ? 'clickable-row' : ''}`.trim()}
+                      className={`${isDeleted ? 'deleted-row' : ''} ${onRowClick ? 'clickable-row' : ''} ${rowClassName ? rowClassName(item) || '' : ''}`.trim()}
                       onClick={(e) => {
                         if (onRowClick) {
                           const target = e.target as HTMLElement;

@@ -3,6 +3,7 @@ import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
+import { useDailyConfirmation } from '../hooks';
 
 export type AttendanceMonthSummaryRow = {
   id: string; // date string: 'YYYY-MM-DD'
@@ -18,6 +19,7 @@ export type AttendanceMonthSummaryRow = {
   meal_count: number;
   pickup_count: number;
   dropoff_count: number;
+  is_confirmed: boolean;
 };
 
 export interface AttendanceMonthPageProps {
@@ -34,6 +36,7 @@ export function AttendanceMonthPage({
   onSelectDate,
 }: AttendanceMonthPageProps) {
   const { selectedOfficeId, offices } = useOffice();
+  const { confirmedDates } = useDailyConfirmation();
   const [internalMonth, setInternalMonth] = useState(() => getCurrentJSTMonth());
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<AttendanceMonthSummaryRow[]>([]);
@@ -74,7 +77,7 @@ export function AttendanceMonthPage({
       const startDateStr = `${currentMonth}-01`;
       const endDateStr = `${currentMonth}-${String(lastDay).padStart(2, '0')}`;
 
-      // 1. Fetch assigned staff and members
+      // 1. Fetch assigned staff, members and daily confirmations
       const [
         staffRes,
         officeStaffRes,
@@ -84,6 +87,7 @@ export function AttendanceMonthPage({
         officeMemberRes,
         memberBasicRes,
         memberExceptionRes,
+        confirmRes,
       ] = await Promise.all([
         supabase.from('staffs').select('*').or('is_deleted.eq.false,is_deleted.is.null'),
         supabase.from('office_staff_settings').select('*').eq('office_id', targetOfficeId),
@@ -103,6 +107,17 @@ export function AttendanceMonthPage({
           .eq('office_id', targetOfficeId)
           .gte('target_date', startDateStr)
           .lte('target_date', endDateStr),
+        supabase
+          .from('daily_work_confirmations')
+          .select('target_period')
+          .eq('is_confirmed', true)
+          .gte('target_period', startDateStr)
+          .lte('target_period', endDateStr),
+      ]);
+
+      const confirmedSet = new Set<string>([
+        ...confirmedDates,
+        ...(confirmRes.data || []).map((c: any) => c.target_period),
       ]);
 
       const activeStaffs = staffRes.data || [];
@@ -203,6 +218,7 @@ export function AttendanceMonthPage({
           meal_count: mealCount,
           pickup_count: pickupCount,
           dropoff_count: dropoffCount,
+          is_confirmed: confirmedSet.has(dateStr),
         });
       }
 
@@ -212,7 +228,7 @@ export function AttendanceMonthPage({
     } finally {
       setLoading(false);
     }
-  }, [targetOfficeId, currentMonth]);
+  }, [targetOfficeId, currentMonth, confirmedDates]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -226,30 +242,9 @@ export function AttendanceMonthPage({
         header: '日付',
         sortable: false,
         style: { width: '130px', textAlign: 'center' },
-        render: item => {
-          const isToday = item.date === todayStr;
-          return (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-2)' }}>
-              <span style={{ fontWeight: isToday ? 'bold' : 'normal' }}>
-                {item.date}
-              </span>
-              {isToday && (
-                <span
-                  style={{
-                    backgroundColor: 'var(--palette-blue-300)',
-                    color: 'var(--palette-blue-700)',
-                    fontSize: 'var(--text-micro)',
-                    fontWeight: 'bold',
-                    padding: '1px 6px',
-                    borderRadius: 'var(--radius-full)',
-                  }}
-                >
-                  今日
-                </span>
-              )}
-            </div>
-          );
-        },
+        render: item => (
+          <span>{item.date}</span>
+        ),
       },
       {
         key: 'day_name',
@@ -257,7 +252,7 @@ export function AttendanceMonthPage({
         sortable: false,
         style: { width: '60px', textAlign: 'center' },
         render: item => (
-          <span style={{ fontWeight: 'bold', color: item.day_color || 'inherit' }}>
+          <span style={{ fontWeight: 'var(--weight-heading)', color: item.day_color || 'inherit' }}>
             {item.day_name}
           </span>
         ),
@@ -312,7 +307,7 @@ export function AttendanceMonthPage({
         },
       },
     ],
-    [todayStr]
+    []
   );
 
   const handleRowClick = useCallback(
@@ -341,6 +336,10 @@ export function AttendanceMonthPage({
       hideAddButton={true}
       hideDeleteColumn={true}
       hideHeader={true}
+      showRestrictionColumn={true}
+      canEditRow={(item) => !item.is_confirmed}
+      restrictionTooltipText="確定済のため変更不可"
+      rowClassName={(item) => item.date === todayStr ? 'today-row' : undefined}
     />
   );
 }

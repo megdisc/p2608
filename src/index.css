@@ -421,6 +421,23 @@ th.sticky-right {
   color: var(--color-text-muted) !important;
 }
 
+/* カレンダー画面等の本日行ハイライト */
+.inventory-table tbody tr.today-row td {
+  background-color: var(--palette-blue-300);
+}
+
+.inventory-table tbody tr.today-row td.sticky-right {
+  background-color: var(--palette-blue-300);
+}
+
+.inventory-table tbody tr.today-row.clickable-row:hover td {
+  background-color: #cfcfff;
+}
+
+.inventory-table tbody tr.today-row.clickable-row:hover td.sticky-right {
+  background-color: #cfcfff;
+}
+
 .item-id {
   font-family: var(--font-mono);
   color: var(--color-text-muted) !important;

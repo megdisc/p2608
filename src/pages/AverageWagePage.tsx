@@ -62,15 +62,15 @@ export function AverageWagePage() {
                     onClick={() => toggleYear(annualRow.year)}
                     style={{ 
                       cursor: 'pointer',
-                      backgroundColor: 'var(--color-bg-subtle, #f9fafb)',
-                      fontWeight: 'bold',
+                      backgroundColor: 'var(--color-bg-subtle)',
+                      fontWeight: 'var(--weight-heading)',
                       userSelect: 'none'
                     }}
                     className="hover-row"
                   >
                     <td style={{ textAlign: 'left' }}>
                       <span style={{ 
-                        fontSize: '12px', 
+                        fontSize: 'var(--text-caption)', 
                         marginRight: '8px',
                         display: 'inline-block',
                         transition: 'transform 0.2s ease',
@@ -80,7 +80,7 @@ export function AverageWagePage() {
                       </span>
                       {annualRow.yearLabel}
                     </td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor', fontVariantNumeric: 'tabular-nums' }}>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', fontVariantNumeric: 'tabular-nums' }}>
                       ¥{Math.round(annualRow.avgMonthlyWage).toLocaleString()}
                     </td>
                     <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
@@ -100,8 +100,8 @@ export function AverageWagePage() {
                   {/* Monthly Detail Rows (Accordion Expansion) */}
                   {isExpanded && annualRow.monthlyDetails.map(monthDetail => (
                     <tr key={monthDetail.month}>
-                      <td style={{ textAlign: 'left', paddingLeft: '32px', color: 'var(--color-text-muted, #666)' }}>
-                        <span style={{ color: 'var(--color-border, #ccc)', marginRight: '6px' }}>└</span>
+                      <td style={{ textAlign: 'left', paddingLeft: '32px', color: 'var(--color-text-muted)' }}>
+                        <span style={{ color: 'var(--color-border)', marginRight: '6px' }}>└</span>
                         {monthDetail.monthLabel}
                       </td>
                       <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>

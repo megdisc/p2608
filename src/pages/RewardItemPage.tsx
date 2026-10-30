@@ -106,7 +106,7 @@ export function RewardItemPage() {
           <span style={{ 
             padding: '2px 8px', 
             borderRadius: '4px', 
-            fontSize: '12px',
+            fontSize: 'var(--text-caption)',
             backgroundColor: isAddition ? 'var(--palette-bluegreen-200)' : 'var(--palette-red-200)',
             color: isAddition ? 'var(--palette-bluegreen-900)' : 'var(--palette-red-900)'
           }}>

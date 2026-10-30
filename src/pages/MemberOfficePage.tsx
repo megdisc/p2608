@@ -144,7 +144,7 @@ export function MemberOfficePage() {
           if (isCopaymentOffice) {
             return (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 0', minWidth: '100px' }}>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'not-allowed', fontSize: '12px', whiteSpace: 'nowrap' }}>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', cursor: 'not-allowed', fontSize: 'var(--text-caption)', whiteSpace: 'nowrap' }}>
                   <input
                     type="checkbox"
                     className="custom-checkbox"
@@ -160,7 +160,7 @@ export function MemberOfficePage() {
 
           return (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 0', minWidth: '100px' }}>
-              <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '12px' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 'var(--text-caption)' }}>
                 <input
                   type="checkbox"
                   className="custom-checkbox"

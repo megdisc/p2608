@@ -289,23 +289,22 @@ export function WageSummaryPage() {
                       const isLastInCategory = !nextItem || nextItem.categoryGroup !== item.categoryGroup;
 
                       const rowBorderBottom = isLastRow ? undefined : 'none';
-                      const rowBg = item.isTotalRow ? 'var(--color-bg-subtle, #f9fafb)' : undefined;
+                      const rowBg = item.isTotalRow ? 'var(--color-bg-subtle)' : undefined;
 
                       return (
                         <tr
                           key={`${row.id}-item-${idx}`}
                           style={{ backgroundColor: rowBg }}
                         >
-                          <td style={{ backgroundColor: '#ffffff', borderBottom: rowBorderBottom }}>
+                          <td style={{ backgroundColor: 'var(--color-bg-main)', borderBottom: rowBorderBottom }}>
                             {isFirstRow ? row.code : ''}
                           </td>
-                          <td style={{ backgroundColor: '#ffffff', borderBottom: rowBorderBottom }}>
+                          <td style={{ backgroundColor: 'var(--color-bg-main)', borderBottom: rowBorderBottom }}>
                             {isFirstRow ? row.name : ''}
                           </td>
                           <td
                             style={{
-                              fontWeight: item.isTotalRow ? 'bold' : 'normal',
-                              WebkitTextStroke: item.isTotalRow ? '0.5px currentColor' : undefined,
+                              fontWeight: item.isTotalRow ? 'var(--weight-heading)' : 'normal',
                               borderBottom: isLastInCategory ? undefined : 'none'
                             }}
                           >
@@ -313,8 +312,7 @@ export function WageSummaryPage() {
                           </td>
                           <td
                             style={{
-                              fontWeight: (item.isBold && item.subject) ? 'bold' : 'normal',
-                              WebkitTextStroke: (item.isBold && item.subject) ? '0.5px currentColor' : undefined
+                              fontWeight: (item.isBold && item.subject) ? 'var(--weight-heading)' : 'normal',
                             }}
                           >
                             {item.subject || ''}
@@ -326,8 +324,7 @@ export function WageSummaryPage() {
                             style={{
                               textAlign: 'right',
                               fontVariantNumeric: 'tabular-nums',
-                              fontWeight: item.isBold ? 'bold' : 'normal',
-                              WebkitTextStroke: item.isBold ? '0.5px currentColor' : undefined,
+                              fontWeight: item.isBold ? 'var(--weight-heading)' : 'normal',
                               color: item.isHighlight ? 'var(--color-primary)' : undefined
                             }}
                           >
@@ -392,11 +389,11 @@ export function WageSummaryPage() {
               今月
             </Button>
             {isWageSummaryConfirmed ? (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
                 確定済
               </span>
             ) : (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold', backgroundColor: '#fef3c7', color: '#92400e' }}>
+              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#fef3c7', color: '#92400e' }}>
                 暫定
               </span>
             )}

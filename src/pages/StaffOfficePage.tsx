@@ -121,7 +121,7 @@ export function StaffOfficePage() {
 
           return (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px 0', minWidth: '100px' }}>
-              <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '12px' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 'var(--text-caption)' }}>
                 <input
                   type="checkbox"
                   className="custom-checkbox"

@@ -120,12 +120,12 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                     <tr key={row.id}>
                       <td>{row.period}</td>
                       <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                        <strong>¥{row.revTotal.toLocaleString()}</strong>
+                      <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                        ¥{row.revTotal.toLocaleString()}
                       </td>
                       <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                        <strong>¥{row.expTotal.toLocaleString()}</strong>
+                      <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                        ¥{row.expTotal.toLocaleString()}
                       </td>
                     </tr>
                   );
@@ -136,8 +136,8 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                   <tr key={row.id}>
                     <td>{row.period}</td>
                     <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                      <strong>¥{row.revTotal.toLocaleString()}</strong>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                      ¥{row.revTotal.toLocaleString()}
                     </td>
                     
                     <td style={{ textAlign: 'right' }}>¥{row.expMaterial.toLocaleString()}</td>
@@ -145,84 +145,84 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                     <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
                     <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
                     <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                      <strong>¥{row.expTotal.toLocaleString()}</strong>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                      ¥{row.expTotal.toLocaleString()}
                     </td>
                     
                     <td style={{ textAlign: 'right' }}>¥{row.resWage.toLocaleString()}</td>
                     <td style={{ textAlign: 'right' }}>¥{row.resEquipment.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                      <strong>¥{row.resTotal.toLocaleString()}</strong>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                      ¥{row.resTotal.toLocaleString()}
                     </td>
 
-                    <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                      <strong>¥{surplus.toLocaleString()}</strong>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                      ¥{surplus.toLocaleString()}
                     </td>
                   </tr>
                 );
               })}
 
               {isWelfare ? (
-                <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                  <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>{currentYear}年累計</strong>
+                <tr style={{ fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
+                  <td style={{ fontWeight: 'var(--weight-heading)' }}>
+                    {currentYear}年累計
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.revSales.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.revSales.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.revTotal.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.revTotal.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expOther.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expOther.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expTotal.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expTotal.toLocaleString()}
                   </td>
                 </tr>
               ) : (
-                <tr style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle, #f9fafb)' }}>
-                  <td style={{ fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>{currentYear}年累計</strong>
+                <tr style={{ fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
+                  <td style={{ fontWeight: 'var(--weight-heading)' }}>
+                    {currentYear}年累計
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.revSales.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.revSales.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.revTotal.toLocaleString()}</strong>
-                  </td>
-                  
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expMaterial.toLocaleString()}</strong>
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expLaborMember.toLocaleString()}</strong>
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expLaborOther.toLocaleString()}</strong>
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expOutsource.toLocaleString()}</strong>
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expOther.toLocaleString()}</strong>
-                  </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.expTotal.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.revTotal.toLocaleString()}
                   </td>
                   
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.resWage.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expMaterial.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.resEquipment.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expLaborMember.toLocaleString()}
                   </td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{totals.resTotal.toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expLaborOther.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expOutsource.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expOther.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.expTotal.toLocaleString()}
+                  </td>
+                  
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.resWage.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.resEquipment.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.resTotal.toLocaleString()}
                   </td>
 
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', WebkitTextStroke: '0.5px currentColor' }}>
-                    <strong>¥{(totals.revTotal - (totals.expTotal + totals.resTotal)).toLocaleString()}</strong>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{(totals.revTotal - (totals.expTotal + totals.resTotal)).toLocaleString()}
                   </td>
                 </tr>
               )}

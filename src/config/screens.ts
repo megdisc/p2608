@@ -90,39 +90,23 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
-  SCREEN_ATTENDANCE: {
-    screenName: PAGE_NAMES.SCREEN_ATTENDANCE,
+  SCREEN_CALENDAR: {
+    screenName: PAGE_NAMES.SCREEN_CALENDAR,
     tabs: [
-      { id: 'attendanceMonth', label: PAGE_NAMES.ATTENDANCE_MONTH },
-      { id: 'attendanceDay', label: PAGE_NAMES.ATTENDANCE_DAY },
+      { id: 'attendanceMonth', label: PAGE_NAMES.TAB_CALENDAR },
     ],
   },
-  SCREEN_CALENDAR_DAILY_REPORT: {
-    screenName: PAGE_NAMES.SCREEN_CALENDAR_DAILY_REPORT,
+  SCREEN_SCHEDULE: {
+    screenName: PAGE_NAMES.SCREEN_SCHEDULE,
     tabs: [
-      { id: 'calendarDailyReportCalendar', label: PAGE_NAMES.TAB_CALENDAR },
-      { id: 'calendarDailyReportDay', label: PAGE_NAMES.TAB_DAILY_REPORT },
+      { id: 'attendanceDay', label: PAGE_NAMES.TAB_SCHEDULE },
     ],
   },
   SCREEN_DAILY_REPORT: {
     screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
     tabs: [
-      { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
-      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
-    ],
-  },
-  SCREEN_STAFF_DAILY_REPORT: {
-    screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
-    tabs: [
-      { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
-      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
-    ],
-  },
-  SCREEN_DAILY_WORK: {
-    screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
-    tabs: [
-      { id: 'staffAttendanceRecord', label: PAGE_NAMES.STAFF_ATTENDANCE_RECORD },
-      { id: 'dailyWorkRecord', label: PAGE_NAMES.DAILY_WORK_RECORD },
+      { id: 'staffAttendanceRecord', label: PAGE_NAMES.TAB_STAFF },
+      { id: 'dailyWorkRecord', label: PAGE_NAMES.TAB_MEMBER },
     ],
   },
   SCREEN_FINANCE: {
@@ -152,12 +136,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 };
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
-  if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR_DAILY_REPORT;
-  if (tabId === 'screenAttendance' || tabId === 'attendanceMonth' || tabId === 'attendanceDay') return SCREEN_CONFIGS.SCREEN_ATTENDANCE;
-  if (tabId === 'screenDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
-  if (tabId === 'screenStaffDailyReport') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
+  if (tabId === 'screenCalendar' || tabId === 'attendanceMonth') return SCREEN_CONFIGS.SCREEN_CALENDAR;
+  if (tabId === 'screenSchedule' || tabId === 'attendanceDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
+  if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
+  if (tabId === 'screenAttendance') return SCREEN_CONFIGS.SCREEN_CALENDAR;
+  if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR;
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
-  if (tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_FINANCE;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;

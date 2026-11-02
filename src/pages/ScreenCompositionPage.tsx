@@ -95,7 +95,9 @@ interface DBColumn {
 }
 
 interface DBTable {
-  layer: string;
+  category: string;
+  categoryDescription?: string;
+  subCategory?: string;
   physicalName: string;
   tableType: string;
   logicalName: string;
@@ -127,9 +129,9 @@ export function ScreenCompositionPage() {
   const isTableComposition = navContext.activeTab === 'tableComposition';
 
   const dbTables: DBTable[] = [
-    // 1. マスタ層（福祉制度）
     {
-      layer: '1. マスタ層',
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'service_types',
       tableType: '独立マスタ',
       logicalName: '支援種別',
@@ -145,7 +147,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'reward_items',
       tableType: '従属マスタ',
       logicalName: '加算・減算',
@@ -167,7 +170,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'qualifications',
       tableType: '独立マスタ',
       logicalName: '資格',
@@ -183,7 +187,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'regional_grade_rates',
       tableType: '独立マスタ',
       logicalName: '所在地級数上乗せ割合',
@@ -199,7 +204,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'regional_grade_locations',
       tableType: '独立マスタ',
       logicalName: '所在地級数所在地',
@@ -214,9 +220,9 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
-    // 施設・事業所マスタ
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
       physicalName: 'organizations',
       tableType: '独立マスタ',
       logicalName: '法人',
@@ -231,7 +237,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
       physicalName: 'offices',
       tableType: '独立マスタ',
       logicalName: '事業所',
@@ -248,7 +255,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
       physicalName: 'office_service_type_settings',
       tableType: '従属マスタ',
       logicalName: '事業所支援種別割当',
@@ -269,7 +277,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
       physicalName: 'office_reward_setting_summaries',
       tableType: '従属マスタ',
       logicalName: '事業所加算・減算割当概要',
@@ -286,7 +295,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
       physicalName: 'office_reward_setting_details',
       tableType: '従属マスタ',
       logicalName: '事業所加算・減算割当詳細',
@@ -301,19 +311,20 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'addresses',
+      category: '2. 法人・事業所',
+      subCategory: '2.2. 取引先',
+      physicalName: 'partners',
       tableType: '独立マスタ',
-      logicalName: '住所',
-      description: '所在地・住所情報の実体データマスタ（重複防止・名寄せ一元管理）',
+      logicalName: '取引先',
+      description: '取引先情報',
       columns: [
-        { name: 'id', desc: '住所ID' },
-        { name: 'postal_code_prefix', desc: '郵便番号上3桁' },
-        { name: 'postal_code_suffix', desc: '郵便番号下4桁' },
-        { name: 'prefecture', desc: '都道府県' },
-        { name: 'city', desc: '市区町村・郡' },
-        { name: 'town_street', desc: '町名・丁目・番地' },
-        { name: 'building', desc: '建物名・部屋番号' },
+        { name: 'id', desc: '取引先ID' },
+        { name: 'code', desc: '取引先コード' },
+        { name: 'name', desc: '取引先・企業名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'is_customer', desc: '顧客フラグ' },
+        { name: 'is_subcontractor', desc: '外注先フラグ' },
+        { name: 'is_other', desc: 'その他フラグ' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -321,32 +332,19 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'entity_address_settings',
+      category: '2. 法人・事業所',
+      subCategory: '2.2. 取引先',
+      physicalName: 'partner_contacts',
       tableType: '従属マスタ',
-      logicalName: '住所割当',
-      description: '法人・事業所・利用者・職員・取引先等と住所の多対多割当・属性管理マスタ',
+      logicalName: '取引先担当者',
+      description: '取引先ごとの担当者情報（1対多。電話・FAX・メールは割当テーブルにて管理）',
       columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
-        { name: 'owner_id', desc: '所有エンティティID' },
-        { name: 'address_id', desc: '住所ID' },
-        { name: 'address_type', desc: '住所種別（main: 所在地・本社 / home: 自宅 / billing: 請求先 / shipping: 納品先）' },
-        { name: 'is_primary', desc: '主たる住所フラグ（true: メイン住所 / false: サブ住所）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'phone_numbers',
-      tableType: '独立マスタ',
-      logicalName: '電話・FAX番号',
-      description: '電話・携帯・FAX番号の実体データマスタ（数字のみ正規化保持・重複防止）',
-      columns: [
-        { name: 'id', desc: '電話番号ID' },
-        { name: 'phone_type', desc: '電話種別（phone: 固定電話 / mobile: 携帯電話 / fax: FAX）' },
-        { name: 'phone_number', desc: '電話番号（ハイフンなし数字のみ正規化保持）' },
+        { name: 'id', desc: '担当者ID' },
+        { name: 'partner_id', desc: '取引先ID' },
+        { name: 'name', desc: '担当者名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'department', desc: '部署' },
+        { name: 'position', desc: '役職' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -354,58 +352,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'entity_phone_settings',
-      tableType: '従属マスタ',
-      logicalName: '電話・FAX番号割当',
-      description: '事業所・利用者・職員・取引先等と電話・携帯・FAX番号の多対多割当・属性管理マスタ',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
-        { name: 'owner_id', desc: '所有エンティティID' },
-        { name: 'phone_number_id', desc: '電話番号ID' },
-        { name: 'label', desc: 'ラベル・窓口名（例: 本部代表、直通、保護者携帯、緊急窓口等）' },
-        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
-        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'email_addresses',
-      tableType: '独立マスタ',
-      logicalName: 'メールアドレス',
-      description: '電子メールアドレスの実体データマスタ（RFC規格・小文字正規化保持・重複防止）',
-      columns: [
-        { name: 'id', desc: 'メールアドレスID' },
-        { name: 'email', desc: 'メールアドレス（RFC規格・小文字正規化保持）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'entity_email_settings',
-      tableType: '従属マスタ',
-      logicalName: 'メールアドレス割当',
-      description: '事業所・利用者・職員・取引先等とメールアドレスの多対多割当・属性管理マスタ',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
-        { name: 'owner_id', desc: '所有エンティティID' },
-        { name: 'email_address_id', desc: 'メールアドレスID' },
-        { name: 'label', desc: 'ラベル・用途名（例: 連絡用、請求書用、保護者宛等）' },
-        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
-        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'wage_rate_items',
       tableType: '従属マスタ',
       logicalName: '工賃単価項目',
@@ -423,7 +371,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'allowance_deduction_items',
       tableType: '従属マスタ',
       logicalName: '加算手当・控除項目',
@@ -447,7 +396,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'reserve_items',
       tableType: '従属マスタ',
       logicalName: '積立金項目',
@@ -464,7 +414,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'skill_categories',
       tableType: '従属マスタ',
       logicalName: 'スキルカテゴリ',
@@ -482,7 +433,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'skill_items',
       tableType: '従属マスタ',
       logicalName: 'スキル項目',
@@ -501,7 +453,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
       physicalName: 'skill_level_items',
       tableType: '従属マスタ',
       logicalName: 'スキルレベル項目',
@@ -518,7 +471,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.1. アカウント',
       physicalName: 'auth_users',
       tableType: '独立マスタ',
       logicalName: '認証ユーザー',
@@ -535,7 +489,120 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'staffs',
+      tableType: '従属マスタ',
+      logicalName: '職員',
+      description: 'システムを利用する職員情報',
+      columns: [
+        { name: 'id', desc: '職員ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '職員コード' },
+        { name: 'name', desc: '職員名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'staff_qualification_settings',
+      tableType: '従属マスタ',
+      logicalName: '職員資格割当',
+      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'qualification_id', desc: '資格ID' },
+        { name: 'license_number', desc: '資格・登録番号' },
+        { name: 'acquired_on', desc: '取得年月日・修了日' },
+        { name: 'valid_until', desc: '有効期限・更新研修期限' },
+        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'office_staff_settings',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当',
+      description: '職員と事業所の多対多割当・所属情報（複数事業所兼務・所属定義対応。「事業所」タブで定義）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '割当ID', status: 'added' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'staff_work_style_summaries',
+      tableType: '従属マスタ',
+      logicalName: '職員勤務形態概要',
+      description: '事業所職員割当（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「勤務形態」タブで管理）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_staff_setting_id', desc: '事業所職員割当ID（FK -> office_staff_settings.id）', status: 'modified' },
+        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
+        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
+        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
+        { name: 'valid_from', desc: '有効期間（開始）' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'staff_work_style_details',
+      tableType: '従属マスタ',
+      logicalName: '職員勤務形態詳細',
+      description: '職員勤務形態概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「勤務形態」タブで管理）',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（staff_work_style_summariesのIDを参照）' },
+        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'staff_basic_schedules',
+      tableType: '従属マスタ',
+      logicalName: '職員基本勤務予定',
+      description: '曜日（日〜土）ごとの職員の定例勤務パターン（勤務曜日・標準出退勤時刻・休憩・所定時間）。日報（勤務記録）の初期自動セット基準',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '基本勤務予定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
+        { name: 'is_work_day', desc: '定例勤務フラグ（true: 勤務日 / false: 公休・法定休日）', status: 'added' },
+        { name: 'start_time', desc: '基本始業時刻（出勤時刻。例: 08:30）', status: 'added' },
+        { name: 'end_time', desc: '基本終業時刻（退勤時刻。例: 17:30）', status: 'added' },
+        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
+        { name: 'scheduled_hours', desc: '基本所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
+        { name: 'remarks', desc: '備考・定例勤務パターンメモ（例: 早番、遅番、通常、時短等）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'members',
       tableType: '従属マスタ',
       logicalName: '利用者',
@@ -553,7 +620,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'member_recipient_certificates',
       tableType: '従属マスタ',
       logicalName: '利用者受給者証',
@@ -580,7 +648,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'office_member_settings',
       tableType: '従属マスタ',
       logicalName: '事業所利用者割当',
@@ -594,7 +663,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'member_skill_settings',
       tableType: '従属マスタ',
       logicalName: '利用者スキル割当',
@@ -609,7 +679,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'member_wage_settings',
       tableType: '従属マスタ',
       logicalName: '利用者工賃単価割当',
@@ -628,7 +699,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
       physicalName: 'member_basic_schedules',
       tableType: '従属マスタ',
       logicalName: '利用者基本利用予定',
@@ -654,17 +726,19 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'staffs',
-      tableType: '従属マスタ',
-      logicalName: '職員',
-      description: 'システムを利用する職員情報',
+      category: '4. 連絡先',
+      physicalName: 'addresses',
+      tableType: '独立マスタ',
+      logicalName: '住所',
+      description: '所在地・住所情報の実体データマスタ（重複防止・名寄せ一元管理）',
       columns: [
-        { name: 'id', desc: '職員ID' },
-        { name: 'user_id', desc: '認証ユーザーID' },
-        { name: 'code', desc: '職員コード' },
-        { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'id', desc: '住所ID' },
+        { name: 'postal_code_prefix', desc: '郵便番号上3桁' },
+        { name: 'postal_code_suffix', desc: '郵便番号下4桁' },
+        { name: 'prefecture', desc: '都道府県' },
+        { name: 'city', desc: '市区町村・郡' },
+        { name: 'town_street', desc: '町名・丁目・番地' },
+        { name: 'building', desc: '建物名・部屋番号' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -672,107 +746,32 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'staff_qualification_settings',
+      category: '4. 連絡先',
+      physicalName: 'entity_address_settings',
       tableType: '従属マスタ',
-      logicalName: '職員資格割当',
-      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
+      logicalName: '住所割当',
+      description: '法人・事業所・利用者・職員・取引先等と住所の多対多割当・属性管理マスタ',
       columns: [
         { name: 'id', desc: '割当ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'qualification_id', desc: '資格ID' },
-        { name: 'license_number', desc: '資格・登録番号' },
-        { name: 'acquired_on', desc: '取得年月日・修了日' },
-        { name: 'valid_until', desc: '有効期限・更新研修期限' },
-        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'address_id', desc: '住所ID' },
+        { name: 'address_type', desc: '住所種別（main: 所在地・本社 / home: 自宅 / billing: 請求先 / shipping: 納品先）' },
+        { name: 'is_primary', desc: '主たる住所フラグ（true: メイン住所 / false: サブ住所）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'office_staff_settings',
-      tableType: '従属マスタ',
-      logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報（複数事業所兼務・所属定義対応。「事業所」タブで定義）',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '割当ID', status: 'added' },
-        { name: 'office_id', desc: '事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staff_work_style_summaries',
-      tableType: '従属マスタ',
-      logicalName: '職員勤務形態概要',
-      description: '事業所職員割当（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「勤務形態」タブで管理）',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '概要ID' },
-        { name: 'office_staff_setting_id', desc: '事業所職員割当ID（FK -> office_staff_settings.id）', status: 'modified' },
-        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
-        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
-        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
-        { name: 'valid_from', desc: '有効期間（開始）' },
-        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staff_work_style_details',
-      tableType: '従属マスタ',
-      logicalName: '職員勤務形態詳細',
-      description: '職員勤務形態概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「勤務形態」タブで管理）',
-      columns: [
-        { name: 'id', desc: '詳細ID' },
-        { name: 'summary_id', desc: '概要ID（staff_work_style_summariesのIDを参照）' },
-        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'staff_basic_schedules',
-      tableType: '従属マスタ',
-      logicalName: '職員基本勤務予定',
-      description: '曜日（日〜土）ごとの職員の定例勤務パターン（勤務曜日・標準出退勤時刻・休憩・所定時間）。日報（勤務記録）の初期自動セット基準',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '基本勤務予定ID', status: 'added' },
-        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
-        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
-        { name: 'is_work_day', desc: '定例勤務フラグ（true: 勤務日 / false: 公休・法定休日）', status: 'added' },
-        { name: 'start_time', desc: '基本始業時刻（出勤時刻。例: 08:30）', status: 'added' },
-        { name: 'end_time', desc: '基本終業時刻（退勤時刻。例: 17:30）', status: 'added' },
-        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
-        { name: 'scheduled_hours', desc: '基本所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
-        { name: 'remarks', desc: '備考・定例勤務パターンメモ（例: 早番、遅番、通常、時短等）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      layer: '1. マスタ層',
-      physicalName: 'partners',
+      category: '4. 連絡先',
+      physicalName: 'phone_numbers',
       tableType: '独立マスタ',
-      logicalName: '取引先',
-      description: '取引先情報',
+      logicalName: '電話・FAX番号',
+      description: '電話・携帯・FAX番号の実体データマスタ（数字のみ正規化保持・重複防止）',
       columns: [
-        { name: 'id', desc: '取引先ID' },
-        { name: 'code', desc: '取引先コード' },
-        { name: 'name', desc: '取引先・企業名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'is_customer', desc: '顧客フラグ' },
-        { name: 'is_subcontractor', desc: '外注先フラグ' },
-        { name: 'is_other', desc: 'その他フラグ' },
+        { name: 'id', desc: '電話番号ID' },
+        { name: 'phone_type', desc: '電話種別（phone: 固定電話 / mobile: 携帯電話 / fax: FAX）' },
+        { name: 'phone_number', desc: '電話番号（ハイフンなし数字のみ正規化保持）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -780,18 +779,32 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
-      physicalName: 'partner_contacts',
+      category: '4. 連絡先',
+      physicalName: 'entity_phone_settings',
       tableType: '従属マスタ',
-      logicalName: '取引先担当者',
-      description: '取引先ごとの担当者情報（1対多。電話・FAX・メールは割当テーブルにて管理）',
+      logicalName: '電話・FAX番号割当',
+      description: '事業所・利用者・職員・取引先等と電話・携帯・FAX番号の多対多割当・属性管理マスタ',
       columns: [
-        { name: 'id', desc: '担当者ID' },
-        { name: 'partner_id', desc: '取引先ID' },
-        { name: 'name', desc: '担当者名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'department', desc: '部署' },
-        { name: 'position', desc: '役職' },
+        { name: 'id', desc: '割当ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'phone_number_id', desc: '電話番号ID' },
+        { name: 'label', desc: 'ラベル・窓口名（例: 本部代表、直通、保護者携帯、緊急窓口等）' },
+        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
+        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '4. 連絡先',
+      physicalName: 'email_addresses',
+      tableType: '独立マスタ',
+      logicalName: 'メールアドレス',
+      description: '電子メールアドレスの実体データマスタ（RFC規格・小文字正規化保持・重複防止）',
+      columns: [
+        { name: 'id', desc: 'メールアドレスID' },
+        { name: 'email', desc: 'メールアドレス（RFC規格・小文字正規化保持）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -799,7 +812,25 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '4. 連絡先',
+      physicalName: 'entity_email_settings',
+      tableType: '従属マスタ',
+      logicalName: 'メールアドレス割当',
+      description: '事業所・利用者・職員・取引先等とメールアドレスの多対多割当・属性管理マスタ',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'owner_type', desc: '所有エンティティ種別（organization: 法人 / office: 事業所 / member: 利用者 / staff: 職員 / partner: 取引先）' },
+        { name: 'owner_id', desc: '所有エンティティID' },
+        { name: 'email_address_id', desc: 'メールアドレスID' },
+        { name: 'label', desc: 'ラベル・用途名（例: 連絡用、請求書用、保護者宛等）' },
+        { name: 'is_emergency', desc: '緊急連絡先フラグ（true: 緊急連絡先 / false: 通常連絡先）' },
+        { name: 'is_primary', desc: '優先連絡先フラグ（true: 優先連絡先 / false: サブ連絡先）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '5. 案件',
       physicalName: 'projects',
       tableType: '従属マスタ',
       logicalName: '案件',
@@ -819,7 +850,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '5. 案件',
       physicalName: 'project_tasks',
       tableType: '従属マスタ',
       logicalName: '案件タスク',
@@ -838,7 +869,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '5. 案件',
       physicalName: 'task_skill_settings',
       tableType: '従属マスタ',
       logicalName: 'タスクスキル割当',
@@ -853,7 +884,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '5. 案件',
       physicalName: 'task_assignee_settings',
       tableType: '従属マスタ',
       logicalName: 'タスク担当者割当',
@@ -870,7 +901,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '1. マスタ層',
+      category: '5. 案件',
       physicalName: 'project_budgets',
       tableType: '従属マスタ',
       logicalName: '案件予算',
@@ -886,9 +917,9 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    // 2. 日次実績層
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.1. 職員の予定と実績',
       physicalName: 'staff_exception_schedules',
       tableType: 'レコード',
       logicalName: '職員例外勤務予定',
@@ -910,7 +941,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.1. 職員の予定と実績',
       physicalName: 'staff_attendance_records',
       tableType: 'レコード',
       logicalName: '職員勤務実績',
@@ -931,7 +963,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'member_exception_schedules',
       tableType: 'レコード',
       logicalName: '利用者例外利用予定',
@@ -957,7 +990,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'member_attendance_records',
       tableType: 'レコード',
       logicalName: '利用者出欠実績',
@@ -987,7 +1021,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'member_work_records',
       tableType: 'レコード',
       logicalName: '利用者作業実績',
@@ -1006,7 +1041,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'allowance_deduction_records',
       tableType: 'レコード',
       logicalName: '加算手当・控除実績',
@@ -1023,7 +1059,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '2. 日次実績層',
+      category: '6. 日次実績の記録',
+      subCategory: '6.3. 確定',
       physicalName: 'daily_record_closings',
       tableType: 'レコード',
       logicalName: '日次実績確定',
@@ -1038,9 +1075,9 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    // 3. 月次実績層
     {
-      layer: '3. 月次実績層',
+      category: '7. 月次実績の記録',
+      subCategory: '7.1. 案件ごとの収支',
       physicalName: 'general_financial_records',
       tableType: 'レコード',
       logicalName: '一般収支実績',
@@ -1059,7 +1096,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '3. 月次実績層',
+      category: '7. 月次実績の記録',
+      subCategory: '7.1. 案件ごとの収支',
       physicalName: 'incentive_records',
       tableType: 'レコード',
       logicalName: 'インセンティブ実績',
@@ -1075,7 +1113,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '3. 月次実績層',
+      category: '7. 月次実績の記録',
+      subCategory: '7.2. 確定',
       physicalName: 'monthly_record_closings',
       tableType: 'レコード',
       logicalName: '月次実績確定',
@@ -1091,9 +1130,9 @@ export function ScreenCompositionPage() {
         { name: 'updated_at', desc: '更新日時' }
       ]
     },
-    // 4. スナップショット層
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.1. 工賃・控除以外の収支',
       physicalName: 'general_financial_details',
       tableType: 'スナップショット',
       logicalName: '一般収支明細',
@@ -1116,7 +1155,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'wage_summaries',
       tableType: 'スナップショット',
       logicalName: '工賃・控除概要',
@@ -1143,7 +1183,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'incentive_details',
       tableType: 'スナップショット',
       logicalName: 'インセンティブ明細',
@@ -1158,7 +1199,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'allowance_details',
       tableType: 'スナップショット',
       logicalName: '加算手当明細',
@@ -1176,7 +1218,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'deduction_details',
       tableType: 'スナップショット',
       logicalName: '控除明細',
@@ -1194,7 +1237,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'service_billing_summaries',
       tableType: 'スナップショット',
       logicalName: 'サービス費概要',
@@ -1224,7 +1268,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.2. 工賃・控除の収支',
       physicalName: 'service_billing_details',
       tableType: 'スナップショット',
       logicalName: 'サービス費明細',
@@ -1244,7 +1289,8 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      layer: '4. スナップショット層',
+      category: '8. 集計結果の記録',
+      subCategory: '8.3. 確定',
       physicalName: 'monthly_financial_closings',
       tableType: 'スナップショット',
       logicalName: '月次収支確定',
@@ -1276,114 +1322,46 @@ export function ScreenCompositionPage() {
       <div className="table-container">
         {isTableComposition ? (
           <div>
-            <div style={{
-              marginBottom: '16px',
-              padding: '16px 20px',
-              backgroundColor: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              borderRadius: '8px',
-              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span style={{ fontSize: '18px' }}>📋</span>
-                <span style={{ fontWeight: 'bold', fontSize: '15px', color: '#1e3a8a' }}>
-                  就労継続支援B型 サービス費算定ロジック（10割・1割）対応 スキーマ改修設計
-                </span>
-              </div>
-              <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#1e40af', lineHeight: '1.6' }}>
-                本システム（就労継続支援B型）における「サービス利用料全額（10割・総費用額）」および「利用者自己負担額（原則1割・上限月額管理判定）」の自動算定ロジック構築に向けて、網羅的な条件登録に必要なテーブル・カラムの追加・変更箇所を<strong style={{ color: '#1d4ed8' }}>青色系背景</strong>で識別表示しています。
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#2563eb',
-                    color: '#ffffff'
-                  }}>
-                    新規テーブル
-                  </span>
-                  <span style={{ color: '#334155' }}>：新規追加テーブル（事業所加算・減算概要、事業所加算・減算詳細、サービス費概要、サービス費明細）</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#0284c7',
-                    color: '#ffffff'
-                  }}>
-                    一部変更
-                  </span>
-                  <span style={{ color: '#334155' }}>：カラム追加・改修予定の既存テーブル</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '1px 6px',
-                    borderRadius: '3px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#2563eb',
-                    color: '#ffffff'
-                  }}>
-                    追加
-                  </span>
-                  <span style={{ color: '#334155' }}>：新規追加カラム（青色背景）</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '1px 6px',
-                    borderRadius: '3px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#0284c7',
-                    color: '#ffffff'
-                  }}>
-                    変更
-                  </span>
-                  <span style={{ color: '#334155' }}>：定義・区分拡張カラム（青色背景）</span>
-                </div>
-              </div>
-            </div>
-
             <table className="inventory-table">
               <thead>
                 <tr>
-                  <th style={{ width: '15%' }}>アーキテクチャ層</th>
-                  <th style={{ width: '10%' }}>区分 (Type)</th>
-                  <th style={{ width: '20%' }}>物理名 (Table Name)</th>
-                  <th style={{ width: '18%' }}>論理名 (Logical Name)</th>
-                  <th style={{ width: '17%' }}>カラム名</th>
-                  <th style={{ width: '20%' }}>カラム説明</th>
+                  <th style={{ width: '12%' }}>区分 (Type)</th>
+                  <th style={{ width: '22%' }}>物理名 (Table Name)</th>
+                  <th style={{ width: '20%' }}>論理名 (Logical Name)</th>
+                  <th style={{ width: '20%' }}>カラム名</th>
+                  <th style={{ width: '26%' }}>カラム説明</th>
                 </tr>
               </thead>
               <tbody>
                 {(() => {
-                  let currentLayer = '';
+                  let currentCategory = '';
+                  let currentSubCategory = '';
+
+                  const getCategoryStyle = (cat: string) => {
+                    if (cat.startsWith('1.')) return { bg: '#eff6ff', text: '#1e40af', badgeBg: '#3b82f6', border: '#bfdbfe' };
+                    if (cat.startsWith('2.')) return { bg: '#f0fdf4', text: '#166534', badgeBg: '#16a34a', border: '#bbf7d0' };
+                    if (cat.startsWith('3.')) return { bg: '#fefce8', text: '#854d0e', badgeBg: '#ca8a04', border: '#fef08a' };
+                    if (cat.startsWith('4.')) return { bg: '#faf5ff', text: '#6b21a8', badgeBg: '#9333ea', border: '#e9d5ff' };
+                    if (cat.startsWith('5.')) return { bg: '#fdf2f8', text: '#9d174d', badgeBg: '#db2777', border: '#fbcfe8' };
+                    if (cat.startsWith('6.')) return { bg: '#fff7ed', text: '#9a3412', badgeBg: '#ea580c', border: '#fed7aa' };
+                    if (cat.startsWith('7.')) return { bg: '#f5f3ff', text: '#5b21b6', badgeBg: '#7c3aed', border: '#ddd6fe' };
+                    if (cat.startsWith('8.')) return { bg: '#ecfdf5', text: '#065f46', badgeBg: '#059669', border: '#a7f3d0' };
+                    return { bg: '#f8fafc', text: '#334155', badgeBg: '#64748b', border: '#cbd5e1' };
+                  };
+
                   return dbTables.flatMap((table, i) => {
-                    const isNewLayer = table.layer !== currentLayer;
-                    if (isNewLayer) {
-                      currentLayer = table.layer || '';
+                    const isNewCategory = table.category !== currentCategory;
+                    if (isNewCategory) {
+                      currentCategory = table.category;
+                      currentSubCategory = '';
                     }
 
-                    const layerBgColor =
-                      table.layer === '1. マスタ層' ? '#ebf8ff' :
-                        table.layer === '2. 日次実績層' ? '#fffaf0' :
-                          table.layer === '3. 月次実績層' ? '#faf5ff' :
-                            table.layer === '4. スナップショット層' ? '#f0fff4' : '#f7fafc';
+                    const isNewSubCategory = !!(table.subCategory && table.subCategory !== currentSubCategory);
+                    if (isNewSubCategory) {
+                      currentSubCategory = table.subCategory || '';
+                    }
 
-                    const layerTextColor =
-                      table.layer === '1. マスタ層' ? '#2b6cb0' :
-                        table.layer === '2. 日次実績層' ? '#c05621' :
-                          table.layer === '3. 月次実績層' ? '#6b46c1' :
-                            table.layer === '4. スナップショット層' ? '#276749' : '#4a5568';
+                    const catStyle = getCategoryStyle(table.category);
 
                     const tableRows = table.columns.map((col, idx) => {
                       const isLastInTable = idx === table.columns.length - 1;
@@ -1412,25 +1390,6 @@ export function ScreenCompositionPage() {
 
                       return (
                         <tr key={`${i}-${idx}`} style={{ backgroundColor: rowBgColor }}>
-                          <td style={{
-                            borderBottom: borderBottomStyle,
-                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
-                          }}>
-                            {idx === 0 ? (
-                              <span style={{
-                                display: 'inline-block',
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                fontSize: '11px',
-                                fontWeight: 'bold',
-                                backgroundColor: layerBgColor,
-                                color: layerTextColor,
-                                border: `1px solid ${layerTextColor}40`
-                              }}>
-                                {table.layer}
-                              </span>
-                            ) : ''}
-                          </td>
                           <td style={{
                             borderBottom: borderBottomStyle,
                             backgroundColor: isTableAdded ? '#f0f7ff' : undefined
@@ -1559,17 +1518,59 @@ export function ScreenCompositionPage() {
                       );
                     });
 
-                    if (isNewLayer) {
-                      return [
-                        <tr key={`layer-hdr-${i}`} style={{ backgroundColor: layerBgColor }}>
-                          <td colSpan={6} style={{ padding: '8px 12px', fontWeight: 'bold', color: layerTextColor, borderTop: '2px solid var(--color-border-subtle)' }}>
-                            ■ {table.layer}
+                    const headerRows: React.ReactElement[] = [];
+
+                    if (isNewCategory) {
+                      headerRows.push(
+                        <tr key={`cat-hdr-${i}`} style={{ backgroundColor: catStyle.bg }}>
+                          <td colSpan={5} style={{
+                            padding: '10px 16px',
+                            fontWeight: 'bold',
+                            borderTop: '2px solid var(--color-border-subtle)',
+                            borderBottom: `1px solid ${catStyle.border}`
+                          }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                              <span style={{
+                                display: 'inline-block',
+                                padding: '3px 10px',
+                                borderRadius: '4px',
+                                fontSize: '13px',
+                                fontWeight: 'bold',
+                                backgroundColor: catStyle.badgeBg,
+                                color: '#ffffff'
+                              }}>
+                                ■ {table.category}
+                              </span>
+                              {table.categoryDescription && (
+                                <span style={{ fontSize: '12px', color: catStyle.text, fontWeight: 'normal' }}>
+                                  {table.categoryDescription}
+                                </span>
+                              )}
+                            </div>
                           </td>
-                        </tr>,
-                        ...tableRows
-                      ];
+                        </tr>
+                      );
                     }
-                    return tableRows;
+
+                    if (isNewSubCategory && table.subCategory) {
+                      headerRows.push(
+                        <tr key={`subcat-hdr-${i}`} style={{ backgroundColor: '#f8fafc' }}>
+                          <td colSpan={5} style={{
+                            padding: '6px 16px 6px 24px',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            color: '#334155',
+                            borderTop: '1px solid var(--color-border-subtle)',
+                            borderBottom: '1px solid var(--color-border-subtle)'
+                          }}>
+                            <span style={{ color: '#64748b', marginRight: '6px' }}>▼</span>
+                            {table.subCategory}
+                          </td>
+                        </tr>
+                      );
+                    }
+
+                    return [...headerRows, ...tableRows];
                   });
                 })()}
               </tbody>

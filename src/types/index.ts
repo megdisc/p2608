@@ -352,6 +352,25 @@ export type SkillEvaluationGridRow = {
   evaluations: Record<string, string>; // mapping from skillId to skillLevelId
 };
 
+// スキル割当履歴（サブ行）
+export type MemberSkillSettingRow = {
+  id: string; // summary_id (UUID or NEW-xxx)
+  member_id: string;
+  valid_from: string;
+  valid_to: string | null;
+  evaluations: Record<string, string>; // skill_id -> skill_level_id
+  [skillId: string]: any; // 動的スキルのフラットアクセス用
+};
+
+// 利用者＋スキル割当履歴（メイン行）
+export type MemberWithSkillSettings = {
+  id: string; // member_id
+  code: string;
+  name: string;
+  yomigana: string;
+  settings: MemberSkillSettingRow[];
+};
+
 export type ProjectFinancialRecordSubRow = {
   id: string;
   type: 'revenue' | 'expense' | 'reserve';

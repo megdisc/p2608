@@ -688,15 +688,33 @@ export function ScreenCompositionPage() {
     {
       category: '3. アカウントとユーザー',
       subCategory: '3.3. 利用者',
-      physicalName: 'member_skill_settings',
+      physicalName: 'member_skill_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '利用者スキル割当',
-      description: '利用者の保有スキル評価履歴',
+      logicalName: '利用者スキル割当概要',
+      description: '利用者ごとのスキル評価履歴期間を管理（「スキル」タブで管理）',
+      status: 'added',
       columns: [
-        { name: 'id', desc: '評価ID' },
-        { name: 'member_id', desc: '利用者ID' },
-        { name: 'skill_id', desc: 'スキルID' },
-        { name: 'skill_level_id', desc: 'スキルレベルID' },
+        { name: 'id', desc: '概要ID' },
+        { name: 'member_id', desc: '利用者ID（FK -> members.id）' },
+        { name: 'valid_from', desc: '有効期間（開始）' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
+      physicalName: 'member_skill_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '利用者スキル割当詳細',
+      description: '利用者スキル割当概要に紐づく各スキル項目の到達レベル評価（「スキル」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（FK -> member_skill_setting_summaries.id）' },
+        { name: 'skill_id', desc: 'スキル項目ID（FK -> skill_items.id）' },
+        { name: 'skill_level_id', desc: 'スキルレベルID（FK -> skill_level_items.id）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

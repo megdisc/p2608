@@ -377,6 +377,27 @@ export type MemberExceptionScheduleTableItem = {
   updated_at?: string;
 };
 
+export type MemberSkillSettingSummaryTableItem = {
+  id?: string; // UUID
+  member_id: string; // UUID (FK -> members.id)
+  valid_from: string; // YYYY-MM-DD
+  valid_to?: string | null; // YYYY-MM-DD
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type MemberSkillSettingDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID (FK -> member_skill_setting_summaries.id)
+  skill_id: string; // UUID (FK -> skill_items.id)
+  skill_level_id: string; // UUID (FK -> skill_level_items.id)
+  created_at?: string;
+  updated_at?: string;
+};
+
+// 後方互換用エイリアス
+export type MemberSkillSettingTableItem = MemberSkillSettingDetailTableItem;
+
 
 
 

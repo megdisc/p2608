@@ -269,6 +269,17 @@ export type MonthlyIncentiveDetailItem = {
   allocationAmount: number;
 };
 
+export type MonthlyAllowanceDeductionDetailItem = {
+  id: string;
+  summaryId: string;
+  itemId?: string;
+  itemCategory: 'allowance' | 'deduction';
+  itemName: string;
+  unitPrice: number;
+  quantity: number;
+  amount: number;
+};
+
 export type MonthlyAllowanceDetailItem = {
   id: string;
   summaryId: string;

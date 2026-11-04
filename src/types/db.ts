@@ -398,6 +398,24 @@ export type MemberSkillSettingDetailTableItem = {
 // 後方互換用エイリアス
 export type MemberSkillSettingTableItem = MemberSkillSettingDetailTableItem;
 
+export type AllowanceDeductionDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID (FK -> wage_summaries.id)
+  item_id?: string | null; // UUID (FK -> allowance_deduction_items.id)
+  item_category: 'allowance' | 'deduction';
+  item_name: string;
+  unit_price: number;
+  quantity: number;
+  amount: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+// 後方互換用エイリアス
+export type AllowanceDetailTableItem = AllowanceDeductionDetailTableItem;
+export type DeductionDetailTableItem = AllowanceDeductionDetailTableItem;
+
+
 
 
 

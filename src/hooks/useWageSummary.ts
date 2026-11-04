@@ -73,8 +73,7 @@ export function useWageSummary() {
         wageHeaderConfirmRes,
         officeSettingsRes,
         monthlyIncentiveDetailsRes,
-        monthlyAllowanceDetailsRes,
-        monthlyDeductionDetailsRes,
+        allowanceDeductionDetailsRes,
         recipientCertificatesRes,
         serviceBillingSummariesRes,
         staffAttendanceRes
@@ -101,8 +100,7 @@ export function useWageSummary() {
         supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
         officeMembersQuery,
         supabase.from('monthly_incentive_details').select('*'),
-        supabase.from('monthly_allowance_details').select('*'),
-        supabase.from('monthly_deduction_details').select('*'),
+        supabase.from('allowance_deduction_details').select('*'),
         supabase.from('member_recipient_certificates').select('*').or('is_deleted.eq.false,is_deleted.is.null'),
         supabase.from('service_billing_summaries').select('*').eq('target_period', monthStr),
         supabase.from('staff_attendance_records').select('*').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`)
@@ -232,15 +230,22 @@ export function useWageSummary() {
       });
 
       const dbAllowanceDetailsMap = new Map<string, any[]>();
-      (monthlyAllowanceDetailsRes.data || []).forEach((d: any) => {
-        if (!dbAllowanceDetailsMap.has(d.summary_id)) dbAllowanceDetailsMap.set(d.summary_id, []);
-        dbAllowanceDetailsMap.get(d.summary_id)!.push(d);
-      });
-
       const dbDeductionDetailsMap = new Map<string, any[]>();
-      (monthlyDeductionDetailsRes.data || []).forEach((d: any) => {
-        if (!dbDeductionDetailsMap.has(d.summary_id)) dbDeductionDetailsMap.set(d.summary_id, []);
-        dbDeductionDetailsMap.get(d.summary_id)!.push(d);
+
+      (allowanceDeductionDetailsRes.data || []).forEach((d: any) => {
+        if (d.item_category === 'allowance' || d.allowance_name) {
+          if (!dbAllowanceDetailsMap.has(d.summary_id)) dbAllowanceDetailsMap.set(d.summary_id, []);
+          dbAllowanceDetailsMap.get(d.summary_id)!.push({
+            ...d,
+            allowance_name: d.item_name || d.allowance_name,
+          });
+        } else if (d.item_category === 'deduction' || d.deduction_name) {
+          if (!dbDeductionDetailsMap.has(d.summary_id)) dbDeductionDetailsMap.set(d.summary_id, []);
+          dbDeductionDetailsMap.get(d.summary_id)!.push({
+            ...d,
+            deduction_name: d.item_name || d.deduction_name,
+          });
+        }
       });
 
       const memberCertMap = new Map<string, any>();
@@ -810,8 +815,7 @@ export function useWageSummary() {
 
           const summaryMap = new Map((insertedSummaries || []).map((s: any) => [s.member_id, s.id]));
 
-          const allAllowanceDetails: any[] = [];
-          const allDeductionDetails: any[] = [];
+          const allAllowanceDeductionDetails: any[] = [];
           const allIncentiveDetails: any[] = [];
 
           data.forEach(r => {
@@ -819,9 +823,10 @@ export function useWageSummary() {
             if (!summaryId) return;
 
             (r.allowanceItems || []).forEach(a => {
-              allAllowanceDetails.push({
+              allAllowanceDeductionDetails.push({
                 summary_id: summaryId,
-                allowance_name: a.name,
+                item_category: 'allowance',
+                item_name: a.name,
                 unit_price: a.amount,
                 quantity: 1,
                 amount: a.amount
@@ -829,9 +834,10 @@ export function useWageSummary() {
             });
 
             (r.deductionItems || []).forEach(d => {
-              allDeductionDetails.push({
+              allAllowanceDeductionDetails.push({
                 summary_id: summaryId,
-                deduction_name: d.name,
+                item_category: 'deduction',
+                item_name: d.name,
                 unit_price: d.amount,
                 quantity: 1,
                 amount: d.amount
@@ -849,14 +855,31 @@ export function useWageSummary() {
           const summaryIds = Array.from(summaryMap.values());
           if (summaryIds.length > 0) {
             try {
-              await supabase.from('monthly_allowance_details').delete().in('summary_id', summaryIds);
-              if (allAllowanceDetails.length > 0) {
-                await supabase.from('monthly_allowance_details').insert(allAllowanceDetails);
+              // 統合テーブル allowance_deduction_details へ保存
+              const { error: syncErr } = await supabase.from('allowance_deduction_details').delete().in('summary_id', summaryIds);
+              if (!syncErr) {
+                if (allAllowanceDeductionDetails.length > 0) {
+                  await supabase.from('allowance_deduction_details').insert(allAllowanceDeductionDetails);
+                }
+              } else {
+                // フォールバック: 旧ビュー/テーブルへの書き込み
+                const allAllowanceDetails = allAllowanceDeductionDetails
+                  .filter(d => d.item_category === 'allowance')
+                  .map(d => ({ summary_id: d.summary_id, allowance_name: d.item_name, unit_price: d.unit_price, quantity: d.quantity, amount: d.amount }));
+                const allDeductionDetails = allAllowanceDeductionDetails
+                  .filter(d => d.item_category === 'deduction')
+                  .map(d => ({ summary_id: d.summary_id, deduction_name: d.item_name, unit_price: d.unit_price, quantity: d.quantity, amount: d.amount }));
+
+                await supabase.from('monthly_allowance_details').delete().in('summary_id', summaryIds);
+                if (allAllowanceDetails.length > 0) {
+                  await supabase.from('monthly_allowance_details').insert(allAllowanceDetails);
+                }
+                await supabase.from('monthly_deduction_details').delete().in('summary_id', summaryIds);
+                if (allDeductionDetails.length > 0) {
+                  await supabase.from('monthly_deduction_details').insert(allDeductionDetails);
+                }
               }
-              await supabase.from('monthly_deduction_details').delete().in('summary_id', summaryIds);
-              if (allDeductionDetails.length > 0) {
-                await supabase.from('monthly_deduction_details').insert(allDeductionDetails);
-              }
+
               await supabase.from('monthly_incentive_details').delete().in('summary_id', summaryIds);
               if (allIncentiveDetails.length > 0) {
                 await supabase.from('monthly_incentive_details').insert(allIncentiveDetails);

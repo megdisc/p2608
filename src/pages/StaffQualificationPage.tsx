@@ -134,17 +134,16 @@ export function StaffQualificationPage() {
     ];
 
     qualifications.forEach(qual => {
-      const isBType = isBTypeQualification(qual);
       cols.push({
         key: qual.id,
         header: qual.name,
         sortable: false,
-        editable: isBType,
+        editable: true,
         inputType: 'checkbox',
-        style: { textAlign: 'center', opacity: isBType ? 1 : 0.6 },
-        onCellChange: isBType ? (newValue, _item, updateRow) => {
+        style: { textAlign: 'center' },
+        onCellChange: (newValue, _item, updateRow) => {
           updateRow({ [qual.id]: Boolean(newValue) });
-        } : undefined,
+        },
       });
     });
 
@@ -169,7 +168,6 @@ export function StaffQualificationPage() {
 
       drafts.forEach(row => {
         qualifications.forEach(qual => {
-          if (!isBTypeQualification(qual)) return;
           const key = `${row.id}_${qual.id}`;
           const isSelected = Boolean(row[qual.id]);
           const existsInDb = existingMap.has(key);

@@ -198,7 +198,7 @@ export function StaffWorkStylePage() {
       employment_type: 'full_time',
       duty_type: 'dedicated',
       weekly_working_hours: 40,
-      staff_roles: ['life_supporter'],
+      staff_roles: ['04'],
       valid_from: defaultStart,
       valid_to: null,
     };

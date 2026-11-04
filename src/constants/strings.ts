@@ -662,13 +662,13 @@ export const DUTY_TYPE_OPTIONS = [
 ];
 
 export const OFFICE_STAFF_ROLE_OPTIONS = [
-  { label: '管理者', value: 'manager' },
-  { label: 'サービス管理責任者', value: 'service_admin' },
-  { label: '職業指導員', value: 'vocational_instructor' },
-  { label: '生活支援員', value: 'life_supporter' },
-  { label: '目標工賃達成指導員', value: 'target_evaluator' },
-  { label: '就労支援員', value: 'employment_supporter' },
-  { label: 'ピアサポート専門員', value: 'peer_supporter' },
+  { label: '管理者', value: '01' },
+  { label: 'サービス管理責任者', value: '02' },
+  { label: '職業指導員', value: '03' },
+  { label: '生活支援員', value: '04' },
+  { label: '目標工賃達成指導員', value: '05' },
+  { label: '就労支援員', value: '06' },
+  { label: 'ピアサポート専門員', value: '07' },
 ];
 
 

@@ -17,12 +17,6 @@ export function StaffRoleMasterPage() {
 
   const columns: Column<StaffRoleTableItem>[] = [
     {
-      key: 'sort_order',
-      header: '表示順',
-      sortable: true,
-      style: { width: '80px', textAlign: 'center' },
-    },
-    {
       key: 'code',
       header: TABLE_COLUMNS.STAFF_ROLE_CODE || '職種コード',
       sortable: true,

@@ -197,7 +197,7 @@ export function ScreenCompositionPage() {
       status: 'added',
       columns: [
         { name: 'id', desc: '職種ID', status: 'added' },
-        { name: 'code', desc: '職種コード（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）', status: 'added' },
+        { name: 'code', desc: '職種コード（公定2桁コード。01: 管理者, 02: サービス管理責任者, 03: 職業指導員, 04: 生活支援員, 05: 目標工賃達成指導員 等）', status: 'added' },
         { name: 'name', desc: '職種名称', status: 'added' },
         { name: 'category', desc: '職種区分（必置職種 / 加算職種 / 関連職種）', status: 'added' },
         { name: 'is_direct_care', desc: '直接処遇職員フラグ（常勤換算比率の対象となる職種か否か）', status: 'added' },
@@ -594,7 +594,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '詳細ID' },
         { name: 'summary_id', desc: '概要ID（staff_role_summariesのIDを参照）' },
         { name: 'staff_role_id', desc: '職種ID（FK -> staff_roles.id）', status: 'added' },
-        { name: 'staff_role', desc: '配置職種区分コード（manager, service_admin 等。staff_roles.codeと連動）' },
+        { name: 'staff_role', desc: '配置職種区分コード（公定2桁コード。01: 管理者, 02: サービス管理責任者 等。staff_roles.codeと連動）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

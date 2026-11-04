@@ -249,6 +249,22 @@ ON CONFLICT (id) DO UPDATE SET
   category = EXCLUDED.category,
   description = EXCLUDED.description;
 
+-- 3.2.1 職種マスタ (staff_roles) 全7件
+INSERT INTO public.staff_roles (id, code, name, category, is_direct_care, description, sort_order) VALUES
+('33333333-0000-0000-0000-000000000001', 'manager', '管理者', '必置職種', false, '事業所全体の管理・業務統括を行う管理責任者', 1),
+('33333333-0000-0000-0000-000000000002', 'service_admin', 'サービス管理責任者', '必置職種', false, '個別支援計画の作成・評価・技術指導等を行う障害福祉事業所の必置人員', 2),
+('33333333-0000-0000-0000-000000000003', 'vocational_instructor', '職業指導員', '必置職種', true, '生産活動や作業技術の指導・支援を行う人員配置基準職種', 3),
+('33333333-0000-0000-0000-000000000004', 'life_supporter', '生活支援員', '必置職種', true, '日常生活支援・体調管理・相談援助を行う人員配置基準職種', 4),
+('33333333-0000-0000-0000-000000000005', 'target_evaluator', '目標工賃達成指導員', '加算職種', true, '工賃向上計画の推進・販路開拓等を行う目標工賃達成指導員配置加算用職種', 5),
+('33333333-0000-0000-0000-000000000006', 'employment_supporter', '就労支援員', '関連職種', true, '一般就労に向けた実習先開拓・求職活動・定着支援等を担当する職種', 6),
+('33333333-0000-0000-0000-000000000007', 'peer_supporter', 'ピアサポート専門員', '加算職種', true, '自らの障害経験を活かした相談・支援を担当するピアサポート体制加算用職種', 7)
+ON CONFLICT (code) DO UPDATE SET
+  name = EXCLUDED.name,
+  category = EXCLUDED.category,
+  is_direct_care = EXCLUDED.is_direct_care,
+  description = EXCLUDED.description,
+  sort_order = EXCLUDED.sort_order;
+
 -- 3.3 加算・減算項目マスタ (reward_items) 全30件
 INSERT INTO public.reward_items (id, service_type_id, code, name, item_category, occurrence_type, unit_value, calc_rate, monthly_limit_count) VALUES
 -- 就労継続支援B型 (21)
@@ -761,24 +777,25 @@ ON CONFLICT (id) DO UPDATE SET
   valid_to = EXCLUDED.valid_to;
 
 -- 12.1 職員職種詳細 (staff_role_details)
-INSERT INTO public.staff_role_details (id, summary_id, staff_role) VALUES
+INSERT INTO public.staff_role_details (id, summary_id, staff_role, staff_role_id) VALUES
 -- 相澤翔太 WS未来 過去
-('88888888-0001-0000-0000-000000000001', '88888888-2222-0000-0000-000000000001', 'life_supporter'),
+('88888888-0001-0000-0000-000000000001', '88888888-2222-0000-0000-000000000001', 'life_supporter', '33333333-0000-0000-0000-000000000004'),
 -- 相澤翔太 WS未来 現在 (兼務: 管理者 + サービス管理責任者)
-('88888888-0001-0000-0000-000000000002', '88888888-2222-0000-0000-000000000002', 'manager'),
-('88888888-0001-0000-0000-000000000003', '88888888-2222-0000-0000-000000000002', 'service_admin'),
+('88888888-0001-0000-0000-000000000002', '88888888-2222-0000-0000-000000000002', 'manager', '33333333-0000-0000-0000-000000000001'),
+('88888888-0001-0000-0000-000000000003', '88888888-2222-0000-0000-000000000002', 'service_admin', '33333333-0000-0000-0000-000000000002'),
 -- 相澤翔太 未来ワークス 現在
-('88888888-0001-0000-0000-000000000004', '88888888-3333-0000-0000-000000000001', 'life_supporter'),
+('88888888-0001-0000-0000-000000000004', '88888888-3333-0000-0000-000000000001', 'life_supporter', '33333333-0000-0000-0000-000000000004'),
 -- 井上結衣 WS未来 現在 (兼務: 職業指導員 + 生活支援員)
-('88888888-0001-0000-0000-000000000005', '88888888-2222-0000-0000-000000000003', 'vocational_instructor'),
-('88888888-0001-0000-0000-000000000006', '88888888-2222-0000-0000-000000000003', 'life_supporter'),
+('88888888-0001-0000-0000-000000000005', '88888888-2222-0000-0000-000000000003', 'vocational_instructor', '33333333-0000-0000-0000-000000000003'),
+('88888888-0001-0000-0000-000000000006', '88888888-2222-0000-0000-000000000003', 'life_supporter', '33333333-0000-0000-0000-000000000004'),
 -- 上田拓海 未来ワークス 現在
-('88888888-0001-0000-0000-000000000007', '88888888-3333-0000-0000-000000000002', 'life_supporter'),
+('88888888-0001-0000-0000-000000000007', '88888888-3333-0000-0000-000000000002', 'life_supporter', '33333333-0000-0000-0000-000000000004'),
 -- 上田拓海 未来オアシス 現在
-('88888888-0001-0000-0000-000000000008', '88888888-4444-0000-0000-000000000001', 'vocational_instructor')
+('88888888-0001-0000-0000-000000000008', '88888888-4444-0000-0000-000000000001', 'vocational_instructor', '33333333-0000-0000-0000-000000000003')
 ON CONFLICT (id) DO UPDATE SET
   summary_id = EXCLUDED.summary_id,
-  staff_role = EXCLUDED.staff_role;
+  staff_role = EXCLUDED.staff_role,
+  staff_role_id = EXCLUDED.staff_role_id;
 
 -- 13. 作業実績データ (member_work_records) 2026年1月〜12月 各事業所
 INSERT INTO public.member_work_records (office_id, target_period, member_id, task_id, work_time, work_location_id) VALUES

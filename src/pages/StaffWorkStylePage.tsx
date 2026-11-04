@@ -12,6 +12,7 @@ import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
 import type {
   StaffTableItem,
   OfficeStaffSettingTableItem,
+  StaffRoleTableItem,
   StaffWorkStyleSummaryTableItem,
   StaffWorkStyleDetailTableItem,
 } from '../types/db';
@@ -62,6 +63,7 @@ const generateId = () => {
 export function StaffWorkStylePage() {
   const { selectedOfficeId, offices } = useOffice();
   const [data, setData] = useState<StaffWithWorkStyleSettings[]>([]);
+  const [staffRoles, setStaffRoles] = useState<StaffRoleTableItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
@@ -81,13 +83,21 @@ export function StaffWorkStylePage() {
     try {
       setLoading(true);
       // 1. 親テーブル (office_staff_settings) から選択中の事業所に所属する割当を取得
-      const [staffRes, officeStaffRes] = await Promise.all([
+      // および職種マスタ (staff_roles) を取得
+      const [staffRes, officeStaffRes, roleRes] = await Promise.all([
         supabase.from('staffs').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
         supabase.from('office_staff_settings').select('*').eq('office_id', targetOfficeId),
+        supabase.from('staff_roles').select('*').order('sort_order', { ascending: true }),
       ]);
 
       if (staffRes.error) throw staffRes.error;
       if (officeStaffRes.error) throw officeStaffRes.error;
+
+      if (roleRes.error) {
+        console.error('Error fetching staff_roles:', roleRes.error);
+      } else if (roleRes.data && roleRes.data.length > 0) {
+        setStaffRoles(roleRes.data);
+      }
 
       // 職種概要テーブルの取得（staff_role_summaries が無ければ staff_work_style_summaries にフォールバック）
       let summariesRes = await supabase.from('staff_role_summaries').select('*').order('valid_from', { ascending: false });
@@ -207,6 +217,22 @@ export function StaffWorkStylePage() {
     return recomputed.sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
   };
 
+  const roleOptions = useMemo(() => {
+    if (staffRoles.length > 0) {
+      return staffRoles.map(r => ({
+        label: r.name,
+        value: r.code,
+      }));
+    }
+    return OFFICE_STAFF_ROLE_OPTIONS;
+  }, [staffRoles]);
+
+  const roleCodeToIdMap = useMemo(() => {
+    const map = new Map<string, string>();
+    staffRoles.forEach(r => map.set(r.code, r.id));
+    return map;
+  }, [staffRoles]);
+
   const columns: Column<any>[] = useMemo(() => {
     return [
       {
@@ -279,7 +305,7 @@ export function StaffWorkStylePage() {
         customEditRender: (value: string[], _subItem: StaffWorkStyleSettingRow, onChange: (newVal: string[]) => void) => {
           return (
             <MultiSelectDropdown
-              options={OFFICE_STAFF_ROLE_OPTIONS}
+              options={roleOptions}
               value={value || []}
               onChange={onChange}
               placeholder="職種を選択"
@@ -288,7 +314,7 @@ export function StaffWorkStylePage() {
         },
         render: (subItem: StaffWorkStyleSettingRow) => {
           const selected = (subItem.staff_roles || [])
-            .map(roleVal => OFFICE_STAFF_ROLE_OPTIONS.find(opt => opt.value === roleVal)?.label)
+            .map(roleVal => roleOptions.find(opt => opt.value === roleVal)?.label || roleVal)
             .filter(Boolean);
 
           if (selected.length === 0) {
@@ -336,7 +362,7 @@ export function StaffWorkStylePage() {
         style: { width: '150px' },
       },
     ];
-  }, []);
+  }, [roleOptions]);
 
   const handleBatchSave = async (drafts: StaffWithWorkStyleSettings[], deletedIds: string[]) => {
     if (!targetOfficeId) {
@@ -410,13 +436,25 @@ export function StaffWorkStylePage() {
               id: generateId(),
               summary_id: summaryId,
               staff_role: role,
+              staff_role_id: roleCodeToIdMap.get(role) || null,
             }));
 
             const { error: insDetailsErr } = await supabase
               .from(detailTable)
               .insert(detailRows);
 
-            if (insDetailsErr) throw insDetailsErr;
+            if (insDetailsErr) {
+              // staff_role_id カラム未適用の環境用フォールバック
+              const fallbackRows = setting.staff_roles.map(role => ({
+                id: generateId(),
+                summary_id: summaryId,
+                staff_role: role,
+              }));
+              const { error: retryErr } = await supabase
+                .from(detailTable)
+                .insert(fallbackRows);
+              if (retryErr) throw retryErr;
+            }
           }
         }
       }

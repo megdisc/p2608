@@ -5,6 +5,7 @@ import { Tabs } from '../components/ui';
 
 import { ServiceTypePage } from './ServiceTypePage';
 import { QualificationPage } from './QualificationPage';
+import { StaffRoleMasterPage } from './StaffRoleMasterPage';
 import { RewardItemPage } from './RewardItemPage';
 import { RegionalGradePage } from './RegionalGradePage';
 
@@ -21,6 +22,8 @@ export function ScreenWelfarePage() {
         return <RewardItemPage />;
       case 'qualification':
         return <QualificationPage />;
+      case 'staffRole':
+        return <StaffRoleMasterPage />;
       case 'regionalGrade':
         return <RegionalGradePage />;
       default:

@@ -145,10 +145,23 @@ export type StaffRoleSummaryTableItem = {
   updated_at?: string;
 };
 
+export type StaffRoleTableItem = {
+  id: string; // UUID
+  code: string;
+  name: string;
+  category: string;
+  is_direct_care?: boolean;
+  description?: string;
+  sort_order?: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type StaffRoleDetailTableItem = {
   id?: string; // UUID
   summary_id: string; // UUID
   staff_role: string;
+  staff_role_id?: string; // UUID (FK -> staff_roles.id)
   created_at?: string;
   updated_at?: string;
 };

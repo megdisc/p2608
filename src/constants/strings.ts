@@ -78,6 +78,7 @@ export const WORDS_SYSTEM = {
   TAB_TABLE_COMPOSITION: 'テーブル構成',
   REGIONAL_GRADE: '所在地級数',
   SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',
+  STAFF_ROLE: '職種',
 };
 
 // 汎用・共通の定数群
@@ -318,6 +319,7 @@ export const PAGE_NAMES = {
   RECIPIENT_CERTIFICATE: '受給者証',
   REGIONAL_GRADE: '所在地級数',
   SERVICE_TYPE_PERSONNEL_COST_RATIO: '支援種別人件費割合',
+  STAFF_ROLE: '職種',
 };
 
 export const TABLE_COLUMNS = {
@@ -370,6 +372,11 @@ export const TABLE_COLUMNS = {
   QUALIFICATION_ID: '資格ID',
   QUALIFICATION_CODE: '資格コード',
   QUALIFICATION_NAME: '資格名',
+  STAFF_ROLE_ID: '職種ID',
+  STAFF_ROLE_CODE: '職種コード',
+  STAFF_ROLE_NAME: '職種名',
+  STAFF_ROLE_CATEGORY: '職種区分',
+  IS_DIRECT_CARE: '直接処遇',
   LICENSE_NUMBER: '登録・免許番号',
   ACQUIRED_ON: '取得年月日',
   VALID_UNTIL: '有効期限',

@@ -8,6 +8,7 @@ export * from './useOffices';
 export * from './useServiceSchemes';
 export * from './useServiceTypes';
 export * from './useQualifications';
+export * from './useStaffRoles';
 export * from './useRewardItems';
 export * from './useRegionalGrades';
 

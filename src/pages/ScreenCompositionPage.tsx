@@ -14,6 +14,7 @@ const getTabCategory = (tabId: string): string => {
   const independentMasterTabIds = [
     'serviceType', // 福祉制度: 支援種別
     'qualification', // 福祉制度: 資格
+    'staffRole', // 福祉制度: 職種
     'regionalGrade', // 福祉制度: 所在地級数
     'organization', // 施設: 法人
     'client', // 取引先: 基本情報
@@ -184,6 +185,26 @@ export function ScreenCompositionPage() {
         { name: 'description', desc: '資格概要' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '1. 福祉制度',
+      categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
+      physicalName: 'staff_roles',
+      tableType: '独立マスタ',
+      logicalName: '職種',
+      description: '法令に基づく障害福祉サービス等の人員配置基準および加算対象となる職種の定義マスターデータ',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '職種ID', status: 'added' },
+        { name: 'code', desc: '職種コード（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）', status: 'added' },
+        { name: 'name', desc: '職種名称', status: 'added' },
+        { name: 'category', desc: '職種区分（必置職種 / 加算職種 / 関連職種）', status: 'added' },
+        { name: 'is_direct_care', desc: '直接処遇職員フラグ（常勤換算比率の対象となる職種か否か）', status: 'added' },
+        { name: 'description', desc: '職種概要・役割説明', status: 'added' },
+        { name: 'sort_order', desc: '表示並び順', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -572,7 +593,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '詳細ID' },
         { name: 'summary_id', desc: '概要ID（staff_role_summariesのIDを参照）' },
-        { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
+        { name: 'staff_role_id', desc: '職種ID（FK -> staff_roles.id）', status: 'added' },
+        { name: 'staff_role', desc: '配置職種区分コード（manager, service_admin 等。staff_roles.codeと連動）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

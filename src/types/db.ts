@@ -133,7 +133,7 @@ export type StaffQualificationSettingTableItem = {
   updated_at?: string;
 };
 
-export type StaffRoleSummaryTableItem = {
+export type StaffRoleSettingSummaryTableItem = {
   id?: string; // UUID
   office_staff_setting_id: string; // UUID (FK -> office_staff_settings.id)
   employment_type?: string;
@@ -157,7 +157,7 @@ export type StaffRoleTableItem = {
   updated_at?: string;
 };
 
-export type StaffRoleDetailTableItem = {
+export type StaffRoleSettingDetailTableItem = {
   id?: string; // UUID
   summary_id: string; // UUID
   staff_role: string;
@@ -167,10 +167,12 @@ export type StaffRoleDetailTableItem = {
 };
 
 // 後方互換用エイリアス
-export type StaffWorkStyleSummaryTableItem = StaffRoleSummaryTableItem;
-export type StaffWorkStyleDetailTableItem = StaffRoleDetailTableItem;
-export type OfficeStaffSettingSummaryTableItem = StaffRoleSummaryTableItem;
-export type OfficeStaffSettingDetailTableItem = StaffRoleDetailTableItem;
+export type StaffRoleSummaryTableItem = StaffRoleSettingSummaryTableItem;
+export type StaffRoleDetailTableItem = StaffRoleSettingDetailTableItem;
+export type StaffWorkStyleSummaryTableItem = StaffRoleSettingSummaryTableItem;
+export type StaffWorkStyleDetailTableItem = StaffRoleSettingDetailTableItem;
+export type OfficeStaffSettingSummaryTableItem = StaffRoleSettingSummaryTableItem;
+export type OfficeStaffSettingDetailTableItem = StaffRoleSettingDetailTableItem;
 
 export type OfficeStaffSettingTableItem = {
   id?: string; // UUID

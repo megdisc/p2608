@@ -99,16 +99,22 @@ export function StaffWorkStylePage() {
         setStaffRoles(roleRes.data);
       }
 
-      // 職種概要テーブルの取得（staff_role_summaries が無ければ staff_work_style_summaries にフォールバック）
-      let summariesRes = await supabase.from('staff_role_summaries').select('*').order('valid_from', { ascending: false });
+      // 職員職種割当概要テーブルの取得（staff_role_setting_summaries -> staff_role_summaries -> staff_work_style_summaries の順でフォールバック）
+      let summariesRes = await supabase.from('staff_role_setting_summaries').select('*').order('valid_from', { ascending: false });
       if (summariesRes.error) {
-        summariesRes = await supabase.from('staff_work_style_summaries').select('*').order('valid_from', { ascending: false });
+        summariesRes = await supabase.from('staff_role_summaries').select('*').order('valid_from', { ascending: false });
+        if (summariesRes.error) {
+          summariesRes = await supabase.from('staff_work_style_summaries').select('*').order('valid_from', { ascending: false });
+        }
       }
 
-      // 職種詳細テーブルの取得（staff_role_details が無ければ staff_work_style_details にフォールバック）
-      let detailsRes = await supabase.from('staff_role_details').select('*');
+      // 職員職種割当詳細テーブルの取得（staff_role_setting_details -> staff_role_details -> staff_work_style_details の順でフォールバック）
+      let detailsRes = await supabase.from('staff_role_setting_details').select('*');
       if (detailsRes.error) {
-        detailsRes = await supabase.from('staff_work_style_details').select('*');
+        detailsRes = await supabase.from('staff_role_details').select('*');
+        if (detailsRes.error) {
+          detailsRes = await supabase.from('staff_work_style_details').select('*');
+        }
       }
 
       const activeStaffs: StaffTableItem[] = staffRes.data || [];
@@ -371,12 +377,18 @@ export function StaffWorkStylePage() {
 
     try {
       // 保存先テーブルの特定（フォールバック対応）
-      let summaryTable = 'staff_role_summaries';
-      let detailTable = 'staff_role_details';
-      const checkRes = await supabase.from('staff_role_summaries').select('id').limit(1);
+      let summaryTable = 'staff_role_setting_summaries';
+      let detailTable = 'staff_role_setting_details';
+      const checkRes = await supabase.from('staff_role_setting_summaries').select('id').limit(1);
       if (checkRes.error) {
-        summaryTable = 'staff_work_style_summaries';
-        detailTable = 'staff_work_style_details';
+        const checkRes2 = await supabase.from('staff_role_summaries').select('id').limit(1);
+        if (!checkRes2.error) {
+          summaryTable = 'staff_role_summaries';
+          detailTable = 'staff_role_details';
+        } else {
+          summaryTable = 'staff_work_style_summaries';
+          detailTable = 'staff_work_style_details';
+        }
       }
 
       // 1. 削除処理

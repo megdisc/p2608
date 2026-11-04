@@ -61,22 +61,29 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           // 職種からデフォルト職種を引く（フォールバック対応）
           const settingIds = ossRes.data.map(o => o.id);
           let workStyleRes: any = await supabase
-            .from('staff_role_summaries')
-            .select('office_staff_setting_id, staff_role_details(staff_role)')
+            .from('staff_role_setting_summaries')
+            .select('office_staff_setting_id, staff_role_setting_details(staff_role)')
             .in('office_staff_setting_id', settingIds);
 
           if (workStyleRes.error) {
             workStyleRes = await supabase
-              .from('staff_work_style_summaries')
-              .select('office_staff_setting_id, staff_work_style_details(staff_role)')
+              .from('staff_role_summaries')
+              .select('office_staff_setting_id, staff_role_details(staff_role)')
               .in('office_staff_setting_id', settingIds);
+
+            if (workStyleRes.error) {
+              workStyleRes = await supabase
+                .from('staff_work_style_summaries')
+                .select('office_staff_setting_id, staff_work_style_details(staff_role)')
+                .in('office_staff_setting_id', settingIds);
+            }
           }
 
           if (!workStyleRes.error && workStyleRes.data) {
             const settingToStaffMap = new Map(ossRes.data.map(o => [o.id, o.staff_id]));
             for (const ws of workStyleRes.data as any[]) {
               const staffId = settingToStaffMap.get(ws.office_staff_setting_id);
-              const roleDetails = ws.staff_role_details || ws.staff_work_style_details;
+              const roleDetails = ws.staff_role_setting_details || ws.staff_role_details || ws.staff_work_style_details;
               if (staffId && roleDetails && roleDetails.length > 0) {
                 const firstRole = roleDetails[0].staff_role;
                 if (firstRole && !defaultRoleMap.has(staffId)) {

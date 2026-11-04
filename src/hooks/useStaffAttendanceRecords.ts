@@ -58,19 +58,27 @@ export function useStaffAttendanceRecords(externalDate?: string) {
           const settingStaffIds = new Set(ossRes.data.map(o => o.staff_id));
           targetStaffs = allStaffs.filter(s => settingStaffIds.has(s.id));
 
-          // 勤務形態からデフォルト職種を引く
+          // 職種からデフォルト職種を引く（フォールバック対応）
           const settingIds = ossRes.data.map(o => o.id);
-          const workStyleRes = await supabase
-            .from('staff_work_style_summaries')
-            .select('office_staff_setting_id, staff_work_style_details(staff_role)')
+          let workStyleRes: any = await supabase
+            .from('staff_role_summaries')
+            .select('office_staff_setting_id, staff_role_details(staff_role)')
             .in('office_staff_setting_id', settingIds);
+
+          if (workStyleRes.error) {
+            workStyleRes = await supabase
+              .from('staff_work_style_summaries')
+              .select('office_staff_setting_id, staff_work_style_details(staff_role)')
+              .in('office_staff_setting_id', settingIds);
+          }
 
           if (!workStyleRes.error && workStyleRes.data) {
             const settingToStaffMap = new Map(ossRes.data.map(o => [o.id, o.staff_id]));
             for (const ws of workStyleRes.data as any[]) {
               const staffId = settingToStaffMap.get(ws.office_staff_setting_id);
-              if (staffId && ws.staff_work_style_details && ws.staff_work_style_details.length > 0) {
-                const firstRole = ws.staff_work_style_details[0].staff_role;
+              const roleDetails = ws.staff_role_details || ws.staff_work_style_details;
+              if (staffId && roleDetails && roleDetails.length > 0) {
+                const firstRole = roleDetails[0].staff_role;
                 if (firstRole && !defaultRoleMap.has(staffId)) {
                   defaultRoleMap.set(staffId, firstRole);
                 }

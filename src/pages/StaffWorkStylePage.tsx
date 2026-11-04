@@ -65,12 +65,14 @@ export function StaffWorkStylePage() {
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
 
+  const targetOfficeId = selectedOfficeId || (offices.length > 0 ? offices[0].id : '');
+
   const currentOffice = useMemo(() => {
-    return offices.find(o => o.id === selectedOfficeId) || null;
-  }, [offices, selectedOfficeId]);
+    return offices.find(o => o.id === targetOfficeId) || null;
+  }, [offices, targetOfficeId]);
 
   const fetchData = useCallback(async () => {
-    if (!selectedOfficeId) {
+    if (!targetOfficeId) {
       setData([]);
       setLoading(false);
       return;
@@ -79,17 +81,25 @@ export function StaffWorkStylePage() {
     try {
       setLoading(true);
       // 1. 親テーブル (office_staff_settings) から選択中の事業所に所属する割当を取得
-      const [staffRes, officeStaffRes, summariesRes, detailsRes] = await Promise.all([
-        supabase.from('staffs').select('*').eq('is_deleted', false).order('code', { ascending: true }),
-        supabase.from('office_staff_settings').select('*').eq('office_id', selectedOfficeId),
-        supabase.from('staff_work_style_summaries').select('*').order('valid_from', { ascending: false }),
-        supabase.from('staff_work_style_details').select('*'),
+      const [staffRes, officeStaffRes] = await Promise.all([
+        supabase.from('staffs').select('*').or('is_deleted.eq.false,is_deleted.is.null').order('code', { ascending: true }),
+        supabase.from('office_staff_settings').select('*').eq('office_id', targetOfficeId),
       ]);
 
       if (staffRes.error) throw staffRes.error;
       if (officeStaffRes.error) throw officeStaffRes.error;
-      if (summariesRes.error) throw summariesRes.error;
-      if (detailsRes.error) throw detailsRes.error;
+
+      // 職種概要テーブルの取得（staff_role_summaries が無ければ staff_work_style_summaries にフォールバック）
+      let summariesRes = await supabase.from('staff_role_summaries').select('*').order('valid_from', { ascending: false });
+      if (summariesRes.error) {
+        summariesRes = await supabase.from('staff_work_style_summaries').select('*').order('valid_from', { ascending: false });
+      }
+
+      // 職種詳細テーブルの取得（staff_role_details が無ければ staff_work_style_details にフォールバック）
+      let detailsRes = await supabase.from('staff_role_details').select('*');
+      if (detailsRes.error) {
+        detailsRes = await supabase.from('staff_work_style_details').select('*');
+      }
 
       const activeStaffs: StaffTableItem[] = staffRes.data || [];
       const assignedOfficeStaffs: OfficeStaffSettingTableItem[] = officeStaffRes.data || [];
@@ -116,7 +126,7 @@ export function StaffWorkStylePage() {
         rolesMap.get(d.summary_id)!.push(d.staff_role);
       });
 
-      // 職員ごとに親割当IDに紐づく勤務形態履歴（子）を集約
+      // 職員ごとに親割当IDに紐づく職種履歴（子）を集約
       const rows: StaffWithWorkStyleSettings[] = targetStaffs.map(staff => {
         const settingId = staffSettingMap.get(staff.id)!;
         const staffSummaries = summaries.filter(s => s.office_staff_setting_id === settingId);
@@ -144,11 +154,11 @@ export function StaffWorkStylePage() {
 
       setData(rows);
     } catch (err) {
-      showAlert(err instanceof Error ? err.message : '勤務形態データの取得に失敗しました', 'error');
+      showAlert(err instanceof Error ? err.message : '職種データの取得に失敗しました', 'error');
     } finally {
       setLoading(false);
     }
-  }, [selectedOfficeId, showAlert]);
+  }, [targetOfficeId, showAlert]);
 
   useEffect(() => {
     fetchData();
@@ -272,7 +282,7 @@ export function StaffWorkStylePage() {
               options={OFFICE_STAFF_ROLE_OPTIONS}
               value={value || []}
               onChange={onChange}
-              placeholder="配置職種を選択"
+              placeholder="職種を選択"
             />
           );
         },
@@ -329,21 +339,30 @@ export function StaffWorkStylePage() {
   }, []);
 
   const handleBatchSave = async (drafts: StaffWithWorkStyleSettings[], deletedIds: string[]) => {
-    if (!selectedOfficeId) {
+    if (!targetOfficeId) {
       throw new Error('事業所を選択してください');
     }
 
     try {
+      // 保存先テーブルの特定（フォールバック対応）
+      let summaryTable = 'staff_role_summaries';
+      let detailTable = 'staff_role_details';
+      const checkRes = await supabase.from('staff_role_summaries').select('id').limit(1);
+      if (checkRes.error) {
+        summaryTable = 'staff_work_style_summaries';
+        detailTable = 'staff_work_style_details';
+      }
+
       // 1. 削除処理
       const realDeletedIds = deletedIds.filter(id => !id.startsWith('NEW-') && id.includes('-'));
       if (realDeletedIds.length > 0) {
         await supabase
-          .from('staff_work_style_details')
+          .from(detailTable)
           .delete()
           .in('summary_id', realDeletedIds);
 
         await supabase
-          .from('staff_work_style_summaries')
+          .from(summaryTable)
           .delete()
           .in('id', realDeletedIds);
       }
@@ -367,7 +386,7 @@ export function StaffWorkStylePage() {
 
           // 2a. 概要テーブル (子) のUpsert (親の office_staff_setting_id を参照)
           const { error: summaryErr } = await supabase
-            .from('staff_work_style_summaries')
+            .from(summaryTable)
             .upsert({
               id: summaryId,
               office_staff_setting_id: setting.office_staff_setting_id || staff.officeStaffSettingId,
@@ -382,7 +401,7 @@ export function StaffWorkStylePage() {
 
           // 2b. 詳細テーブル (孫) の同期
           await supabase
-            .from('staff_work_style_details')
+            .from(detailTable)
             .delete()
             .eq('summary_id', summaryId);
 
@@ -394,7 +413,7 @@ export function StaffWorkStylePage() {
             }));
 
             const { error: insDetailsErr } = await supabase
-              .from('staff_work_style_details')
+              .from(detailTable)
               .insert(detailRows);
 
             if (insDetailsErr) throw insDetailsErr;
@@ -405,7 +424,7 @@ export function StaffWorkStylePage() {
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
       await fetchData();
     } catch (err) {
-      showAlert(err instanceof Error ? err.message : '勤務形態データの保存に失敗しました', 'error');
+      showAlert(err instanceof Error ? err.message : '職種データの保存に失敗しました', 'error');
       throw err;
     }
   };
@@ -414,11 +433,11 @@ export function StaffWorkStylePage() {
 
   return (
     <DataPage
-      title="勤務形態"
+      title="職種"
       data={data}
       columns={columns}
       emptyMessage={
-        !selectedOfficeId
+        !targetOfficeId
           ? 'サイドバー上部で事業所を選択してください。'
           : `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）に勤務する職員が登録されていません。「事業所」タブで職員の割当を行ってください。`
       }
@@ -431,3 +450,5 @@ export function StaffWorkStylePage() {
     />
   );
 }
+
+export const StaffRolePage = StaffWorkStylePage;

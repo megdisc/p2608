@@ -738,8 +738,8 @@ ON CONFLICT (id) DO UPDATE SET
   subject = EXCLUDED.subject,
   amount = EXCLUDED.amount;
 
--- 12. 職員勤務形態概要 (staff_work_style_summaries)
-INSERT INTO public.staff_work_style_summaries (id, office_staff_setting_id, employment_type, duty_type, weekly_working_hours, valid_from, valid_to) VALUES
+-- 12. 職員職種概要 (staff_role_summaries)
+INSERT INTO public.staff_role_summaries (id, office_staff_setting_id, employment_type, duty_type, weekly_working_hours, valid_from, valid_to) VALUES
 -- 相澤翔太 (S-000001): WS未来 過去履歴 (生活支援員)
 ('88888888-2222-0000-0000-000000000001', '77777777-2222-0000-0000-000000000001', 'full_time', 'dedicated', 40.0, '2024-04-01', '2026-03-31'),
 -- 相澤翔太 (S-000001): WS未来 現在 (管理者・サビ管兼務)
@@ -760,8 +760,8 @@ ON CONFLICT (id) DO UPDATE SET
   valid_from = EXCLUDED.valid_from,
   valid_to = EXCLUDED.valid_to;
 
--- 12.1 職員勤務形態詳細 (staff_work_style_details)
-INSERT INTO public.staff_work_style_details (id, summary_id, staff_role) VALUES
+-- 12.1 職員職種詳細 (staff_role_details)
+INSERT INTO public.staff_role_details (id, summary_id, staff_role) VALUES
 -- 相澤翔太 WS未来 過去
 ('88888888-0001-0000-0000-000000000001', '88888888-2222-0000-0000-000000000001', 'life_supporter'),
 -- 相澤翔太 WS未来 現在 (兼務: 管理者 + サービス管理責任者)

@@ -312,7 +312,7 @@ export const PAGE_NAMES = {
   QUALIFICATION: '資格',
   ORGANIZATION: '法人',
   OFFICE: '事業所',
-  WORK_STYLE: '勤務形態',
+  WORK_STYLE: '職種',
   WORK_SCHEDULE: '勤務予定',
   SERVICE_SCHEDULE: '利用予定',
   RECIPIENT_CERTIFICATE: '受給者証',
@@ -407,7 +407,7 @@ export const TABLE_COLUMNS = {
   EMPLOYMENT_TYPE: '雇用形態',
   DUTY_TYPE: '勤務区分',
   WEEKLY_WORKING_HOURS: '週所定労働時間',
-  STAFF_ROLE: '配置職種',
+  STAFF_ROLE: '職種',
 
   // 住所・連絡先
   UNIT_PRICE_REGIONAL: '地域区分単価(円)',

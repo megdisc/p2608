@@ -35,7 +35,7 @@ const getTabCategory = (tabId: string): string => {
     'staff', // 職員: 基本情報
     'staffQualification', // 職員: 資格
     'staffOffice', // 職員: 所属事業所
-    'staffWorkStyle', // 職員: 勤務形態
+    'staffWorkStyle', // 職員: 職種
     'staffSchedule', // 職員: 勤務予定
     'projectUser', // 利用者: 基本情報
     'memberRecipientCertificate', // 利用者: 受給者証
@@ -545,10 +545,10 @@ export function ScreenCompositionPage() {
     {
       category: '3. アカウントとユーザー',
       subCategory: '3.2. 職員',
-      physicalName: 'staff_work_style_summaries',
+      physicalName: 'staff_role_summaries',
       tableType: '従属マスタ',
-      logicalName: '職員勤務形態概要',
-      description: '事業所職員割当（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「勤務形態」タブで管理）',
+      logicalName: '職員職種概要',
+      description: '事業所職員割当（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「職種」タブで管理）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID' },
@@ -565,13 +565,13 @@ export function ScreenCompositionPage() {
     {
       category: '3. アカウントとユーザー',
       subCategory: '3.2. 職員',
-      physicalName: 'staff_work_style_details',
+      physicalName: 'staff_role_details',
       tableType: '従属マスタ',
-      logicalName: '職員勤務形態詳細',
-      description: '職員勤務形態概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「勤務形態」タブで管理）',
+      logicalName: '職員職種詳細',
+      description: '職員職種概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「職種」タブで管理）',
       columns: [
         { name: 'id', desc: '詳細ID' },
-        { name: 'summary_id', desc: '概要ID（staff_work_style_summariesのIDを参照）' },
+        { name: 'summary_id', desc: '概要ID（staff_role_summariesのIDを参照）' },
         { name: 'staff_role', desc: '配置職種区分（manager: 管理者, service_admin: サービス管理責任者, vocational_instructor: 職業指導員, life_supporter: 生活支援員 等）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }

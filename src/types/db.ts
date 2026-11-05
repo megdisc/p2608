@@ -112,6 +112,17 @@ export type StaffTableItem = {
   updated_at?: string;
 };
 
+export type MemberTableItem = {
+  id: string; // UUID
+  user_id?: string; // UUID
+  code?: string;
+  name: string;
+  yomigana?: string;
+  is_deleted?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type StocktakingTableItem = {
   id: string; // UUID
   date: string;

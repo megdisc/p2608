@@ -231,7 +231,7 @@ export function MemberOfficePage() {
       },
       {
         key: 'valid_from',
-        header: TABLE_COLUMNS.VALID_PERIOD_FROM,
+        header: TABLE_COLUMNS.MEMBER_OFFICE_VALID_FROM,
         sortable: false,
         rowType: 'sub',
         editable: true,
@@ -245,7 +245,7 @@ export function MemberOfficePage() {
       },
       {
         key: 'valid_to',
-        header: TABLE_COLUMNS.VALID_PERIOD_TO,
+        header: TABLE_COLUMNS.MEMBER_OFFICE_VALID_TO,
         sortable: false,
         rowType: 'sub',
         editable: true,

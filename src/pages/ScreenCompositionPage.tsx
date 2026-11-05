@@ -254,8 +254,8 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
         { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
         { name: 'corporate_number', desc: '法人番号（13桁）' },
-        { name: 'valid_from', desc: '集計開始時期（運営開始・法人設立年月日）', status: 'added' },
-        { name: 'valid_to', desc: '集計終了時期（運営終了・解散年月日。NULL: 運営中・無期限）', status: 'added' },
+        { name: 'valid_from', desc: '設立日（運営開始・法人設立年月日）', status: 'added' },
+        { name: 'valid_to', desc: '解散日（運営終了・解散年月日。NULL: 運営中・無期限）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -273,8 +273,8 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名（正式名称）' },
         { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
-        { name: 'valid_from', desc: '集計開始時期（開設・指定年月日）', status: 'added' },
-        { name: 'valid_to', desc: '集計終了時期（廃止年月日。NULL: 運営中・継続中）', status: 'added' },
+        { name: 'valid_from', desc: '開設日（開設・指定年月日）', status: 'added' },
+        { name: 'valid_to', desc: '廃止日（廃止年月日。NULL: 運営中・継続中）', status: 'added' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -292,8 +292,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
-        { name: 'valid_from', desc: '集計開始時期（指定・適用開始年月日）' },
-        { name: 'valid_to', desc: '集計終了時期（指定・適用終了年月日。NULL: 継続中）' },
+        { name: 'valid_from', desc: '適用開始日（指定・適用開始年月日）' },
+        { name: 'valid_to', desc: '適用終了日（指定・適用終了年月日。NULL: 継続中）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -579,8 +579,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
-        { name: 'valid_from', desc: '集計開始時期（配属・所属開始年月日）' },
-        { name: 'valid_to', desc: '集計終了時期（配属・所属終了年月日。NULL: 継続中）' },
+        { name: 'valid_from', desc: '所属開始日（配属・所属開始年月日）' },
+        { name: 'valid_to', desc: '所属終了日（配属・所属終了年月日。NULL: 継続中）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -719,8 +719,8 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
-        { name: 'valid_from', desc: '集計開始時期（利用契約・在籍開始年月日）' },
-        { name: 'valid_to', desc: '集計終了時期（利用契約・在籍終了年月日。NULL: 継続中）' },
+        { name: 'valid_from', desc: '契約開始日（利用契約・在籍開始年月日）' },
+        { name: 'valid_to', desc: '契約終了日（利用契約・在籍終了年月日。NULL: 継続中）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -937,8 +937,8 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '案件ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'settlement_year_month', desc: '精算年月' },
-        { name: 'start_date', desc: '集計開始時期（案件開始・着手年月日）', status: 'added' },
-        { name: 'end_date', desc: '集計終了時期（案件終了・完了予定年月日。NULL: 進行中）', status: 'added' },
+        { name: 'start_date', desc: '着手日（案件開始・着手年月日）', status: 'added' },
+        { name: 'end_date', desc: '完了日（案件終了・完了予定年月日。NULL: 進行中）', status: 'added' },
         { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'code', desc: '案件コード' },
         { name: 'name', desc: '案件名' },

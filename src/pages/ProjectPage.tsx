@@ -62,14 +62,14 @@ export function ProjectPage() {
     },
     { 
       key: 'startDate', 
-      header: TABLE_COLUMNS.AGGREGATION_START_DATE, 
+      header: TABLE_COLUMNS.PROJECT_START_DATE, 
       editable: (item: ProjectItem) => !isProjectFinished(item), 
       inputType: 'date', 
       rowType: 'main' 
     },
     { 
       key: 'endDate', 
-      header: TABLE_COLUMNS.AGGREGATION_END_DATE, 
+      header: TABLE_COLUMNS.PROJECT_END_DATE, 
       editable: (item: ProjectItem) => !isProjectFinished(item), 
       inputType: 'date', 
       rowType: 'main' 

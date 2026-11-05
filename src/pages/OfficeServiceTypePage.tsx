@@ -213,7 +213,7 @@ export function OfficeServiceTypePage() {
       },
       {
         key: 'valid_from',
-        header: TABLE_COLUMNS.AGGREGATION_START_DATE,
+        header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
         sortable: false,
         rowType: 'sub',
         inputType: 'date',
@@ -221,7 +221,7 @@ export function OfficeServiceTypePage() {
       },
       {
         key: 'valid_to',
-        header: TABLE_COLUMNS.AGGREGATION_END_DATE,
+        header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
         sortable: false,
         rowType: 'sub',
         inputType: 'date',

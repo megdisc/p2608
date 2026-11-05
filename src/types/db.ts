@@ -78,11 +78,24 @@ export type UserTableItem = {
   updated_at?: string;
 };
 
+export type OrganizationTableItem = {
+  id?: string; // UUID
+  name: string;
+  representative_name?: string | null;
+  corporate_number?: string | null;
+  valid_from?: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type OfficeTableItem = {
   id: string; // UUID
   code?: string;
   name: string;
   short_name?: string;
+  valid_from?: string;
+  valid_to?: string | null;
   is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
@@ -171,13 +184,30 @@ export type StaffRoleSummaryTableItem = StaffRoleSettingSummaryTableItem;
 export type StaffRoleDetailTableItem = StaffRoleSettingDetailTableItem;
 export type StaffWorkStyleSummaryTableItem = StaffRoleSettingSummaryTableItem;
 export type StaffWorkStyleDetailTableItem = StaffRoleSettingDetailTableItem;
-export type OfficeStaffSettingSummaryTableItem = StaffRoleSettingSummaryTableItem;
-export type OfficeStaffSettingDetailTableItem = StaffRoleSettingDetailTableItem;
+
+export type OfficeStaffSettingSummaryTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  valid_from: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeStaffSettingDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID
+  staff_id: string; // UUID
+  created_at?: string;
+  updated_at?: string;
+};
 
 export type OfficeStaffSettingTableItem = {
   id?: string; // UUID
   office_id: string; // UUID
   staff_id: string; // UUID
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -223,6 +253,29 @@ export type RegionalGradeTableItem = {
   updated_at?: string;
 };
 
+export type OfficeServiceTypeSettingSummaryTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  valid_from: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeServiceTypeSettingDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID
+  service_type_id: string; // UUID
+  capacity?: number;
+  office_number?: string | null;
+  staffing_ratio?: string | null;
+  wage_achievement_tier?: string | null;
+  is_deleted?: boolean;
+  deleted_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type OfficeServiceTypeSettingTableItem = {
   id?: string; // UUID
   office_id: string; // UUID
@@ -231,6 +284,8 @@ export type OfficeServiceTypeSettingTableItem = {
   office_number?: string | null;
   staffing_ratio?: string | null;
   wage_achievement_tier?: string | null;
+  valid_from?: string;
+  valid_to?: string | null;
   deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;
@@ -250,11 +305,46 @@ export type PartnerContactTableItem = {
   updated_at?: string;
 };
 
+export type OfficeMemberSettingSummaryTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  valid_from: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type OfficeMemberSettingDetailTableItem = {
+  id?: string; // UUID
+  summary_id: string; // UUID
+  member_id: string; // UUID
+  created_at?: string;
+  updated_at?: string;
+};
+
 export type OfficeMemberSettingTableItem = {
   id?: string; // UUID
   office_id: string; // UUID
   member_id: string; // UUID
+  valid_from?: string;
+  valid_to?: string | null;
   is_primary?: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type ProjectTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID
+  name: string;
+  code: string;
+  client_id?: string | null;
+  project_type?: string;
+  settlement_year_month?: string | null;
+  start_date?: string | null;
+  end_date?: string | null;
+  deleted_at?: string | null;
+  is_deleted?: boolean;
   created_at?: string;
   updated_at?: string;
 };

@@ -6,6 +6,8 @@ export type OrganizationItem = {
   name: string;
   representative_name: string;
   corporate_number: string;
+  valid_from: string;
+  valid_to: string | null;
   postal_code_prefix: string;
   postal_code_suffix: string;
   prefecture: string;
@@ -79,6 +81,8 @@ export function useOrganizations() {
           name: o.name,
           representative_name: o.representative_name || '',
           corporate_number: o.corporate_number || '',
+          valid_from: o.valid_from || '2020-04-01',
+          valid_to: o.valid_to || '',
           postal_code_prefix: addr.postal_code_prefix || '',
           postal_code_suffix: addr.postal_code_suffix || '',
           prefecture: addr.prefecture || '',
@@ -108,6 +112,8 @@ export function useOrganizations() {
           name: item.name,
           representative_name: item.representative_name || null,
           corporate_number: item.corporate_number || null,
+          valid_from: item.valid_from || '2020-04-01',
+          valid_to: item.valid_to || null,
         };
         if (!item.id.startsWith('ORG-')) {
           upsertData.id = item.id;

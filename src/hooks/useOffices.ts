@@ -12,6 +12,8 @@ export type OfficeItem = {
   code: string;
   name: string;
   short_name: string;
+  valid_from: string;
+  valid_to: string | null;
   postal_code_prefix: string;
   postal_code_suffix: string;
   prefecture: string;
@@ -91,6 +93,8 @@ export function useOffices() {
           code: o.code || '',
           name: o.name,
           short_name: o.short_name || '',
+          valid_from: o.valid_from || '2024-04-01',
+          valid_to: o.valid_to || '',
           postal_code_prefix: addr.postal_code_prefix || '',
           postal_code_suffix: addr.postal_code_suffix || '',
           prefecture: addr.prefecture || '',
@@ -130,6 +134,8 @@ export function useOffices() {
           code: item.code?.trim() || null,
           name: item.name,
           short_name: item.short_name?.trim() || null,
+          valid_from: item.valid_from || '2024-04-01',
+          valid_to: item.valid_to || null,
         };
         if (!item.id.startsWith('OFF-')) {
           upsertData.id = item.id;

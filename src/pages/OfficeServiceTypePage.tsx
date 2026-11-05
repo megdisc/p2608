@@ -24,6 +24,8 @@ export type OfficeServiceTypeRow = {
   capacity: number;
   staffing_ratio: string;
   wage_achievement_tier: string;
+  valid_from?: string;
+  valid_to?: string | null;
   unit_price: number;
 };
 
@@ -118,6 +120,8 @@ export function OfficeServiceTypePage() {
               capacity: s.capacity ?? 20,
               staffing_ratio: s.staffing_ratio || '7.5:1',
               wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
+              valid_from: (s as any).valid_from || '2024-04-01',
+              valid_to: (s as any).valid_to || '',
               unit_price: derived.unit_price,
             };
           }),
@@ -148,6 +152,8 @@ export function OfficeServiceTypePage() {
       capacity: 20,
       staffing_ratio: '7.5:1',
       wage_achievement_tier: '4万5千円以上',
+      valid_from: '2024-04-01',
+      valid_to: '',
       unit_price: derived.unit_price,
     };
   };
@@ -204,6 +210,22 @@ export function OfficeServiceTypePage() {
           </Button>
         ),
         style: { minWidth: '160px' },
+      },
+      {
+        key: 'valid_from',
+        header: TABLE_COLUMNS.AGGREGATION_START_DATE,
+        sortable: false,
+        rowType: 'sub',
+        inputType: 'date',
+        style: { minWidth: '130px' },
+      },
+      {
+        key: 'valid_to',
+        header: TABLE_COLUMNS.AGGREGATION_END_DATE,
+        sortable: false,
+        rowType: 'sub',
+        inputType: 'date',
+        style: { minWidth: '130px' },
       },
       {
         key: 'office_number',
@@ -280,6 +302,8 @@ export function OfficeServiceTypePage() {
         capacity: number;
         staffing_ratio: string | null;
         wage_achievement_tier: string | null;
+        valid_from: string | null;
+        valid_to: string | null;
         deleted_at: null;
         updated_at: string;
       }[] = [];
@@ -295,6 +319,8 @@ export function OfficeServiceTypePage() {
               capacity: Number(st.capacity) || 0,
               staffing_ratio: st.staffing_ratio || null,
               wage_achievement_tier: st.wage_achievement_tier || null,
+              valid_from: st.valid_from || '2024-04-01',
+              valid_to: st.valid_to || null,
               deleted_at: null,
               updated_at: new Date().toISOString(),
             });

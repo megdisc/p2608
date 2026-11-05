@@ -32,18 +32,25 @@ ON CONFLICT (id) DO UPDATE SET
   user_type = EXCLUDED.user_type;
 
 -- 3. 法人 & 事業所マスタ (organizations / offices)
-INSERT INTO public.organizations (id, name, representative_name, corporate_number) VALUES
-('11111111-1111-1111-1111-111111111111', '社会福祉法人未来福祉会', '理事長 山田太郎', '1234567890123')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.organizations (id, name, representative_name, corporate_number, valid_from, valid_to) VALUES
+('11111111-1111-1111-1111-111111111111', '社会福祉法人未来福祉会', '理事長 山田太郎', '1234567890123', '2020-04-01', NULL)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  representative_name = EXCLUDED.representative_name,
+  corporate_number = EXCLUDED.corporate_number,
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to;
 
-INSERT INTO public.offices (id, code, name, short_name) VALUES
-('22222222-2222-2222-2222-222222222222', 'OFF-001', '指定多機能型障害者就労支援事業所 ワークステーション未来あかすみ', 'WS未来'),
-('33333333-3333-3333-3333-333333333333', 'OFF-002', '指定障害福祉サービス事業所 就労継続支援B型 未来ワークスあすか', '未来ワークス'),
-('44444444-4444-4444-4444-444444444444', 'OFF-003', '就労移行・定着・自立複合支援センター 未来オアシスガーデン', '未来オアシス')
+INSERT INTO public.offices (id, code, name, short_name, valid_from, valid_to) VALUES
+('22222222-2222-2222-2222-222222222222', 'OFF-001', '指定多機能型障害者就労支援事業所 ワークステーション未来あかすみ', 'WS未来', '2024-04-01', NULL),
+('33333333-3333-3333-3333-333333333333', 'OFF-002', '指定障害福祉サービス事業所 就労継続支援B型 未来ワークスあすか', '未来ワークス', '2024-04-01', NULL),
+('44444444-4444-4444-4444-444444444444', 'OFF-003', '就労移行・定着・自立複合支援センター 未来オアシスガーデン', '未来オアシス', '2024-04-01', NULL)
 ON CONFLICT (id) DO UPDATE SET
   code = EXCLUDED.code,
   name = EXCLUDED.name,
-  short_name = EXCLUDED.short_name;
+  short_name = EXCLUDED.short_name,
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to;
 
 INSERT INTO public.addresses (id, postal_code_prefix, postal_code_suffix, prefecture, city, town_street, building) VALUES
 ('aaaaa111-1111-1111-1111-111111111111', '730', '0051', '広島県', '広島市中区', '大手町2-1-1', '広島平和ビル 5F'),
@@ -208,10 +215,20 @@ ON CONFLICT (id) DO UPDATE SET
   description = EXCLUDED.description,
   personnel_cost_ratio = EXCLUDED.personnel_cost_ratio;
 
-INSERT INTO public.office_service_type_settings (id, office_id, service_type_id, capacity, office_number, staffing_ratio, wage_achievement_tier) VALUES
-('33333333-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', 20, '3410100001', '7.5:1', '4万円以上4万5千円未満'),
-('33333333-0000-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '11111111-0000-0000-0000-000000000001', 20, '3410200002', '7.5:1', '3万円以上3万5千円未満'),
-('33333333-0000-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '11111111-0000-0000-0000-000000000001', 20, '3410300003', '10:1', '2万円以上2万5千円未満')
+-- 3.1.1 事業所支援種別割当概要 (office_service_type_setting_summaries)
+INSERT INTO public.office_service_type_setting_summaries (id, office_id, valid_from, valid_to) VALUES
+('33333333-1111-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '2024-04-01', NULL),
+('33333333-1111-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '2024-04-01', NULL),
+('33333333-1111-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '2024-04-01', NULL)
+ON CONFLICT (id) DO UPDATE SET
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to;
+
+-- 3.1.2 事業所支援種別割当詳細 (office_service_type_setting_details)
+INSERT INTO public.office_service_type_setting_details (id, summary_id, service_type_id, capacity, office_number, staffing_ratio, wage_achievement_tier) VALUES
+('33333333-0000-0000-0000-000000000001', '33333333-1111-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001', 20, '3410100001', '7.5:1', '4万円以上4万5千円未満'),
+('33333333-0000-0000-0000-000000000002', '33333333-1111-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001', 20, '3410200002', '7.5:1', '3万円以上3万5千円未満'),
+('33333333-0000-0000-0000-000000000003', '33333333-1111-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', 20, '3410300003', '10:1', '2万円以上2万5千円未満')
 ON CONFLICT (id) DO UPDATE SET
   office_number = EXCLUDED.office_number,
   staffing_ratio = EXCLUDED.staffing_ratio,
@@ -424,18 +441,27 @@ ON CONFLICT (id) DO UPDATE SET
   valid_until = EXCLUDED.valid_until,
   is_primary = EXCLUDED.is_primary;
 
--- 5.2 事業所職員割当 (office_staff_settings)
-INSERT INTO public.office_staff_settings (id, office_id, staff_id) VALUES
--- 相澤翔太 (S-000001): WS未来, 未来ワークス
-('77777777-2222-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
-('77777777-3333-0000-0000-000000000001', '33333333-3333-3333-3333-333333333333', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
--- 井上結衣 (S-000002): WS未来
-('77777777-2222-0000-0000-000000000002', '22222222-2222-2222-2222-222222222222', 'de2d336b-254d-4af7-8e49-5acbda340e67'),
--- 上田拓海 (S-000003): 未来ワークス, 未来オアシス
-('77777777-3333-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '5ff5e55e-186f-43ce-84d2-aa751d8341b5'),
-('77777777-4444-0000-0000-000000000001', '44444444-4444-4444-4444-444444444444', '5ff5e55e-186f-43ce-84d2-aa751d8341b5')
+-- 5.2.1 事業所職員割当概要 (office_staff_setting_summaries)
+INSERT INTO public.office_staff_setting_summaries (id, office_id, valid_from, valid_to) VALUES
+('77777777-1111-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '2024-04-01', NULL),
+('77777777-1111-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '2024-04-01', NULL),
+('77777777-1111-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '2024-04-01', NULL)
 ON CONFLICT (id) DO UPDATE SET
-  office_id = EXCLUDED.office_id,
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to;
+
+-- 5.2.2 事業所職員割当詳細 (office_staff_setting_details)
+INSERT INTO public.office_staff_setting_details (id, summary_id, staff_id) VALUES
+-- 相澤翔太 (S-000001): WS未来, 未来ワークス
+('77777777-2222-0000-0000-000000000001', '77777777-1111-0000-0000-000000000001', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
+('77777777-3333-0000-0000-000000000001', '77777777-1111-0000-0000-000000000002', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa'),
+-- 井上結衣 (S-000002): WS未来
+('77777777-2222-0000-0000-000000000002', '77777777-1111-0000-0000-000000000001', 'de2d336b-254d-4af7-8e49-5acbda340e67'),
+-- 上田拓海 (S-000003): 未来ワークス, 未来オアシス
+('77777777-3333-0000-0000-000000000002', '77777777-1111-0000-0000-000000000002', '5ff5e55e-186f-43ce-84d2-aa751d8341b5'),
+('77777777-4444-0000-0000-000000000001', '77777777-1111-0000-0000-000000000003', '5ff5e55e-186f-43ce-84d2-aa751d8341b5')
+ON CONFLICT (id) DO UPDATE SET
+  summary_id = EXCLUDED.summary_id,
   staff_id = EXCLUDED.staff_id;
 
 -- 6. 工賃単価項目マスタ (wage_rate_items)
@@ -468,14 +494,24 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   yomigana = EXCLUDED.yomigana;
 
-INSERT INTO public.office_member_settings (office_id, member_id) VALUES
-('22222222-2222-2222-2222-222222222222', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a'),
-('22222222-2222-2222-2222-222222222222', 'e98c7634-1eb3-4e42-b062-841f39c043e0'),
-('33333333-3333-3333-3333-333333333333', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0'),
-('33333333-3333-3333-3333-333333333333', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2'),
-('44444444-4444-4444-4444-444444444444', 'c5555555-5555-5555-5555-555555555555'),
-('44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666')
-ON CONFLICT DO NOTHING;
+-- 7.2.1 事業所利用者割当概要 (office_member_setting_summaries)
+INSERT INTO public.office_member_setting_summaries (id, office_id, valid_from, valid_to) VALUES
+('88888888-1111-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', '2024-04-01', NULL),
+('88888888-1111-0000-0000-000000000002', '33333333-3333-3333-3333-333333333333', '2024-04-01', NULL),
+('88888888-1111-0000-0000-000000000003', '44444444-4444-4444-4444-444444444444', '2024-04-01', NULL)
+ON CONFLICT (id) DO UPDATE SET
+  valid_from = EXCLUDED.valid_from,
+  valid_to = EXCLUDED.valid_to;
+
+-- 7.2.2 事業所利用者割当詳細 (office_member_setting_details)
+INSERT INTO public.office_member_setting_details (summary_id, member_id) VALUES
+('88888888-1111-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a'),
+('88888888-1111-0000-0000-000000000001', 'e98c7634-1eb3-4e42-b062-841f39c043e0'),
+('88888888-1111-0000-0000-000000000002', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0'),
+('88888888-1111-0000-0000-000000000002', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2'),
+('88888888-1111-0000-0000-000000000003', 'c5555555-5555-5555-5555-555555555555'),
+('88888888-1111-0000-0000-000000000003', 'c6666666-6666-6666-6666-666666666666')
+ON CONFLICT (summary_id, member_id) DO NOTHING;
 
 INSERT INTO public.member_recipient_certificates (id, member_id, certificate_number, issuing_municipality, income_category, copayment_limit_amount, disability_support_class, copayment_management_type, copayment_office_id, copayment_office_code, copayment_office_name, valid_from, valid_to, remarks) VALUES
 ('99000000-0000-0000-0000-000000000001', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '1234567890', '横浜市中区', 'low_income', 0, 'class_2', 'self_internal', '22222222-2222-2222-2222-222222222222', NULL, '', '2025-04-01', '2026-03-31', '継続申請済み'),
@@ -651,8 +687,8 @@ ON CONFLICT (summary_id, skill_id) DO UPDATE SET
   skill_level_id = EXCLUDED.skill_level_id;
 
 -- 11. 案件 & タスク (projects / project_tasks)
-INSERT INTO public.projects (id, office_id, name, code, project_type) VALUES 
-('00000000-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'その他', 'P-000000', 'other') 
+INSERT INTO public.projects (id, office_id, name, code, project_type, start_date, end_date) VALUES 
+('00000000-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'その他', 'P-000000', 'other', '2024-04-01', NULL) 
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.project_tasks (id, project_id, name) VALUES 
@@ -660,16 +696,18 @@ INSERT INTO public.project_tasks (id, project_id, name) VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- 事業所1 (WS未来) 案件
-INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month) VALUES 
-('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '22222222-2222-2222-2222-222222222222', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'one-off', '2026-10'),
-('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '22222222-2222-2222-2222-222222222222', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing', NULL) 
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month, start_date, end_date) VALUES 
+('418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '22222222-2222-2222-2222-222222222222', '本社オフィスネットワーク構築', 'P-000001', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'one-off', '2026-10', '2026-10-01', '2026-10-31'),
+('d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631', '22222222-2222-2222-2222-222222222222', 'パンの販売・カフェ運営', 'P-000005', NULL, 'ongoing', NULL, '2024-04-01', NULL) 
 ON CONFLICT (id) DO UPDATE SET
   office_id = EXCLUDED.office_id,
   name = EXCLUDED.name,
   code = EXCLUDED.code,
   client_id = EXCLUDED.client_id,
   project_type = EXCLUDED.project_type,
-  settlement_year_month = EXCLUDED.settlement_year_month;
+  settlement_year_month = EXCLUDED.settlement_year_month,
+  start_date = EXCLUDED.start_date,
+  end_date = EXCLUDED.end_date;
 
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type, is_completed, completed_at) VALUES 
 ('aaceaea1-43df-42c1-bfc6-1794a4eb9e16', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '要件定義', 'internal', true, '2026-10-10 17:00:00+09'),
@@ -695,10 +733,18 @@ INSERT INTO public.task_assignee_settings (task_id, member_id, staff_id, client_
 ON CONFLICT DO NOTHING;
 
 -- 事業所2 (未来ワークス) 案件
-INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month) VALUES 
-('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '33333333-3333-3333-3333-333333333333', '支社サーバーリプレイス', 'P-000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'one-off', '2026-08'),
-('33333333-0000-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', '軽作業・封入梱包受託', 'P-000003', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'ongoing', NULL)
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, settlement_year_month, start_date, end_date) VALUES 
+('52532aea-8f77-478e-ae37-c0ef57ee5cf5', '33333333-3333-3333-3333-333333333333', '支社サーバーリプレイス', 'P-000002', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'one-off', '2026-08', '2026-08-01', '2026-08-31'),
+('33333333-0000-0000-0000-000000000003', '33333333-3333-3333-3333-333333333333', '軽作業・封入梱包受託', 'P-000003', 'bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'ongoing', NULL, '2024-04-01', NULL)
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  name = EXCLUDED.name,
+  code = EXCLUDED.code,
+  client_id = EXCLUDED.client_id,
+  project_type = EXCLUDED.project_type,
+  settlement_year_month = EXCLUDED.settlement_year_month,
+  start_date = EXCLUDED.start_date,
+  end_date = EXCLUDED.end_date;
 
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES 
 ('adc26f10-909b-4ae1-b255-a86a5014dd3d', '52532aea-8f77-478e-ae37-c0ef57ee5cf5', 'サーバー構築', 'internal'),
@@ -711,10 +757,17 @@ INSERT INTO public.task_assignee_settings (task_id, member_id) VALUES
 ON CONFLICT DO NOTHING;
 
 -- 事業所3 (未来オアシス) 案件
-INSERT INTO public.projects (id, office_id, name, code, client_id, project_type) VALUES 
-('44444444-0000-0000-0000-000000000004', '44444444-4444-4444-4444-444444444444', 'Webサイト制作・デザイン', 'P-000004', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'ongoing'),
-('44444444-0000-0000-0000-000000000006', '44444444-4444-4444-4444-444444444444', '動画編集・制作受託', 'P-000006', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'ongoing')
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.projects (id, office_id, name, code, client_id, project_type, start_date, end_date) VALUES 
+('44444444-0000-0000-0000-000000000004', '44444444-4444-4444-4444-444444444444', 'Webサイト制作・デザイン', 'P-000004', '73ab0c05-9915-4894-a083-6bccf7a66d2a', 'ongoing', '2024-04-01', NULL),
+('44444444-0000-0000-0000-000000000006', '44444444-4444-4444-4444-444444444444', '動画編集・制作受託', 'P-000006', '0ff5f11e-b752-4b06-aaab-86984a67eec7', 'ongoing', '2024-04-01', NULL)
+ON CONFLICT (id) DO UPDATE SET
+  office_id = EXCLUDED.office_id,
+  name = EXCLUDED.name,
+  code = EXCLUDED.code,
+  client_id = EXCLUDED.client_id,
+  project_type = EXCLUDED.project_type,
+  start_date = EXCLUDED.start_date,
+  end_date = EXCLUDED.end_date;
 
 INSERT INTO public.project_tasks (id, project_id, name, assignee_type) VALUES 
 ('44444444-1111-0000-0000-000000000004', '44444444-0000-0000-0000-000000000004', 'Webデザイン・コーディング', 'internal'),

@@ -411,6 +411,8 @@ export const TABLE_COLUMNS = {
   VALID_TO: '有効期限（終了）',
   VALID_PERIOD_FROM: '有効期間（開始）',
   VALID_PERIOD_TO: '有効期間（終了）',
+  AGGREGATION_START_DATE: '集計開始時期',
+  AGGREGATION_END_DATE: '集計終了時期',
   EMPLOYMENT_TYPE: '雇用形態',
   DUTY_TYPE: '勤務区分',
   WEEKLY_WORKING_HOURS: '週所定労働時間',

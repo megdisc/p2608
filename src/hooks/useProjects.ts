@@ -19,7 +19,7 @@ export function useProjects() {
         supabase.from('skills').select('*').eq('is_deleted', false).order('name', { ascending: true }),
         supabase.from('skill_levels').select('*').order('created_at', { ascending: true }),
         supabase.from('projects').select(`
-          id, office_id, code, name, project_type, settlement_year_month, created_at, client_id,
+          id, office_id, code, name, project_type, settlement_year_month, start_date, end_date, created_at, client_id,
           project_tasks (
             id, name, is_deleted, assignee_type, created_at, is_completed, completed_at,
             project_task_skills ( skill_id, skill_level_id, skills(name), skill_levels(level_value) )
@@ -65,6 +65,8 @@ export function useProjects() {
         name: p.name,
         projectType: p.project_type || 'one-off',
         settlementYearMonth: p.settlement_year_month || undefined,
+        startDate: p.start_date || undefined,
+        endDate: p.end_date || undefined,
         createdAt: p.created_at || undefined,
         projectTypeSortKey: p.project_type === 'ongoing' ? '0' : (p.project_type === 'その他' ? '2' : '1'),
         customerId: p.client_id || '',
@@ -128,6 +130,8 @@ export function useProjects() {
           name: p.name,
           project_type: p.projectType || 'one-off',
           client_id: p.customerId || null,
+          start_date: p.startDate || null,
+          end_date: p.endDate || null,
         };
         if (p.settlementYearMonth !== undefined) {
           projData.settlement_year_month = p.settlementYearMonth || null;

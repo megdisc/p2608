@@ -61,6 +61,20 @@ export function ProjectPage() {
       rowType: 'main' 
     },
     { 
+      key: 'startDate', 
+      header: TABLE_COLUMNS.AGGREGATION_START_DATE, 
+      editable: (item: ProjectItem) => !isProjectFinished(item), 
+      inputType: 'date', 
+      rowType: 'main' 
+    },
+    { 
+      key: 'endDate', 
+      header: TABLE_COLUMNS.AGGREGATION_END_DATE, 
+      editable: (item: ProjectItem) => !isProjectFinished(item), 
+      inputType: 'date', 
+      rowType: 'main' 
+    },
+    { 
       key: 'task', 
       header: TABLE_COLUMNS.TASK, 
       editable: (item: any) => !isProjectFinished(item), 
@@ -148,6 +162,8 @@ export function ProjectPage() {
       code: generateNextUnifiedCode(existingCodes, 'P-'),
       name: '',
       projectType: 'ongoing',
+      startDate: new Date().toISOString().slice(0, 10),
+      endDate: '',
       customerId: '',
       tasks: [],
     } as ProjectItem;

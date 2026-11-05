@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, Button, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { calculateRegionalUnitPrice } from '../utils';
+import { calculateRegionalUnitPrice, getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
 import {
   MESSAGES,
   TABLE_COLUMNS,
@@ -34,6 +34,7 @@ export type OfficeWithServiceTypes = {
   code: string;
   name: string;
   short_name: string;
+  service_type_name?: string;
   serviceTypes: OfficeServiceTypeRow[];
 };
 
@@ -104,27 +105,31 @@ export function OfficeServiceTypePage() {
       const rows: OfficeWithServiceTypes[] = activeOffices.map(office => {
         const officeSettings = settings.filter(s => s.office_id === office.id);
         const officeAddr = addrMap[office.id];
+        const formattedSettings: OfficeServiceTypeRow[] = officeSettings.map(s => {
+          const st = activeSTs.find(t => t.id === s.service_type_id);
+          const derived = calculateRegionalUnitPrice(officeAddr, st, regionalList);
+          return {
+            id: s.id || generateId(),
+            office_id: office.id,
+            service_type_id: s.service_type_id,
+            office_number: s.office_number || '',
+            capacity: s.capacity ?? 20,
+            staffing_ratio: s.staffing_ratio || '7.5:1',
+            wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
+            valid_from: (s as any).valid_from || '2024-04-01',
+            valid_to: (s as any).valid_to || '',
+            unit_price: derived.unit_price,
+          };
+        });
+        formattedSettings.sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
+
         return {
           id: office.id,
           code: office.code || '',
           name: office.name,
           short_name: office.short_name || '',
-          serviceTypes: officeSettings.map(s => {
-            const st = activeSTs.find(t => t.id === s.service_type_id);
-            const derived = calculateRegionalUnitPrice(officeAddr, st, regionalList);
-            return {
-              id: s.id || generateId(),
-              office_id: office.id,
-              service_type_id: s.service_type_id,
-              office_number: s.office_number || '',
-              capacity: s.capacity ?? 20,
-              staffing_ratio: s.staffing_ratio || '7.5:1',
-              wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
-              valid_from: (s as any).valid_from || '2024-04-01',
-              valid_to: (s as any).valid_to || '',
-              unit_price: derived.unit_price,
-            };
-          }),
+          service_type_name: '就労継続支援B型',
+          serviceTypes: formattedSettings,
         };
       });
 
@@ -141,30 +146,55 @@ export function OfficeServiceTypePage() {
   }, [fetchData]);
 
   const handleAddSubRow = (parentId: string): OfficeServiceTypeRow => {
+    const parent = data.find(p => p.id === parentId);
+    const existing = parent?.serviceTypes || [];
+    const sortedDesc = [...existing].sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
+
+    const today = getCurrentJSTDateOnly();
+    let defaultStart = today;
+    let latestRow: Partial<OfficeServiceTypeRow> = {};
+
+    if (sortedDesc.length > 0) {
+      latestRow = sortedDesc[0];
+      if (latestRow.valid_from && latestRow.valid_from >= today) {
+        const [y, m, d] = latestRow.valid_from.split('-').map(Number);
+        const nextDate = new Date(Date.UTC(y, m - 1, d + 1));
+        defaultStart = nextDate.toISOString().substring(0, 10);
+      }
+    }
+
     const bType = serviceTypes.find(isBTypeServiceType);
     const officeAddr = officeAddressMap[parentId];
     const derived = calculateRegionalUnitPrice(officeAddr, bType, regionalGrades);
+
     return {
       id: generateId(),
       office_id: parentId,
-      service_type_id: bType ? bType.id : '11111111-0000-0000-0000-000000000001',
-      office_number: '',
-      capacity: 20,
-      staffing_ratio: '7.5:1',
-      wage_achievement_tier: '4万5千円以上',
-      valid_from: '2024-04-01',
-      valid_to: '',
+      service_type_id: bType ? bType.id : (latestRow.service_type_id || '11111111-0000-0000-0000-000000000001'),
+      office_number: latestRow.office_number || '',
+      capacity: latestRow.capacity ?? 20,
+      staffing_ratio: latestRow.staffing_ratio || '7.5:1',
+      wage_achievement_tier: latestRow.wage_achievement_tier || '4万5千円以上',
+      valid_from: defaultStart,
+      valid_to: null,
       unit_price: derived.unit_price,
     };
   };
 
-  const columns: Column<OfficeWithServiceTypes>[] = useMemo(() => {
-    const bTypes = serviceTypes.filter(isBTypeServiceType);
-    const serviceTypeOptions = bTypes.map(st => ({
-      label: st.name,
-      value: st.id,
-    }));
+  const handleRecomputeSubItems = (
+    subItems: OfficeServiceTypeRow[],
+    _parent: OfficeWithServiceTypes,
+    deletedIds?: Set<string> | string[]
+  ): OfficeServiceTypeRow[] => {
+    const recomputed = recomputeHistoryPeriods(subItems, {
+      fromKey: 'valid_from',
+      toKey: 'valid_to',
+      deletedIds,
+    });
+    return recomputed.sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
+  };
 
+  const columns: Column<any>[] = useMemo(() => {
     return [
       {
         key: 'code',
@@ -183,32 +213,16 @@ export function OfficeServiceTypePage() {
         rowType: 'main',
       },
       {
-        key: 'service_type_id',
+        key: 'service_type_name',
         header: TABLE_COLUMNS.SERVICE_TYPE,
         sortable: false,
-        rowType: 'sub',
-        inputType: 'select',
-        options: serviceTypeOptions,
-        onCellChange: (val: unknown, rowItem: unknown) => {
-          const stId = String(val);
-          const row = rowItem as OfficeServiceTypeRow;
+        editable: false,
+        rowType: 'main',
+        render: (item: any) => {
+          const stId = item.serviceTypes?.[0]?.service_type_id;
           const st = serviceTypes.find(s => s.id === stId);
-          const officeAddr = officeAddressMap[row.office_id];
-          const derived = calculateRegionalUnitPrice(officeAddr, st, regionalGrades);
-          return {
-            unit_price: derived.unit_price,
-          } as Partial<OfficeServiceTypeRow>;
+          return st ? st.name : (item.service_type_name || '就労継続支援B型');
         },
-        render: (subItem: unknown) => {
-          const row = subItem as OfficeServiceTypeRow;
-          const st = serviceTypes.find(s => s.id === row.service_type_id);
-          return st ? st.name : '';
-        },
-        mainRender: (_item, addSubRow) => (
-          <Button onClick={addSubRow}>
-            ＋ 支援種別追加
-          </Button>
-        ),
         style: { minWidth: '160px' },
       },
       {
@@ -216,8 +230,14 @@ export function OfficeServiceTypePage() {
         header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
         sortable: false,
         rowType: 'sub',
+        editable: true,
         inputType: 'date',
         style: { minWidth: '130px' },
+        mainRender: (_item, addSubRow) => (
+          <Button onClick={addSubRow}>
+            ＋ 履歴追加
+          </Button>
+        ),
       },
       {
         key: 'valid_to',
@@ -352,12 +372,13 @@ export function OfficeServiceTypePage() {
       columns={columns}
       subItemsKey="serviceTypes"
       onAddSubRow={handleAddSubRow}
+      recomputeSubItems={handleRecomputeSubItems}
       onBatchSave={handleBatchSave}
       emptyMessage="事業所データがありません"
       initialSort={{ key: 'code', direction: 'asc' }}
       hideAddButton={true}
       hideDeleteColumn={false}
-      canDeleteRow={() => false}
+      canDeleteRow={(item: any) => !item.code}
       hideHeader={true}
     />
   );

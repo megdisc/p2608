@@ -247,12 +247,15 @@ export function ScreenCompositionPage() {
       physicalName: 'organizations',
       tableType: '独立マスタ',
       logicalName: '法人',
-      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・工賃明細書等各種帳票出力用属性）',
+      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・集計有効期間等）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '法人ID' },
         { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
         { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
         { name: 'corporate_number', desc: '法人番号（13桁）' },
+        { name: 'valid_from', desc: '集計開始時期（運営開始・法人設立年月日）', status: 'added' },
+        { name: 'valid_to', desc: '集計終了時期（運営終了・解散年月日。NULL: 運営中・無期限）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -263,12 +266,15 @@ export function ScreenCompositionPage() {
       physicalName: 'offices',
       tableType: '独立マスタ',
       logicalName: '事業所',
-      description: '法人が運営する各事業所の基本情報（多機能型事業所対応）',
+      description: '法人が運営する各事業所の基本情報（多機能型事業所対応・集計有効期間管理）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '事業所ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名（正式名称）' },
         { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
+        { name: 'valid_from', desc: '集計開始時期（開設・指定年月日）', status: 'added' },
+        { name: 'valid_to', desc: '集計終了時期（廃止年月日。NULL: 運営中・継続中）', status: 'added' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
@@ -278,21 +284,36 @@ export function ScreenCompositionPage() {
     {
       category: '2. 法人・事業所',
       subCategory: '2.1. 概要',
-      physicalName: 'office_service_type_settings',
+      physicalName: 'office_service_type_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所支援種別割当',
-      description: '事業所が指定を受けて実施する支援種別および定員・人員配置・報酬区分設定',
+      logicalName: '事業所支援種別割当概要',
+      description: '事業所が指定を受けて実施する支援種別セットの適用期間・履歴管理（多機能型事業所等の年度・指定変更対応。「支援種別」タブで管理）',
       status: 'modified',
       columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'service_type_id', desc: '支援種別ID' },
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
+        { name: 'valid_from', desc: '集計開始時期（指定・適用開始年月日）' },
+        { name: 'valid_to', desc: '集計終了時期（指定・適用終了年月日。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.1. 概要',
+      physicalName: 'office_service_type_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '事業所支援種別割当詳細',
+      description: '事業所支援種別割当概要に紐づく個別の指定支援種別設定（定員・人員配置・報酬区分等。「支援種別」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（FK -> office_service_type_setting_summaries.id）' },
+        { name: 'service_type_id', desc: '支援種別ID（FK -> service_types.id）' },
         { name: 'capacity', desc: '利用定員（人）' },
-        { name: 'office_number', desc: '指定事業所番号（都道府県等から付与された10桁コード。国保連請求・代理受領通知書用）', status: 'added' },
-        { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1 / 10:1。基本報酬の単位数決定用）', status: 'added' },
-        { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）', status: 'added' },
-        { name: 'deleted_at', desc: '削除日時（論理削除用）', status: 'added' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除用）', status: 'added' },
+        { name: 'office_number', desc: '指定事業所番号（都道府県等から付与された10桁コード。国保連請求・代理受領通知書用）' },
+        { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1 / 10:1。基本報酬の単位数決定用）' },
+        { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -550,17 +571,34 @@ export function ScreenCompositionPage() {
     {
       category: '3. アカウントとユーザー',
       subCategory: '3.2. 職員',
-      physicalName: 'office_staff_settings',
+      physicalName: 'office_staff_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所職員割当',
-      description: '職員と事業所の多対多割当・所属情報（複数事業所兼務・所属定義対応。「事業所」タブで定義）',
+      logicalName: '事業所職員割当概要',
+      description: '各事業所における職員配属・所属期間の履歴管理（「事業所」タブで管理）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
+        { name: 'valid_from', desc: '集計開始時期（配属・所属開始年月日）' },
+        { name: 'valid_to', desc: '集計終了時期（配属・所属終了年月日。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.2. 職員',
+      physicalName: 'office_staff_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当詳細',
+      description: '事業所職員割当概要に紐づく職員の個別所属割当（複数事業所兼務・所属定義対応。「事業所」タブで管理）',
       status: 'added',
       columns: [
-        { name: 'id', desc: '割当ID', status: 'added' },
-        { name: 'office_id', desc: '事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（FK -> office_staff_setting_summaries.id）' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
       ]
     },
     {
@@ -569,11 +607,11 @@ export function ScreenCompositionPage() {
       physicalName: 'staff_role_setting_summaries',
       tableType: '従属マスタ',
       logicalName: '職員職種割当概要',
-      description: '事業所職員割当（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「職種」タブで管理）',
+      description: '事業所職員割当詳細（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「職種」タブで管理）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID' },
-        { name: 'office_staff_setting_id', desc: '事業所職員割当ID（FK -> office_staff_settings.id）', status: 'modified' },
+        { name: 'office_staff_setting_id', desc: '事業所職員割当詳細ID（FK -> office_staff_setting_details.id）', status: 'modified' },
         { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
         { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
         { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
@@ -673,14 +711,32 @@ export function ScreenCompositionPage() {
     {
       category: '3. アカウントとユーザー',
       subCategory: '3.3. 利用者',
-      physicalName: 'office_member_settings',
+      physicalName: 'office_member_setting_summaries',
       tableType: '従属マスタ',
-      logicalName: '事業所利用者割当',
-      description: '利用者と事業所の多対多割当・所属情報（多拠点利用対応）',
+      logicalName: '事業所利用者割当概要',
+      description: '各事業所における利用者の在籍・利用契約期間の履歴管理（「事業所」タブで管理）',
+      status: 'modified',
       columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'office_id', desc: '事業所ID' },
-        { name: 'member_id', desc: '利用者ID' },
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
+        { name: 'valid_from', desc: '集計開始時期（利用契約・在籍開始年月日）' },
+        { name: 'valid_to', desc: '集計終了時期（利用契約・在籍終了年月日。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 利用者',
+      physicalName: 'office_member_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '事業所利用者割当詳細',
+      description: '事業所利用者割当概要に紐づく利用者の個別割当（多拠点利用対応。「事業所」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（FK -> office_member_setting_summaries.id）' },
+        { name: 'member_id', desc: '利用者ID（FK -> members.id）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -875,11 +931,14 @@ export function ScreenCompositionPage() {
       physicalName: 'projects',
       tableType: '従属マスタ',
       logicalName: '案件',
-      description: '案件基本情報（事業所ごとに管理）',
+      description: '案件基本情報（事業所ごとに管理・実施期間別の集計管理）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '案件ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'settlement_year_month', desc: '精算年月' },
+        { name: 'start_date', desc: '集計開始時期（案件開始・着手年月日）', status: 'added' },
+        { name: 'end_date', desc: '集計終了時期（案件終了・完了予定年月日。NULL: 進行中）', status: 'added' },
         { name: 'client_id', desc: '紐づく取引先ID' },
         { name: 'code', desc: '案件コード' },
         { name: 'name', desc: '案件名' },

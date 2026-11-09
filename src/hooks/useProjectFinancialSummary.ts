@@ -27,6 +27,20 @@ export function useProjectFinancialSummary(year: string, officeId?: string) {
     try {
       setLoading(true);
       let projQuery = supabase.from('projects').select('id, name, code, office_id').eq('is_deleted', false).order('code', { ascending: true });
+      
+      let closingsQuery = supabase
+        .from('monthly_financial_closings')
+        .select('target_period, is_confirmed')
+        .gte('target_period', `${year}-01`)
+        .lte('target_period', `${year}-12`)
+        .eq('is_confirmed', true);
+
+      let snapQuery = supabase
+        .from('general_financial_snapshot_details')
+        .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
+        .gte('target_period', `${year}-01-01`)
+        .lte('target_period', `${year}-12-31`);
+
       let recQuery = supabase
         .from('general_financial_records')
         .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
@@ -35,24 +49,59 @@ export function useProjectFinancialSummary(year: string, officeId?: string) {
 
       if (officeId) {
         projQuery = projQuery.eq('office_id', officeId);
+        closingsQuery = closingsQuery.eq('office_id', officeId);
+        snapQuery = snapQuery.eq('office_id', officeId);
         recQuery = recQuery.eq('office_id', officeId);
       }
 
       const [
         { data: projData, error: projError },
+        { data: closingsData },
+        { data: snapData },
         { data: recData, error: recError }
       ] = await Promise.all([
         projQuery,
+        closingsQuery,
+        snapQuery,
         recQuery
       ]);
 
       if (projError) throw projError;
       if (recError) throw recError;
 
+      const confirmedMonths = new Set((closingsData || []).map((c: { target_period: string }) => c.target_period));
+      const snapRecords = snapData || [];
+      const actRecords = recData || [];
+      const snapMonthSet = new Set(snapRecords.map(r => r.target_period ? r.target_period.substring(0, 7) : ''));
+
+      type RawProjectFinancialRecord = {
+        id: string;
+        project_id?: string | null;
+        type?: string | null;
+        subject?: string | null;
+        amount?: number | null;
+        target_period?: string | null;
+        activity_category?: string | null;
+        office_id?: string | null;
+      };
+
+      // 各月ごとに確定済み月はスナップショット、未確定月はレコード系を採用
+      const mergedRecords: RawProjectFinancialRecord[] = [];
+      for (let i = 1; i <= 12; i++) {
+        const monthStr = `${year}-${i.toString().padStart(2, '0')}`;
+        const isClosed = confirmedMonths.has(monthStr);
+
+        if (isClosed && snapMonthSet.has(monthStr)) {
+          mergedRecords.push(...snapRecords.filter(r => r.target_period && r.target_period.startsWith(monthStr)));
+        } else {
+          mergedRecords.push(...actRecords.filter(r => r.target_period && r.target_period.startsWith(monthStr)));
+        }
+      }
+
       if (projData) {
         // Filter out 'その他' project and filter financial records for production activity
         const filteredProjData = projData.filter((p: any) => p.name !== 'その他');
-        const productionRecords = (recData || []).filter((r: any) => r.activity_category !== 'welfare');
+        const productionRecords = mergedRecords.filter((r: any) => r.activity_category !== 'welfare');
 
         const rows: ProjectFinancialSummaryRow[] = filteredProjData.map((p: any) => {
           const pRecs = productionRecords.filter((r: any) => r.project_id === p.id);

@@ -18,23 +18,83 @@ export function useMonthlyFinancials() {
   const fetchFinancials = useCallback(async (monthStr: string) => {
     try {
       setLoadingFinancials(true);
-      const [recRes, allExpRes] = await Promise.all([
-        supabase
-          .from('general_financial_records')
-          .select('*')
-          .or(`target_period.eq.${monthStr},target_period.eq.${monthStr}-01,and(target_period.gte.${monthStr}-01,target_period.lte.${monthStr}-31)`),
-        supabase
-          .from('general_financial_records')
-          .select('*')
-          .eq('type', 'expense')
-          .in('subject', ['材料費', '経費'])
-      ]);
-      
-      if (recRes.error) throw recRes.error;
-      if (allExpRes.error) throw allExpRes.error;
 
-      setFinancials(recRes.data || []);
-      setAllExpenseRecords(allExpRes.data || []);
+      const [y, m] = monthStr.split('-').map(Number);
+      const startOfMonth = `${monthStr}-01`;
+      const lastDay = new Date(y, m, 0).getDate();
+      const endOfMonth = `${monthStr}-${lastDay.toString().padStart(2, '0')}`;
+
+      // 1. 月次確定状態の確認
+      const { data: closingData } = await supabase
+        .from('monthly_financial_closings')
+        .select('target_period, is_confirmed')
+        .eq('target_period', monthStr)
+        .eq('is_confirmed', true);
+
+      const isClosed = Boolean(closingData && closingData.length > 0);
+
+      let records: MonthlyFinancialRecord[] = [];
+      let allExpense: MonthlyFinancialRecord[] = [];
+
+      if (isClosed) {
+        // 確定済み: スナップショットテーブルから取得
+        const [snapRes, snapExpRes] = await Promise.all([
+          supabase
+            .from('general_financial_snapshot_details')
+            .select('*')
+            .gte('target_period', startOfMonth)
+            .lte('target_period', endOfMonth),
+          supabase
+            .from('general_financial_snapshot_details')
+            .select('*')
+            .eq('type', 'expense')
+            .in('subject', ['材料費', '経費'])
+        ]);
+
+        if (!snapRes.error && snapRes.data && snapRes.data.length > 0) {
+          records = snapRes.data;
+          allExpense = snapExpRes.data || [];
+        } else {
+          // スナップショットにまだ未作成の場合はレコード層からフォールバック
+          const [recRes, recExpRes] = await Promise.all([
+            supabase
+              .from('general_financial_records')
+              .select('*')
+              .gte('target_period', startOfMonth)
+              .lte('target_period', endOfMonth),
+            supabase
+              .from('general_financial_records')
+              .select('*')
+              .eq('type', 'expense')
+              .in('subject', ['材料費', '経費'])
+          ]);
+          records = recRes.data || [];
+          allExpense = recExpRes.data || [];
+        }
+      } else {
+        // 未確定: レコードテーブル（月次実績層）から取得
+        const [recRes, recExpRes] = await Promise.all([
+          supabase
+            .from('general_financial_records')
+            .select('*')
+            .gte('target_period', startOfMonth)
+            .lte('target_period', endOfMonth),
+          supabase
+            .from('general_financial_records')
+            .select('*')
+            .eq('type', 'expense')
+            .in('subject', ['材料費', '経費'])
+        ]);
+
+        if (recRes.error) throw recRes.error;
+        if (recExpRes.error) throw recExpRes.error;
+
+        records = recRes.data || [];
+        allExpense = recExpRes.data || [];
+      }
+
+      setFinancials(records);
+      setAllExpenseRecords(allExpense);
     } catch (err) {
       console.error('Error fetching monthly financials:', err);
       throw err;
@@ -43,7 +103,7 @@ export function useMonthlyFinancials() {
     }
   }, []);
 
-const isValidUuid = (str: any): boolean => {
+const isValidUuid = (str: unknown): boolean => {
   return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 };
 

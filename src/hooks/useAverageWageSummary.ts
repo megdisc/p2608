@@ -34,27 +34,39 @@ export function useAverageWageSummary(officeId?: string) {
 
       let workQuery = supabase.from('daily_work_records').select('target_period, member_id, work_time, office_id');
       let wageQuery = supabase.from('wage_snapshot_summaries').select('target_period, payment, wage_total, member_id, office_id');
-      let finQuery = supabase.from('general_financial_snapshot_details').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
+      let finSnapQuery = supabase.from('general_financial_snapshot_details').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
+      let finRecQuery = supabase.from('general_financial_records').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
 
       if (officeId) {
         workQuery = workQuery.eq('office_id', officeId);
         wageQuery = wageQuery.eq('office_id', officeId);
-        finQuery = finQuery.eq('office_id', officeId);
+        finSnapQuery = finSnapQuery.eq('office_id', officeId);
+        finRecQuery = finRecQuery.eq('office_id', officeId);
       }
 
       const [
         { data: workRecords, error: workError },
         { data: wageRecords, error: wageError },
-        { data: finRecords, error: finError }
+        { data: finSnapRecords, error: finSnapError },
+        { data: finRecRecords, error: finRecError }
       ] = await Promise.all([
         workQuery,
         wageQuery,
-        finQuery
+        finSnapQuery,
+        finRecQuery
       ]);
 
       if (workError) throw workError;
       if (wageError) throw wageError;
-      if (finError) throw finError;
+      if (finSnapError) throw finSnapError;
+      if (finRecError) throw finRecError;
+
+      // 確定スナップショットと未確定レコードをマージ（確定月優先）
+      const snapMonths = new Set((finSnapRecords || []).map(r => r.target_period ? r.target_period.slice(0, 7) : ''));
+      const finRecords = [
+        ...(finSnapRecords || []),
+        ...(finRecRecords || []).filter(r => !snapMonths.has(r.target_period ? r.target_period.slice(0, 7) : ''))
+      ];
 
       // Extract all years available
       const yearsSet = new Set<string>();

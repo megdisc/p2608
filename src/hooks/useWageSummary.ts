@@ -88,7 +88,7 @@ export function useWageSummary() {
             project_task_assignees ( member_id, staff_id )
           )
         `).eq('is_deleted', false),
-        supabase.from('financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
+        supabase.from('general_financial_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('type', 'expense'),
         supabase.from('daily_work_records').select('target_period, member_id, task_id, work_time, office_id').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
         supabase.from('member_attendance_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
         supabase.from('allowances').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
@@ -903,10 +903,14 @@ export function useWageSummary() {
       // 一般収支スナップショット (general_financial_snapshot_details) への固定化保存
       try {
         // 1. 月次実績 general_financial_records から当月のレコードを取得してスナップショットへ同期
+        const [yNum, mNum] = monthStr.split('-').map(Number);
+        const lastDayNum = new Date(yNum, mNum, 0).getDate();
+        const endOfMonthDate = `${monthStr}-${lastDayNum.toString().padStart(2, '0')}`;
         const { data: monthRecords } = await supabase
           .from('general_financial_records')
           .select('*')
-          .or(`target_period.eq.${monthStr},target_period.eq.${periodDate},and(target_period.gte.${periodDate},target_period.lte.${monthStr}-31)`);
+          .gte('target_period', periodDate)
+          .lte('target_period', endOfMonthDate);
 
         if (monthRecords && monthRecords.length > 0) {
           const snapshotRows = monthRecords.map(r => ({

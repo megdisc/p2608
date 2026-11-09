@@ -2,7 +2,7 @@ import { DataPage, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import type { FinancialRecordItem } from '../types';
-import { useAlert, useAuth } from '../contexts';
+import { useAlert } from '../contexts';
 import { useFinancialRecords } from '../hooks';
 import { getCurrentJSTDateOnly } from '../utils';
 
@@ -30,7 +30,6 @@ export function ProjectFinancialRecordPage() {
     disableYearFilter: true
   });
   const { showAlert } = useAlert();
-  const { user } = useAuth();
 
   useEffect(() => {
     fetchRecords().catch(() => {
@@ -102,7 +101,7 @@ export function ProjectFinancialRecordPage() {
     }
   ];
 
-  const handleBatchSave = async (drafts: FinancialRecordItem[], _deletedIds: string[]) => {
+  const handleBatchSave = async (drafts: FinancialRecordItem[]) => {
     try {
       const sanitizedDrafts = drafts.map(d => ({
         ...d,
@@ -127,7 +126,7 @@ export function ProjectFinancialRecordPage() {
     amount: 0,
     remarks: '',
     recordedDate: getCurrentJSTDateOnly(),
-    recordedBy: user?.id || '',
+    recordedBy: '',
     isLimited: false
   });
 

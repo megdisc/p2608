@@ -32,25 +32,81 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
   const fetchSummary = useCallback(async () => {
     try {
       setLoading(true);
-      let query = supabase
+
+      // 1. 当該年の確定済み月一覧を取得
+      let closingsQuery = supabase
+        .from('monthly_financial_closings')
+        .select('target_period, is_confirmed')
+        .gte('target_period', `${year}-01`)
+        .lte('target_period', `${year}-12`)
+        .eq('is_confirmed', true);
+
+      // 2. スナップショットデータクエリ
+      let snapQuery = supabase
         .from('general_financial_snapshot_details')
         .select('target_period, type, subject, amount, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
+      // 3. 未確定レコードデータクエリ
+      let recQuery = supabase
+        .from('general_financial_records')
+        .select('target_period, type, subject, amount, activity_category, office_id')
+        .gte('target_period', `${year}-01-01`)
+        .lte('target_period', `${year}-12-31`);
+
       if (officeId) {
-        query = query.eq('office_id', officeId);
+        closingsQuery = closingsQuery.eq('office_id', officeId);
+        snapQuery = snapQuery.eq('office_id', officeId);
+        recQuery = recQuery.eq('office_id', officeId);
       }
 
       if (activityCategory === 'welfare') {
-        query = query.eq('activity_category', 'welfare');
+        snapQuery = snapQuery.eq('activity_category', 'welfare');
+        recQuery = recQuery.eq('activity_category', 'welfare');
       } else {
-        query = query.or('activity_category.eq.production,activity_category.is.null');
+        snapQuery = snapQuery.or('activity_category.eq.production,activity_category.is.null');
+        recQuery = recQuery.or('activity_category.eq.production,activity_category.is.null');
       }
 
-      const { data: records, error } = await query;
-        
-      if (error) throw error;
+      const [closingsRes, snapRes, recRes] = await Promise.all([
+        closingsQuery,
+        snapQuery,
+        recQuery
+      ]);
+
+      const confirmedMonths = new Set(
+        (closingsRes.data || []).map((c: { target_period: string }) => c.target_period)
+      );
+
+      const snapRecords = snapRes.data || [];
+      const actRecords = recRes.data || [];
+
+      // 各月ごとに確定済み月はスナップショット、未確定月はレコード系を採用
+      const snapMonthSet = new Set(snapRecords.map(r => r.target_period ? r.target_period.substring(0, 7) : ''));
+
+      type FinancialSummaryRawRecord = {
+        target_period?: string | null;
+        type?: string | null;
+        subject?: string | null;
+        amount?: number | null;
+        activity_category?: string | null;
+        office_id?: string | null;
+      };
+
+      const records: FinancialSummaryRawRecord[] = [];
+      for (let i = 1; i <= 12; i++) {
+        const monthStr = `${year}-${i.toString().padStart(2, '0')}`;
+        const isClosed = confirmedMonths.has(monthStr);
+
+        if (isClosed && snapMonthSet.has(monthStr)) {
+          // 確定済み: スナップショットを採用
+          records.push(...snapRecords.filter(r => r.target_period && r.target_period.startsWith(monthStr)));
+        } else {
+          // 未確定またはスナップショット未作成: 実績レコードを採用
+          records.push(...actRecords.filter(r => r.target_period && r.target_period.startsWith(monthStr)));
+        }
+      }
 
       const summaryMap = new Map<string, FinancialSummaryRow>();
       

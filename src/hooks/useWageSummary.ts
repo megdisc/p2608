@@ -94,15 +94,15 @@ export function useWageSummary() {
         supabase.from('allowances').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
         supabase.from('deductions').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
         supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
-        supabase.from('monthly_incentive_records').select('*').eq('target_period', monthStr),
-        supabase.from('monthly_wage_summaries').select('*').eq('target_period', monthStr),
-        supabase.from('monthly_wage_confirmations').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
+        supabase.from('monthly_record_closings').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
+        supabase.from('incentive_records').select('*').eq('target_period', monthStr),
+        supabase.from('wage_snapshot_summaries').select('*').eq('target_period', monthStr),
+        supabase.from('monthly_financial_closings').select('target_period').eq('target_period', monthStr).eq('is_confirmed', true),
         officeMembersQuery,
-        supabase.from('monthly_incentive_details').select('*'),
-        supabase.from('allowance_deduction_details').select('*'),
+        supabase.from('incentive_snapshot_details').select('*'),
+        supabase.from('allowance_deduction_snapshot_details').select('*'),
         supabase.from('member_recipient_certificates').select('*').or('is_deleted.eq.false,is_deleted.is.null'),
-        supabase.from('service_billing_summaries').select('*').eq('target_period', monthStr),
+        supabase.from('service_billing_snapshot_summaries').select('*').eq('target_period', monthStr),
         supabase.from('staff_attendance_records').select('*').gte('work_date', `${monthStr}-01`).lt('work_date', `${nextMonthStr}-01`)
       ]);
 
@@ -809,7 +809,7 @@ export function useWageSummary() {
       if (wageRecords.length > 0) {
         try {
           const { data: insertedSummaries } = await supabase
-            .from('monthly_wage_summaries')
+            .from('wage_snapshot_summaries')
             .upsert(wageRecords, { onConflict: 'office_id,target_period,member_id' })
             .select('id, member_id');
 
@@ -855,50 +855,36 @@ export function useWageSummary() {
           const summaryIds = Array.from(summaryMap.values());
           if (summaryIds.length > 0) {
             try {
-              // 統合テーブル allowance_deduction_details へ保存
-              const { error: syncErr } = await supabase.from('allowance_deduction_details').delete().in('summary_id', summaryIds);
-              if (!syncErr) {
-                if (allAllowanceDeductionDetails.length > 0) {
-                  await supabase.from('allowance_deduction_details').insert(allAllowanceDeductionDetails);
-                }
-              } else {
-                // フォールバック: 旧ビュー/テーブルへの書き込み
-                const allAllowanceDetails = allAllowanceDeductionDetails
-                  .filter(d => d.item_category === 'allowance')
-                  .map(d => ({ summary_id: d.summary_id, allowance_name: d.item_name, unit_price: d.unit_price, quantity: d.quantity, amount: d.amount }));
-                const allDeductionDetails = allAllowanceDeductionDetails
-                  .filter(d => d.item_category === 'deduction')
-                  .map(d => ({ summary_id: d.summary_id, deduction_name: d.item_name, unit_price: d.unit_price, quantity: d.quantity, amount: d.amount }));
-
-                await supabase.from('monthly_allowance_details').delete().in('summary_id', summaryIds);
-                if (allAllowanceDetails.length > 0) {
-                  await supabase.from('monthly_allowance_details').insert(allAllowanceDetails);
-                }
-                await supabase.from('monthly_deduction_details').delete().in('summary_id', summaryIds);
-                if (allDeductionDetails.length > 0) {
-                  await supabase.from('monthly_deduction_details').insert(allDeductionDetails);
-                }
+              // 統合テーブル allowance_deduction_snapshot_details へ保存
+              await supabase.from('allowance_deduction_snapshot_details').delete().in('summary_id', summaryIds);
+              if (allAllowanceDeductionDetails.length > 0) {
+                await supabase.from('allowance_deduction_snapshot_details').insert(allAllowanceDeductionDetails);
               }
 
-              await supabase.from('monthly_incentive_details').delete().in('summary_id', summaryIds);
+              // インセンティブ明細スナップショット (incentive_snapshot_details) へ保存
+              await supabase.from('incentive_snapshot_details').delete().in('summary_id', summaryIds);
               if (allIncentiveDetails.length > 0) {
-                await supabase.from('monthly_incentive_details').insert(allIncentiveDetails);
+                await supabase.from('incentive_snapshot_details').insert(allIncentiveDetails);
               }
             } catch (detailErr) {
               console.warn('Could not sync details records:', detailErr);
             }
           }
         } catch (e) {
-          console.warn('Could not upsert monthly_wage_summaries:', e);
+          console.warn('Could not upsert wage_snapshot_summaries:', e);
         }
       }
 
+      // 月次収支確定 (monthly_financial_closings) の更新
       try {
         await supabase
-          .from('monthly_wage_confirmations')
-          .upsert({ target_period: monthStr, office_id: officeId || null, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'office_id,target_period' });
+          .from('monthly_financial_closings')
+          .upsert(
+            { target_period: monthStr, office_id: officeId || null, is_confirmed: true, confirmed_at: new Date().toISOString() },
+            { onConflict: 'office_id,target_period' }
+          );
       } catch (e) {
-        console.warn('Could not update monthly_wage_confirmations:', e);
+        console.warn('Could not update monthly_financial_closings:', e);
       }
 
       try {
@@ -914,9 +900,35 @@ export function useWageSummary() {
       const totalDeduction = data.reduce((sum, r) => sum + (r.dedTotal || 0), 0);
       const periodDate = `${monthStr}-01`;
 
+      // 一般収支スナップショット (general_financial_snapshot_details) への固定化保存
       try {
+        // 1. 月次実績 general_financial_records から当月のレコードを取得してスナップショットへ同期
+        const { data: monthRecords } = await supabase
+          .from('general_financial_records')
+          .select('*')
+          .or(`target_period.eq.${monthStr},target_period.eq.${periodDate},and(target_period.gte.${periodDate},target_period.lte.${monthStr}-31)`);
+
+        if (monthRecords && monthRecords.length > 0) {
+          const snapshotRows = monthRecords.map(r => ({
+            id: r.id,
+            office_id: r.office_id || officeId || null,
+            target_period: r.target_period,
+            project_id: r.project_id || null,
+            client_id: r.client_id || null,
+            recorded_by: r.recorded_by || null,
+            type: r.type,
+            activity_category: r.activity_category || 'production',
+            cost_category: r.cost_category || 'manufacturing',
+            subject: r.subject,
+            amount: r.amount,
+            remarks: r.remarks || null
+          }));
+          await supabase.from('general_financial_snapshot_details').upsert(snapshotRows);
+        }
+
+        // 2. 確定工賃（労務費・利用者工賃）の登録
         let finQuery = supabase
-          .from('financial_records')
+          .from('general_financial_snapshot_details')
           .select('id')
           .eq('target_period', periodDate)
           .eq('subject', '労務費（利用者工賃）');
@@ -925,7 +937,7 @@ export function useWageSummary() {
 
         if (existingFin && existingFin.length > 0) {
           await supabase
-            .from('financial_records')
+            .from('general_financial_snapshot_details')
             .update({
               amount: totalLaborWage,
               activity_category: 'production',
@@ -934,7 +946,7 @@ export function useWageSummary() {
             .eq('id', existingFin[0].id);
         } else {
           await supabase
-            .from('financial_records')
+            .from('general_financial_snapshot_details')
             .insert({
               target_period: periodDate,
               office_id: officeId || null,
@@ -946,8 +958,9 @@ export function useWageSummary() {
             });
         }
 
+        // 3. 確定控除の登録
         let dedFinQuery = supabase
-          .from('financial_records')
+          .from('general_financial_snapshot_details')
           .select('id')
           .eq('target_period', periodDate)
           .eq('subject', '控除');
@@ -956,7 +969,7 @@ export function useWageSummary() {
 
         if (existingDedFin && existingDedFin.length > 0) {
           await supabase
-            .from('financial_records')
+            .from('general_financial_snapshot_details')
             .update({
               type: 'revenue',
               amount: totalDeduction,
@@ -967,7 +980,7 @@ export function useWageSummary() {
             .eq('id', existingDedFin[0].id);
         } else {
           await supabase
-            .from('financial_records')
+            .from('general_financial_snapshot_details')
             .insert({
               target_period: periodDate,
               office_id: officeId || null,
@@ -979,7 +992,7 @@ export function useWageSummary() {
             });
         }
       } catch (e) {
-        console.warn('Could not sync financial_records:', e);
+        console.warn('Could not sync general_financial_snapshot_details:', e);
       }
 
       setIsWageSummaryConfirmedState(true);
@@ -996,9 +1009,13 @@ export function useWageSummary() {
       setLoading(true);
 
       try {
-        let q = supabase.from('monthly_wage_confirmations').delete().eq('target_period', monthStr);
-        if (officeId) q = q.eq('office_id', officeId);
-        await q;
+        let q1 = supabase.from('monthly_financial_closings').delete().eq('target_period', monthStr);
+        if (officeId) q1 = q1.eq('office_id', officeId);
+        await q1;
+
+        let q2 = supabase.from('monthly_wage_confirmations').delete().eq('target_period', monthStr);
+        if (officeId) q2 = q2.eq('office_id', officeId);
+        await q2;
       } catch (e) {
         console.warn('Could not update wage confirmation records:', e);
       }

@@ -20,11 +20,11 @@ export function useMonthlyFinancials() {
       setLoadingFinancials(true);
       const [recRes, allExpRes] = await Promise.all([
         supabase
-          .from('financial_records')
+          .from('general_financial_records')
           .select('*')
           .or(`target_period.eq.${monthStr},target_period.eq.${monthStr}-01,and(target_period.gte.${monthStr}-01,target_period.lte.${monthStr}-31)`),
         supabase
-          .from('financial_records')
+          .from('general_financial_records')
           .select('*')
           .eq('type', 'expense')
           .in('subject', ['材料費', '経費'])
@@ -52,7 +52,7 @@ const isValidUuid = (str: any): boolean => {
       if (deletedIds.length > 0) {
         const validDeletes = deletedIds.filter(isValidUuid);
         if (validDeletes.length > 0) {
-          const { error: delErr } = await supabase.from('financial_records').delete().in('id', validDeletes);
+          const { error: delErr } = await supabase.from('general_financial_records').delete().in('id', validDeletes);
           if (delErr) throw delErr;
         }
       }
@@ -72,7 +72,7 @@ const isValidUuid = (str: any): boolean => {
       });
       
       if (upserts.length > 0) {
-        const { error: upErr } = await supabase.from('financial_records').upsert(upserts);
+        const { error: upErr } = await supabase.from('general_financial_records').upsert(upserts);
         if (upErr) throw upErr;
       }
     } catch (err) {

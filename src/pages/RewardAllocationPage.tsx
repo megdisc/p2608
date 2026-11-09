@@ -240,7 +240,7 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('monthly_incentive_confirmations').select('target_period').eq('is_confirmed', true);
+      const { data, error } = await supabase.from('monthly_record_closings').select('target_period').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
         const dbMonths = data.map(d => d.target_period);
         setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));
@@ -248,9 +248,38 @@ export function RewardAllocationPage() {
     } catch {}
   }, []);
 
+  const fetchIncentiveRecords = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('incentive_records')
+        .select('member_id, task_id, allocation_amount')
+        .eq('target_period', currentMonth);
+      if (!error && data && data.length > 0) {
+        const dbMap = new Map<string, number>();
+        data.forEach(d => {
+          dbMap.set(`${d.member_id}_${d.task_id}`, Number(d.allocation_amount) || 0);
+        });
+        setAllocationDrafts(prev => {
+          const next = { ...prev };
+          progressRecords.forEach(r => {
+            const rawMemberId = r.userId?.startsWith('member_') ? r.userId.replace('member_', '') : r.userId;
+            const key = `${rawMemberId}_${r.taskId}`;
+            if (dbMap.has(key)) {
+              next[r.id] = dbMap.get(key)!;
+            }
+          });
+          return next;
+        });
+      }
+    } catch (err) {
+      console.warn('Error fetching incentive records:', err);
+    }
+  }, [currentMonth, progressRecords]);
+
   useEffect(() => {
     fetchMonthlyConfirmations();
-  }, [fetchMonthlyConfirmations]);
+    fetchIncentiveRecords();
+  }, [fetchMonthlyConfirmations, fetchIncentiveRecords]);
 
   const isConfirmed = useMemo(() => {
     return confirmedMonths.includes(currentMonth);
@@ -321,6 +350,33 @@ export function RewardAllocationPage() {
       );
       await saveFinancials(upsertFin, []);
       
+      // 2. 利用者インセンティブ実績 (incentive_records) への保存
+      try {
+        const incentiveUpserts = progressRecords
+          .filter(r => r.userId && !r.userId.startsWith('staff_'))
+          .map(r => {
+            const rawMemberId = r.userId.startsWith('member_') ? r.userId.replace('member_', '') : r.userId;
+            const customVal = allocationDrafts[r.id];
+            const val = customVal !== undefined ? Number(customVal) || 0 : Number(r.allocationAmount) || 0;
+            return {
+              target_period: currentMonth,
+              member_id: rawMemberId,
+              task_id: r.taskId,
+              allocation_amount: val
+            };
+          })
+          .filter(item => item.member_id && item.task_id);
+
+        if (incentiveUpserts.length > 0) {
+          const { error: incErr } = await supabase
+            .from('incentive_records')
+            .upsert(incentiveUpserts, { onConflict: 'target_period,member_id,task_id' });
+          if (incErr) console.warn('Could not upsert incentive_records:', incErr);
+        }
+      } catch (e) {
+        console.warn('incentive_records save warning:', e);
+      }
+
       try {
         localStorage.setItem(`monthly_allocation_drafts_${currentMonth}`, JSON.stringify(allocationDrafts));
       } catch (e) {
@@ -385,9 +441,9 @@ export function RewardAllocationPage() {
     }
 
     try {
-      await supabase.from('monthly_incentive_confirmations').upsert(
+      await supabase.from('monthly_record_closings').upsert(
         { target_period: currentMonth, is_confirmed: true, confirmed_at: new Date().toISOString() },
-        { onConflict: 'target_period' }
+        { onConflict: 'office_id,target_period' }
       );
     } catch {}
 
@@ -404,7 +460,7 @@ export function RewardAllocationPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_incentive_confirmations').delete().eq('target_period', currentMonth);
+      await supabase.from('monthly_record_closings').delete().eq('target_period', currentMonth);
     } catch {}
 
     setConfirmedMonths(prev => {

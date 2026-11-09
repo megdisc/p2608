@@ -29,7 +29,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   const fetchRecords = useCallback(async () => {
     try {
       setLoading(true);
-      let query = supabase.from('financial_records').select(`
+      let query = supabase.from('general_financial_records').select(`
           id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project:projects(id, name),
           staff:staffs(id, name),
@@ -134,7 +134,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     }));
 
     if (upserts.length > 0) {
-      const { error: upsertError } = await supabase.from('financial_records').upsert(upserts);
+      const { error: upsertError } = await supabase.from('general_financial_records').upsert(upserts);
       if (upsertError) throw upsertError;
     }
 
@@ -144,7 +144,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     const deletedIds = existingIds.filter(id => !draftIds.includes(id));
 
     if (deletedIds.length > 0) {
-      const { error: deleteError } = await supabase.from('financial_records').delete().in('id', deletedIds);
+      const { error: deleteError } = await supabase.from('general_financial_records').delete().in('id', deletedIds);
       if (deleteError) throw deleteError;
     }
 

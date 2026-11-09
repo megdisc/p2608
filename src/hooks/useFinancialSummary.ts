@@ -33,7 +33,7 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
     try {
       setLoading(true);
       let query = supabase
-        .from('financial_records')
+        .from('general_financial_snapshot_details')
         .select('target_period, type, subject, amount, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);

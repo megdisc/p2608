@@ -501,7 +501,7 @@ export type MemberSkillSettingTableItem = MemberSkillSettingDetailTableItem;
 
 export type AllowanceDeductionDetailTableItem = {
   id?: string; // UUID
-  summary_id: string; // UUID (FK -> wage_summaries.id)
+  summary_id: string; // UUID (FK -> wage_snapshot_summaries.id)
   item_id?: string | null; // UUID (FK -> allowance_deduction_items.id)
   item_category: 'allowance' | 'deduction';
   item_name: string;

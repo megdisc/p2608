@@ -905,8 +905,8 @@ INSERT INTO public.member_work_records (office_id, target_period, member_id, tas
 ('44444444-4444-4444-4444-444444444444', '2026-06-16', 'c6666666-6666-6666-6666-666666666666', '44444444-1111-0000-0000-000000000006', 5, '0ff5f11e-b752-4b06-aaab-86984a67eec7')
 ON CONFLICT DO NOTHING;
 
--- 14. 月次工賃サマリー (wage_summaries) 各事業所 2026年1月〜12月
-INSERT INTO public.wage_summaries (id, office_id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
+-- 14. 月次工賃サマリー (wage_snapshot_summaries) 各事業所 2026年1月〜12月
+INSERT INTO public.wage_snapshot_summaries (id, office_id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, deduction_total, payment) VALUES
 -- WS未来
 ('a0000001-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 50, 100, 5000, 8000, 3000, 16000, 200, 15800),
 ('a0000001-2222-42ea-800b-5e476066c582', '22222222-2222-2222-2222-222222222222', '2026-01', 'e98c7634-1eb3-4e42-b062-841f39c043e0', 60, 250, 15000, 10000, 3000, 28000, 200, 27800),
@@ -936,9 +936,9 @@ ON CONFLICT (office_id, target_period, member_id) DO UPDATE SET
   deduction_total = EXCLUDED.deduction_total,
   payment = EXCLUDED.payment;
 
--- 15. 収支記録 (general_financial_details) 各事業所 2026年1月〜12月
+-- 15. 収支明細スナップショット (general_financial_snapshot_details) 各事業所 2026年1月〜12月
 -- 事業所1: ワークステーション未来あかすみ (22222222-2222-2222-2222-222222222222)
-INSERT INTO public.general_financial_details (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
+INSERT INTO public.general_financial_snapshot_details (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
 -- 2026年1月〜12月の月次データ
 -- 1月
 ('f1111111-2222-0101-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-01-01', '418efd88-75c7-4b89-8fe9-f1fb40fc3f6d', '73ab0c05-9915-4894-a083-6bccf7a66d2a', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'production', 'manufacturing', '就労支援事業収益', 520000, 'ネットワーク構築受託売上(1月)'),
@@ -1035,10 +1035,28 @@ INSERT INTO public.general_financial_details (id, office_id, target_period, proj
 ('f3333333-4444-0625-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-06-25', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'expense', 'welfare', 'manufacturing', '事業費用・経費', 1680000, '6月度施設運営経費')
 ON CONFLICT (id) DO NOTHING;
 
+-- 15.1 一般収支実績 (general_financial_records) 各事業所 2026年1月〜12月（月次実績層）
+INSERT INTO public.general_financial_records (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks)
+SELECT id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks
+FROM public.general_financial_snapshot_details
+ON CONFLICT (id) DO NOTHING;
+
 -- 16. 月次実績確定 (monthly_record_closings)
--- WS未来 2026年10月精算（未確定状態: 精算ロジック検証用）
+-- WS未来 2026年1月, 6月は確定済、2026年10月精算は未確定状態（精算ロジック検証用）
 INSERT INTO public.monthly_record_closings (id, office_id, target_period, confirmed_at, confirmed_by, is_confirmed) VALUES
+('c1111111-2222-0101-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-01', '2026-01-31 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('c1111111-2222-0601-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-06', '2026-06-30 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
 ('c1111111-2222-1001-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-10', '2026-10-31 18:00:00+09', NULL, false)
+ON CONFLICT (office_id, target_period) DO UPDATE SET
+  confirmed_at = EXCLUDED.confirmed_at,
+  confirmed_by = EXCLUDED.confirmed_by,
+  is_confirmed = EXCLUDED.is_confirmed;
+
+-- 16.1 月次収支確定 (monthly_financial_closings)
+-- WS未来 2026年1月, 6月は確定済、2026年10月は未確定
+INSERT INTO public.monthly_financial_closings (id, office_id, target_period, confirmed_at, confirmed_by, is_confirmed) VALUES
+('f0000001-2222-0101-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-01', '2026-01-31 19:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('f0000001-2222-0601-a111-111111111111', '22222222-2222-2222-2222-222222222222', '2026-06', '2026-06-30 19:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true)
 ON CONFLICT (office_id, target_period) DO UPDATE SET
   confirmed_at = EXCLUDED.confirmed_at,
   confirmed_by = EXCLUDED.confirmed_by,
@@ -1052,9 +1070,9 @@ INSERT INTO public.incentive_records (id, target_period, member_id, task_id, all
 ON CONFLICT (id) DO UPDATE SET
   allocation_amount = EXCLUDED.allocation_amount;
 
--- 18. インセンティブ明細 (incentive_details)
--- 工賃サマリー(wage_summaries)とタスクの紐付け明細
-INSERT INTO public.incentive_details (id, summary_id, task_id, allocation_amount) VALUES
+-- 18. インセンティブ明細 (incentive_snapshot_details)
+-- 工賃サマリー(wage_snapshot_summaries)とタスクの紐付け明細
+INSERT INTO public.incentive_snapshot_details (id, summary_id, task_id, allocation_amount) VALUES
 -- 2026年1月
 ('d1111111-2222-0101-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c581', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 8000),
 ('d1111111-2222-0102-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c582', '1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c', 10000),
@@ -1075,8 +1093,8 @@ INSERT INTO public.incentive_details (id, summary_id, task_id, allocation_amount
 ON CONFLICT (id) DO UPDATE SET
   allocation_amount = EXCLUDED.allocation_amount;
 
--- 19. 加算手当・控除明細 (allowance_deduction_details) 各事業所 2026年1月, 6月, 10月
-INSERT INTO public.allowance_deduction_details (id, summary_id, item_category, item_name, unit_price, quantity, amount) VALUES
+-- 19. 加算手当・控除明細 (allowance_deduction_snapshot_details) 各事業所 2026年1月, 6月, 10月
+INSERT INTO public.allowance_deduction_snapshot_details (id, summary_id, item_category, item_name, unit_price, quantity, amount) VALUES
 -- 加算手当: WS未来
 ('d2222222-2222-0101-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c581', 'allowance', '精勤手当', 3000, 1, 3000),
 ('d2222222-2222-0102-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c582', 'allowance', '精勤手当', 3000, 1, 3000),

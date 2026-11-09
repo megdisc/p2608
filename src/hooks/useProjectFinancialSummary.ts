@@ -28,7 +28,7 @@ export function useProjectFinancialSummary(year: string, officeId?: string) {
       setLoading(true);
       let projQuery = supabase.from('projects').select('id, name, code, office_id').eq('is_deleted', false).order('code', { ascending: true });
       let recQuery = supabase
-        .from('financial_records')
+        .from('general_financial_records')
         .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);

@@ -1171,9 +1171,13 @@ export function ScreenCompositionPage() {
         { name: 'target_period', desc: '対象時期・取引日' },
         { name: 'project_id', desc: '関連案件ID' },
         { name: 'client_id', desc: '関連取引先ID' },
+        { name: 'recorded_by', desc: '計上・登録職員ID', status: 'added' },
+        { name: 'activity_category', desc: '事業活動区分（production: 就労支援事業 / welfare: 福祉事業）', status: 'added' },
+        { name: 'cost_category', desc: '費用区分（manufacturing: 製造原価 / sga: 販売費及び一般管理費）', status: 'added' },
         { name: 'subject', desc: '勘定科目・摘要' },
         { name: 'amount', desc: '金額' },
         { name: 'type', desc: '区分（revenue: 収益 / expense: 費用 / reserve: 積立金）' },
+        { name: 'remarks', desc: '備考・摘要詳細', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -1216,10 +1220,11 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.1. 工賃・控除以外の収支',
-      physicalName: 'general_financial_details',
+      physicalName: 'general_financial_snapshot_details',
       tableType: 'スナップショット',
       logicalName: '一般収支明細',
       description: '締め時点で確定・集計保存された勘定科目別の決算収支データ（就労支援事業/福祉事業）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'office_id', desc: '事業所ID' },
@@ -1240,10 +1245,11 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.2. 工賃・控除の収支',
-      physicalName: 'wage_summaries',
+      physicalName: 'wage_snapshot_summaries',
       tableType: 'スナップショット',
       logicalName: '工賃・控除概要',
       description: '月ごとの各利用者の計算・支給工賃記録、サービス利用料控除額、およびその他控除概要（基幹親テーブル）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID' },
@@ -1268,13 +1274,14 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.2. 工賃・控除の収支',
-      physicalName: 'incentive_details',
+      physicalName: 'incentive_snapshot_details',
       tableType: 'スナップショット',
       logicalName: 'インセンティブ明細',
       description: '工賃確定時点のインセンティブ分配内訳スナップショット',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID' },
-        { name: 'summary_id', desc: '工賃・控除概要ID' },
+        { name: 'summary_id', desc: '工賃・控除概要ID（FK -> wage_snapshot_summaries.id）' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
         { name: 'created_at', desc: '作成日時' },
@@ -1284,14 +1291,14 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.2. 工賃・控除の収支',
-      physicalName: 'allowance_deduction_details',
+      physicalName: 'allowance_deduction_snapshot_details',
       tableType: 'スナップショット',
       logicalName: '加算手当・控除明細',
       description: '工賃確定時点のその他加算手当・控除内訳スナップショット',
       status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID' },
-        { name: 'summary_id', desc: '工賃・控除概要ID（FK -> wage_summaries.id）' },
+        { name: 'summary_id', desc: '工賃・控除概要ID（FK -> wage_snapshot_summaries.id）' },
         { name: 'item_id', desc: '項目ID（FK -> allowance_deduction_items.id）' },
         { name: 'item_category', desc: '項目区分（allowance: 加算手当, deduction: 控除）' },
         { name: 'item_name', desc: '項目名（手当名または控除名）' },
@@ -1305,11 +1312,11 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.2. 工賃・控除の収支',
-      physicalName: 'service_billing_summaries',
+      physicalName: 'service_billing_snapshot_summaries',
       tableType: 'スナップショット',
       logicalName: 'サービス費概要',
       description: '利用者ごとの月次サービス利用料全額（10割・総費用額）、利用者負担額（1割・上限月額判定）、および自治体請求額（9割・介護給付費等）の確定スナップショット',
-      status: 'added',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '概要ID', status: 'added' },
         { name: 'office_id', desc: '事業所ID', status: 'added' },
@@ -1336,14 +1343,14 @@ export function ScreenCompositionPage() {
     {
       category: '8. 集計結果の記録',
       subCategory: '8.2. 工賃・控除の収支',
-      physicalName: 'service_billing_details',
+      physicalName: 'service_billing_snapshot_details',
       tableType: 'スナップショット',
       logicalName: 'サービス費明細',
       description: 'サービス費集計の内訳明細スナップショット（基本報酬・送迎加算・食事提供加算・目標工賃達成加算等の個別項目算定ログ）',
-      status: 'added',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID', status: 'added' },
-        { name: 'summary_id', desc: 'サービス費概要ID（service_billing_summariesのIDを参照）', status: 'added' },
+        { name: 'summary_id', desc: 'サービス費概要ID（service_billing_snapshot_summariesのIDを参照）', status: 'added' },
         { name: 'reward_item_id', desc: '加減算・報酬項目ID（reward_itemsのIDを参照）', status: 'added' },
         { name: 'service_code', desc: '国保連サービス種類・項目コード（6桁コード）', status: 'added' },
         { name: 'item_name', desc: '算定項目名称', status: 'added' },

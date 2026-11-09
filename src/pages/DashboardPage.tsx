@@ -5,15 +5,6 @@ import { supabase } from '../lib';
 import { getCurrentJSTDateOnly } from '../utils';
 import type { Tab } from '../types';
 
-type NotificationItem = {
-  id: string;
-  type: 'warning' | 'info' | 'success';
-  badge: string;
-  title: string;
-  message: string;
-  tab: Tab;
-};
-
 type QuickAccessButton = {
   id: string;
   title: string;
@@ -49,19 +40,33 @@ type StaffTodaySchedule = {
 
 const WEEKDAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
-const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
-  present: { label: '通所', color: '#16a34a', bg: '#f0fdf4' },
-  offsite: { label: '施設外就労', color: '#0284c7', bg: '#f0f9ff' },
-  remote: { label: '在宅利用', color: '#7c3aed', bg: '#f5f3ff' },
-  absent: { label: '欠席', color: '#dc2626', bg: '#fef2f2' },
+const STATUS_TEXT: Record<string, string> = {
+  present: '通所',
+  offsite: '施設外就労',
+  remote: '在宅利用',
+  absent: '欠席',
+};
+
+const getPickupText = (pickup: boolean, dropoff: boolean): string => {
+  if (pickup && dropoff) return '往復';
+  if (pickup) return '迎えのみ';
+  if (dropoff) return '送りのみ';
+  return '-';
+};
+
+const getYesterdayString = (dateStr: string): string => {
+  const parts = dateStr.split('-');
+  const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+  d.setDate(d.getDate() - 1);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 };
 
 export function DashboardPage() {
   const { setActiveTab } = useNavigation();
   const { offices, selectedOfficeId, selectedOffice } = useOffice();
-
-  const [hoveredButtonId, setHoveredButtonId] = useState<string | null>(null);
-  const [scheduleViewType, setScheduleViewType] = useState<'member' | 'staff'>('member');
 
   // 今日の日付 (JST)
   const todayDateStr = useMemo(() => getCurrentJSTDateOnly(), []);
@@ -97,117 +102,36 @@ export function DashboardPage() {
     { id: 'work-base-wage-evaluation', title: '基本工賃評価', tab: 'baseWageAssignment' },
   ];
 
-  // 通知データ
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  // 今日の予定データ
+  // 通知ステート（1パネル構成）
+  const [notificationMessage, setNotificationMessage] = useState<string>('通知はありません');
+  const [hasPendingNotification, setHasPendingNotification] = useState<boolean>(false);
+
+  // 今日の予定ステート
   const [memberSchedules, setMemberSchedules] = useState<MemberTodaySchedule[]>([]);
   const [staffSchedules, setStaffSchedules] = useState<StaffTodaySchedule[]>([]);
-  const [activeProjectCount, setActiveProjectCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
 
   // データフェッチ
   const fetchDashboardData = useCallback(async () => {
     if (!targetOfficeId) return;
 
     try {
-      setLoading(true);
+      // 1. 通知判定（前日の日報確定未処理チェック）
+      const yesterdayStr = getYesterdayString(todayDateStr);
+      const { data: yesterdayConf } = await supabase
+        .from('daily_work_confirmations')
+        .select('target_period, is_confirmed')
+        .eq('target_period', yesterdayStr);
 
-      // 1. 通知判定用データの取得
-      // 受給者証の期限確認 (60日以内または過去日)
-      const sixtyDaysLater = new Date(todayDateObj);
-      sixtyDaysLater.setDate(sixtyDaysLater.getDate() + 60);
-      const sixtyDaysLaterStr = sixtyDaysLater.toISOString().substring(0, 10);
-
-      const [certRes, dailyConfRes, closingRes, projectRes] = await Promise.all([
-        supabase
-          .from('member_recipient_certificates')
-          .select('id, member_id, valid_to')
-          .lte('valid_to', sixtyDaysLaterStr)
-          .or('is_deleted.eq.false,is_deleted.is.null'),
-        supabase
-          .from('daily_work_confirmations')
-          .select('target_period, is_confirmed')
-          .eq('target_period', todayDateStr),
-        supabase
-          .from('monthly_financial_closings')
-          .select('target_period, status')
-          .order('target_period', { ascending: false })
-          .limit(1),
-        supabase
-          .from('projects')
-          .select('id, status, is_deleted')
-          .or('is_deleted.eq.false,is_deleted.is.null')
-      ]);
-
-      const notifs: NotificationItem[] = [];
-
-      // 受給者証期限通知
-      const expiringCerts = certRes.data || [];
-      if (expiringCerts.length > 0) {
-        notifs.push({
-          id: 'notif-cert',
-          type: 'warning',
-          badge: '要対応',
-          title: '受給者証更新の確認',
-          message: `直近に有効期限を迎える、または期限切れの受給者証が ${expiringCerts.length} 件あります。更新手続きや支給量の確認を行ってください。`,
-          tab: 'memberRecipientCertificate',
-        });
-      }
-
-      // 本日の日報確定通知
-      const isTodayConfirmed = dailyConfRes.data && dailyConfRes.data.length > 0 && dailyConfRes.data[0].is_confirmed;
-      if (isTodayConfirmed) {
-        notifs.push({
-          id: 'notif-daily-confirmed',
-          type: 'success',
-          badge: '日次確定済',
-          title: '本日の日次日報 確定完了',
-          message: `本日（${todayDateStr}）の日次作業記録および出欠実績は確定済みです。`,
-          tab: 'dailyWorkRecord',
-        });
+      const isYesterdayConfirmed = yesterdayConf && yesterdayConf.length > 0 && yesterdayConf[0].is_confirmed;
+      if (!isYesterdayConfirmed) {
+        setNotificationMessage(`前日（${yesterdayStr}）の日報確定が未処理です。`);
+        setHasPendingNotification(true);
       } else {
-        notifs.push({
-          id: 'notif-daily-pending',
-          type: 'info',
-          badge: '日次確認',
-          title: '本日の日次日報 未確定',
-          message: `本日（${todayDateStr}）の日次記録・日報は未確定です。業務終了時に記録内容を確認の上、確定処理を行ってください。`,
-          tab: 'dailyWorkRecord',
-        });
+        setNotificationMessage('通知はありません');
+        setHasPendingNotification(false);
       }
-
-      // 月次決算ステータス
-      const latestClosing = closingRes.data && closingRes.data.length > 0 ? closingRes.data[0] : null;
-      if (latestClosing && latestClosing.status === 'closed') {
-        notifs.push({
-          id: 'notif-closing',
-          type: 'info',
-          badge: '月次状況',
-          title: `月次決算（${latestClosing.target_period}）確定完了`,
-          message: `${latestClosing.target_period} 度の月次決算・工賃確定処理は完了しています。最新の収支状況をご確認ください。`,
-          tab: 'financialSummary',
-        });
-      } else {
-        notifs.push({
-          id: 'notif-closing-reminder',
-          type: 'info',
-          badge: '月次確認',
-          title: '月次決算・工賃精算の確認',
-          message: '前月および当月の案件売上・経費精算、工賃計算の確定状況を確認してください。',
-          tab: 'wageSummary',
-        });
-      }
-
-      setNotifications(notifs);
-
-      // 稼働案件数
-      type SimpleProject = { id: string; status?: string | null; is_deleted?: boolean | null };
-      const allProjects = (projectRes.data || []) as SimpleProject[];
-      const activeProjects = allProjects.filter(p => p.status !== 'completed' && p.status !== 'cancelled');
-      setActiveProjectCount(activeProjects.length);
 
       // 2. 今日の予定データ取得
-      // 利用者予定
       const [
         memberRes,
         officeMemberRes,
@@ -355,10 +279,8 @@ export function DashboardPage() {
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-    } finally {
-      setLoading(false);
     }
-  }, [targetOfficeId, todayDateStr, todayDateObj, dayOfWeek]);
+  }, [targetOfficeId, todayDateStr, dayOfWeek]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -372,8 +294,7 @@ export function DashboardPage() {
     const remote = memberSchedules.filter(m => m.isScheduled && m.status === 'remote').length;
     const absent = memberSchedules.filter(m => !m.isScheduled || m.status === 'absent').length;
     const totalScheduled = present + offsite + remote;
-    const mealCount = memberSchedules.filter(m => m.isScheduled && m.hasMeal && m.status !== 'absent').length;
-    return { present, offsite, remote, absent, totalScheduled, mealCount, total: memberSchedules.length };
+    return { present, offsite, remote, absent, totalScheduled, total: memberSchedules.length };
   }, [memberSchedules]);
 
   // 職員サマリー集計
@@ -384,600 +305,295 @@ export function DashboardPage() {
   }, [staffSchedules]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6, 24px)', paddingBottom: 'var(--space-8, 32px)' }}>
+    <div style={{
+      flex: 1,
+      minHeight: 0,
+      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 'var(--space-6)',
+      paddingBottom: 'var(--space-10)',
+      paddingRight: 'var(--space-2)'
+    }}>
       {/* ページヘッダー */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingBottom: 'var(--space-2, 8px)',
-        borderBottom: '1px solid var(--color-border, #e2e8f0)'
+        alignItems: 'baseline'
       }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--color-text-main)' }}>
-            {PAGE_NAMES.SCREEN_DASHBOARD}
-          </h2>
-        </div>
+        <h2 style={{ margin: 0, fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+          {PAGE_NAMES.SCREEN_DASHBOARD}
+        </h2>
         {selectedOffice && (
-          <div style={{
-            fontSize: '13px',
-            color: 'var(--color-text-muted)',
-            backgroundColor: 'var(--color-bg-subtle, #f1f5f9)',
-            padding: '4px 12px',
-            borderRadius: '9999px',
-            fontWeight: 500
-          }}>
+          <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
             事業所: {selectedOffice.name}
           </div>
         )}
       </div>
 
-      {/* 1. 通知セクション（クイックアクセスの上） */}
-      <section>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-3, 12px)' }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ color: 'var(--color-text-main)' }}
-          >
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          </svg>
-          <h3 style={{
-            fontSize: 'var(--text-heading-3, 16px)',
-            fontWeight: 'var(--weight-heading, 600)',
-            color: 'var(--color-text-main)',
-            margin: 0
-          }}>
-            通知
-          </h3>
-          {notifications.some(n => n.type === 'warning') && (
-            <span style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              backgroundColor: '#fee2e2',
-              color: '#dc2626',
-              padding: '2px 8px',
-              borderRadius: '9999px'
-            }}>
-              要確認あり
-            </span>
-          )}
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 'var(--space-3, 12px)'
+      {/* 1. 通知セクション（1パネル構成） */}
+      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <h3 style={{
+          fontSize: 'var(--text-heading-3)',
+          fontWeight: 'var(--weight-heading)',
+          color: 'var(--color-text-main)',
+          margin: 0
         }}>
-          {notifications.map(notif => {
-            const isWarning = notif.type === 'warning';
-            const isSuccess = notif.type === 'success';
-            const borderColor = isWarning ? '#fca5a5' : isSuccess ? '#86efac' : 'var(--color-border, #e2e8f0)';
-            const badgeBg = isWarning ? '#fee2e2' : isSuccess ? '#dcfce7' : '#e0e7ff';
-            const badgeColor = isWarning ? '#b91c1c' : isSuccess ? '#15803d' : '#4338ca';
-
-            return (
-              <div
-                key={notif.id}
-                onClick={() => setActiveTab(notif.tab)}
-                style={{
-                  backgroundColor: 'var(--color-bg-main, #ffffff)',
-                  border: `1px solid ${borderColor}`,
-                  borderLeft: `4px solid ${badgeColor}`,
-                  borderRadius: 'var(--radius-md, 6px)',
-                  padding: '12px 16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '6px',
-                  cursor: 'pointer',
-                  transition: 'box-shadow 0.15s ease, transform 0.15s ease',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.boxShadow = '0 3px 8px rgba(0,0,0,0.06)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.transform = 'none';
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    backgroundColor: badgeBg,
-                    color: badgeColor
-                  }}>
-                    {notif.badge}
-                  </span>
-                  <span style={{ fontSize: '12px', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                    開く
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </span>
-                </div>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-main)' }}>
-                  {notif.title}
-                </div>
-                <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', lineHeight: '1.4' }}>
-                  {notif.message}
-                </div>
-              </div>
-            );
-          })}
+          通知
+        </h3>
+        <div style={{
+          backgroundColor: 'var(--color-bg-main)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-md)',
+          padding: 'var(--space-3) var(--space-4)',
+          fontSize: 'var(--text-body)',
+          color: 'var(--color-text-main)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          <span>{notificationMessage}</span>
+          {hasPendingNotification && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('dailyWorkRecord')}
+              style={{
+                fontSize: 'var(--text-caption)',
+                padding: '4px 12px',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--color-bg-subtle)',
+                color: 'var(--color-text-main)',
+                cursor: 'pointer'
+              }}
+            >
+              日報画面を開く
+            </button>
+          )}
         </div>
       </section>
 
-      {/* 2. クイックアクセスセクション（2行 × 6列、シンプルパネル） */}
-      <section>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-3, 12px)' }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{ color: 'var(--color-text-main)' }}
-          >
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-          </svg>
-          <h3 style={{
-            fontSize: 'var(--text-heading-3, 16px)',
-            fontWeight: 'var(--weight-heading, 600)',
-            color: 'var(--color-text-main)',
-            margin: 0
-          }}>
-            クイックアクセス
-          </h3>
-        </div>
-
-        {/* 2行 × 6列 のボタングリッド */}
+      {/* 2. クイックアクセスセクション（2行 × 6列） */}
+      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <h3 style={{
+          fontSize: 'var(--text-heading-3)',
+          fontWeight: 'var(--weight-heading)',
+          color: 'var(--color-text-main)',
+          margin: 0
+        }}>
+          クイックアクセス
+        </h3>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
-          gap: '10px'
+          gap: 'var(--space-2)'
         }}>
-          {quickAccessItems.map(item => {
-            const isHovered = hoveredButtonId === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveTab(item.tab)}
-                onMouseEnter={() => setHoveredButtonId(item.id)}
-                onMouseLeave={() => setHoveredButtonId(null)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '46px',
-                  padding: '0 8px',
-                  backgroundColor: isHovered ? 'var(--color-bg-subtle, #f8fafc)' : 'var(--color-bg-main, #ffffff)',
-                  border: isHovered ? '1px solid var(--color-border-focus, #3b82f6)' : '1px solid var(--color-border, #cbd5e1)',
-                  borderRadius: 'var(--radius-md, 6px)',
-                  boxShadow: isHovered ? '0 2px 4px rgba(0,0,0,0.06)' : '0 1px 2px rgba(0,0,0,0.02)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease-in-out',
-                  transform: isHovered ? 'translateY(-1px)' : 'none',
-                  color: isHovered ? 'var(--color-primary, #2563eb)' : 'var(--color-text-main, #1e293b)',
-                  fontSize: '13.5px',
-                  fontWeight: 600,
-                  textAlign: 'center',
-                  fontFamily: 'inherit',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {item.title}
-              </button>
-            );
-          })}
+          {quickAccessItems.map(item => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveTab(item.tab)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '42px',
+                padding: '0 var(--space-2)',
+                backgroundColor: 'var(--color-bg-main)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                color: 'var(--color-text-main)',
+                fontSize: 'var(--text-caption)',
+                fontWeight: 'var(--weight-heading)',
+                textAlign: 'center',
+                fontFamily: 'inherit',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)';
+                e.currentTarget.style.borderColor = 'var(--color-border-focus)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'var(--color-bg-main)';
+                e.currentTarget.style.borderColor = 'var(--color-border)';
+              }}
+            >
+              {item.title}
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* 3. 今日の予定セクション（クイックアクセスの下） */}
-      <section style={{
-        backgroundColor: 'var(--color-bg-main, #ffffff)',
-        border: '1px solid var(--color-border, #e2e8f0)',
-        borderRadius: 'var(--radius-lg, 8px)',
-        padding: 'var(--space-5, 20px)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-4, 16px)'
-      }}>
-        {/* セクションヘッダー */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px',
-          borderBottom: '1px solid var(--color-border, #f1f5f9)',
-          paddingBottom: '12px'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ color: 'var(--color-primary, #2563eb)' }}
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+      {/* 3. 今日の予定セクション */}
+      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)' }}>
             <h3 style={{
-              fontSize: '17px',
-              fontWeight: 700,
+              fontSize: 'var(--text-heading-3)',
+              fontWeight: 'var(--weight-heading)',
               color: 'var(--color-text-main)',
               margin: 0
             }}>
               今日の予定
             </h3>
-            <span style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              color: 'var(--color-text-muted)',
-              backgroundColor: 'var(--color-bg-subtle, #f8fafc)',
-              padding: '2px 10px',
-              borderRadius: '6px'
-            }}>
+            <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
               {formattedTodayJP}
             </span>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button
-              type="button"
-              onClick={() => setActiveTab('scheduleMember')}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: 'var(--color-primary, #2563eb)',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '4px 8px',
-                borderRadius: '4px'
-              }}
-            >
-              予定一覧を開く
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveTab('scheduleMember')}
+            style={{
+              fontSize: 'var(--text-caption)',
+              padding: '4px 12px',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--color-bg-main)',
+              color: 'var(--color-text-main)',
+              cursor: 'pointer'
+            }}
+          >
+            予定表を開く
+          </button>
         </div>
 
-        {/* サマリーカード指標（KPI） */}
+        {/* サマリーパネル */}
         <div style={{
+          backgroundColor: 'var(--color-bg-main)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-md)',
+          padding: 'var(--space-4)',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '12px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: 'var(--space-4)'
         }}>
-          {/* 利用者 通所予定 */}
-          <div style={{
-            backgroundColor: 'var(--color-bg-subtle, #f8fafc)',
-            border: '1px solid var(--color-border, #e2e8f0)',
-            borderRadius: '6px',
-            padding: '12px 16px'
-          }}>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px', fontWeight: 600 }}>
-              利用者 通所予定
+          {/* 職員 勤怠状況 */}
+          <div>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>
+              職員 勤怠状況
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                {memberSummary.totalScheduled}
-              </span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                / 登録 {memberSummary.total}名
-              </span>
+            <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
+              {staffSummary.working} / {staffSummary.total} 名
             </div>
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              marginTop: '6px',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)',
-              flexWrap: 'wrap'
-            }}>
-              <span>通所: <strong style={{ color: '#16a34a' }}>{memberSummary.present}</strong></span>
-              <span>施設外: <strong style={{ color: '#0284c7' }}>{memberSummary.offsite}</strong></span>
-              <span>在宅: <strong style={{ color: '#7c3aed' }}>{memberSummary.remote}</strong></span>
-              <span>欠席: <strong style={{ color: '#dc2626' }}>{memberSummary.absent}</strong></span>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+              内訳: 勤務 {staffSummary.working}名 / 休み {staffSummary.off}名
             </div>
           </div>
 
-          {/* 職員 出勤予定 */}
-          <div style={{
-            backgroundColor: 'var(--color-bg-subtle, #f8fafc)',
-            border: '1px solid var(--color-border, #e2e8f0)',
-            borderRadius: '6px',
-            padding: '12px 16px'
-          }}>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px', fontWeight: 600 }}>
-              職員 出勤予定
+          {/* 利用者 出欠状況 */}
+          <div>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>
+              利用者 出欠状況
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                {staffSummary.working}
-              </span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                / 所属 {staffSummary.total}名
-              </span>
+            <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
+              {memberSummary.totalScheduled} / {memberSummary.total} 名
             </div>
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              marginTop: '6px',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)'
-            }}>
-              <span>勤務: <strong>{staffSummary.working}名</strong></span>
-              <span>公休・休職: <strong>{staffSummary.off}名</strong></span>
-            </div>
-          </div>
-
-          {/* 昼食・送迎・案件 */}
-          <div style={{
-            backgroundColor: 'var(--color-bg-subtle, #f8fafc)',
-            border: '1px solid var(--color-border, #e2e8f0)',
-            borderRadius: '6px',
-            padding: '12px 16px'
-          }}>
-            <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px', fontWeight: 600 }}>
-              食事・稼働案件
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-              <span style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                {memberSummary.mealCount}
-              </span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                食（昼食提供予定）
-              </span>
-            </div>
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              marginTop: '6px',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)'
-            }}>
-              <span>稼働中案件: <strong>{activeProjectCount}件</strong></span>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+              内訳: 通所 {memberSummary.present}名 / 施設外 {memberSummary.offsite}名 / 在宅 {memberSummary.remote}名 / 欠席 {memberSummary.absent}名
             </div>
           </div>
         </div>
 
-        {/* 予定詳細プレビュー（タブ切り替え） */}
-        <div>
-          {/* タブ切り替えボタン */}
-          <div style={{
-            display: 'flex',
-            gap: '8px',
-            borderBottom: '1px solid var(--color-border, #e2e8f0)',
-            marginBottom: '12px'
-          }}>
-            <button
-              type="button"
-              onClick={() => setScheduleViewType('member')}
-              style={{
-                padding: '8px 16px',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: scheduleViewType === 'member' ? 'var(--color-primary, #2563eb)' : 'var(--color-text-muted)',
-                borderBottom: scheduleViewType === 'member' ? '2px solid var(--color-primary, #2563eb)' : '2px solid transparent',
-                backgroundColor: 'transparent',
-                borderTop: 'none',
-                borderLeft: 'none',
-                borderRight: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              利用者 予定一覧 ({memberSchedules.length}名)
-            </button>
-            <button
-              type="button"
-              onClick={() => setScheduleViewType('staff')}
-              style={{
-                padding: '8px 16px',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: scheduleViewType === 'staff' ? 'var(--color-primary, #2563eb)' : 'var(--color-text-muted)',
-                borderBottom: scheduleViewType === 'staff' ? '2px solid var(--color-primary, #2563eb)' : '2px solid transparent',
-                backgroundColor: 'transparent',
-                borderTop: 'none',
-                borderLeft: 'none',
-                borderRight: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              職員 予定一覧 ({staffSchedules.length}名)
-            </button>
+        {/* 当日状況の詳細テーブル（上下スクロール可能） */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          {/* 利用者 当日状況詳細 */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              利用者 当日状況 ({memberSchedules.length}名)
+            </div>
+            <div style={{
+              maxHeight: '260px',
+              overflowY: 'auto',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--color-bg-main)'
+            }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 'var(--text-caption)' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--color-bg-subtle)', position: 'sticky', top: 0, zIndex: 1 }}>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>コード</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>氏名</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>状況</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>予定時間</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>昼食</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>送迎</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {memberSchedules.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ padding: '16px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                        データがありません
+                      </td>
+                    </tr>
+                  ) : (
+                    memberSchedules.map(m => (
+                      <tr key={m.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                        <td style={{ padding: '8px var(--space-3)' }}>{m.code}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{m.name}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{STATUS_TEXT[m.status] || '通所'}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{m.isScheduled && m.startTime ? `${m.startTime} 〜 ${m.endTime}` : '-'}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{m.hasMeal ? 'あり' : '-'}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{getPickupText(m.hasPickup, m.hasDropoff)}</td>
+                        <td style={{ padding: '8px var(--space-3)', color: 'var(--color-text-muted)' }}>{m.remarks || '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* 利用者 予定リスト */}
-          {scheduleViewType === 'member' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {memberSchedules.length === 0 ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '13px' }}>
-                  {loading ? '読み込み中...' : '登録された利用者がいません。'}
-                </div>
-              ) : (
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '8px'
-                }}>
-                  {memberSchedules.map(m => {
-                    const statusConfig = STATUS_LABELS[m.status] || STATUS_LABELS.present;
-                    return (
-                      <div
-                        key={m.id}
-                        style={{
-                          border: '1px solid var(--color-border, #e2e8f0)',
-                          borderRadius: '6px',
-                          padding: '10px 14px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '6px',
-                          backgroundColor: m.isScheduled ? '#ffffff' : '#fafafa'
-                        }}
-                      >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
-                              {m.code}
-                            </span>
-                            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-main)' }}>
-                              {m.name}
-                            </span>
-                          </div>
-                          <span style={{
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            backgroundColor: statusConfig.bg,
-                            color: statusConfig.color
-                          }}>
-                            {statusConfig.label}
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                          <div>
-                            {m.isScheduled && m.startTime && m.endTime ? (
-                              <span>時間: <strong style={{ color: 'var(--color-text-main)' }}>{m.startTime} 〜 {m.endTime}</strong></span>
-                            ) : (
-                              <span>予定なし</span>
-                            )}
-                          </div>
-                          <div style={{ display: 'flex', gap: '4px' }}>
-                            {m.hasMeal && (
-                              <span style={{ fontSize: '10px', backgroundColor: '#fef3c7', color: '#b45309', padding: '1px 5px', borderRadius: '3px', fontWeight: 600 }}>
-                                昼食
-                              </span>
-                            )}
-                            {(m.hasPickup || m.hasDropoff) && (
-                              <span style={{ fontSize: '10px', backgroundColor: '#e0e7ff', color: '#3730a3', padding: '1px 5px', borderRadius: '3px', fontWeight: 600 }}>
-                                送迎
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {m.remarks && (
-                          <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {m.remarks}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+          {/* 職員 当日状況詳細 */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              職員 当日状況 ({staffSchedules.length}名)
             </div>
-          )}
-
-          {/* 職員 予定リスト */}
-          {scheduleViewType === 'staff' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {staffSchedules.length === 0 ? (
-                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '13px' }}>
-                  {loading ? '読み込み中...' : '登録された職員がいません。'}
-                </div>
-              ) : (
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                  gap: '8px'
-                }}>
-                  {staffSchedules.map(s => (
-                    <div
-                      key={s.id}
-                      style={{
-                        border: '1px solid var(--color-border, #e2e8f0)',
-                        borderRadius: '6px',
-                        padding: '10px 14px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '6px',
-                        backgroundColor: s.isWorkDay ? '#ffffff' : '#fafafa'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
-                            {s.code}
-                          </span>
-                          <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-main)' }}>
-                            {s.name}
-                          </span>
-                        </div>
-                        <span style={{
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: '4px',
-                          backgroundColor: s.isWorkDay ? '#dcfce7' : '#f1f5f9',
-                          color: s.isWorkDay ? '#15803d' : '#64748b'
-                        }}>
-                          {s.isWorkDay ? '出勤' : '公休'}
-                        </span>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                        <div>
-                          {s.isWorkDay && s.startTime && s.endTime ? (
-                            <span>勤務: <strong style={{ color: 'var(--color-text-main)' }}>{s.startTime} 〜 {s.endTime}</strong></span>
-                          ) : (
-                            <span>勤務なし</span>
-                          )}
-                        </div>
-                        {s.isWorkDay && s.breakMinutes > 0 && (
-                          <span style={{ fontSize: '11px' }}>
-                            休憩 {s.breakMinutes}分
-                          </span>
-                        )}
-                      </div>
-
-                      {s.remarks && (
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {s.remarks}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div style={{
+              maxHeight: '260px',
+              overflowY: 'auto',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-md)',
+              backgroundColor: 'var(--color-bg-main)'
+            }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 'var(--text-caption)' }}>
+                <thead>
+                  <tr style={{ backgroundColor: 'var(--color-bg-subtle)', position: 'sticky', top: 0, zIndex: 1 }}>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>コード</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>氏名</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>勤怠</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>勤務時間</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>休憩</th>
+                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>備考</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {staffSchedules.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ padding: '16px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+                        データがありません
+                      </td>
+                    </tr>
+                  ) : (
+                    staffSchedules.map(s => (
+                      <tr key={s.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
+                        <td style={{ padding: '8px var(--space-3)' }}>{s.code}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{s.name}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay ? '出勤' : '休み'}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
+                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay && s.breakMinutes > 0 ? `${s.breakMinutes}分` : '-'}</td>
+                        <td style={{ padding: '8px var(--space-3)', color: 'var(--color-text-muted)' }}>{s.remarks || '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
+          </div>
         </div>
       </section>
     </div>

@@ -4,88 +4,71 @@ import { getScreenConfigForTab, SCREEN_CONFIGS } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
-const CATEGORY_INDEPENDENT_MASTER = MENU_CATEGORIES.INDEPENDENT_MASTER || '独立マスタ系';
-const CATEGORY_DEPENDENT_MASTER = MENU_CATEGORIES.DEPENDENT_MASTER || '従属マスタ系';
-const CATEGORY_RECORD = MENU_CATEGORIES.RECORD || 'レコード系';
-const CATEGORY_SUMMARY = MENU_CATEGORIES.SUMMARY || '集計結果系';
+const CATEGORY_SETTINGS = MENU_CATEGORIES.SETTINGS || '設定';
+const CATEGORY_PEOPLE = MENU_CATEGORIES.PEOPLE || '人の情報';
+const CATEGORY_DAILY_RECORDS = MENU_CATEGORIES.DAILY_RECORDS || '日々の記録';
+const CATEGORY_REPORTS = MENU_CATEGORIES.REPORTS || '集計結果';
 
 const getTabCategory = (tabId: string): string => {
-  // 1. 独立マスタ系
-  const independentMasterTabIds = [
-    'serviceType', // 福祉制度: 支援種別
-    'qualification', // 福祉制度: 資格
-    'staffRole', // 福祉制度: 職種
-    'regionalGrade', // 福祉制度: 所在地級数
-    'organization', // 施設: 法人
-    'client', // 取引先: 基本情報
-    'skillCategory', // スキル体系: カテゴリ
-    'baseWage', // 工賃・控除体系: 工賃単価
-    'allowance', // 工賃・控除体系: 加算手当
-    'deduction', // 工賃・控除体系: 控除
-    'reserveSetting', // 積立金体系: 基本情報
+  // 1. 設定（福祉制度、施設、取引先、スキル体系、工賃・控除体系、積立金体系）
+  const settingsTabIds = [
+    // 福祉制度
+    'serviceType', 'qualification', 'staffRole', 'regionalGrade', 'rewardItem',
+    // 施設
+    'organization', 'office', 'officeServiceType', 'officeReward',
+    // 取引先
+    'client',
+    // スキル体系
+    'skillCategory', 'skill', 'skillLevel',
+    // 工賃・控除体系
+    'baseWage', 'allowance', 'deduction',
+    // 積立金体系
+    'reserveSetting', 'reserve',
   ];
 
-  // 2. 従属マスタ系
-  const dependentMasterTabIds = [
-    'rewardItem', // 福祉制度: 加算・減算
-    'office', // 施設: 事業所
-    'officeServiceType', // 施設: 支援種別
-    'officeReward', // 施設: 加算・減算
-    'skill', // スキル体系: スキル
-    'skillLevel', // スキル体系: レベル
-    'staff', // 職員: 基本情報
-    'staffQualification', // 職員: 資格
-    'staffOffice', // 職員: 所属事業所
-    'staffWorkStyle', // 職員: 職種
-    'staffSchedule', // 職員: 勤務予定
-    'projectUser', // 利用者: 基本情報
-    'memberRecipientCertificate', // 利用者: 受給者証
-    'memberOffice', // 利用者: 事業所
-    'memberSchedule', // 利用者: 利用予定
-    'baseWageAssignment', // 利用者: 工賃単価
-    'project', // 案件: 基本情報
-    'budgetPlanning', // 案件: 予算
-    'assigneeAllocation', // 案件: 担当者
+  // 2. 人の情報（職員、利用者）
+  const peopleTabIds = [
+    // 職員
+    'staff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule',
+    // 利用者
+    'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'baseWageAssignment', 'skillEvaluation',
   ];
 
-  // 3. レコード系
-  const recordTabIds = [
-    'calendarDailyReportCalendar', // カレンダー・日報: カレンダー
-    'calendarDailyReportDay', // カレンダー・日報: 日報
-    'attendanceMonth', // 勤怠・出欠: 月
-    'attendanceDay', // 勤怠・出欠: 日
-    'skillEvaluation', // 利用者: スキル評価
-    'progressRecord', // 案件: 進捗
-    'projectFinancialRecord', // 案件: 材料費・経費記録
-    'staffAttendanceRecord', // 日報: 勤務記録
-    'dailyWorkRecord', // 日報: 利用記録
-    'financialRecord', // 収支: 収支一覧
+  // 3. 日々の記録（案件、カレンダー、予定、日報）
+  const dailyRecordsTabIds = [
+    // 案件
+    'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation',
+    // カレンダー
+    'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth',
+    // 予定
+    'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay',
+    // 日報
+    'dailyWorkRecord', 'staffAttendanceRecord', 'calendarDailyReportDay', 'screenDailyWork', 'screenStaffDailyReport',
   ];
 
-  // 4. 集計結果系
-  const summaryTabIds = [
-    'rewardAllocation', // 案件: 精算
-    'wageSummary', // 収支: 工賃・控除明細
-    'averageWage', // 収支: 平均工賃
-    'projectFinancialSummary', // 収支: 就労支援事業活動収支（案件別）
-    'financialSummary', // 収支: 就労支援事業活動収支（期間別）
-    'welfareFinancialSummary', // 収支: 福祉事業活動収支
-    'dashboard', // ダッシュボード
+  // 4. 集計結果（収支、ダッシュボード、システム構成（開発用））
+  const reportsTabIds = [
+    // 収支
+    'wageSummary', 'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary', 'financialRecord',
+    // ダッシュボード
+    'dashboard',
+    // システム構成
+    'screenComposition', 'tableComposition',
   ];
 
-  if (independentMasterTabIds.includes(tabId)) return CATEGORY_INDEPENDENT_MASTER;
-  if (dependentMasterTabIds.includes(tabId)) return CATEGORY_DEPENDENT_MASTER;
-  if (recordTabIds.includes(tabId)) return CATEGORY_RECORD;
-  if (summaryTabIds.includes(tabId)) return CATEGORY_SUMMARY;
+  if (settingsTabIds.includes(tabId)) return CATEGORY_SETTINGS;
+  if (peopleTabIds.includes(tabId)) return CATEGORY_PEOPLE;
+  if (dailyRecordsTabIds.includes(tabId)) return CATEGORY_DAILY_RECORDS;
+  if (reportsTabIds.includes(tabId)) return CATEGORY_REPORTS;
 
-  return CATEGORY_DEPENDENT_MASTER;
+  return CATEGORY_SETTINGS;
 };
 
 const getCategoryColor = (category: string) => {
-  if (category === CATEGORY_INDEPENDENT_MASTER) return 'var(--palette-red-300)';
-  if (category === CATEGORY_DEPENDENT_MASTER) return 'var(--palette-blue-300)';
-  if (category === CATEGORY_RECORD) return 'var(--palette-bluegreen-300)';
-  if (category === CATEGORY_SUMMARY) return 'var(--palette-yellow-300)';
+  if (category === CATEGORY_SETTINGS) return 'var(--palette-red-300)';
+  if (category === CATEGORY_PEOPLE) return 'var(--palette-blue-300)';
+  if (category === CATEGORY_DAILY_RECORDS) return 'var(--palette-bluegreen-300)';
+  if (category === CATEGORY_REPORTS) return 'var(--palette-yellow-300)';
   return 'transparent';
 };
 
@@ -1664,20 +1647,20 @@ export function ScreenCompositionPage() {
             <thead>
               <tr>
                 <th style={{ width: '20%' }}>画面</th>
-                <th style={{ width: '20%' }}>{CATEGORY_INDEPENDENT_MASTER}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_DEPENDENT_MASTER}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_RECORD}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_SUMMARY}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_SETTINGS}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_PEOPLE}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_DAILY_RECORDS}</th>
+                <th style={{ width: '20%' }}>{CATEGORY_REPORTS}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
                 const isNoTabScreen = ['システム構成（開発用）', PAGE_NAMES.SCREEN_COMPOSITION].includes(row.screen);
                 const activeTabs = isNoTabScreen ? [] : row.tabs;
-                const independentMasterTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_INDEPENDENT_MASTER);
-                const dependentMasterTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_DEPENDENT_MASTER);
-                const recordTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_RECORD);
-                const summaryTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_SUMMARY);
+                const settingsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_SETTINGS);
+                const peopleTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_PEOPLE);
+                const dailyRecordsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_DAILY_RECORDS);
+                const reportsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_REPORTS);
 
                 return (
                   <tr key={i} style={{ height: 'auto', minHeight: '42px' }}>
@@ -1693,7 +1676,7 @@ export function ScreenCompositionPage() {
                       {row.screen}
                     </td>
                     <td style={{
-                      backgroundColor: getCategoryColor(CATEGORY_INDEPENDENT_MASTER),
+                      backgroundColor: getCategoryColor(CATEGORY_SETTINGS),
                       color: 'var(--color-text-main)',
                       height: 'auto',
                       minHeight: '42px',
@@ -1702,11 +1685,11 @@ export function ScreenCompositionPage() {
                       verticalAlign: 'middle'
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
-                        {independentMasterTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                        {settingsTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                     <td style={{
-                      backgroundColor: getCategoryColor(CATEGORY_DEPENDENT_MASTER),
+                      backgroundColor: getCategoryColor(CATEGORY_PEOPLE),
                       color: 'var(--color-text-main)',
                       height: 'auto',
                       minHeight: '42px',
@@ -1715,11 +1698,11 @@ export function ScreenCompositionPage() {
                       verticalAlign: 'middle'
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
-                        {dependentMasterTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                        {peopleTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                     <td style={{
-                      backgroundColor: getCategoryColor(CATEGORY_RECORD),
+                      backgroundColor: getCategoryColor(CATEGORY_DAILY_RECORDS),
                       color: 'var(--color-text-main)',
                       height: 'auto',
                       minHeight: '42px',
@@ -1728,11 +1711,11 @@ export function ScreenCompositionPage() {
                       verticalAlign: 'middle'
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
-                        {recordTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                        {dailyRecordsTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                     <td style={{
-                      backgroundColor: getCategoryColor(CATEGORY_SUMMARY),
+                      backgroundColor: getCategoryColor(CATEGORY_REPORTS),
                       color: 'var(--color-text-main)',
                       height: 'auto',
                       minHeight: '42px',
@@ -1741,7 +1724,7 @@ export function ScreenCompositionPage() {
                       verticalAlign: 'middle'
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
-                        {summaryTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                        {reportsTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                   </tr>

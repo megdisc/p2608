@@ -46,7 +46,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
       
       <nav className="nav-menu">
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.INDEPENDENT_MASTER}</div>
+          <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
           <button 
             className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'staffRole', 'rewardItem', 'regionalGrade'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
@@ -86,7 +86,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.DEPENDENT_MASTER}</div>
+          <div className="nav-category">{MENU_CATEGORIES.PEOPLE}</div>
           <button 
             className={`nav-button ${['screenStaff', 'staff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('staff')}
@@ -99,16 +99,16 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.SCREEN_USER}
           </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.DAILY_RECORDS}</div>
           <button 
             className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('progressRecord')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.RECORD}</div>
           <button 
             className={`nav-button ${['screenCalendar', 'calendarMonth', 'attendanceMonth'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('attendanceMonth')}
@@ -130,7 +130,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.SUMMARY}</div>
+          <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
           <button 
             className={`nav-button ${['screenFinance', 'financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('wageSummary')}

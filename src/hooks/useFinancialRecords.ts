@@ -176,7 +176,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         }
       });
 
-      // 案件未紐付けの積立金出金のみに絞り込む（費用帳簿向け）
+      // 案件未紐付けの積立金出金のみに絞り込む（会計帳簿向け）
       let filteredList = mergedList;
       if (options.onlyUnassignedReserves) {
         filteredList = filteredList.filter(item => {

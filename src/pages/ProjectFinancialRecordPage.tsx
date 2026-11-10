@@ -44,10 +44,16 @@ export function ProjectFinancialRecordPage() {
   const canDeleteRow = useCallback((item: FinancialRecordItem) => !item.isLimited, []);
 
   const normalizedItems = useMemo(() => {
-    return items.map(item => ({
-      ...item,
-      subject: item.subject === 'その他経費' ? WORDS_PROJECT.SUBJECT_EXPENSE_OTHER : item.subject
-    }));
+    return items.map(item => {
+      const isReserve = item.type === 'reserve' || item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT;
+      return {
+        ...item,
+        type: (isReserve ? 'reserve' : 'expense') as 'reserve' | 'expense',
+        subject: isReserve
+          ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
+          : (item.subject === 'その他経費' ? WORDS_PROJECT.SUBJECT_EXPENSE_OTHER : item.subject)
+      };
+    });
   }, [items]);
 
   const sortedItems = useMemo(() => {
@@ -80,11 +86,11 @@ export function ProjectFinancialRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      editable: (item: FinancialRecordItem) => item.subject !== WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, 
+      editable: (item: FinancialRecordItem) => item.type !== 'reserve', 
       inputType: 'select', 
       options: projectOptions,
       render: (item: FinancialRecordItem) => {
-        if (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) {
+        if (item.type === 'reserve') {
           return '-';
         }
         return projectOptions.find(p => p.value === item.projectId)?.label || '-';
@@ -93,27 +99,40 @@ export function ProjectFinancialRecordPage() {
     { 
       key: 'type', 
       header: TABLE_COLUMNS.TRANSACTION_TYPE, 
-      editable: false, 
-      render: (item: FinancialRecordItem) => (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.type === 'reserve')
-        ? WORDS_PROJECT.RESERVE
-        : WORDS_PROJECT.EXPENSE
+      editable: true, 
+      inputType: 'radio',
+      options: [
+        { label: TABLE_COLUMNS.TRANSACTION_TYPE_EXPENSE, value: 'expense' },
+        { label: TABLE_COLUMNS.TRANSACTION_TYPE_RESERVE_WITHDRAWAL, value: 'reserve' }
+      ],
+      onCellChange: (val: unknown, updatedItem: FinancialRecordItem) => {
+        if (val === 'reserve') {
+          return { type: 'reserve' as const, subject: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, projectId: '' };
+        } else {
+          return {
+            type: 'expense' as const,
+            subject: updatedItem.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
+              ? WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL
+              : updatedItem.subject
+          };
+        }
+      }
     },
     {
       key: 'subject',
       header: TABLE_COLUMNS.ACCOUNT_SUBJECT,
       editable: true,
       inputType: 'radio',
-      options: [
-        { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
-        { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER },
-        { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
-      ],
-      onCellChange: (val: unknown) => {
-        if (val === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) {
-          return { projectId: '', type: 'reserve' as const };
-        } else {
-          return { type: 'expense' as const };
+      options: (item: FinancialRecordItem) => {
+        if (item.type === 'reserve') {
+          return [
+            { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
+          ];
         }
+        return [
+          { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
+          { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER }
+        ];
       }
     },
     {
@@ -134,8 +153,9 @@ export function ProjectFinancialRecordPage() {
     try {
       const sanitizedDrafts = drafts.map(d => ({
         ...d,
-        projectId: d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ? '' : d.projectId,
-        type: d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ? ('reserve' as const) : ('expense' as const)
+        projectId: d.type === 'reserve' ? '' : d.projectId,
+        subject: d.type === 'reserve' ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT : d.subject,
+        type: d.type === 'reserve' ? ('reserve' as const) : ('expense' as const)
       }));
       await batchSaveRecords(sanitizedDrafts);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
@@ -172,7 +192,7 @@ export function ProjectFinancialRecordPage() {
   return (
     <>
       <DataPage 
-        title={PAGE_NAMES.PROJECT_FINANCIAL_RECORD}
+        title={PAGE_NAMES.EXPENSE_LEDGER}
         data={sortedItems}
         columns={columns}
         emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}

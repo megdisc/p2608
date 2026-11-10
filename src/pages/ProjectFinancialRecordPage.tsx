@@ -2,11 +2,12 @@ import { DataPage, type Column, SummaryPopup } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import type { FinancialRecordItem } from '../types';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useFinancialRecords } from '../hooks';
 import { getCurrentJSTDateOnly } from '../utils';
 
 export function ProjectFinancialRecordPage() {
+  const { selectedOfficeId } = useOffice();
   const expenseSubjects = useMemo(() => [
     WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL,
     WORDS_PROJECT.SUBJECT_EXPENSE_OTHER,
@@ -30,7 +31,8 @@ export function ProjectFinancialRecordPage() {
     initialSort: { key: 'period', direction: 'desc' },
     subjects: expenseSubjects,
     disableYearFilter: true,
-    onlyUnassignedReserves: true
+    onlyUnassignedReserves: true,
+    officeId: selectedOfficeId
   });
   const { showAlert } = useAlert();
 

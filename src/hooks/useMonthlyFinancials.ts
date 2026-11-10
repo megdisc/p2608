@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
+import { useOffice } from '../contexts';
 
 export type MonthlyFinancialRecord = {
   id: string;
@@ -8,16 +9,25 @@ export type MonthlyFinancialRecord = {
   subject: string;
   amount: number;
   target_period: string; // e.g. '2026-08'
+  office_id?: string | null;
 };
 
 export function useMonthlyFinancials() {
   const [financials, setFinancials] = useState<MonthlyFinancialRecord[]>([]);
   const [allExpenseRecords, setAllExpenseRecords] = useState<MonthlyFinancialRecord[]>([]);
   const [loadingFinancials, setLoadingFinancials] = useState(false);
+  const { selectedOfficeId } = useOffice();
 
-  const fetchFinancials = useCallback(async (monthStr: string) => {
+  const fetchFinancials = useCallback(async (monthStr: string, officeId?: string) => {
     try {
       setLoadingFinancials(true);
+      const effOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
+
+      if (!effOfficeId) {
+        setFinancials([]);
+        setAllExpenseRecords([]);
+        return;
+      }
 
       const [y, m] = monthStr.split('-').map(Number);
       const startOfMonth = `${monthStr}-01`;
@@ -29,6 +39,7 @@ export function useMonthlyFinancials() {
         .from('monthly_financial_closings')
         .select('target_period, is_confirmed')
         .eq('target_period', monthStr)
+        .eq('office_id', effOfficeId)
         .eq('is_confirmed', true);
 
       const isClosed = Boolean(closingData && closingData.length > 0);
@@ -42,11 +53,13 @@ export function useMonthlyFinancials() {
           supabase
             .from('general_financial_snapshot_details')
             .select('*')
+            .eq('office_id', effOfficeId)
             .gte('target_period', startOfMonth)
             .lte('target_period', endOfMonth),
           supabase
             .from('general_financial_snapshot_details')
             .select('*')
+            .eq('office_id', effOfficeId)
             .eq('type', 'expense')
             .in('subject', ['材料費', '経費'])
         ]);
@@ -60,11 +73,13 @@ export function useMonthlyFinancials() {
             supabase
               .from('general_financial_records')
               .select('*')
+              .eq('office_id', effOfficeId)
               .gte('target_period', startOfMonth)
               .lte('target_period', endOfMonth),
             supabase
               .from('general_financial_records')
               .select('*')
+              .eq('office_id', effOfficeId)
               .eq('type', 'expense')
               .in('subject', ['材料費', '経費'])
           ]);
@@ -77,11 +92,13 @@ export function useMonthlyFinancials() {
           supabase
             .from('general_financial_records')
             .select('*')
+            .eq('office_id', effOfficeId)
             .gte('target_period', startOfMonth)
             .lte('target_period', endOfMonth),
           supabase
             .from('general_financial_records')
             .select('*')
+            .eq('office_id', effOfficeId)
             .eq('type', 'expense')
             .in('subject', ['材料費', '経費'])
         ]);
@@ -101,7 +118,7 @@ export function useMonthlyFinancials() {
     } finally {
       setLoadingFinancials(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
 
 const isValidUuid = (str: unknown): boolean => {
   return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -122,6 +139,7 @@ const isValidUuid = (str: unknown): boolean => {
         const periodStr = d.target_period ? (d.target_period.length === 7 ? `${d.target_period}-01` : d.target_period) : d.target_period;
         return {
           ...(isRealUuid ? { id: d.id } : {}),
+          office_id: selectedOfficeId || null,
           project_id: d.project_id,
           type: d.type,
           subject: d.subject,

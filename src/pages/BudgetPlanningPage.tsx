@@ -3,7 +3,7 @@ import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, RadioButton
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
 import { isProjectFinished, formatSummaryDescription } from '../utils';
 
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert, useOffice } from '../contexts';
 
 import { useBudgetPlanning, type DetailItem, type ProjectDraft } from '../hooks';
 
@@ -32,13 +32,13 @@ export function BudgetPlanningPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 50;
   const { showAlert } = useAlert();
-
+  const { selectedOfficeId } = useOffice();
 
   useEffect(() => {
-    fetchBudgetPlanning().catch(() => {
+    fetchBudgetPlanning(selectedOfficeId).catch(() => {
       showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
-  }, [fetchBudgetPlanning, showAlert]);
+  }, [fetchBudgetPlanning, selectedOfficeId, showAlert]);
 
   const handleBatchSave = async () => {
     try {

@@ -54,23 +54,30 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     try {
       setLoading(true);
 
+      if (!options.officeId) {
+        setItems([]);
+        setTotals({ material: 0, other: 0, equipmentReserve: 0, total: 0 });
+        setTotalCount(0);
+        setProjects([]);
+        setStaffs([]);
+        setClients([]);
+        setLoading(false);
+        return;
+      }
+
       // 1. 確定状況の確認（月次財務確定）
-      let closingsQuery = supabase
+      const closingsQuery = supabase
         .from('monthly_financial_closings')
         .select('target_period, is_confirmed')
-        .eq('is_confirmed', true);
-      if (options.officeId) {
-        closingsQuery = closingsQuery.eq('office_id', options.officeId);
-      }
+        .eq('is_confirmed', true)
+        .eq('office_id', options.officeId);
 
       // 2. 実績レコードクエリ（月次実績層）
       let recQuery = supabase.from('general_financial_records').select(`
           id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project_id, client_id, recorded_by
-        `);
-      if (options.officeId) {
-        recQuery = recQuery.or(`office_id.eq.${options.officeId},office_id.is.null`);
-      }
+        `).eq('office_id', options.officeId);
+
       if (currentYear && !options.disableYearFilter) {
         recQuery = recQuery.gte('target_period', `${currentYear}-01-01`).lte('target_period', `${currentYear}-12-31`);
       }
@@ -85,10 +92,8 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       let snapQuery = supabase.from('general_financial_snapshot_details').select(`
           id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project_id, client_id, recorded_by
-        `);
-      if (options.officeId) {
-        snapQuery = snapQuery.or(`office_id.eq.${options.officeId},office_id.is.null`);
-      }
+        `).eq('office_id', options.officeId);
+
       if (currentYear && !options.disableYearFilter) {
         snapQuery = snapQuery.gte('target_period', `${currentYear}-01-01`).lte('target_period', `${currentYear}-12-31`);
       }
@@ -99,10 +104,11 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         snapQuery = snapQuery.in('subject', options.subjects);
       }
 
-      let projQuery = supabase.from('projects').select('id, name, code, is_deleted, office_id').order('code', { ascending: true });
-      if (options.officeId) {
-        projQuery = projQuery.or(`office_id.eq.${options.officeId},office_id.is.null`);
-      }
+      const projQuery = supabase
+        .from('projects')
+        .select('id, name, code, is_deleted, office_id')
+        .eq('office_id', options.officeId)
+        .order('code', { ascending: true });
 
       const [
         { data: closingsData },

@@ -26,9 +26,10 @@ export function useBudgetPlanning() {
   const [loading, setLoading] = useState(false);
   const { selectedOfficeId } = useOffice();
 
-  const fetchBudgetPlanning = useCallback(async () => {
+  const fetchBudgetPlanning = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
+      const effOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
 
       const [projectsRes, partnersRes, budgetsRes] = await Promise.all([
         supabase
@@ -51,9 +52,9 @@ export function useBudgetPlanning() {
       const clientMap = new Map<string, string>(partnersList.map((p: any) => [p.id, p.name]));
 
       let rawProjects = (projectsRes.data as any[]) || [];
-      if (selectedOfficeId) {
-        rawProjects = rawProjects.filter((p: any) => p.office_id === selectedOfficeId);
-      }
+      rawProjects = effOfficeId
+        ? rawProjects.filter((p: any) => p.office_id === effOfficeId)
+        : [];
 
       const initialDrafts: ProjectDraft[] = rawProjects
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
@@ -146,7 +147,7 @@ export function useBudgetPlanning() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
 
   const batchSaveBudgets = async (currentDrafts: ProjectDraft[]) => {
     try {

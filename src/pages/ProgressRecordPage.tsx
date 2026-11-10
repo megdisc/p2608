@@ -1,7 +1,7 @@
 import { DataPage, type Column, MonthInput, Input } from '../components';
 import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords, type ProgressFlatRecord } from '../hooks';
 import { getProjectFinishedMonth, getCurrentJSTMonth } from '../utils';
 
@@ -15,12 +15,13 @@ export function ProgressRecordPage() {
     batchSaveProgressRecords 
   } = useProgressRecords();
   const { showAlert } = useAlert();
+  const { selectedOfficeId } = useOffice();
 
   useEffect(() => {
-    fetchMasters().catch(() => {
+    fetchMasters(selectedOfficeId).catch(() => {
       showAlert('データ取得に失敗しました', 'error');
     });
-  }, [fetchMasters, showAlert]);
+  }, [fetchMasters, selectedOfficeId, showAlert]);
 
   useEffect(() => {
     if (dbProjects.length > 0) {

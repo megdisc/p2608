@@ -53,9 +53,11 @@ export function useProgressRecords() {
   const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
   const { selectedOfficeId } = useOffice();
 
-  const fetchMasters = useCallback(async () => {
+  const fetchMasters = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
+      const effOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
+
       const [membersRes, staffsRes, clientsRes, budgetsRes, projectsRes] = await Promise.all([
         supabase.from('members').select('*').order('yomigana', { ascending: true }),
         supabase.from('staffs').select('*').order('yomigana', { ascending: true }),
@@ -85,9 +87,9 @@ export function useProgressRecords() {
       let rawProjects = (projectsRes.data || [])
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他');
 
-      if (selectedOfficeId) {
-        rawProjects = rawProjects.filter((p: any) => p.office_id === selectedOfficeId);
-      }
+      rawProjects = effOfficeId
+        ? rawProjects.filter((p: any) => p.office_id === effOfficeId)
+        : [];
 
       const formattedProjects = rawProjects
         .map((p: any) => ({
@@ -125,7 +127,7 @@ export function useProgressRecords() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
 
   const fetchRecords = useCallback(async (monthStr?: string) => {
     try {

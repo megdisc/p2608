@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { ProjectItem, ClientItem, SkillItem } from '../types';
+import { useOffice } from '../contexts';
 
 export function useProjects() {
   const [items, setItems] = useState<ProjectItem[]>([]);
@@ -10,10 +11,12 @@ export function useProjects() {
   const [dbSkills, setDbSkills] = useState<SkillItem[]>([]);
   const [dbSkillLevels, setDbSkillLevels] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const { selectedOfficeId } = useOffice();
 
   const fetchProjects = useCallback(async (officeId?: string) => {
     try {
       setLoading(true);
+      const effOfficeId = officeId !== undefined ? officeId : selectedOfficeId;
       const [clientsRes, skillsRes, skillLevelsRes, projectsRes, allProjectsCodesRes] = await Promise.all([
         supabase.from('partners').select('*').eq('is_deleted', false).order('yomigana', { ascending: true }),
         supabase.from('skills').select('*').eq('is_deleted', false).order('name', { ascending: true }),
@@ -52,9 +55,9 @@ export function useProjects() {
       setLastDbCode(latestCode);
 
       let rawProjects = projectsRes.data || [];
-      if (officeId) {
-        rawProjects = rawProjects.filter((p: any) => p.office_id === officeId);
-      }
+      rawProjects = effOfficeId
+        ? rawProjects.filter((p: any) => p.office_id === effOfficeId)
+        : [];
 
       const formattedProjects: ProjectItem[] = rawProjects
         .filter((p: any) => p.project_type !== 'other' && p.project_type !== 'その他')
@@ -101,10 +104,11 @@ export function useProjects() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedOfficeId]);
 
   const batchSaveProjects = async (drafts: ProjectItem[], deletedIds: string[], targetOfficeId?: string) => {
     try {
+      const effTargetOfficeId = targetOfficeId || selectedOfficeId;
       if (deletedIds.length > 0) {
         const pIdsToDelete = deletedIds.filter(id => !id.includes('TASK'));
         const tIdsToDelete = deletedIds.filter(id => id.includes('TASK'));
@@ -125,7 +129,7 @@ export function useProjects() {
       for (const p of activeProjects) {
         const projData: any = {
           id: p.id,
-          office_id: p.officeId || targetOfficeId || null,
+          office_id: p.officeId || effTargetOfficeId || null,
           code: p.code?.trim() || null,
           name: p.name,
           project_type: p.projectType || 'one-off',

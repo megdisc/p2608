@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
 import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription } from '../utils';
-import { useAlert } from '../contexts';
+import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
 import { useBudgetPlanning } from '../hooks/useBudgetPlanning';
@@ -146,6 +146,7 @@ export function RewardAllocationPage() {
   } = useMonthlyFinancials();
 
   const { showAlert } = useAlert();
+  const { selectedOfficeId } = useOffice();
 
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
 
@@ -194,14 +195,14 @@ export function RewardAllocationPage() {
 
   useEffect(() => {
     Promise.all([
-      fetchProgressMasters(),
-      fetchBudgetPlanning(),
+      fetchProgressMasters(selectedOfficeId),
+      fetchBudgetPlanning(selectedOfficeId),
       fetchWageAndWorkRecords()
     ]).then(() => {
       fetchProgress(currentMonth);
-      fetchFinancials(currentMonth);
+      fetchFinancials(currentMonth, selectedOfficeId);
     }).catch(console.error);
-  }, [currentMonth, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords]);
+  }, [currentMonth, selectedOfficeId, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords]);
 
   useEffect(() => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
@@ -240,13 +241,17 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('monthly_record_closings').select('target_period').eq('is_confirmed', true);
+      let query = supabase.from('monthly_record_closings').select('target_period').eq('is_confirmed', true);
+      if (selectedOfficeId) {
+        query = query.eq('office_id', selectedOfficeId);
+      }
+      const { data, error } = await query;
       if (!error && data && data.length > 0) {
         const dbMonths = data.map(d => d.target_period);
         setConfirmedMonths(prev => Array.from(new Set([...prev, ...dbMonths])));
       }
     } catch {}
-  }, []);
+  }, [selectedOfficeId]);
 
   const fetchIncentiveRecords = useCallback(async () => {
     try {

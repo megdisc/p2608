@@ -488,11 +488,11 @@ export function RewardAllocationPage() {
       { label: TABLE_COLUMNS.PROJECT_ID, width: '90px', sortKey: 'projectCode' },
       { label: TABLE_COLUMNS.PROJECT_NAME, width: '160px', sortKey: 'projectName' },
       { label: TABLE_COLUMNS.PROJECT_TYPE, width: '150px', sortKey: 'projectType' },
-      { label: '取引区分', width: '120px' },
-      { label: '勘定科目', width: '220px' },
-      { label: '摘要', width: '160px' },
-      { label: '金額', width: '120px' },
-      { label: '備考', width: '300px' },
+      { label: TABLE_COLUMNS.TRANSACTION_TYPE, width: '120px' },
+      { label: TABLE_COLUMNS.ACCOUNT_SUBJECT, width: '220px' },
+      { label: TABLE_COLUMNS.SUMMARY, width: '160px' },
+      { label: TABLE_COLUMNS.AMOUNT, width: '120px' },
+      { label: TABLE_COLUMNS.REMARKS, width: '300px' },
       { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
   ];
@@ -960,7 +960,7 @@ export function RewardAllocationPage() {
                     </td>
                     <td className="sticky-right" style={{ textAlign: 'center', borderBottom: rowBorderBottom }}>
                       {isFirstRow && (isConfirmed ? (
-                        <Tooltip text="確定済のため変更不可">
+                        <Tooltip text={MESSAGES.CONFIRMED_CANNOT_EDIT}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
@@ -981,7 +981,7 @@ export function RewardAllocationPage() {
 
               if (isConfirmed) {
                 return (
-                  <Tooltip as="tbody" key={proj.id} text="確定済のため変更不可">
+                  <Tooltip as="tbody" key={proj.id} text={MESSAGES.CONFIRMED_CANNOT_EDIT}>
                     {rows}
                   </Tooltip>
                 );

@@ -36,7 +36,7 @@ export function ProjectFinancialRecordPage() {
 
   useEffect(() => {
     fetchRecords().catch(() => {
-      showAlert('費用帳簿の取得に失敗しました', 'error');
+      showAlert(MESSAGES.FETCH_EXPENSE_LEDGER_ERROR, 'error');
     });
   }, [fetchRecords, showAlert]);
 
@@ -92,7 +92,7 @@ export function ProjectFinancialRecordPage() {
     },
     { 
       key: 'type', 
-      header: TABLE_COLUMNS.FINANCIAL_TYPE, 
+      header: TABLE_COLUMNS.TRANSACTION_TYPE, 
       editable: false, 
       render: (item: FinancialRecordItem) => (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.type === 'reserve')
         ? WORDS_PROJECT.RESERVE
@@ -100,7 +100,7 @@ export function ProjectFinancialRecordPage() {
     },
     {
       key: 'subject',
-      header: TABLE_COLUMNS.SUBJECT,
+      header: TABLE_COLUMNS.ACCOUNT_SUBJECT,
       editable: true,
       inputType: 'radio',
       options: [
@@ -116,17 +116,17 @@ export function ProjectFinancialRecordPage() {
         }
       }
     },
+    {
+      key: 'remarks',
+      header: TABLE_COLUMNS.SUMMARY,
+      editable: true,
+      inputType: 'text'
+    },
     { 
       key: 'amount', 
       header: TABLE_COLUMNS.AMOUNT, 
       editable: true, 
       inputType: 'currency' 
-    },
-    {
-      key: 'remarks',
-      header: TABLE_COLUMNS.REMARKS,
-      editable: true,
-      inputType: 'text'
     }
   ];
 
@@ -164,7 +164,7 @@ export function ProjectFinancialRecordPage() {
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: totals.material || 0 },
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: totals.other || 0 },
     { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: totals.equipmentReserve || 0 },
-    { label: '累計合計', value: totals.total || 0, isTotal: true }
+    { label: WORDS_PROJECT.CUMULATIVE_TOTAL, value: totals.total || 0, isTotal: true }
   ], [totals]);
 
   if (loading) return <div>{MESSAGES.LOADING}</div>;
@@ -188,12 +188,12 @@ export function ProjectFinancialRecordPage() {
         onSortChange={handleSortChange}
         highlightInputColumns={true}
         showRestrictionColumn={true}
-        restrictionTooltipText="確定済のため変更不可"
+        restrictionTooltipText={MESSAGES.CONFIRMED_CANNOT_EDIT}
         canEditRow={canEditRow}
         canDeleteRow={canDeleteRow}
       />
       <SummaryPopup 
-        title="累計金額サマリ"
+        title={WORDS_PROJECT.SUMMARY_POPUP_TITLE}
         items={summaryItems}
       />
     </>

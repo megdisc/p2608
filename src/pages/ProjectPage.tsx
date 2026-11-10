@@ -36,7 +36,7 @@ export function ProjectPage() {
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {finished ? (
-              <Tooltip text="案件終了のため変更不可" as="span">
+              <Tooltip text={MESSAGES.PROJECT_FINISHED_CANNOT_EDIT} as="span">
                 <span>{item.name}</span>
               </Tooltip>
             ) : (
@@ -206,7 +206,7 @@ export function ProjectPage() {
       canEditRow={(item) => !isProjectFinished(item)}
       canDeleteRow={(item) => !isProjectFinished(item)}
       showRestrictionColumn={true}
-      restrictionTooltipText="案件終了のため変更不可"
+      restrictionTooltipText={MESSAGES.PROJECT_FINISHED_CANNOT_EDIT}
     />
   );
 }

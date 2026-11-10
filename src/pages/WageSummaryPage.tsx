@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 
 import { getCurrentJSTMonth } from '../utils';
 import { useAlert, useOffice } from '../contexts';
@@ -57,13 +57,13 @@ export function WageSummaryPage() {
 
   const headerRows: HeaderCell[][] = [
     [
-      { label: '利用者ID', width: '120px', sortKey: 'code' },
-      { label: '氏名', width: '160px', sortKey: 'name' },
-      { label: '取引区分', width: '130px' },
-      { label: '勘定科目', width: '150px' },
-      { label: '摘要' },
-      { label: '金額', width: '130px' },
-      { label: '備考', width: '220px' }
+      { label: TABLE_COLUMNS.MEMBER_CODE, width: '120px', sortKey: 'code' },
+      { label: TABLE_COLUMNS.USER_NAME, width: '160px', sortKey: 'name' },
+      { label: TABLE_COLUMNS.TRANSACTION_TYPE, width: '130px' },
+      { label: TABLE_COLUMNS.ACCOUNT_SUBJECT, width: '150px' },
+      { label: TABLE_COLUMNS.SUMMARY },
+      { label: TABLE_COLUMNS.AMOUNT, width: '130px' },
+      { label: TABLE_COLUMNS.REMARKS, width: '220px' }
     ]
   ];
   if (loading) return <div>{MESSAGES.LOADING}</div>;

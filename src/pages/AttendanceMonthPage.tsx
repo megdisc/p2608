@@ -4,6 +4,7 @@ import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
 import { useDailyConfirmation } from '../hooks';
+import { MESSAGES } from '../constants';
 
 export type AttendanceMonthSummaryRow = {
   id: string; // date string: 'YYYY-MM-DD'
@@ -406,7 +407,7 @@ export function AttendanceMonthPage({
       hideHeader={true}
       showRestrictionColumn={true}
       canEditRow={(item) => !item.is_confirmed}
-      restrictionTooltipText="確定済のため変更不可"
+      restrictionTooltipText={MESSAGES.CONFIRMED_CANNOT_EDIT}
       rowClassName={(item) => item.date === todayStr ? 'today-row' : undefined}
     />
   );

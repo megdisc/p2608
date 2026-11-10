@@ -67,13 +67,13 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
   const headerRows: HeaderCell[][] = isWelfare ? [
     [
       { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: '収益', colSpan: 2 },
-      { label: '費用', colSpan: 2 },
+      { label: TABLE_COLUMNS.REVENUE_SIMPLE, colSpan: 2 },
+      { label: TABLE_COLUMNS.EXPENSE_SIMPLE, colSpan: 2 },
     ],
     [
-      { label: '事業収益' },
+      { label: TABLE_COLUMNS.WELFARE_REVENUE },
       { label: TABLE_COLUMNS.TOTAL },
-      { label: '事業費用・経費' },
+      { label: TABLE_COLUMNS.WELFARE_EXPENSE },
       { label: TABLE_COLUMNS.TOTAL },
     ]
   ] : [

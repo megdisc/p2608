@@ -288,7 +288,7 @@ export function AssigneeAllocationPage() {
               </tr>
             ) : (
               paginatedDrafts.map((item) => (
-                <Tooltip text="案件終了のため変更不可" as="tr" disabled={!item.isProjectFinished} key={item.id}>
+                <Tooltip text={MESSAGES.PROJECT_FINISHED_CANNOT_EDIT} as="tr" disabled={!item.isProjectFinished} key={item.id}>
                   <td style={{ borderBottom: item.isLastInProject ? undefined : 'none' }}>
                     {item.isFirstInProject ? item.projectCode : ''}
                   </td>

@@ -249,7 +249,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       canEditRow={canEditRow}
       canDeleteRow={canDeleteRow}
       showRestrictionColumn={true}
-      restrictionTooltipText="確定済のため変更不可"
+      restrictionTooltipText={MESSAGES.CONFIRMED_CANNOT_EDIT}
       isConfirmed={isConfirmed}
       onConfirm={handleConfirm}
       onUnconfirm={handleUnconfirm}

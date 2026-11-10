@@ -3,7 +3,6 @@ import { PAGE_NAMES } from '../constants';
 import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
-import { FinancialRecordPage } from './FinancialRecordPage';
 import { FinancialSummaryPage } from './FinancialSummaryPage';
 import { WageSummaryPage } from './WageSummaryPage';
 import { ProjectFinancialSummaryPage } from './ProjectFinancialSummaryPage';
@@ -11,7 +10,10 @@ import { AverageWagePage } from './AverageWagePage';
 
 export function ScreenFinancePage() {
   const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const currentTab = (navContext.activeTab === 'screenFinance' || navContext.activeTab === 'financialRecord')
+    ? 'wageSummary'
+    : navContext.activeTab;
+  const screenConfig = getScreenConfigForTab(currentTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_FINANCE;
 
   return (
@@ -20,23 +22,21 @@ export function ScreenFinancePage() {
         <h2 style={{ margin: 0 }}>{displayTitle}</h2>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+            <Tabs tabs={screenConfig.tabs} activeTab={currentTab} onChange={navContext.setActiveTab} />
           )}
         </div>
       </div>
       
-      {navContext.activeTab === 'wageSummary' ? (
-        <WageSummaryPage />
-      ) : navContext.activeTab === 'averageWage' ? (
+      {currentTab === 'averageWage' ? (
         <AverageWagePage />
-      ) : navContext.activeTab === 'projectFinancialSummary' ? (
+      ) : currentTab === 'projectFinancialSummary' ? (
         <ProjectFinancialSummaryPage />
-      ) : navContext.activeTab === 'welfareFinancialSummary' ? (
+      ) : currentTab === 'welfareFinancialSummary' ? (
         <FinancialSummaryPage activityCategory="welfare" />
-      ) : navContext.activeTab === 'financialSummary' ? (
+      ) : currentTab === 'financialSummary' ? (
         <FinancialSummaryPage activityCategory="production" />
       ) : (
-        <FinancialRecordPage />
+        <WageSummaryPage />
       )}
     </>
   );

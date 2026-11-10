@@ -13,6 +13,17 @@ export type UseFinancialRecordsOptions = {
   onlyUnassignedReserves?: boolean;
 };
 
+export const isManuallyEditableItem = (item: { id?: string; subject?: string; type?: string; projectId?: string; project_id?: string | null }) => {
+  if (item.id && item.id.startsWith('draft-')) return true;
+  if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject?.includes('材料費')) return true;
+  if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER || item.subject === 'その他経費' || item.subject === '経費') return true;
+  const pId = item.projectId !== undefined ? item.projectId : item.project_id;
+  if (item.type === 'reserve' && (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.subject?.includes('設備等修繕維持積立金')) && !pId) {
+    return true;
+  }
+  return false;
+};
+
 type RawDbRecord = {
   id: string;
   target_period: string;
@@ -229,7 +240,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         } else if (r.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER || r.subject?.includes('経費')) {
           calculatedTotals.other += amt;
           calculatedTotals.total += amt;
-        } else if (r.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || r.subject?.includes('設備等修繕維持積立金')) {
+        } else if ((r.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || r.subject?.includes('設備等修繕維持積立金')) && !r.project_id) {
           calculatedTotals.equipmentReserve += amt;
           calculatedTotals.total += amt;
         } else {
@@ -279,31 +290,35 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
 
-    // Process new and updated records into general_financial_records
-    const upserts = drafts.map(d => ({
-      ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-      target_period: d.period || d.targetPeriod || today,
-      office_id: options.officeId || null,
-      project_id: d.projectId || null,
-      client_id: d.clientId || null,
-      type: d.type || 'revenue',
-      subject: d.subject || '',
-      amount: d.amount || 0,
-      remarks: d.remarks || null,
-      recorded_by: d.recordedBy || null,
-      activity_category: d.activity_category || 'production',
-      cost_category: d.costCategory || 'manufacturing'
-    }));
+    // Process new and updated records for manually editable items into general_financial_records
+    const upserts = drafts
+      .filter(d => isManuallyEditableItem(d))
+      .map(d => ({
+        ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
+        target_period: d.period || d.targetPeriod || today,
+        office_id: options.officeId || null,
+        project_id: d.type === 'reserve' ? null : (d.projectId || null),
+        client_id: d.type === 'reserve' ? null : (d.clientId || null),
+        type: d.type || 'expense',
+        subject: d.type === 'reserve' ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT : d.subject,
+        amount: Number(d.amount) || 0,
+        remarks: d.remarks || null,
+        recorded_by: d.recordedBy || null,
+        activity_category: d.activity_category || 'production',
+        cost_category: d.costCategory || 'manufacturing'
+      }));
 
     if (upserts.length > 0) {
       const { error: upsertError } = await supabase.from('general_financial_records').upsert(upserts);
       if (upsertError) throw upsertError;
     }
 
-    // Process deletions
+    // Process deletions: 手動入力行のみを対象とする
     const draftIds = drafts.map(d => d.id).filter(id => !id.startsWith('draft-'));
-    const existingIds = items.map(i => i.id);
-    const deletedIds = existingIds.filter(id => !draftIds.includes(id));
+    const editableExistingIds = items
+      .filter(i => !i.isLimited && isManuallyEditableItem(i))
+      .map(i => i.id);
+    const deletedIds = editableExistingIds.filter(id => !draftIds.includes(id));
 
     if (deletedIds.length > 0) {
       const { error: deleteError } = await supabase.from('general_financial_records').delete().in('id', deletedIds);

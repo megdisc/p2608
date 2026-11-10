@@ -51,7 +51,7 @@ const getTabCategory = (tabId: string): string => {
   // 4. 集計結果（収支、ダッシュボード、システム構成（開発用））
   const reportsTabIds = [
     // 収支
-    'wageSummary', 'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary', 'financialRecord',
+    'wageSummary', 'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary',
     // ダッシュボード
     'dashboard',
     // システム構成

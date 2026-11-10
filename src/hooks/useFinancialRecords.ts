@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import type { FinancialRecordItem } from '../types';
 import { getCurrentJSTDateOnly } from '../utils';
+import { WORDS_PROJECT } from '../constants';
 
 export type UseFinancialRecordsOptions = {
   initialSort?: { key: string; direction: 'asc' | 'desc' };
@@ -9,6 +10,7 @@ export type UseFinancialRecordsOptions = {
   subjects?: string[];
   officeId?: string;
   disableYearFilter?: boolean;
+  onlyUnassignedReserves?: boolean;
 };
 
 type RawDbRecord = {
@@ -33,6 +35,13 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   const [staffs, setStaffs] = useState<{ id: string; name: string }[]>([]);
   const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [totals, setTotals] = useState<Record<string, number>>({
+    material: 0,
+    other: 0,
+    equipmentReserve: 0,
+    total: 0
+  });
 
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -167,6 +176,17 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         }
       });
 
+      // 案件未紐付けの積立金出金のみに絞り込む（費用帳簿向け）
+      let filteredList = mergedList;
+      if (options.onlyUnassignedReserves) {
+        filteredList = filteredList.filter(item => {
+          if (item.type === 'reserve' || item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.subject?.includes('積立金')) {
+            return !item.project_id;
+          }
+          return true;
+        });
+      }
+
       // 並び替え (ソート)
       let dbSortKey: keyof RawDbRecord = 'target_period';
       if (sortConfig.key === 'projectId') dbSortKey = 'project_id';
@@ -177,7 +197,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         dbSortKey = sortConfig.key as keyof RawDbRecord;
       }
 
-      mergedList.sort((a, b) => {
+      filteredList.sort((a, b) => {
         const valA = a[dbSortKey] ?? '';
         const valB = b[dbSortKey] ?? '';
         if (typeof valA === 'number' && typeof valB === 'number') {
@@ -188,27 +208,55 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
           : String(valB).localeCompare(String(valA));
       });
 
-      setTotalCount(mergedList.length);
+      // 全件での累計金額サマリ集計
+      const calculatedTotals = {
+        material: 0,
+        other: 0,
+        equipmentReserve: 0,
+        total: 0
+      };
+      filteredList.forEach(r => {
+        const amt = Number(r.amount) || 0;
+        if (r.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || r.subject?.includes('材料費')) {
+          calculatedTotals.material += amt;
+          calculatedTotals.total += amt;
+        } else if (r.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER || r.subject?.includes('経費')) {
+          calculatedTotals.other += amt;
+          calculatedTotals.total += amt;
+        } else if (r.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || r.subject?.includes('設備等修繕維持積立金')) {
+          calculatedTotals.equipmentReserve += amt;
+          calculatedTotals.total += amt;
+        } else {
+          calculatedTotals.total += amt;
+        }
+      });
+      setTotals(calculatedTotals);
+
+      setTotalCount(filteredList.length);
 
       // ページネーション
       const startIdx = (page - 1) * pageSize;
-      const pagedRecords = mergedList.slice(startIdx, startIdx + pageSize);
+      const pagedRecords = filteredList.slice(startIdx, startIdx + pageSize);
 
-      const mapped: FinancialRecordItem[] = pagedRecords.map(r => ({
-        id: r.id,
-        targetPeriod: r.target_period || '',
-        period: r.target_period || '',
-        recordedDate: r.target_period || '',
-        projectId: r.project_id || '',
-        clientId: r.client_id || '',
-        type: (r.type === 'expense' || r.type === 'reserve' ? r.type : 'revenue') as 'revenue' | 'expense' | 'reserve',
-        subject: r.subject,
-        amount: Number(r.amount) || 0,
-        remarks: r.remarks || '',
-        recordedBy: r.recorded_by || '',
-        activity_category: (r.activity_category === 'welfare' ? 'welfare' : 'production') as 'production' | 'welfare',
-        costCategory: (r.cost_category === 'sga' ? 'sga' : 'manufacturing') as 'manufacturing' | 'sga'
-      }));
+      const mapped: FinancialRecordItem[] = pagedRecords.map(r => {
+        const isConfirmed = confirmedMonths.has((r.target_period || '').substring(0, 7));
+        return {
+          id: r.id,
+          targetPeriod: r.target_period || '',
+          period: r.target_period || '',
+          recordedDate: r.target_period || '',
+          projectId: r.project_id || '',
+          clientId: r.client_id || '',
+          type: (r.type === 'expense' || r.type === 'reserve' ? r.type : 'revenue') as 'revenue' | 'expense' | 'reserve',
+          subject: r.subject,
+          amount: Number(r.amount) || 0,
+          remarks: r.remarks || '',
+          recordedBy: r.recorded_by || '',
+          activity_category: (r.activity_category === 'welfare' ? 'welfare' : 'production') as 'production' | 'welfare',
+          costCategory: (r.cost_category === 'sga' ? 'sga' : 'manufacturing') as 'manufacturing' | 'sga',
+          isLimited: isConfirmed
+        };
+      });
       setItems(mapped);
 
       if (projData) setProjects(projData.map((p: { id: string; name: string; is_deleted?: boolean | null }) => ({ id: p.id, name: p.is_deleted ? `${p.name} (削除済)` : p.name })));
@@ -220,7 +268,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, sortConfig, currentYear, options.type, options.subjects, options.officeId, options.disableYearFilter]);
+  }, [page, pageSize, sortConfig, currentYear, options.type, options.subjects, options.officeId, options.disableYearFilter, options.onlyUnassignedReserves]);
 
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
@@ -272,6 +320,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   return {
     items,
     totalCount,
+    totals,
     page,
     setPage,
     currentYear,

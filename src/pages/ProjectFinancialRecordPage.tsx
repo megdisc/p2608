@@ -1,5 +1,5 @@
-import { DataPage, type Column } from '../components';
-import { useEffect, useMemo } from 'react';
+import { DataPage, type Column, SummaryPopup } from '../components';
+import { useEffect, useMemo, useCallback } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import type { FinancialRecordItem } from '../types';
 import { useAlert } from '../contexts';
@@ -9,12 +9,15 @@ import { getCurrentJSTDateOnly } from '../utils';
 export function ProjectFinancialRecordPage() {
   const expenseSubjects = useMemo(() => [
     WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL,
-    WORDS_PROJECT.SUBJECT_EXPENSE_OTHER
+    WORDS_PROJECT.SUBJECT_EXPENSE_OTHER,
+    'その他経費',
+    WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
   ], []);
 
   const { 
     items, 
     totalCount,
+    totals,
     page,
     setPage,
     handleSortChange,
@@ -25,9 +28,9 @@ export function ProjectFinancialRecordPage() {
     batchSaveRecords 
   } = useFinancialRecords({ 
     initialSort: { key: 'period', direction: 'desc' },
-    type: 'expense',
     subjects: expenseSubjects,
-    disableYearFilter: true
+    disableYearFilter: true,
+    onlyUnassignedReserves: true
   });
   const { showAlert } = useAlert();
 
@@ -37,8 +40,18 @@ export function ProjectFinancialRecordPage() {
     });
   }, [fetchRecords, showAlert]);
 
+  const canEditRow = useCallback((item: FinancialRecordItem) => !item.isLimited, []);
+  const canDeleteRow = useCallback((item: FinancialRecordItem) => !item.isLimited, []);
+
+  const normalizedItems = useMemo(() => {
+    return items.map(item => ({
+      ...item,
+      subject: item.subject === 'その他経費' ? WORDS_PROJECT.SUBJECT_EXPENSE_OTHER : item.subject
+    }));
+  }, [items]);
+
   const sortedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
+    return [...normalizedItems].sort((a, b) => {
       if (sortConfig.key === 'period') {
         const pA = a.period || '';
         const pB = b.period || '';
@@ -53,7 +66,7 @@ export function ProjectFinancialRecordPage() {
       }
       return 0;
     });
-  }, [items, projects, sortConfig]);
+  }, [normalizedItems, projects, sortConfig]);
 
   const projectOptions = useMemo(() => [{ label: '', value: '' }, ...projects.map(p => ({ label: p.name, value: p.id }))], [projects]);
 
@@ -67,15 +80,23 @@ export function ProjectFinancialRecordPage() {
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      editable: true, 
+      editable: (item: FinancialRecordItem) => item.subject !== WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, 
       inputType: 'select', 
-      options: projectOptions
+      options: projectOptions,
+      render: (item: FinancialRecordItem) => {
+        if (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) {
+          return '-';
+        }
+        return projectOptions.find(p => p.value === item.projectId)?.label || '-';
+      }
     },
     { 
       key: 'type', 
       header: TABLE_COLUMNS.FINANCIAL_TYPE, 
       editable: false, 
-      render: () => WORDS_PROJECT.EXPENSE
+      render: (item: FinancialRecordItem) => (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.type === 'reserve')
+        ? WORDS_PROJECT.RESERVE
+        : WORDS_PROJECT.EXPENSE
     },
     {
       key: 'subject',
@@ -84,8 +105,16 @@ export function ProjectFinancialRecordPage() {
       inputType: 'radio',
       options: [
         { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
-        { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER }
-      ]
+        { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER },
+        { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
+      ],
+      onCellChange: (val: unknown) => {
+        if (val === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) {
+          return { projectId: '', type: 'reserve' as const };
+        } else {
+          return { type: 'expense' as const };
+        }
+      }
     },
     { 
       key: 'amount', 
@@ -105,7 +134,8 @@ export function ProjectFinancialRecordPage() {
     try {
       const sanitizedDrafts = drafts.map(d => ({
         ...d,
-        type: 'expense' as const
+        projectId: d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ? '' : d.projectId,
+        type: d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ? ('reserve' as const) : ('expense' as const)
       }));
       await batchSaveRecords(sanitizedDrafts);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
@@ -130,25 +160,42 @@ export function ProjectFinancialRecordPage() {
     isLimited: false
   });
 
+  const summaryItems = useMemo(() => [
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: totals.material || 0 },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: totals.other || 0 },
+    { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: totals.equipmentReserve || 0 },
+    { label: '累計合計', value: totals.total || 0, isTotal: true }
+  ], [totals]);
+
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
-    <DataPage 
-      title={PAGE_NAMES.PROJECT_FINANCIAL_RECORD}
-      data={sortedItems}
-      columns={columns}
-      emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
-      onBatchSave={handleBatchSave}
-      onAddRow={handleAddRow}
-      initialSort={{ key: 'period', direction: 'desc' }}
-      sortConfig={sortConfig}
-      hideHeader={true}
-      serverSidePagination={true}
-      totalCount={totalCount}
-      currentPage={page}
-      onPageChange={setPage}
-      onSortChange={handleSortChange}
-      highlightInputColumns={true}
-    />
+    <>
+      <DataPage 
+        title={PAGE_NAMES.PROJECT_FINANCIAL_RECORD}
+        data={sortedItems}
+        columns={columns}
+        emptyMessage={MESSAGES.EMPTY_FINANCIAL_RECORD}
+        onBatchSave={handleBatchSave}
+        onAddRow={handleAddRow}
+        initialSort={{ key: 'period', direction: 'desc' }}
+        sortConfig={sortConfig}
+        hideHeader={true}
+        serverSidePagination={true}
+        totalCount={totalCount}
+        currentPage={page}
+        onPageChange={setPage}
+        onSortChange={handleSortChange}
+        highlightInputColumns={true}
+        showRestrictionColumn={true}
+        restrictionTooltipText="確定済のため変更不可"
+        canEditRow={canEditRow}
+        canDeleteRow={canDeleteRow}
+      />
+      <SummaryPopup 
+        title="累計金額サマリ"
+        items={summaryItems}
+      />
+    </>
   );
 }

@@ -30,7 +30,7 @@ export function ScreenExpenseLedgerPage() {
           )}
         </div>
       </div>
-      
+
       {renderContent()}
     </>
   );

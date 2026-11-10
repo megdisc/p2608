@@ -104,10 +104,16 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.DAILY_RECORDS}</div>
           <button 
-            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'projectFinancialRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('progressRecord')}
           >
             {PAGE_NAMES.SCREEN_PROJECT}
+          </button>
+          <button 
+            className={`nav-button ${['screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('expenseLedger')}
+          >
+            {PAGE_NAMES.SCREEN_EXPENSE_LEDGER}
           </button>
           <button 
             className={`nav-button ${['screenCalendar', 'calendarMonth', 'attendanceMonth'].includes(activeTab) ? 'active' : ''}`}

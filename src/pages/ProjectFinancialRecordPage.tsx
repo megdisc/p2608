@@ -33,7 +33,7 @@ export function ProjectFinancialRecordPage() {
 
   useEffect(() => {
     fetchRecords().catch(() => {
-      showAlert('材料費・経費記録の取得に失敗しました', 'error');
+      showAlert('費用帳簿の取得に失敗しました', 'error');
     });
   }, [fetchRecords, showAlert]);
 

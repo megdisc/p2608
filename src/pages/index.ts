@@ -39,6 +39,7 @@ export * from './ProjectFinancialSummaryPage';
 export * from './ScreenCompositionPage';
 export * from './ScreenFinancePage';
 export * from './ScreenProjectPage';
+export * from './ScreenExpenseLedgerPage';
 export * from './ScreenUserPage';
 export * from './ScreenStaffPage';
 export * from './ScreenClientPage';

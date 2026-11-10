@@ -87,8 +87,13 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'budgetPlanning', label: PAGE_NAMES.BUDGET_PLANNING },
       { id: 'assigneeAllocation', label: PAGE_NAMES.ASSIGNEE_ALLOCATION },
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
-      { id: 'projectFinancialRecord', label: PAGE_NAMES.PROJECT_FINANCIAL_RECORD },
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
+    ],
+  },
+  SCREEN_EXPENSE_LEDGER: {
+    screenName: PAGE_NAMES.SCREEN_EXPENSE_LEDGER,
+    tabs: [
+      { id: 'expenseLedger', label: PAGE_NAMES.EXPENSE_LEDGER },
     ],
   },
   SCREEN_CALENDAR: {
@@ -144,6 +149,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenAttendance') return SCREEN_CONFIGS.SCREEN_CALENDAR;
   if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR;
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
+  if (tabId === 'screenExpenseLedger' || tabId === 'expenseLedger' || tabId === 'projectFinancialRecord') return SCREEN_CONFIGS.SCREEN_EXPENSE_LEDGER;
   if (tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_FINANCE;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;

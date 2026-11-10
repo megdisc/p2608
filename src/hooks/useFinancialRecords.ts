@@ -13,6 +13,14 @@ export type UseFinancialRecordsOptions = {
   onlyUnassignedReserves?: boolean;
 };
 
+export type FinancialRecordProjectOption = {
+  id: string;
+  name: string;
+  code?: string;
+  clientId?: string;
+  isFinished?: boolean;
+};
+
 export const isManuallyEditableItem = (item: { id?: string; subject?: string; type?: string; projectId?: string; project_id?: string | null }) => {
   if (item.id && item.id.startsWith('draft-')) return true;
   if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject?.includes('材料費')) return true;
@@ -22,6 +30,15 @@ export const isManuallyEditableItem = (item: { id?: string; subject?: string; ty
     return true;
   }
   return false;
+};
+
+type RawProjectData = {
+  id: string;
+  name: string;
+  code?: string | null;
+  is_deleted?: boolean | null;
+  client_id?: string | null;
+  project_tasks?: { id: string; is_completed?: boolean | null; is_deleted?: boolean | null }[] | null;
 };
 
 type RawDbRecord = {
@@ -42,7 +59,7 @@ type RawDbRecord = {
 export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   const initialSort = options.initialSort || { key: 'targetPeriod', direction: 'desc' };
   const [items, setItems] = useState<FinancialRecordItem[]>([]);
-  const [projects, setProjects] = useState<{ id: string; name: string }[]>([]);
+  const [projects, setProjects] = useState<FinancialRecordProjectOption[]>([]);
   const [staffs, setStaffs] = useState<{ id: string; name: string }[]>([]);
   const [clients, setClients] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
@@ -117,7 +134,10 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
 
       const projQuery = supabase
         .from('projects')
-        .select('id, name, code, is_deleted, office_id')
+        .select(`
+          id, name, code, is_deleted, office_id, client_id,
+          project_tasks ( id, is_completed, is_deleted )
+        `)
         .eq('office_id', options.officeId)
         .order('code', { ascending: true });
 
@@ -276,7 +296,19 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       });
       setItems(mapped);
 
-      if (projData) setProjects(projData.map((p: { id: string; name: string; is_deleted?: boolean | null }) => ({ id: p.id, name: p.is_deleted ? `${p.name} (削除済)` : p.name })));
+      if (projData) {
+        setProjects(projData.map((p: RawProjectData) => {
+          const activeTasks = (p.project_tasks || []).filter(t => !t.is_deleted);
+          const isFinished = activeTasks.length > 0 && activeTasks.every(t => t.is_completed);
+          return {
+            id: p.id,
+            name: p.is_deleted ? `${p.name} (削除済)` : p.name,
+            code: p.code || '',
+            clientId: p.client_id || '',
+            isFinished
+          };
+        }));
+      }
       if (staffData) setStaffs(staffData.map((s: { id: string; name: string; is_deleted?: boolean | null }) => ({ id: s.id, name: s.is_deleted ? `${s.name} (削除済)` : s.name })));
       if (clientData) setClients(clientData.map((c: { id: string; name: string; is_deleted?: boolean | null }) => ({ id: c.id, name: c.is_deleted ? `${c.name} (削除済)` : c.name })));
     } catch (error) {
@@ -303,7 +335,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         subject: d.type === 'reserve' ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT : d.subject,
         amount: Number(d.amount) || 0,
         remarks: d.remarks || null,
-        recorded_by: d.recordedBy || null,
+        recorded_by: d.recordedBy || (staffs[0]?.id || null),
         activity_category: d.activity_category || 'production',
         cost_category: d.costCategory || 'manufacturing'
       }));
@@ -326,7 +358,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     }
 
     await fetchRecords();
-  }, [items, fetchRecords, options.officeId]);
+  }, [items, fetchRecords, options.officeId, staffs]);
 
   const handleSortChange = useCallback((newConfig: { key: string; direction: 'asc' | 'desc' }) => {
     setSortConfig(newConfig);

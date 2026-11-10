@@ -543,7 +543,7 @@ export function DataTable<T extends { id: string }>({
         return col.customEditRender(value, item, (newVal) => handleCellChange(item.id, col.key, newVal, col, isSubItem, parentId, isSubSubItem, subParentId));
       }
 
-      if (col.render) {
+      if (col.render && (!col.inputType || col.render.length > 1)) {
         return col.render(item, draftData, setDraftData);
       }
       

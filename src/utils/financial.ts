@@ -15,7 +15,10 @@ export function getSubjectActivityCategory(subject?: string): ActivityCategoryTy
     '控除', // 過去データ互換
     '事業収益',
     '事業費用',
-    '事業費用・経費'
+    '事業費用・経費',
+    'その他事業費用',
+    'その他福祉事業費用',
+    '福祉事業費用'
   ];
   if (welfareSubjects.some(s => subject === s || subject.includes(s))) {
     return 'welfare';

@@ -38,7 +38,7 @@ export function FinancialRecordPage() {
   const columns: Column<FinancialRecordItem>[] = [
     { 
       key: 'targetPeriod', 
-      header: TABLE_COLUMNS.PERIOD,
+      header: TABLE_COLUMNS.TRANSACTION_PERIOD,
       inputType: 'date'
     },
     {

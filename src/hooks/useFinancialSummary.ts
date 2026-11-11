@@ -215,7 +215,9 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
             subj === '事業費用・経費' ||
             subj === '事業費用' ||
             subj === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER ||
-            subj.includes('その他福祉事業費用')
+            subj.includes('その他福祉事業費用') ||
+            subj.includes('その他事業費用') ||
+            subj.includes('福祉事業費用')
           ) {
             row.expWelfareOther += amt;
             row.expOther += amt;

@@ -64,7 +64,14 @@ export function ProjectFinancialRecordPage() {
         } else {
           normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER;
         }
-      } else if (normalizedSubject === '事業費用・経費' || normalizedSubject === '事業費用') {
+      } else if (
+        normalizedSubject === '事業費用・経費' ||
+        normalizedSubject === '事業費用' ||
+        normalizedSubject === 'その他福祉事業費用' ||
+        normalizedSubject === 'その他事業費用' ||
+        normalizedSubject === '福祉事業費用' ||
+        normalizedSubject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER
+      ) {
         normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER;
       }
 
@@ -100,18 +107,19 @@ export function ProjectFinancialRecordPage() {
     });
   }, [normalizedItems, projects, sortConfig]);
 
-  // 手動入力用の勘定科目プルダウン（3択）
+  // 手動入力用の勘定科目プルダウン（材料費、経費、設備等修繕維持積立金、福祉事業費用の4択）
   const subjectOptions = useMemo(() => [
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER },
-    { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
+    { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER },
   ], []);
 
   const columns: Column<FinancialRecordItem>[] = [
-    // 1. 対象時期（日付ピッカー）: 入力可
+    // 1. 取引時期（日付ピッカー）: 入力可
     { 
       key: 'targetPeriod', 
-      header: TABLE_COLUMNS.PERIOD,
+      header: TABLE_COLUMNS.TRANSACTION_PERIOD,
       editable: (item: FinancialRecordItem) => canEditRow(item),
       inputType: 'date'
     },
@@ -135,7 +143,7 @@ export function ProjectFinancialRecordPage() {
         type: item.type
       })
     },
-    // 4. 勘定科目（プルダウン選択肢: 材料費、経費、設備等修繕維持積立金の3択）: 入力可
+    // 4. 勘定科目（プルダウン選択肢: 材料費、経費、設備等修繕維持積立金、福祉事業費用の4択）: 入力可
     {
       key: 'subject',
       header: TABLE_COLUMNS.ACCOUNT_SUBJECT,
@@ -145,29 +153,40 @@ export function ProjectFinancialRecordPage() {
       render: (item: FinancialRecordItem) => item.subject || '-',
       onCellChange: (val: unknown, updatedItem: FinancialRecordItem) => {
         if (val === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) {
-          // 設備等修繕維持積立金の場合は案件名・取引先をクリアし、取引区分を積立金取崩に自動判定
+          // 設備等修繕維持積立金の場合は案件名・取引先をクリアし、取引区分を積立金取崩に自動判定、事業区分は就労支援
           return { 
             type: 'reserve' as const, 
             subject: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, 
             projectId: '',
-            clientId: ''
+            clientId: '',
+            activity_category: 'production' as const
+          };
+        } else if (val === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER) {
+          // 福祉事業費用の場合は案件名・取引先をクリアし、取引区分を費用に自動判定、事業区分は福祉
+          return {
+            type: 'expense' as const,
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER,
+            projectId: '',
+            clientId: '',
+            activity_category: 'welfare' as const
           };
         } else {
-          // 材料費・経費の場合は費用に自動判定。案件が選択されていれば取引先も自動判定
+          // 材料費・経費の場合は費用に自動判定。案件が選択されていれば取引先も自動判定、事業区分は就労支援
           const selProj = projects.find(p => p.id === updatedItem.projectId);
           return {
             type: 'expense' as const,
             subject: String(val || WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL),
-            clientId: selProj?.clientId || ''
+            clientId: selProj?.clientId || '',
+            activity_category: 'production' as const
           };
         }
       }
     },
-    // 5. 案件名（登録済み・未完了案件のプルダウン）: 入力可（材料費・経費のみ）
+    // 5. 案件名（登録済み・未完了案件のプルダウン）: 入力可（材料費・経費のみ。設備等修繕維持積立金・福祉事業費用は非活性）
     { 
       key: 'projectId', 
       header: TABLE_COLUMNS.PROJECT_NAME, 
-      editable: (item: FinancialRecordItem) => canEditRow(item) && item.subject !== WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, 
+      editable: (item: FinancialRecordItem) => canEditRow(item) && item.subject !== WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT && item.subject !== WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, 
       inputType: 'select', 
       options: (item: FinancialRecordItem) => [
         { label: WORDS_PROJECT.SELECT_PROJECT, value: '' },
@@ -176,7 +195,12 @@ export function ProjectFinancialRecordPage() {
           .map(p => ({ label: p.name, value: p.id }))
       ],
       render: (item: FinancialRecordItem) => {
-        if (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.type === 'reserve') {
+        if (
+          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ||
+          item.type === 'reserve' ||
+          item.subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER ||
+          item.activity_category === 'welfare'
+        ) {
           return '-';
         }
         return projects.find(p => p.id === item.projectId)?.name || '-';
@@ -243,16 +267,19 @@ export function ProjectFinancialRecordPage() {
 
       const sanitizedDrafts = drafts.map(d => {
         const isReserveWithdrawal = d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT;
+        const isWelfareExpense = d.subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER || d.activity_category === 'welfare';
+        const isNonProject = isReserveWithdrawal || isWelfareExpense;
         const selProj = projects.find(p => p.id === d.projectId);
+
         return {
           ...d,
-          projectId: isReserveWithdrawal ? '' : d.projectId,
-          clientId: isReserveWithdrawal ? '' : (d.clientId || selProj?.clientId || ''),
+          projectId: isNonProject ? '' : d.projectId,
+          clientId: isNonProject ? '' : (d.clientId || selProj?.clientId || ''),
           subject: d.subject,
           type: (isReserveWithdrawal ? 'reserve' : 'expense') as 'reserve' | 'expense',
           recordedDate: d.recordedDate || today,
           recordedBy: d.recordedBy || defaultStaffId,
-          activity_category: 'production' as const
+          activity_category: isWelfareExpense ? ('welfare' as const) : ('production' as const)
         };
       });
       await batchSaveRecords(sanitizedDrafts);
@@ -284,6 +311,7 @@ export function ProjectFinancialRecordPage() {
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: totals.material || 0 },
     { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: totals.other || 0 },
     { label: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}取崩`, value: totals.equipmentReserve || 0 },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, value: totals.welfareExpense || 0 },
     { label: WORDS_PROJECT.CUMULATIVE_TOTAL, value: totals.total || 0, isTotal: true }
   ], [totals]);
 

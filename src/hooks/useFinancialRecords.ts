@@ -25,6 +25,15 @@ export const isManuallyEditableItem = (item: { id?: string; subject?: string; ty
   if (item.id && item.id.startsWith('draft-')) return true;
   if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject?.includes('材料費')) return true;
   if (item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER || item.subject === 'その他経費' || item.subject === '経費') return true;
+  if (
+    item.subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER ||
+    item.subject === 'その他福祉事業費用' ||
+    item.subject === 'その他事業費用' ||
+    item.subject === '福祉事業費用' ||
+    item.subject?.includes('福祉事業費用')
+  ) {
+    return true;
+  }
   const pId = item.projectId !== undefined ? item.projectId : item.project_id;
   if (item.type === 'reserve' && (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || item.subject?.includes('設備等修繕維持積立金')) && !pId) {
     return true;
@@ -68,6 +77,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     material: 0,
     other: 0,
     equipmentReserve: 0,
+    welfareExpense: 0,
     total: 0
   });
 
@@ -84,7 +94,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
 
       if (!options.officeId) {
         setItems([]);
-        setTotals({ material: 0, other: 0, equipmentReserve: 0, total: 0 });
+        setTotals({ material: 0, other: 0, equipmentReserve: 0, welfareExpense: 0, total: 0 });
         setTotalCount(0);
         setProjects([]);
         setStaffs([]);
@@ -364,6 +374,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         material: 0,
         other: 0,
         equipmentReserve: 0,
+        welfareExpense: 0,
         total: 0
       };
       filteredList.forEach(r => {
@@ -376,6 +387,15 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
           calculatedTotals.total += amt;
         } else if ((r.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT || r.subject?.includes('設備等修繕維持積立金')) && !r.project_id) {
           calculatedTotals.equipmentReserve += amt;
+          calculatedTotals.total += amt;
+        } else if (
+          r.subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER ||
+          r.subject === 'その他福祉事業費用' ||
+          r.subject === 'その他事業費用' ||
+          r.subject === '福祉事業費用' ||
+          r.subject?.includes('福祉事業費用')
+        ) {
+          calculatedTotals.welfareExpense += amt;
           calculatedTotals.total += amt;
         } else {
           calculatedTotals.total += amt;
@@ -439,20 +459,26 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     // Process new and updated records for manually editable items into general_financial_records
     const upserts = drafts
       .filter(d => isManuallyEditableItem(d))
-      .map(d => ({
-        ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
-        target_period: d.period || d.targetPeriod || today,
-        office_id: options.officeId || null,
-        project_id: d.type === 'reserve' ? null : (d.projectId || null),
-        client_id: d.type === 'reserve' ? null : (d.clientId || null),
-        type: d.type || 'expense',
-        subject: d.type === 'reserve' ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT : d.subject,
-        amount: Number(d.amount) || 0,
-        remarks: d.remarks || null,
-        recorded_by: d.recordedBy || (staffs[0]?.id || null),
-        activity_category: d.activity_category || 'production',
-        cost_category: d.costCategory || 'manufacturing'
-      }));
+      .map(d => {
+        const isReserveWithdrawal = d.type === 'reserve' || d.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT;
+        const isWelfareExpense = d.subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER || d.activity_category === 'welfare';
+        const isNonProject = isReserveWithdrawal || isWelfareExpense;
+
+        return {
+          ...(d.id.startsWith('draft-') ? {} : { id: d.id }),
+          target_period: d.period || d.targetPeriod || today,
+          office_id: options.officeId || null,
+          project_id: isNonProject ? null : (d.projectId || null),
+          client_id: isNonProject ? null : (d.clientId || null),
+          type: isReserveWithdrawal ? 'reserve' : (d.type || 'expense'),
+          subject: isReserveWithdrawal ? WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT : d.subject,
+          amount: Number(d.amount) || 0,
+          remarks: d.remarks || null,
+          recorded_by: d.recordedBy || (staffs[0]?.id || null),
+          activity_category: isWelfareExpense ? 'welfare' : (d.activity_category || 'production'),
+          cost_category: d.costCategory || 'manufacturing'
+        };
+      });
 
     if (upserts.length > 0) {
       const { error: upsertError } = await supabase.from('general_financial_records').upsert(upserts);

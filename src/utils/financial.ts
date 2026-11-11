@@ -12,7 +12,10 @@ export function getSubjectActivityCategory(subject?: string): ActivityCategoryTy
   const welfareSubjects = [
     ...ACCOUNT_SUBJECT_TREE.welfare.revenue,
     ...ACCOUNT_SUBJECT_TREE.welfare.expense,
-    '控除' // 過去データ互換
+    '控除', // 過去データ互換
+    '事業収益',
+    '事業費用',
+    '事業費用・経費'
   ];
   if (welfareSubjects.some(s => subject === s || subject.includes(s))) {
     return 'welfare';

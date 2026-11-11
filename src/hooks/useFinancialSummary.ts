@@ -49,14 +49,14 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
       // 2. スナップショットデータクエリ
       let snapQuery = supabase
         .from('general_financial_snapshot_details')
-        .select('target_period, type, subject, amount, activity_category, office_id')
+        .select('target_period, type, subject, amount, activity_category, office_id, description')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
       // 3. 未確定レコードデータクエリ
       let recQuery = supabase
         .from('general_financial_records')
-        .select('target_period, type, subject, amount, activity_category, office_id')
+        .select('target_period, type, subject, amount, activity_category, office_id, description')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
@@ -97,6 +97,7 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         amount?: number | null;
         activity_category?: string | null;
         office_id?: string | null;
+        description?: string | null;
       };
 
       const records: FinancialSummaryRawRecord[] = [];
@@ -173,10 +174,17 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
             subj.includes('実費控除')
           ) {
             row.revDeduction += amt;
-          } else if (subj === WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT || subj.includes('訓練等給付費')) {
+          } else if (
+            subj === WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT ||
+            subj.includes('訓練等給付費') ||
+            subj.includes('給付費')
+          ) {
             row.revBenefit += amt;
           } else if (subj === WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER || subj.includes('その他福祉事業収益')) {
             row.revOther += amt;
+          } else if (subj === '事業収益') {
+            // 過去データ互換: 福祉事業の事業収益（給付費等）は訓練等給付費に集計
+            row.revBenefit += amt;
           } else if (subj === WORDS_PROJECT.SUBJECT_REVENUE_SALES || subj.includes('就労支援事業収益') || subj.includes('売上')) {
             row.revSales += amt;
           } else {
@@ -190,7 +198,13 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         } 
         // Expenses
         else if (record.type === 'expense') {
-          if (activityCategory === 'welfare') {
+          if (
+            activityCategory === 'welfare' ||
+            subj === '事業費用・経費' ||
+            subj === '事業費用' ||
+            subj === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER ||
+            subj.includes('その他福祉事業費用')
+          ) {
             row.expWelfareOther += amt;
             row.expOther += amt;
           } else {

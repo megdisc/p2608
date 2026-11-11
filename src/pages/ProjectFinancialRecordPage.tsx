@@ -55,6 +55,15 @@ export function ProjectFinancialRecordPage() {
         normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION;
       } else if (normalizedSubject === '労務費（その他）' || normalizedSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER) {
         normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
+      } else if (normalizedSubject === '事業収益') {
+        const desc = item.remarks || '';
+        if (desc.includes('給付費') || desc.includes('訓練') || !desc) {
+          normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT;
+        } else {
+          normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER;
+        }
+      } else if (normalizedSubject === '事業費用・経費' || normalizedSubject === '事業費用') {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER;
       }
 
       // 勘定科目から事業区分を自動判定・補完

@@ -36,12 +36,17 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
   const totals = data.reduce(
     (acc, row) => ({
       revSales: acc.revSales + row.revSales,
+      revServiceFee: acc.revServiceFee + row.revServiceFee,
+      revDeduction: acc.revDeduction + row.revDeduction,
+      revBenefit: acc.revBenefit + row.revBenefit,
+      revOther: acc.revOther + row.revOther,
       revTotal: acc.revTotal + row.revTotal,
       expMaterial: acc.expMaterial + row.expMaterial,
       expLaborMember: acc.expLaborMember + row.expLaborMember,
       expLaborOther: acc.expLaborOther + row.expLaborOther,
       expOutsource: acc.expOutsource + row.expOutsource,
       expOther: acc.expOther + row.expOther,
+      expWelfareOther: acc.expWelfareOther + row.expWelfareOther,
       expTotal: acc.expTotal + row.expTotal,
       resWage: acc.resWage + row.resWage,
       resEquipment: acc.resEquipment + row.resEquipment,
@@ -49,12 +54,17 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
     }),
     {
       revSales: 0,
+      revServiceFee: 0,
+      revDeduction: 0,
+      revBenefit: 0,
+      revOther: 0,
       revTotal: 0,
       expMaterial: 0,
       expLaborMember: 0,
       expLaborOther: 0,
       expOutsource: 0,
       expOther: 0,
+      expWelfareOther: 0,
       expTotal: 0,
       resWage: 0,
       resEquipment: 0,
@@ -67,13 +77,14 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
   const headerRows: HeaderCell[][] = isWelfare ? [
     [
       { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: TABLE_COLUMNS.REVENUE_SIMPLE, colSpan: 2 },
+      { label: TABLE_COLUMNS.REVENUE_SIMPLE, colSpan: 3 },
       { label: TABLE_COLUMNS.EXPENSE_SIMPLE, colSpan: 2 },
     ],
     [
-      { label: TABLE_COLUMNS.WELFARE_REVENUE },
+      { label: TABLE_COLUMNS.SUBJECT_WELFARE_USAGE_FEE },
+      { label: TABLE_COLUMNS.SUBJECT_WELFARE_EXPENSE_DEDUCTION },
       { label: TABLE_COLUMNS.TOTAL },
-      { label: TABLE_COLUMNS.WELFARE_EXPENSE },
+      { label: TABLE_COLUMNS.SUBJECT_WELFARE_EXPENSE_OTHER },
       { label: TABLE_COLUMNS.TOTAL },
     ]
   ] : [
@@ -109,7 +120,7 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
           {sortedData.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={isWelfare ? 5 : 13} className="empty-message">表示するデータがありません</td>
+                <td colSpan={isWelfare ? 6 : 13} className="empty-message">表示するデータがありません</td>
               </tr>
             </tbody>
           ) : (
@@ -119,11 +130,12 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                   return (
                     <tr key={row.id}>
                       <td>{row.period}</td>
-                      <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
+                      <td style={{ textAlign: 'right' }}>¥{row.revServiceFee.toLocaleString()}</td>
+                      <td style={{ textAlign: 'right' }}>¥{row.revDeduction.toLocaleString()}</td>
                       <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
                         ¥{row.revTotal.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
+                      <td style={{ textAlign: 'right' }}>¥{row.expWelfareOther.toLocaleString()}</td>
                       <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
                         ¥{row.expTotal.toLocaleString()}
                       </td>
@@ -168,13 +180,16 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                     {currentYear}年累計
                   </td>
                   <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
-                    ¥{totals.revSales.toLocaleString()}
+                    ¥{totals.revServiceFee.toLocaleString()}
+                  </td>
+                  <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    ¥{totals.revDeduction.toLocaleString()}
                   </td>
                   <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
                     ¥{totals.revTotal.toLocaleString()}
                   </td>
                   <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
-                    ¥{totals.expOther.toLocaleString()}
+                    ¥{totals.expWelfareOther.toLocaleString()}
                   </td>
                   <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
                     ¥{totals.expTotal.toLocaleString()}

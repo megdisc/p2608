@@ -681,8 +681,8 @@ export function RewardAllocationPage() {
     const restNonLabor = nonLaborExpenses.filter(e => e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OTHER);
 
     const externalLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || e.subject.startsWith('外注加工費'));
-    const staffLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || e.subject.startsWith('労務費（利用者工賃以外）'));
-    const memberLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || (!e.subject.startsWith('外注加工費') && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER && !e.subject.startsWith('労務費（利用者工賃以外）')));
+    const staffLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || e.subject.startsWith('労務費（利用者工賃以外）') || e.subject.startsWith('労務費（その他）'));
+    const memberLabor = laborExpenses.filter(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || (!e.subject.startsWith('外注加工費') && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE && e.subject !== WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER && !e.subject.startsWith('労務費（利用者工賃以外）') && !e.subject.startsWith('労務費（その他）')));
 
     const expenses: any[] = [];
     // 1. 材料費
@@ -852,10 +852,10 @@ export function RewardAllocationPage() {
               items.push({
                 categoryType: 'surplus',
                 categoryLabel: WORDS_PROJECT.CATEGORY_SURPLUS,
-                subject: '余剰',
+                subject: WORDS_PROJECT.SUBJECT_SURPLUS,
                 amount: totalSurplus,
                 summary: '-',
-                remarks: totalSurplus !== 0 ? '余剰が¥0になるように、金額を調整してください。' : '-',
+                remarks: totalSurplus !== 0 ? WORDS_PROJECT.SURPLUS_ADJUST_HINT : '-',
               });
 
               const totalRows = items.length;

@@ -4,7 +4,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants
 import type { FinancialRecordItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
 import { useFinancialRecords, isManuallyEditableItem } from '../hooks';
-import { getCurrentJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly, getTransactionTypeDisplayLabel, getDefaultClientBySubject, getSubjectActivityCategory } from '../utils';
 
 export function ProjectFinancialRecordPage() {
   const { selectedOfficeId } = useOffice();
@@ -48,12 +48,24 @@ export function ProjectFinancialRecordPage() {
 
   const normalizedItems = useMemo(() => {
     return items.map(item => {
-      const isManualReserveWithdrawal = (item.type === 'reserve' || item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) && !item.projectId;
+      let normalizedSubject = item.subject || '';
+      if (normalizedSubject === 'その他経費' || normalizedSubject === '経費') {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_OTHER;
+      } else if (normalizedSubject === '控除' || normalizedSubject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION) {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION;
+      } else if (normalizedSubject === '労務費（その他）' || normalizedSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER) {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
+      }
+
+      // 勘定科目から事業区分を自動判定・補完
+      const determinedCategory = item.activity_category || getSubjectActivityCategory(normalizedSubject);
+      const isManualReserveWithdrawal = (item.type === 'reserve' || normalizedSubject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) && !item.projectId;
+
       return {
         ...item,
         type: (isManualReserveWithdrawal ? 'reserve' : item.type) as 'revenue' | 'expense' | 'reserve',
-        subject: (item.subject === 'その他経費' || item.subject === '経費') ? WORDS_PROJECT.SUBJECT_EXPENSE_OTHER : item.subject,
-        activity_category: item.activity_category || 'production',
+        subject: normalizedSubject,
+        activity_category: determinedCategory,
         targetPeriod: item.targetPeriod || item.period || ''
       };
     });
@@ -84,23 +96,6 @@ export function ProjectFinancialRecordPage() {
     { label: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, value: WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT }
   ], []);
 
-  // 取引区分の表示ラベル（勘定科目・案件紐付けから自動判定）
-  const getTransactionTypeLabel = (item: FinancialRecordItem): string => {
-    if (item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT && !item.projectId) {
-      return TABLE_COLUMNS.TRANSACTION_TYPE_RESERVE_WITHDRAWAL;
-    }
-    if (item.type === 'expense' || item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER) {
-      return TABLE_COLUMNS.TRANSACTION_TYPE_EXPENSE;
-    }
-    if (item.type === 'revenue') {
-      return TABLE_COLUMNS.TRANSACTION_TYPE_REVENUE;
-    }
-    if (item.type === 'reserve' && item.projectId) {
-      return TABLE_COLUMNS.TRANSACTION_TYPE_RESERVE_INFLOW;
-    }
-    return item.type || '-';
-  };
-
   const columns: Column<FinancialRecordItem>[] = [
     // 1. 対象時期（日付ピッカー）: 入力可
     { 
@@ -123,7 +118,11 @@ export function ProjectFinancialRecordPage() {
       key: 'type', 
       header: TABLE_COLUMNS.TRANSACTION_TYPE, 
       editable: false,
-      render: (item: FinancialRecordItem) => getTransactionTypeLabel(item)
+      render: (item: FinancialRecordItem) => getTransactionTypeDisplayLabel({
+        subject: item.subject,
+        projectId: item.projectId,
+        type: item.type
+      })
     },
     // 4. 勘定科目（プルダウン選択肢: 材料費、経費、設備等修繕維持積立金の3択）: 入力可
     {
@@ -160,7 +159,7 @@ export function ProjectFinancialRecordPage() {
       editable: (item: FinancialRecordItem) => canEditRow(item) && item.subject !== WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT, 
       inputType: 'select', 
       options: (item: FinancialRecordItem) => [
-        { label: '案件を選択', value: '' },
+        { label: WORDS_PROJECT.SELECT_PROJECT, value: '' },
         ...projects
           .filter(p => !p.isFinished || p.id === item.projectId)
           .map(p => ({ label: p.name, value: p.id }))
@@ -183,18 +182,9 @@ export function ProjectFinancialRecordPage() {
       header: TABLE_COLUMNS.CLIENT_NAME,
       editable: false,
       render: (item: FinancialRecordItem) => {
-        if (
-          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
-          item.subject === WORDS_PROJECT.SUBJECT_DEDUCTION
-        ) {
-          return '利用者一括';
-        }
-        if (
-          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
-          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_WAGE ||
-          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
-        ) {
-          return '自社';
+        const defaultClient = getDefaultClientBySubject(item.subject);
+        if (defaultClient) {
+          return defaultClient;
         }
         const selProj = projects.find(p => p.id === item.projectId);
         const effClientId = item.clientId || selProj?.clientId;

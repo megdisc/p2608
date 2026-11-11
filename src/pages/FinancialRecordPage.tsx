@@ -4,6 +4,7 @@ import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants
 import type { FinancialRecordItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
 import { useFinancialRecords } from '../hooks';
+import { getDefaultClientBySubject } from '../utils';
 
 export function FinancialRecordPage() {
   const { selectedOfficeId } = useOffice();
@@ -65,14 +66,35 @@ export function FinancialRecordPage() {
       header: TABLE_COLUMNS.ACCOUNT_SUBJECT,
       inputType: 'select',
       options: (item) => {
+        const isWelfare = item.activity_category === 'welfare';
+        if (isWelfare) {
+          if (item.type === 'revenue') {
+            return [
+              { label: '', value: '' },
+              { label: WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT, value: WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT },
+              { label: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE, value: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE },
+              { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION },
+              { label: WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER, value: WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER }
+            ];
+          }
+          if (item.type === 'expense') {
+            return [
+              { label: '', value: '' },
+              { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER }
+            ];
+          }
+          return [{ label: '', value: '' }];
+        }
+
+        // 就労支援
         if (item.type === 'expense') {
           return [
             { label: '', value: '' },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER },
             { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
-            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
-            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER }
+            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER },
+            { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER }
           ];
         } else if (item.type === 'reserve') {
           return [
@@ -83,8 +105,7 @@ export function FinancialRecordPage() {
         }
         return [
           { label: '', value: '' },
-          { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES },
-          { label: WORDS_PROJECT.SUBJECT_DEDUCTION, value: WORDS_PROJECT.SUBJECT_DEDUCTION }
+          { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES }
         ];
       }
     },
@@ -101,18 +122,9 @@ export function FinancialRecordPage() {
       inputType: 'select', 
       options: clientOptions,
       render: (item) => {
-        if (
-          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
-          item.subject === WORDS_PROJECT.SUBJECT_DEDUCTION
-        ) {
-          return '利用者一括';
-        }
-        if (
-          item.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
-          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_WAGE ||
-          item.subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT
-        ) {
-          return '自社';
+        const defaultClient = getDefaultClientBySubject(item.subject);
+        if (defaultClient) {
+          return defaultClient;
         }
         return clientOptions.find(o => o.value === item.clientId)?.label || '-';
       }

@@ -9,6 +9,10 @@ export type FinancialSummaryRow = {
   
   // Revenue
   revSales: number;
+  revServiceFee: number;
+  revDeduction: number;
+  revBenefit: number;
+  revOther: number;
   revTotal: number;
   
   // Expense
@@ -17,6 +21,7 @@ export type FinancialSummaryRow = {
   expLaborOther: number;
   expOutsource: number;
   expOther: number;
+  expWelfareOther: number;
   expTotal: number;
 
   // Reserve
@@ -118,12 +123,17 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
           id: periodKey,
           period: periodKey,
           revSales: 0,
+          revServiceFee: 0,
+          revDeduction: 0,
+          revBenefit: 0,
+          revOther: 0,
           revTotal: 0,
           expMaterial: 0,
           expLaborMember: 0,
           expLaborOther: 0,
           expOutsource: 0,
           expOther: 0,
+          expWelfareOther: 0,
           expTotal: 0,
           resWage: 0,
           resEquipment: 0,
@@ -155,24 +165,49 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         } 
         // Revenues
         else if (record.type === 'revenue') {
-          row.revSales += amt;
+          if (subj === WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE || subj.includes('サービス利用料')) {
+            row.revServiceFee += amt;
+          } else if (
+            subj === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION ||
+            subj === '控除' ||
+            subj.includes('実費控除')
+          ) {
+            row.revDeduction += amt;
+          } else if (subj === WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT || subj.includes('訓練等給付費')) {
+            row.revBenefit += amt;
+          } else if (subj === WORDS_PROJECT.SUBJECT_WELFARE_REVENUE_OTHER || subj.includes('その他福祉事業収益')) {
+            row.revOther += amt;
+          } else if (subj === WORDS_PROJECT.SUBJECT_REVENUE_SALES || subj.includes('就労支援事業収益') || subj.includes('売上')) {
+            row.revSales += amt;
+          } else {
+            if (activityCategory === 'welfare') {
+              row.revOther += amt;
+            } else {
+              row.revSales += amt;
+            }
+          }
           row.revTotal += amt;
         } 
         // Expenses
         else if (record.type === 'expense') {
-          if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subj.includes('材料費')) {
-            row.expMaterial += amt;
-          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || subj.includes('労務費（利用者工賃）')) {
-            row.expLaborMember += amt;
-          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || subj.includes('労務費（その他）') || subj.includes('労務費（利用者工賃以外）')) {
-            row.expLaborOther += amt;
-          } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || subj.includes('外注加工費')) {
-            row.expOutsource += amt;
-          } else if (subj.includes('労務費・外注加工費')) {
-             // Fallback for old data
-            row.expLaborOther += amt;
-          } else {
+          if (activityCategory === 'welfare') {
+            row.expWelfareOther += amt;
             row.expOther += amt;
+          } else {
+            if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL || subj.includes('材料費')) {
+              row.expMaterial += amt;
+            } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || subj.includes('労務費（利用者工賃）')) {
+              row.expLaborMember += amt;
+            } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER || subj.includes('労務費（その他）') || subj.includes('労務費（利用者工賃以外）')) {
+              row.expLaborOther += amt;
+            } else if (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || subj.includes('外注加工費')) {
+              row.expOutsource += amt;
+            } else if (subj.includes('労務費・外注加工費')) {
+               // Fallback for old data
+              row.expLaborOther += amt;
+            } else {
+              row.expOther += amt;
+            }
           }
           row.expTotal += amt;
         }

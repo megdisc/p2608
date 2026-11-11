@@ -203,7 +203,7 @@ export function BudgetPlanningPage() {
                       if (m) rawTaskName = m[1];
                     }
                     displaySubject = WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE;
-                  } else if (displaySubject.startsWith('労務費（利用者工賃以外）')) {
+                  } else if (displaySubject.startsWith('労務費（利用者工賃以外）') || displaySubject.startsWith('労務費（その他）')) {
                     displaySubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
                   } else if (displaySubject.startsWith('労務費（利用者工賃')) {
                     if (!rawTaskName && displaySubject.includes('・')) {
@@ -247,10 +247,10 @@ export function BudgetPlanningPage() {
                 items.push({
                   categoryType: 'surplus',
                   categoryLabel: WORDS_PROJECT.CATEGORY_SURPLUS,
-                  subject: '余剰',
+                  subject: WORDS_PROJECT.SUBJECT_SURPLUS,
                   amount: totalSurplus,
                   summary: '-',
-                  remarks: totalSurplus !== 0 ? '余剰が¥0になるように、金額を調整してください。' : '-',
+                  remarks: totalSurplus !== 0 ? WORDS_PROJECT.SURPLUS_ADJUST_HINT : '-',
                 });
 
                 const totalRows = items.length;

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { MESSAGES, TABLE_COLUMNS, WORDS_PROJECT } from '../constants';
 
 import { getCurrentJSTMonth } from '../utils';
 import { useAlert, useOffice } from '../contexts';
@@ -82,7 +82,7 @@ export function WageSummaryPage() {
             ) : (
               paginatedRows.map(row => {
                 type DetailItem = {
-                  categoryGroup: '工賃　A' | '控除　B' | '差額　A-B';
+                  categoryGroup: string;
                   categoryLabel?: string;
                   subject?: string;
                   content?: string;
@@ -95,10 +95,10 @@ export function WageSummaryPage() {
 
                 const items: DetailItem[] = [];
 
-                // 1. 工賃　A 親行
+                // 1. 工賃 A 親行
                 items.push({
-                  categoryGroup: '工賃　A',
-                  categoryLabel: '工賃　A',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
+                  categoryLabel: WORDS_PROJECT.CATEGORY_WAGE_A,
                   subject: '',
                   content: '',
                   amount: row.wageTotal ?? 0,
@@ -134,9 +134,9 @@ export function WageSummaryPage() {
                   : (effectiveWageRate > 0 ? `工賃単価¥${effectiveWageRate.toLocaleString()}` : '');
 
                 items.push({
-                  categoryGroup: '工賃　A',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
                   categoryLabel: '',
-                  subject: '基本工賃',
+                  subject: WORDS_PROJECT.SUBJECT_BASE_WAGE_ITEM,
                   content: '',
                   amount: effectiveBasicWage,
                   remarks: basicWageRemark,
@@ -145,9 +145,9 @@ export function WageSummaryPage() {
 
                 // 3. インセンティブ合計行
                 items.push({
-                  categoryGroup: '工賃　A',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
                   categoryLabel: '',
-                  subject: 'インセンティブ',
+                  subject: WORDS_PROJECT.SUBJECT_INCENTIVE_ITEM,
                   content: '',
                   amount: row.incentiveTotal ?? 0,
                   remarks: '',
@@ -157,7 +157,7 @@ export function WageSummaryPage() {
                 // 4. インセンティブ明細
                 (row.taskIncentives || []).forEach(t => {
                   items.push({
-                    categoryGroup: '工賃　A',
+                    categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
                     categoryLabel: '',
                     subject: '',
                     content: `案件：${t.projectName}、タスク：${t.taskName}`,
@@ -169,9 +169,9 @@ export function WageSummaryPage() {
 
                 // 5. 加算手当合計行
                 items.push({
-                  categoryGroup: '工賃　A',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
                   categoryLabel: '',
-                  subject: '加算手当',
+                  subject: WORDS_PROJECT.SUBJECT_ALLOWANCE_ITEM,
                   content: '',
                   amount: row.allowanceTotal ?? 0,
                   remarks: '',
@@ -181,7 +181,7 @@ export function WageSummaryPage() {
                 // 6. 加算手当明細
                 (row.allowanceItems || []).forEach(item => {
                   items.push({
-                    categoryGroup: '工賃　A',
+                    categoryGroup: WORDS_PROJECT.CATEGORY_WAGE_A,
                     categoryLabel: '',
                     subject: '',
                     content: item.name,
@@ -191,10 +191,10 @@ export function WageSummaryPage() {
                   });
                 });
 
-                // 7. 控除　B 親行
+                // 7. 控除 B 親行
                 items.push({
-                  categoryGroup: '控除　B',
-                  categoryLabel: '控除　B',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_DEDUCTION_B,
+                  categoryLabel: WORDS_PROJECT.CATEGORY_DEDUCTION_B,
                   subject: '',
                   content: '',
                   amount: row.dedTotal ?? 0,
@@ -205,9 +205,9 @@ export function WageSummaryPage() {
 
                 // 8. サービス利用料行（最優先表示）
                 items.push({
-                  categoryGroup: '控除　B',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_DEDUCTION_B,
                   categoryLabel: '',
-                  subject: 'サービス利用料',
+                  subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
                   content: '',
                   amount: row.serviceFeeCopayment ?? 0,
                   remarks: row.serviceFeeRemarks || (row.serviceFeeCopayment > 0 ? '上限月額管理適用' : '負担上限月額: ¥0（自己負担なし）'),
@@ -216,9 +216,9 @@ export function WageSummaryPage() {
 
                 // 9. 実費控除合計行（統括科目）
                 items.push({
-                  categoryGroup: '控除　B',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_DEDUCTION_B,
                   categoryLabel: '',
-                  subject: '実費控除',
+                  subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
                   content: '',
                   amount: row.actualExpenseTotal ?? 0,
                   remarks: '',
@@ -254,7 +254,7 @@ export function WageSummaryPage() {
                     }
                   }
                   items.push({
-                    categoryGroup: '控除　B',
+                    categoryGroup: WORDS_PROJECT.CATEGORY_DEDUCTION_B,
                     categoryLabel: '',
                     subject: '',
                     content: item.name,
@@ -264,11 +264,11 @@ export function WageSummaryPage() {
                   });
                 });
 
-                // 9. 差額　A-B 行（支給額）
+                // 9. 差額 A-B 行（支給額）
                 items.push({
-                  categoryGroup: '差額　A-B',
-                  categoryLabel: '差額　A-B',
-                  subject: '支給額',
+                  categoryGroup: WORDS_PROJECT.CATEGORY_DIFFERENCE_AB,
+                  categoryLabel: WORDS_PROJECT.CATEGORY_DIFFERENCE_AB,
+                  subject: WORDS_PROJECT.PAYMENT_AMOUNT,
                   content: '',
                   amount: row.payment ?? 0,
                   remarks: '',

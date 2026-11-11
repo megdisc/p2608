@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { supabase } from '../lib';
 import { getCurrentJSTMonth, compareValues } from '../utils';
+import { WORDS_PROJECT } from '../constants';
 
 export type WageRow = {
   id: string;
@@ -935,7 +936,7 @@ export function useWageSummary() {
           .from('general_financial_snapshot_details')
           .select('id')
           .eq('target_period', periodDate)
-          .eq('subject', '労務費（利用者工賃）');
+          .eq('subject', WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER);
         if (officeId) finQuery = finQuery.eq('office_id', officeId);
         const { data: existingFin } = await finQuery.limit(1);
 
@@ -955,19 +956,19 @@ export function useWageSummary() {
               target_period: periodDate,
               office_id: officeId || null,
               type: 'expense',
-              subject: '労務費（利用者工賃）',
+              subject: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER,
               amount: totalLaborWage,
               activity_category: 'production',
               cost_category: 'manufacturing'
             });
         }
 
-        // 3. 確定控除の登録
+        // 3. 確定控除の登録（実費控除）
         let dedFinQuery = supabase
           .from('general_financial_snapshot_details')
           .select('id')
           .eq('target_period', periodDate)
-          .eq('subject', '控除');
+          .in('subject', [WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION, '控除']);
         if (officeId) dedFinQuery = dedFinQuery.eq('office_id', officeId);
         const { data: existingDedFin } = await dedFinQuery.limit(1);
 
@@ -976,6 +977,7 @@ export function useWageSummary() {
             .from('general_financial_snapshot_details')
             .update({
               type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
               amount: totalDeduction,
               activity_category: 'welfare',
               cost_category: 'manufacturing',
@@ -989,7 +991,7 @@ export function useWageSummary() {
               target_period: periodDate,
               office_id: officeId || null,
               type: 'revenue',
-              subject: '控除',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
               amount: totalDeduction,
               activity_category: 'welfare',
               cost_category: 'manufacturing'

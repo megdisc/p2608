@@ -98,10 +98,11 @@ export function getTransactionTypeDisplayLabel(typeKeyOrItem: TransactionTypeKey
 export function getDefaultClientBySubject(subject?: string): string | null {
   if (!subject) return null;
 
-  // 利用者一括: 労務費（利用者工賃）、実費控除（旧: 控除）
+  // 利用者一括: 労務費（利用者工賃）、実費控除（旧: 控除）、サービス利用料
   if (
     subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
     subject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION ||
+    subject === WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE ||
     subject === '控除' ||
     subject.startsWith('労務費（利用者工賃')
   ) {

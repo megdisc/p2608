@@ -51,8 +51,10 @@ export function ProjectFinancialRecordPage() {
       let normalizedSubject = item.subject || '';
       if (normalizedSubject === 'その他経費' || normalizedSubject === '経費') {
         normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_OTHER;
-      } else if (normalizedSubject === '控除' || normalizedSubject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION) {
+      } else if (normalizedSubject === '控除' || normalizedSubject === WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION || normalizedSubject.includes('実費控除')) {
         normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION;
+      } else if (normalizedSubject === 'サービス利用料' || normalizedSubject.includes('サービス利用料')) {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE;
       } else if (normalizedSubject === '労務費（その他）' || normalizedSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER) {
         normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
       } else if (normalizedSubject === '事業収益') {

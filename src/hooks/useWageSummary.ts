@@ -250,7 +250,10 @@ export function useWageSummary() {
       });
 
       const memberCertMap = new Map<string, any>();
-      (recipientCertificatesRes.data || []).forEach((c: any) => {
+      const sortedCerts = [...(recipientCertificatesRes.data || [])].sort((a: any, b: any) => 
+        (b.valid_from || '').localeCompare(a.valid_from || '')
+      );
+      sortedCerts.forEach((c: any) => {
         const start = c.valid_from ? c.valid_from.substring(0, 7) : '1900-01';
         const end = c.valid_to ? c.valid_to.substring(0, 7) : '2999-12';
         if (monthStr >= start && monthStr <= end) {
@@ -661,7 +664,9 @@ export function useWageSummary() {
             serviceDaysCount++;
           }
         });
-        const effectiveAttendanceDays = attendanceDaysCount > 0 ? attendanceDaysCount : serviceDaysCount;
+        const effectiveAttendanceDays = attendanceDaysCount > 0 
+          ? attendanceDaysCount 
+          : (serviceDaysCount > 0 ? serviceDaysCount : (finalWorkTime > 0 ? Math.max(1, Math.round(finalWorkTime / 5)) : 0));
         const effectiveServiceHours = totalMemberServiceHours > 0 ? totalMemberServiceHours : effectiveAttendanceDays * 5.0;
 
         // 職員実勤務時間の確認（人員配置基準・支援体制確認用）
@@ -995,6 +1000,116 @@ export function useWageSummary() {
               amount: totalDeduction,
               activity_category: 'welfare',
               cost_category: 'manufacturing'
+            });
+        }
+
+        // 実績層 (general_financial_records) にも実費控除を同期
+        let dedRecQuery = supabase
+          .from('general_financial_records')
+          .select('id')
+          .eq('target_period', periodDate)
+          .in('subject', [WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION, '控除']);
+        if (officeId) dedRecQuery = dedRecQuery.eq('office_id', officeId);
+        const { data: existingDedRec } = await dedRecQuery.limit(1);
+
+        if (existingDedRec && existingDedRec.length > 0) {
+          await supabase
+            .from('general_financial_records')
+            .update({
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
+              amount: totalDeduction,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingDedRec[0].id);
+        } else {
+          await supabase
+            .from('general_financial_records')
+            .insert({
+              target_period: periodDate,
+              office_id: officeId || null,
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
+              amount: totalDeduction,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing'
+            });
+        }
+
+        // 4. サービス利用料の登録
+        const totalServiceFee = data.reduce((acc, r) => acc + (r.serviceFeeCopayment || 0), 0);
+        let serviceFeeFinQuery = supabase
+          .from('general_financial_snapshot_details')
+          .select('id')
+          .eq('target_period', periodDate)
+          .eq('subject', WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE);
+        if (officeId) serviceFeeFinQuery = serviceFeeFinQuery.eq('office_id', officeId);
+        const { data: existingServiceFeeFin } = await serviceFeeFinQuery.limit(1);
+
+        if (existingServiceFeeFin && existingServiceFeeFin.length > 0) {
+          await supabase
+            .from('general_financial_snapshot_details')
+            .update({
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+              amount: totalServiceFee,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing',
+              remarks: 'サービス利用料（自己負担）',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingServiceFeeFin[0].id);
+        } else {
+          await supabase
+            .from('general_financial_snapshot_details')
+            .insert({
+              target_period: periodDate,
+              office_id: officeId || null,
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+              amount: totalServiceFee,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing',
+              remarks: 'サービス利用料（自己負担）'
+            });
+        }
+
+        // 実績層 (general_financial_records) にもサービス利用料を同期
+        let serviceFeeRecQuery = supabase
+          .from('general_financial_records')
+          .select('id')
+          .eq('target_period', periodDate)
+          .eq('subject', WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE);
+        if (officeId) serviceFeeRecQuery = serviceFeeRecQuery.eq('office_id', officeId);
+        const { data: existingServiceFeeRec } = await serviceFeeRecQuery.limit(1);
+
+        if (existingServiceFeeRec && existingServiceFeeRec.length > 0) {
+          await supabase
+            .from('general_financial_records')
+            .update({
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+              amount: totalServiceFee,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing',
+              remarks: 'サービス利用料（自己負担）',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingServiceFeeRec[0].id);
+        } else {
+          await supabase
+            .from('general_financial_records')
+            .insert({
+              target_period: periodDate,
+              office_id: officeId || null,
+              type: 'revenue',
+              subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+              amount: totalServiceFee,
+              activity_category: 'welfare',
+              cost_category: 'manufacturing',
+              remarks: 'サービス利用料（自己負担）'
             });
         }
       } catch (e) {

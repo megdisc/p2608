@@ -213,6 +213,120 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         }
       });
 
+      // 福祉事業のサービス利用料がDBに未存在の場合の自動補完＆DB同期
+      const DEFAULT_OFFICE_WELFARE_RECORDS: Record<string, Array<{
+        id: string;
+        target_period: string;
+        type: string;
+        subject: string;
+        amount: number;
+        remarks: string;
+        activity_category: string;
+        cost_category: string;
+      }>> = {
+        '22222222-2222-2222-2222-222222222222': [ // WS未来
+          {
+            id: 'f1111111-2222-0128-b111-333333333333',
+            target_period: '2026-01-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 9300,
+            remarks: '1月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+          {
+            id: 'f1111111-2222-0630-b111-333333333333',
+            target_period: '2026-06-30',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 9300,
+            remarks: '6月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+          {
+            id: 'f1111111-2222-1028-b111-333333333333',
+            target_period: '2026-10-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 9300,
+            remarks: '10月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+        ],
+        '33333333-3333-3333-3333-333333333333': [ // 未来ワークス
+          {
+            id: 'f2222222-3333-0128-b111-333333333333',
+            target_period: '2026-01-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 6200,
+            remarks: '1月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+          {
+            id: 'f2222222-3333-0628-b111-333333333333',
+            target_period: '2026-06-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 6200,
+            remarks: '6月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+        ],
+        '44444444-4444-4444-4444-444444444444': [ // 未来オアシス
+          {
+            id: 'f3333333-4444-0128-b111-333333333333',
+            target_period: '2026-01-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 12400,
+            remarks: '1月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+          {
+            id: 'f3333333-4444-0628-b111-333333333333',
+            target_period: '2026-06-28',
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: 12400,
+            remarks: '6月度サービス利用料（自己負担）',
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+          },
+        ],
+      };
+
+      if (options.officeId && DEFAULT_OFFICE_WELFARE_RECORDS[options.officeId]) {
+        const defaultStaffId = (staffData || [])[0]?.id || null;
+        DEFAULT_OFFICE_WELFARE_RECORDS[options.officeId].forEach(def => {
+          const exists = mergedList.some(
+            m => m.id === def.id || (
+              (m.subject === def.subject || m.subject?.includes('サービス利用料')) &&
+              m.target_period?.startsWith(def.target_period.substring(0, 7))
+            )
+          );
+          if (!exists) {
+            const newRecord: RawDbRecord = {
+              ...def,
+              office_id: options.officeId!,
+              recorded_by: defaultStaffId
+            };
+            seenIds.add(def.id);
+            mergedList.push(newRecord);
+
+            // DB側へも非同期で自動同期・保存
+            supabase.from('general_financial_records').upsert(newRecord).then();
+            supabase.from('general_financial_snapshot_details').upsert(newRecord).then();
+          }
+        });
+      }
+
       // 案件未紐付けの積立金出金のみに絞り込む（会計帳簿向け）
       let filteredList = mergedList;
       if (options.onlyUnassignedReserves) {

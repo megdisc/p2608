@@ -29,20 +29,20 @@ export function useProjectFinancialSummary(year: string, officeId?: string) {
       let projQuery = supabase.from('projects').select('id, name, code, office_id').eq('is_deleted', false).order('code', { ascending: true });
       
       let closingsQuery = supabase
-        .from('monthly_financial_closings')
-        .select('target_period, is_confirmed')
+        .from('monthly_closings')
+        .select('target_period, is_financial_confirmed')
         .gte('target_period', `${year}-01`)
         .lte('target_period', `${year}-12`)
-        .eq('is_confirmed', true);
+        .eq('is_financial_confirmed', true);
 
       let snapQuery = supabase
-        .from('general_financial_snapshot_details')
+        .from('financial_snapshot')
         .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
       let recQuery = supabase
-        .from('general_financial_records')
+        .from('financial_records')
         .select('id, project_id, type, subject, amount, target_period, activity_category, office_id')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);

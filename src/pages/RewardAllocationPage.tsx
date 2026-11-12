@@ -241,7 +241,7 @@ export function RewardAllocationPage() {
 
   const fetchMonthlyConfirmations = useCallback(async () => {
     try {
-      let query = supabase.from('monthly_record_closings').select('target_period').eq('is_confirmed', true);
+      let query = supabase.from('monthly_closings').select('target_period').eq('is_settlement_confirmed', true);
       if (selectedOfficeId) {
         query = query.eq('office_id', selectedOfficeId);
       }
@@ -446,8 +446,13 @@ export function RewardAllocationPage() {
     }
 
     try {
-      await supabase.from('monthly_record_closings').upsert(
-        { target_period: currentMonth, is_confirmed: true, confirmed_at: new Date().toISOString() },
+      await supabase.from('monthly_closings').upsert(
+        {
+          office_id: selectedOfficeId || null,
+          target_period: currentMonth,
+          is_settlement_confirmed: true,
+          settlement_confirmed_at: new Date().toISOString()
+        },
         { onConflict: 'office_id,target_period' }
       );
     } catch {}
@@ -465,7 +470,18 @@ export function RewardAllocationPage() {
 
   const handleUnconfirm = async () => {
     try {
-      await supabase.from('monthly_record_closings').delete().eq('target_period', currentMonth);
+      let q = supabase
+        .from('monthly_closings')
+        .update({
+          is_settlement_confirmed: false,
+          settlement_confirmed_at: null,
+          settlement_confirmed_by: null
+        })
+        .eq('target_period', currentMonth);
+      if (selectedOfficeId) {
+        q = q.eq('office_id', selectedOfficeId);
+      }
+      await q;
     } catch {}
 
     setConfirmedMonths(prev => {

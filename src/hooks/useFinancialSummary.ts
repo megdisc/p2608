@@ -40,30 +40,30 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
 
       // 1. 当該年の確定済み月一覧を取得
       let closingsQuery = supabase
-        .from('monthly_financial_closings')
-        .select('target_period, is_confirmed')
+        .from('monthly_closings')
+        .select('target_period, is_financial_confirmed')
         .gte('target_period', `${year}-01`)
         .lte('target_period', `${year}-12`)
-        .eq('is_confirmed', true);
+        .eq('is_financial_confirmed', true);
 
       // 2. スナップショットデータクエリ
       let snapQuery = supabase
-        .from('general_financial_snapshot_details')
+        .from('financial_snapshot')
         .select('target_period, type, subject, amount, activity_category, office_id, remarks')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
       // 3. 未確定レコードデータクエリ
       let recQuery = supabase
-        .from('general_financial_records')
+        .from('financial_records')
         .select('target_period, type, subject, amount, activity_category, office_id, remarks')
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
       // 4. 工賃サマリスナップショットクエリ（サービス利用料・実費控除のバックアップ集計用）
       let wageQuery = supabase
-        .from('wage_snapshot_summaries')
-        .select('target_period, service_fee_copayment, deduction_total, office_id')
+        .from('wage_snapshot')
+        .select('target_period, service_fee_copayment, service_fee_deduction, actual_expense_deduction, deduction_total, office_id')
         .gte('target_period', `${year}-01`)
         .lte('target_period', `${year}-12`);
 
@@ -260,16 +260,16 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         };
 
         summaryMap.forEach((row, periodKey) => {
-          // wage_snapshot_summaries からの集計フォールバック
+          // wage_snapshot からの集計フォールバック
           const monthWages = wageRecords.filter((w: any) => w.target_period === periodKey);
           if (row.revServiceFee === 0 && monthWages.length > 0) {
-            const wageServiceFee = monthWages.reduce((sum: number, w: any) => sum + (Number(w.service_fee_copayment) || 0), 0);
+            const wageServiceFee = monthWages.reduce((sum: number, w: any) => sum + (Number(w.service_fee_deduction ?? w.service_fee_copayment) || 0), 0);
             if (wageServiceFee > 0) {
               row.revServiceFee = wageServiceFee;
             }
           }
           if (row.revDeduction === 0 && monthWages.length > 0) {
-            const wageDeduction = monthWages.reduce((sum: number, w: any) => sum + (Number(w.deduction_total) || 0), 0);
+            const wageDeduction = monthWages.reduce((sum: number, w: any) => sum + (Number(w.actual_expense_deduction ?? w.deduction_total) || 0), 0);
             if (wageDeduction > 0) {
               row.revDeduction = wageDeduction;
             }

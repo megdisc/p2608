@@ -501,7 +501,7 @@ export type MemberSkillSettingTableItem = MemberSkillSettingDetailTableItem;
 
 export type AllowanceDeductionDetailTableItem = {
   id?: string; // UUID
-  summary_id: string; // UUID (FK -> wage_snapshot_summaries.id)
+  summary_id: string; // UUID (FK -> wage_snapshot.id)
   item_id?: string | null; // UUID (FK -> allowance_deduction_items.id)
   item_category: 'allowance' | 'deduction';
   item_name: string;
@@ -515,6 +515,95 @@ export type AllowanceDeductionDetailTableItem = {
 // 後方互換用エイリアス
 export type AllowanceDetailTableItem = AllowanceDeductionDetailTableItem;
 export type DeductionDetailTableItem = AllowanceDeductionDetailTableItem;
+
+// 7. 月次実績の記録
+export type FinancialRecordTableItem = {
+  id?: string;
+  office_id: string;
+  target_period: string;
+  project_id?: string | null;
+  client_id?: string | null;
+  recorded_by?: string | null;
+  type: 'revenue' | 'expense' | 'reserve';
+  activity_category: 'production' | 'welfare';
+  cost_category?: 'manufacturing' | 'selling_general_admin' | 'none' | null;
+  subject: string;
+  amount: number;
+  remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+// 8. 集計結果の記録（スナップショット）
+export type MonthlyClosingTableItem = {
+  id?: string;
+  office_id: string;
+  target_period: string; // YYYY-MM
+  is_settlement_confirmed: boolean;
+  settlement_confirmed_at?: string | null;
+  settlement_confirmed_by?: string | null;
+  is_financial_confirmed: boolean;
+  financial_confirmed_at?: string | null;
+  financial_confirmed_by?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type FinancialSnapshotTableItem = FinancialRecordTableItem;
+
+export type ServiceBillingSnapshotTableItem = {
+  id?: string;
+  office_id: string;
+  member_id: string;
+  target_period: string; // YYYY-MM
+  attendance_days: number;
+  base_reward_units: number;
+  addition_units: number;
+  subtraction_units: number;
+  total_units: number;
+  unit_price: number;
+  total_cost_amount: number;
+  calculated_copayment_amount: number;
+  copayment_limit_amount: number;
+  final_copayment_amount: number;
+  benefit_billing_amount: number;
+  actual_expense_amount: number;
+  total_member_billed_amount: number;
+  status: 'draft' | 'confirmed';
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type WageSnapshotTableItem = {
+  id?: string;
+  office_id: string;
+  target_period: string; // YYYY-MM
+  member_id: string;
+  work_time: number;
+  wage_rate: number;
+  basic_wage: number;
+  incentive_total: number;
+  other_allowance_total: number;
+  wage_total: number;
+  service_fee_deduction: number;
+  actual_expense_deduction: number;
+  deduction_total: number;
+  payment: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type IncentiveSnapshotTableItem = {
+  id?: string;
+  summary_id: string; // FK -> wage_snapshot.id
+  task_id: string;
+  allocation_amount: number;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type AllowanceDeductionSnapshotTableItem = AllowanceDeductionDetailTableItem;
+
 
 
 

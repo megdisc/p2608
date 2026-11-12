@@ -36,11 +36,11 @@ export function useMonthlyFinancials() {
 
       // 1. 月次確定状態の確認
       const { data: closingData } = await supabase
-        .from('monthly_financial_closings')
-        .select('target_period, is_confirmed')
+        .from('monthly_closings')
+        .select('target_period, is_financial_confirmed')
         .eq('target_period', monthStr)
         .eq('office_id', effOfficeId)
-        .eq('is_confirmed', true);
+        .eq('is_financial_confirmed', true);
 
       const isClosed = Boolean(closingData && closingData.length > 0);
 
@@ -51,13 +51,13 @@ export function useMonthlyFinancials() {
         // 確定済み: スナップショットテーブルから取得
         const [snapRes, snapExpRes] = await Promise.all([
           supabase
-            .from('general_financial_snapshot_details')
+            .from('financial_snapshot')
             .select('*')
             .eq('office_id', effOfficeId)
             .gte('target_period', startOfMonth)
             .lte('target_period', endOfMonth),
           supabase
-            .from('general_financial_snapshot_details')
+            .from('financial_snapshot')
             .select('*')
             .eq('office_id', effOfficeId)
             .eq('type', 'expense')
@@ -71,13 +71,13 @@ export function useMonthlyFinancials() {
           // スナップショットにまだ未作成の場合はレコード層からフォールバック
           const [recRes, recExpRes] = await Promise.all([
             supabase
-              .from('general_financial_records')
+              .from('financial_records')
               .select('*')
               .eq('office_id', effOfficeId)
               .gte('target_period', startOfMonth)
               .lte('target_period', endOfMonth),
             supabase
-              .from('general_financial_records')
+              .from('financial_records')
               .select('*')
               .eq('office_id', effOfficeId)
               .eq('type', 'expense')
@@ -90,13 +90,13 @@ export function useMonthlyFinancials() {
         // 未確定: レコードテーブル（月次実績層）から取得
         const [recRes, recExpRes] = await Promise.all([
           supabase
-            .from('general_financial_records')
+            .from('financial_records')
             .select('*')
             .eq('office_id', effOfficeId)
             .gte('target_period', startOfMonth)
             .lte('target_period', endOfMonth),
           supabase
-            .from('general_financial_records')
+            .from('financial_records')
             .select('*')
             .eq('office_id', effOfficeId)
             .eq('type', 'expense')
@@ -129,7 +129,7 @@ const isValidUuid = (str: unknown): boolean => {
       if (deletedIds.length > 0) {
         const validDeletes = deletedIds.filter(isValidUuid);
         if (validDeletes.length > 0) {
-          const { error: delErr } = await supabase.from('general_financial_records').delete().in('id', validDeletes);
+          const { error: delErr } = await supabase.from('financial_records').delete().in('id', validDeletes);
           if (delErr) throw delErr;
         }
       }
@@ -150,7 +150,7 @@ const isValidUuid = (str: unknown): boolean => {
       });
       
       if (upserts.length > 0) {
-        const { error: upErr } = await supabase.from('general_financial_records').upsert(upserts);
+        const { error: upErr } = await supabase.from('financial_records').upsert(upserts);
         if (upErr) throw upErr;
       }
     } catch (err) {

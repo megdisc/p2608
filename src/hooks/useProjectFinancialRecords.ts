@@ -17,7 +17,7 @@ export function useProjectFinancialRecords() {
         { data: recData, error: recError }
       ] = await Promise.all([
         supabase.from('projects').select('id, office_id, name, project_type').eq('is_deleted', false).order('name', { ascending: true }),
-        supabase.from('general_financial_records').select('id, project_id, type, subject, amount, target_period')
+        supabase.from('financial_records').select('id, project_id, type, subject, amount, target_period')
       ]);
 
       if (projError) throw projError;

@@ -105,13 +105,13 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
 
       // 1. 確定状況の確認（月次財務確定）
       const closingsQuery = supabase
-        .from('monthly_financial_closings')
-        .select('target_period, is_confirmed')
-        .eq('is_confirmed', true)
+        .from('monthly_closings')
+        .select('target_period, is_financial_confirmed')
+        .eq('is_financial_confirmed', true)
         .eq('office_id', options.officeId);
 
       // 2. 実績レコードクエリ（月次実績層）
-      let recQuery = supabase.from('general_financial_records').select(`
+      let recQuery = supabase.from('financial_records').select(`
           id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project_id, client_id, recorded_by
         `).eq('office_id', options.officeId);
@@ -127,7 +127,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       }
 
       // 3. 確定スナップショットクエリ（スナップショット層）
-      let snapQuery = supabase.from('general_financial_snapshot_details').select(`
+      let snapQuery = supabase.from('financial_snapshot').select(`
           id, target_period, type, subject, amount, remarks, activity_category, cost_category, office_id,
           project_id, client_id, recorded_by
         `).eq('office_id', options.officeId);
@@ -222,120 +222,6 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
           });
         }
       });
-
-      // 福祉事業のサービス利用料がDBに未存在の場合の自動補完＆DB同期
-      const DEFAULT_OFFICE_WELFARE_RECORDS: Record<string, Array<{
-        id: string;
-        target_period: string;
-        type: string;
-        subject: string;
-        amount: number;
-        remarks: string;
-        activity_category: string;
-        cost_category: string;
-      }>> = {
-        '22222222-2222-2222-2222-222222222222': [ // WS未来
-          {
-            id: 'f1111111-2222-0128-b111-333333333333',
-            target_period: '2026-01-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 9300,
-            remarks: '1月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-          {
-            id: 'f1111111-2222-0630-b111-333333333333',
-            target_period: '2026-06-30',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 9300,
-            remarks: '6月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-          {
-            id: 'f1111111-2222-1028-b111-333333333333',
-            target_period: '2026-10-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 9300,
-            remarks: '10月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-        ],
-        '33333333-3333-3333-3333-333333333333': [ // 未来ワークス
-          {
-            id: 'f2222222-3333-0128-b111-333333333333',
-            target_period: '2026-01-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 6200,
-            remarks: '1月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-          {
-            id: 'f2222222-3333-0628-b111-333333333333',
-            target_period: '2026-06-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 6200,
-            remarks: '6月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-        ],
-        '44444444-4444-4444-4444-444444444444': [ // 未来オアシス
-          {
-            id: 'f3333333-4444-0128-b111-333333333333',
-            target_period: '2026-01-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 12400,
-            remarks: '1月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-          {
-            id: 'f3333333-4444-0628-b111-333333333333',
-            target_period: '2026-06-28',
-            type: 'revenue',
-            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
-            amount: 12400,
-            remarks: '6月度サービス利用料（自己負担）',
-            activity_category: 'welfare',
-            cost_category: 'manufacturing',
-          },
-        ],
-      };
-
-      if (options.officeId && DEFAULT_OFFICE_WELFARE_RECORDS[options.officeId]) {
-        const defaultStaffId = (staffData || [])[0]?.id || null;
-        DEFAULT_OFFICE_WELFARE_RECORDS[options.officeId].forEach(def => {
-          const exists = mergedList.some(
-            m => m.id === def.id || (
-              (m.subject === def.subject || m.subject?.includes('サービス利用料')) &&
-              m.target_period?.startsWith(def.target_period.substring(0, 7))
-            )
-          );
-          if (!exists) {
-            const newRecord: RawDbRecord = {
-              ...def,
-              office_id: options.officeId!,
-              recorded_by: defaultStaffId
-            };
-            seenIds.add(def.id);
-            mergedList.push(newRecord);
-
-            // DB側へも非同期で自動同期・保存
-            supabase.from('general_financial_records').upsert(newRecord).then();
-            supabase.from('general_financial_snapshot_details').upsert(newRecord).then();
-          }
-        });
-      }
 
       // 案件未紐付けの積立金出金のみに絞り込む（会計帳簿向け）
       let filteredList = mergedList;
@@ -456,7 +342,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
   const batchSaveRecords = useCallback(async (drafts: FinancialRecordItem[]) => {
     const today = getCurrentJSTDateOnly();
 
-    // Process new and updated records for manually editable items into general_financial_records
+    // Process new and updated records for manually editable items into financial_records
     const upserts = drafts
       .filter(d => isManuallyEditableItem(d))
       .map(d => {
@@ -481,7 +367,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       });
 
     if (upserts.length > 0) {
-      const { error: upsertError } = await supabase.from('general_financial_records').upsert(upserts);
+      const { error: upsertError } = await supabase.from('financial_records').upsert(upserts);
       if (upsertError) throw upsertError;
     }
 
@@ -493,7 +379,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
     const deletedIds = editableExistingIds.filter(id => !draftIds.includes(id));
 
     if (deletedIds.length > 0) {
-      const { error: deleteError } = await supabase.from('general_financial_records').delete().in('id', deletedIds);
+      const { error: deleteError } = await supabase.from('financial_records').delete().in('id', deletedIds);
       if (deleteError) throw deleteError;
     }
 

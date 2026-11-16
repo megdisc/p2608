@@ -10,6 +10,7 @@ export type MonthlyFinancialRecord = {
   amount: number;
   target_period: string; // e.g. '2026-08'
   office_id?: string | null;
+  remarks?: string | null;
 };
 
 export function useMonthlyFinancials() {

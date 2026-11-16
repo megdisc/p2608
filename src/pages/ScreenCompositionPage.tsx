@@ -21,7 +21,7 @@ const getTabCategory = (tabId: string): string => {
     // スキル体系
     'skillCategory', 'skill', 'skillLevel',
     // 工賃・控除体系
-    'baseWage', 'allowance', 'deduction',
+    'baseWage', 'allowance', 'deduction', 'closingDate',
     // 積立金体系
     'reserveSetting', 'reserve',
   ];
@@ -39,7 +39,7 @@ const getTabCategory = (tabId: string): string => {
     // 案件
     'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord',
     // 収益分配
-    'rewardAllocation',
+    'rewardAllocation', 'transactionPeriod',
     // 会計帳簿
     'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord',
     // 予定（カレンダー統合）
@@ -234,13 +234,15 @@ export function ScreenCompositionPage() {
       physicalName: 'organizations',
       tableType: '独立マスタ',
       logicalName: '法人',
-      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・集計有効期間等）',
+      description: '運営法人・事業本部の基本情報（法人名・代表者名・法人番号・事業年度締め日・集計有効期間等）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '法人ID' },
         { name: 'name', desc: '法人名（例: 社会福祉法人〇〇会、特定非営利活動法人〇〇、一般社団法人〇〇等）' },
         { name: 'representative_name', desc: '代表者職・氏名（例: 理事長 〇〇 〇〇）' },
         { name: 'corporate_number', desc: '法人番号（13桁）' },
+        { name: 'fiscal_year_closing_month', desc: '事業年度決算月（1〜12月。行政年度とは別に法人独自の事業年度・会計締め期間を定義）', status: 'added' },
+        { name: 'fiscal_year_closing_day', desc: '事業年度締め日（1〜31日、または99: 末日。法人収支等の年次締め基準日）', status: 'added' },
         { name: 'valid_from', desc: '設立日（運営開始・法人設立年月日）', status: 'added' },
         { name: 'valid_to', desc: '解散日（運営終了・解散年月日。NULL: 運営中・無期限）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
@@ -422,6 +424,27 @@ export function ScreenCompositionPage() {
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'wage_closing_settings',
+      tableType: '従属マスタ',
+      logicalName: '工賃基準日設定',
+      description: '事業所の工賃締め日、工賃支給日、および平均工賃算出基準日のマスターデータ（工賃体系画面の「基準日」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '設定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'closing_day', desc: '工賃締め日（1〜31日、または99: 末日。作業時間・実績の月次集計締切日）', status: 'added' },
+        { name: 'payment_month_type', desc: '工賃支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'payment_day', desc: '工賃支給日（1〜31日、または99: 末日。労務費の取引計上基準日）', status: 'added' },
+        { name: 'average_wage_calc_basis', desc: '平均工賃算出基準日区分（closing_date: 工賃締め日 / payment_date: 工賃支給日。デフォルト: payment_date）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -1172,7 +1195,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '収支記録ID' },
         { name: 'office_id', desc: '事業所ID' },
-        { name: 'target_period', desc: '対象時期・取引日' },
+        { name: 'target_period', desc: '対象時期・取引日（YYYY-MM-DD。収益分配画面の各勘定科目や収支レコードの取引日）' },
         { name: 'project_id', desc: '関連案件ID' },
         { name: 'client_id', desc: '関連取引先ID' },
         { name: 'recorded_by', desc: '計上・登録職員ID', status: 'added' },
@@ -1192,10 +1215,11 @@ export function ScreenCompositionPage() {
       physicalName: 'incentive_records',
       tableType: 'レコード',
       logicalName: 'インセンティブ配分レコード',
-      description: '案件タスクの成果・貢献度に応じた各利用者の月次インセンティブ配分決定記録（スタッフによる手動配分入力値）',
+      description: '案件タスクの成果・貢献度に応じた各利用者のインセンティブ配分決定記録（収益分配画面の「取引時期」タブ等で年月日指定）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '記録ID' },
-        { name: 'target_period', desc: '対象時期(YYYY-MM)' },
+        { name: 'target_period', desc: '取引時期・対象年月日（YYYY-MM-DD。年月から年月日に改修し、取引帰属日として管理）', status: 'modified' },
         { name: 'member_id', desc: '分配先利用者ID' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
@@ -1271,6 +1295,7 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '概要ID' },
         { name: 'office_id', desc: '事業所ID' },
         { name: 'target_period', desc: '対象時期(YYYY-MM)' },
+        { name: 'payment_date', desc: '工賃支給日・取引時期（YYYY-MM-DD。基準日設定に基づき自動算出。収支上の労務費取引日）', status: 'added' },
         { name: 'member_id', desc: '利用者ID' },
         { name: 'work_time', desc: '総作業時間' },
         { name: 'wage_rate', desc: '工賃単価' },
@@ -1297,6 +1322,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '明細ID' },
         { name: 'summary_id', desc: '工賃・控除総額スナップショットID（FK -> wage_snapshot.id）' },
+        { name: 'target_period', desc: '取引時期・対象年月日（YYYY-MM-DD。インセンティブ配分レコードから引き継がれる取引日）', status: 'added' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
         { name: 'created_at', desc: '作成日時' },

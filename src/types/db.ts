@@ -83,6 +83,8 @@ export type OrganizationTableItem = {
   name: string;
   representative_name?: string | null;
   corporate_number?: string | null;
+  fiscal_year_closing_month?: number;
+  fiscal_year_closing_day?: number;
   valid_from?: string;
   valid_to?: string | null;
   created_at?: string;
@@ -516,6 +518,20 @@ export type AllowanceDeductionDetailTableItem = {
 export type AllowanceDetailTableItem = AllowanceDeductionDetailTableItem;
 export type DeductionDetailTableItem = AllowanceDeductionDetailTableItem;
 
+// 工賃基準日設定
+export type WageClosingSettingTableItem = {
+  id?: string; // UUID
+  office_id: string; // UUID (FK -> offices.id)
+  closing_day: number; // 1-31, 99:末日
+  payment_month_type: 'current' | 'next' | 'next_next';
+  payment_day: number; // 1-31, 99:末日
+  average_wage_calc_basis: 'closing_date' | 'payment_date';
+  valid_from: string; // YYYY-MM-DD
+  valid_to?: string | null; // YYYY-MM-DD
+  created_at?: string;
+  updated_at?: string;
+};
+
 // 6. 日次実績の記録
 export type DailyClosingTableItem = {
   id?: string;
@@ -549,7 +565,7 @@ export type FinancialRecordTableItem = {
 
 export type IncentiveRecordTableItem = {
   id?: string;
-  target_period: string; // YYYY-MM
+  target_period: string; // YYYY-MM-DD (取引時期)
   member_id: string;
   task_id: string;
   allocation_amount: number;
@@ -602,6 +618,7 @@ export type WageSnapshotTableItem = {
   id?: string;
   office_id: string;
   target_period: string; // YYYY-MM
+  payment_date?: string; // YYYY-MM-DD (工賃支給日・取引時期)
   member_id: string;
   work_time: number;
   wage_rate: number;
@@ -621,6 +638,7 @@ export type WageSnapshotTableItem = {
 export type IncentiveSnapshotTableItem = {
   id?: string;
   summary_id: string; // FK -> wage_snapshot.id (工賃・控除総額スナップショット)
+  target_period?: string; // YYYY-MM-DD (取引時期)
   task_id: string;
   allocation_amount: number;
   created_at?: string;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
-import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription } from '../utils';
+import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate } from '../utils';
 import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
@@ -357,6 +357,22 @@ export function RewardAllocationPage() {
       
       // 2. 利用者インセンティブ実績 (incentive_records) への保存
       try {
+        let paymentDate = `${currentMonth}-10`;
+        try {
+          let cQuery = supabase.from('wage_closing_settings').select('*');
+          if (selectedOfficeId && selectedOfficeId !== 'all') {
+            cQuery = cQuery.eq('office_id', selectedOfficeId);
+          }
+          const { data: cData } = await cQuery.limit(1);
+          if (cData && cData.length > 0) {
+            paymentDate = calcWagePaymentDate(currentMonth, cData[0]);
+          } else {
+            paymentDate = calcWagePaymentDate(currentMonth);
+          }
+        } catch {
+          paymentDate = `${currentMonth}-10`;
+        }
+
         const incentiveUpserts = progressRecords
           .filter(r => r.userId && !r.userId.startsWith('staff_'))
           .map(r => {
@@ -364,7 +380,7 @@ export function RewardAllocationPage() {
             const customVal = allocationDrafts[r.id];
             const val = customVal !== undefined ? Number(customVal) || 0 : Number(r.allocationAmount) || 0;
             return {
-              target_period: currentMonth,
+              target_period: paymentDate,
               member_id: rawMemberId,
               task_id: r.taskId,
               allocation_amount: val

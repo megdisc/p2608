@@ -15,10 +15,41 @@ export function OrganizationPage() {
     });
   }, [fetchOrganizations, showAlert]);
 
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+    value: String(i + 1),
+    label: `${i + 1}月`,
+  }));
+
+  const dayOptions = [
+    { value: '99', label: '末日' },
+    ...Array.from({ length: 31 }, (_, i) => ({
+      value: String(i + 1),
+      label: `${i + 1}日`,
+    })),
+  ];
+
   const columns: Column<OrganizationItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.ORGANIZATION_NAME, sortable: false, editable: true, inputType: 'text' },
     { key: 'representative_name', header: TABLE_COLUMNS.REPRESENTATIVE_NAME, sortable: false, editable: true, inputType: 'text' },
     { key: 'corporate_number', header: TABLE_COLUMNS.CORPORATE_NUMBER, sortable: false, editable: true, inputType: 'text' },
+    { 
+      key: 'fiscal_year_closing_month', 
+      header: TABLE_COLUMNS.FISCAL_YEAR_CLOSING_MONTH, 
+      sortable: false, 
+      editable: true, 
+      inputType: 'select', 
+      options: monthOptions,
+      render: (item) => `${item.fiscal_year_closing_month || 3}月` 
+    },
+    { 
+      key: 'fiscal_year_closing_day', 
+      header: TABLE_COLUMNS.FISCAL_YEAR_CLOSING_DAY, 
+      sortable: false, 
+      editable: true, 
+      inputType: 'select', 
+      options: dayOptions,
+      render: (item) => Number(item.fiscal_year_closing_day) === 99 ? '末日' : `${item.fiscal_year_closing_day || 31}日`
+    },
     { key: 'valid_from', header: TABLE_COLUMNS.ORGANIZATION_ESTABLISHED_DATE, sortable: false, editable: true, inputType: 'date' },
     { key: 'valid_to', header: TABLE_COLUMNS.ORGANIZATION_DISSOLVED_DATE, sortable: false, editable: true, inputType: 'date' },
     { key: 'postal_code_prefix', header: TABLE_COLUMNS.POSTAL_CODE_PREFIX, sortable: false, editable: true, inputType: 'text' },

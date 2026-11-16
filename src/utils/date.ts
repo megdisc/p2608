@@ -205,3 +205,42 @@ export function parseLocalInputAsUTC(input: string): string {
   if (isNaN(date.getTime())) return input; // fallback
   return date.toISOString();
 }
+
+/**
+ * 工賃基準日設定と対象年月から、工賃支給日（取引時期）を自動算出する
+ */
+export function calcWagePaymentDate(
+  yearMonth: string,
+  closingSetting?: {
+    payment_month_type?: 'current' | 'next' | 'next_next';
+    payment_day?: number;
+  }
+): string {
+  if (!yearMonth || !yearMonth.includes('-')) return '';
+  const [yearStr, monthStr] = yearMonth.split('-');
+  let year = parseInt(yearStr, 10);
+  let month = parseInt(monthStr, 10); // 1-12
+
+  const monthType = closingSetting?.payment_month_type || 'next';
+  const paymentDay = Number(closingSetting?.payment_day) || 10;
+
+  if (monthType === 'next') {
+    month += 1;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  } else if (monthType === 'next_next') {
+    month += 2;
+    if (month > 12) {
+      month -= 12;
+      year += 1;
+    }
+  }
+
+  // その月の末日を取得
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const day = (paymentDay === 99 || paymentDay > daysInMonth) ? daysInMonth : paymentDay;
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}

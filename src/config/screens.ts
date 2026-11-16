@@ -51,6 +51,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'baseWage', label: PAGE_NAMES.BASE_WAGE },
       { id: 'allowance', label: PAGE_NAMES.ALLOWANCE },
       { id: 'deduction', label: PAGE_NAMES.DEDUCTION },
+      { id: 'closingDate', label: PAGE_NAMES.TAB_CLOSING_DATE },
     ],
   },
   SCREEN_RESERVE: {
@@ -93,6 +94,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_REWARD_ALLOCATION,
     tabs: [
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
+      { id: 'transactionPeriod', label: PAGE_NAMES.TAB_TRANSACTION_PERIOD },
     ],
   },
   SCREEN_EXPENSE_LEDGER: {
@@ -148,7 +150,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
-  if (tabId === 'screenRewardAllocation' || tabId === 'rewardAllocation') return SCREEN_CONFIGS.SCREEN_REWARD_ALLOCATION;
+  if (tabId === 'screenRewardAllocation' || tabId === 'rewardAllocation' || tabId === 'transactionPeriod') return SCREEN_CONFIGS.SCREEN_REWARD_ALLOCATION;
   if (tabId === 'screenExpenseLedger' || tabId === 'expenseLedger' || tabId === 'projectFinancialRecord') return SCREEN_CONFIGS.SCREEN_EXPENSE_LEDGER;
   if (tabId === 'screenCalendar' || tabId === 'attendanceMonth' || tabId === 'screenSchedule' || tabId === 'scheduleStaff' || tabId === 'scheduleMember' || tabId === 'attendanceDay' || tabId === 'screenAttendance' || tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
   if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
@@ -160,7 +162,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenWelfare') return SCREEN_CONFIGS.SCREEN_WELFARE;
   if (tabId === 'screenFacility') return SCREEN_CONFIGS.SCREEN_FACILITY;
   if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;
-  if (tabId === 'screenWage') return SCREEN_CONFIGS.SCREEN_WAGE;
+  if (tabId === 'screenWage' || tabId === 'baseWage' || tabId === 'allowance' || tabId === 'deduction' || tabId === 'closingDate') return SCREEN_CONFIGS.SCREEN_WAGE;
   if (tabId === 'screenReserve') return SCREEN_CONFIGS.SCREEN_RESERVE;
   if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_COMPOSITION;
 

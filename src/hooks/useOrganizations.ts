@@ -6,6 +6,8 @@ export type OrganizationItem = {
   name: string;
   representative_name: string;
   corporate_number: string;
+  fiscal_year_closing_month: number;
+  fiscal_year_closing_day: number;
   valid_from: string;
   valid_to: string | null;
   postal_code_prefix: string;
@@ -81,6 +83,8 @@ export function useOrganizations() {
           name: o.name,
           representative_name: o.representative_name || '',
           corporate_number: o.corporate_number || '',
+          fiscal_year_closing_month: o.fiscal_year_closing_month ?? 3,
+          fiscal_year_closing_day: o.fiscal_year_closing_day ?? 31,
           valid_from: o.valid_from || '2020-04-01',
           valid_to: o.valid_to || '',
           postal_code_prefix: addr.postal_code_prefix || '',
@@ -112,6 +116,8 @@ export function useOrganizations() {
           name: item.name,
           representative_name: item.representative_name || null,
           corporate_number: item.corporate_number || null,
+          fiscal_year_closing_month: Number(item.fiscal_year_closing_month) || 3,
+          fiscal_year_closing_day: Number(item.fiscal_year_closing_day) || 31,
           valid_from: item.valid_from || '2020-04-01',
           valid_to: item.valid_to || null,
         };

@@ -6,6 +6,7 @@ import { Tabs } from '../components/ui';
 import { BaseWagePage } from './BaseWagePage';
 import { AllowancePage } from './AllowancePage';
 import { DeductionPage } from './DeductionPage';
+import { WageClosingSettingPage } from './WageClosingSettingPage';
 
 export function ScreenWagePage() {
   const navContext = useNavigation();
@@ -20,6 +21,8 @@ export function ScreenWagePage() {
         return <AllowancePage />;
       case 'deduction':
         return <DeductionPage />;
+      case 'closingDate':
+        return <WageClosingSettingPage />;
       default:
         return <BaseWagePage />;
     }

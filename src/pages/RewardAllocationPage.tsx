@@ -1095,16 +1095,16 @@ export function RewardAllocationPage() {
                     {/* 取引時期カラム（金額の直後） */}
                     <td
                       className={
-                        !isConfirmed && !isSurplusRow
+                        !isConfirmed && !isSurplusRow && !rowItem.isAutoCalculated
                           ? 'bg-input-highlight'
                           : undefined
                       }
                       style={{
-                        textAlign: isSurplusRow ? 'center' : 'left',
-                        padding: isSurplusRow ? undefined : '0 8px',
+                        textAlign: isSurplusRow || rowItem.isAutoCalculated ? 'center' : 'left',
+                        padding: isSurplusRow || rowItem.isAutoCalculated ? undefined : '0 8px',
                       }}
                     >
-                      {isSurplusRow ? (
+                      {isSurplusRow || rowItem.isAutoCalculated ? (
                         <span style={{ color: 'var(--color-text-muted)' }}>-</span>
                       ) : rowItem.isLaborMember ? (
                         <Tooltip text="工賃支給日（基準日設定より自動算出・変更不可）">

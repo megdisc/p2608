@@ -82,7 +82,7 @@ function AppContent() {
               <ScreenReservePage />
             ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (
               <ScreenProjectPage />
-            ) : ['screenRewardAllocation', 'rewardAllocation', 'transactionPeriod'].includes(activeTab) ? (
+            ) : ['screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? (
               <ScreenRewardAllocationPage />
             ) : ['screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord'].includes(activeTab) ? (
               <ScreenExpenseLedgerPage />

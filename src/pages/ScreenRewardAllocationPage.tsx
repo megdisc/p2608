@@ -3,7 +3,6 @@ import { SCREEN_CONFIGS, getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 import { RewardAllocationPage } from './RewardAllocationPage';
-import { TransactionPeriodPage } from './TransactionPeriodPage';
 
 export function ScreenRewardAllocationPage() {
   const navContext = useNavigation();
@@ -18,19 +17,14 @@ export function ScreenRewardAllocationPage() {
           {screenConfig && (
             <Tabs
               tabs={screenConfig.tabs}
-              activeTab={navContext.activeTab === 'transactionPeriod' ? 'transactionPeriod' : 'rewardAllocation'}
+              activeTab={'rewardAllocation'}
               onChange={navContext.setActiveTab}
             />
           )}
         </div>
       </div>
 
-      {navContext.activeTab === 'transactionPeriod' ? (
-        <TransactionPeriodPage />
-      ) : (
-        <RewardAllocationPage />
-      )}
+      <RewardAllocationPage />
     </>
   );
 }
-

@@ -63,5 +63,4 @@ export * from './AttendanceDayPage';
 export * from './ScreenCalendarPage';
 export * from './ScreenSchedulePage';
 export * from './ScreenRewardAllocationPage';
-export * from './TransactionPeriodPage';
 export * from './ScreenWageSummaryPage';

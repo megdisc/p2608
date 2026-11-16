@@ -39,7 +39,7 @@ const getTabCategory = (tabId: string): string => {
     // 案件
     'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord',
     // 収益分配
-    'rewardAllocation', 'transactionPeriod',
+    'rewardAllocation',
     // 会計帳簿
     'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord',
     // 予定（カレンダー統合）

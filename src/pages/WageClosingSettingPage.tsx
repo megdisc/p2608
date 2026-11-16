@@ -6,7 +6,7 @@ import { useWageClosingSettings, type WageClosingSettingItem } from '../hooks';
 
 export function WageClosingSettingPage() {
   const { items, loading, fetchWageClosingSettings, batchSaveWageClosingSettings } = useWageClosingSettings();
-  const { selectedOfficeId } = useOffice();
+  const { selectedOfficeId, offices } = useOffice();
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -35,13 +35,6 @@ export function WageClosingSettingPage() {
   ];
 
   const columns: Column<WageClosingSettingItem>[] = [
-    {
-      key: 'office_name',
-      header: '事業所名',
-      sortable: false,
-      editable: false,
-      render: (item) => <strong>{item.office_name}</strong>,
-    },
     {
       key: 'closing_day',
       header: '工賃締め日',
@@ -101,9 +94,27 @@ export function WageClosingSettingPage() {
     },
   ];
 
-  const handleBatchSave = async (drafts: WageClosingSettingItem[]) => {
+  const effectiveOfficeId = (selectedOfficeId && selectedOfficeId !== 'all')
+    ? selectedOfficeId
+    : (offices[0]?.id || '');
+
+  const handleAdd = () => {
+    return {
+      id: `new_${Date.now()}`,
+      office_id: effectiveOfficeId,
+      office_name: '',
+      closing_day: 25,
+      payment_month_type: 'next',
+      payment_day: 10,
+      average_wage_calc_basis: 'payment_date',
+      valid_from: new Date().toISOString().slice(0, 10),
+      valid_to: null,
+    } as WageClosingSettingItem;
+  };
+
+  const handleBatchSave = async (drafts: WageClosingSettingItem[], deletedIds: string[]) => {
     try {
-      await batchSaveWageClosingSettings(drafts);
+      await batchSaveWageClosingSettings(drafts, deletedIds);
       await fetchWageClosingSettings(selectedOfficeId);
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
@@ -112,19 +123,17 @@ export function WageClosingSettingPage() {
     }
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading && items.length === 0) return <div style={{ padding: '24px' }}>Loading...</div>;
 
   return (
     <DataPage
       title="基準日設定"
       data={items}
       columns={columns}
-      emptyMessage="事業所データがありません"
+      emptyMessage="基準日設定データがありません"
       onBatchSave={handleBatchSave}
-      hideDeleteColumn={true}
-      hideAddButton={true}
+      onAddRow={handleAdd}
       hideHeader={true}
     />
   );
 }
-

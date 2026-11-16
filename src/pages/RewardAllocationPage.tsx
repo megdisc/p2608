@@ -6,6 +6,7 @@ import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
 import { useBudgetPlanning } from '../hooks/useBudgetPlanning';
+import { useWageClosingSettings } from '../hooks';
 import { supabase } from '../lib';
 
 /**
@@ -148,6 +149,9 @@ export function RewardAllocationPage() {
   const { showAlert } = useAlert();
   const { selectedOfficeId } = useOffice();
 
+  const { items: closingSettings, fetchWageClosingSettings } = useWageClosingSettings();
+  const [transactionDateDrafts, setTransactionDateDrafts] = useState<Record<string, string>>({});
+
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
 
   const [financialDrafts, setFinancialDrafts] = useState<MonthlyFinancialRecord[]>([]);
@@ -197,12 +201,13 @@ export function RewardAllocationPage() {
     Promise.all([
       fetchProgressMasters(selectedOfficeId),
       fetchBudgetPlanning(selectedOfficeId),
-      fetchWageAndWorkRecords()
+      fetchWageAndWorkRecords(),
+      fetchWageClosingSettings(selectedOfficeId),
     ]).then(() => {
       fetchProgress(currentMonth);
       fetchFinancials(currentMonth, selectedOfficeId);
     }).catch(console.error);
-  }, [currentMonth, selectedOfficeId, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords]);
+  }, [currentMonth, selectedOfficeId, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords, fetchWageClosingSettings]);
 
   useEffect(() => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
@@ -290,6 +295,44 @@ export function RewardAllocationPage() {
     return confirmedMonths.includes(currentMonth);
   }, [confirmedMonths, currentMonth]);
 
+  // 工賃支給日の自動算出（労務費・利用者工賃用：変更不可）
+  const autoWagePaymentDate = useMemo(() => {
+    const currentSetting = (selectedOfficeId && selectedOfficeId !== 'all')
+      ? closingSettings.find(s => s.office_id === selectedOfficeId) || closingSettings[0]
+      : closingSettings[0];
+    return calcWagePaymentDate(currentMonth, currentSetting);
+  }, [currentMonth, closingSettings, selectedOfficeId]);
+
+  const handleDateChange = (
+    dateKey: string,
+    newDate: string,
+    projectId: string,
+    type: 'revenue' | 'expense' | 'reserve',
+    subject: string
+  ) => {
+    if (isConfirmed) return;
+    setTransactionDateDrafts(prev => ({
+      ...prev,
+      [dateKey]: newDate,
+    }));
+
+    setFinancialDrafts(prev => {
+      const existing = prev.find(f => f.project_id === projectId && f.type === type && f.subject === subject);
+      if (existing) {
+        return prev.map(f => f.id === existing.id ? { ...f, target_period: newDate } : f);
+      } else {
+        return [...prev, {
+          id: `TEMP-${Date.now()}-${Math.random()}`,
+          project_id: projectId,
+          type,
+          subject,
+          amount: 0,
+          target_period: newDate,
+          office_id: selectedOfficeId || null
+        }];
+      }
+    });
+  };
 
   const handleFinChange = (projectId: string, type: 'revenue' | 'expense' | 'reserve', subject: string, value: string | number) => {
     if (isConfirmed) return;
@@ -298,13 +341,16 @@ export function RewardAllocationPage() {
       if (existing) {
         return prev.map(f => f.id === existing.id ? { ...f, amount: Number(value) || 0 } : f);
       } else {
+        const dateKey = `${type}_${projectId}_${subject}`;
+        const targetDate = transactionDateDrafts[dateKey] || `${currentMonth}-01`;
         return [...prev, {
           id: `TEMP-${Date.now()}-${Math.random()}`,
           project_id: projectId,
           type,
           subject,
           amount: Number(value) || 0,
-          target_period: currentMonth
+          target_period: targetDate,
+          office_id: selectedOfficeId || null
         }];
       }
     });
@@ -325,10 +371,15 @@ export function RewardAllocationPage() {
       const orig = financials.find(o => o.id === f.id || (o.project_id === f.project_id && o.type === f.type && o.subject === f.subject));
       if (!orig) {
         if (f.amount > 0) return true;
+        if (f.target_period && f.target_period !== `${currentMonth}-01`) return true;
       } else {
         if (f.amount !== orig.amount) return true;
+        const origP = orig.target_period?.length === 7 ? `${orig.target_period}-01` : orig.target_period;
+        const curP = f.target_period?.length === 7 ? `${f.target_period}-01` : f.target_period;
+        if (curP !== origP) return true;
       }
     }
+    if (Object.keys(transactionDateDrafts).length > 0) return true;
     let savedAllocs: Record<string, number> = {};
     try {
       const savedStr = localStorage.getItem(`monthly_allocation_drafts_${currentMonth}`);
@@ -339,7 +390,7 @@ export function RewardAllocationPage() {
       if (val !== savedVal) return true;
     }
     return false;
-  }, [financialDrafts, financials, allocationDrafts, isConfirmed, currentMonth]);
+  }, [financialDrafts, financials, allocationDrafts, transactionDateDrafts, isConfirmed, currentMonth]);
 
   const isValidUuid = (str: any): boolean => {
     return typeof str === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -351,27 +402,29 @@ export function RewardAllocationPage() {
         f &&
         f.subject &&
         !isAutoCalculatedSubject(f.subject) &&
-        (isValidUuid(f.id) || Number(f.amount) > 0)
+        (isValidUuid(f.id) || Number(f.amount) > 0 || (f.target_period && f.target_period !== `${currentMonth}-01`))
       );
       await saveFinancials(upsertFin, []);
+
+      // 1-b. 材料費・経費の既存レコードで日付変更されたものを更新
+      for (const [dateKey, newDate] of Object.entries(transactionDateDrafts)) {
+        if (dateKey.startsWith('exp_nl_')) {
+          const parts = dateKey.split('_');
+          const expPid = parts[2];
+          const expSubj = parts.slice(3).join('_');
+          const matchingExpense = allExpenseRecords.find(r => r.project_id === expPid && (r.subject === expSubj || (expSubj === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER && r.subject === 'その他経費')));
+          if (matchingExpense && isValidUuid(matchingExpense.id)) {
+            await supabase
+              .from('financial_records')
+              .update({ target_period: newDate })
+              .eq('id', matchingExpense.id);
+          }
+        }
+      }
       
       // 2. 利用者インセンティブ実績 (incentive_records) への保存
       try {
-        let paymentDate = `${currentMonth}-10`;
-        try {
-          let cQuery = supabase.from('wage_closing_settings').select('*');
-          if (selectedOfficeId && selectedOfficeId !== 'all') {
-            cQuery = cQuery.eq('office_id', selectedOfficeId);
-          }
-          const { data: cData } = await cQuery.limit(1);
-          if (cData && cData.length > 0) {
-            paymentDate = calcWagePaymentDate(currentMonth, cData[0]);
-          } else {
-            paymentDate = calcWagePaymentDate(currentMonth);
-          }
-        } catch {
-          paymentDate = `${currentMonth}-10`;
-        }
+        const paymentDate = autoWagePaymentDate || `${currentMonth}-10`;
 
         const incentiveUpserts = progressRecords
           .filter(r => r.userId && !r.userId.startsWith('staff_'))
@@ -421,6 +474,7 @@ export function RewardAllocationPage() {
         console.warn('Re-fetch warning:', e);
       }
 
+      setTransactionDateDrafts({});
       showAlert(MESSAGES.SAVE_SUCCESS, 'success');
     } catch (err) {
       console.error('Error in handleBatchSave:', err);
@@ -430,6 +484,7 @@ export function RewardAllocationPage() {
 
   const handleCancel = () => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
+    setTransactionDateDrafts({});
     try {
       const savedStr = localStorage.getItem(`monthly_allocation_drafts_${currentMonth}`);
       if (savedStr) {
@@ -529,6 +584,7 @@ export function RewardAllocationPage() {
       { label: TABLE_COLUMNS.ACCOUNT_SUBJECT, width: '220px' },
       { label: TABLE_COLUMNS.SUMMARY, width: '160px' },
       { label: TABLE_COLUMNS.AMOUNT, width: '120px' },
+      { label: TABLE_COLUMNS.TRANSACTION_PERIOD, width: '140px' },
       { label: TABLE_COLUMNS.REMARKS, width: '300px' },
       { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
@@ -548,7 +604,8 @@ export function RewardAllocationPage() {
       return {
         subject: b.subject,
         billingDest: clientName,
-        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0)
+        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0),
+        target_period: fin?.target_period || null,
       };
     });
 
@@ -561,13 +618,17 @@ export function RewardAllocationPage() {
         amount = recs.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
       }
 
+      const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'expense' && (f.subject === subj || (subj === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER && f.subject === 'その他経費')));
+      const recPeriod = recs.length > 0 && recs[0].target_period ? recs[0].target_period : null;
+
       return {
         id: subj,
         subject: subj,
         payee: '',
         amount,
         type: 'non-labor',
-        isAutoCalculated: true
+        isAutoCalculated: true,
+        target_period: fin?.target_period || recPeriod,
       };
     });
 
@@ -734,7 +795,8 @@ export function RewardAllocationPage() {
       const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'reserve' && f.subject === b.subject);
       return {
         subject: b.subject,
-        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0)
+        amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0),
+        target_period: fin?.target_period || null,
       };
     });
 
@@ -816,7 +878,7 @@ export function RewardAllocationPage() {
         <table className="inventory-table">
           <MultiRowHeader rows={headerRows} sortConfig={sortConfig} onSort={handleSort} />
           {displayProjects.length === 0 ? (
-            <tbody><tr><td colSpan={9} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
+            <tbody><tr><td colSpan={10} className="empty-message">{MESSAGES.EMPTY_PROGRESS_RECORD}</td></tr></tbody>
           ) : (
             displayProjects.map(proj => {
               const sumRev = proj.revenues.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
@@ -834,11 +896,18 @@ export function RewardAllocationPage() {
                 expenseId?: string;
                 isLabor?: boolean;
                 isAutoCalculated?: boolean;
+                dateKey?: string;
+                transactionDate?: string;
+                isLaborMember?: boolean;
               };
 
               const items: FinRowItem[] = [];
 
               proj.revenues.forEach(rev => {
+                const dateKey = `rev_${proj.id}_${rev.subject}`;
+                const defaultDate = rev.target_period ? (rev.target_period.length === 7 ? `${rev.target_period}-01` : rev.target_period) : `${currentMonth}-01`;
+                const transactionDate = transactionDateDrafts[dateKey] || defaultDate;
+
                 items.push({
                   categoryType: 'revenue',
                   categoryLabel: WORDS_PROJECT.CATEGORY_REVENUE,
@@ -846,6 +915,9 @@ export function RewardAllocationPage() {
                   amount: rev.amount,
                   summary: formatSummaryDescription({ billingDest: rev.billingDest }),
                   remarks: '-',
+                  dateKey,
+                  transactionDate,
+                  isLaborMember: false,
                 });
               });
 
@@ -857,6 +929,21 @@ export function RewardAllocationPage() {
                   isStaff,
                 });
 
+                const isLaborMember = exp.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER;
+                const dateKey = isLaborMember
+                  ? `exp_member_${exp.id}`
+                  : exp.isLabor
+                    ? `exp_labor_${exp.id}`
+                    : `exp_nl_${proj.id}_${exp.subject}`;
+
+                let defaultDate = `${currentMonth}-01`;
+                if (isLaborMember) {
+                  defaultDate = autoWagePaymentDate;
+                } else if (exp.target_period) {
+                  defaultDate = exp.target_period.length === 7 ? `${exp.target_period}-01` : exp.target_period;
+                }
+                const transactionDate = isLaborMember ? autoWagePaymentDate : (transactionDateDrafts[dateKey] || defaultDate);
+
                 items.push({
                   categoryType: 'expense',
                   categoryLabel: WORDS_PROJECT.CATEGORY_EXPENSE,
@@ -867,10 +954,17 @@ export function RewardAllocationPage() {
                   expenseId: exp.id,
                   isLabor: exp.type === 'labor',
                   isAutoCalculated: exp.isAutoCalculated,
+                  dateKey,
+                  transactionDate,
+                  isLaborMember,
                 });
               });
 
               proj.reserves.forEach(res => {
+                const dateKey = `res_${proj.id}_${res.subject}`;
+                const defaultDate = res.target_period ? (res.target_period.length === 7 ? `${res.target_period}-01` : res.target_period) : `${currentMonth}-01`;
+                const transactionDate = transactionDateDrafts[dateKey] || defaultDate;
+
                 items.push({
                   categoryType: 'reserve',
                   categoryLabel: WORDS_PROJECT.CATEGORY_RESERVE,
@@ -878,6 +972,9 @@ export function RewardAllocationPage() {
                   amount: res.amount,
                   summary: '-',
                   remarks: '-',
+                  dateKey,
+                  transactionDate,
+                  isLaborMember: false,
                 });
               });
 
@@ -888,6 +985,9 @@ export function RewardAllocationPage() {
                 amount: totalSurplus,
                 summary: '-',
                 remarks: totalSurplus !== 0 ? WORDS_PROJECT.SURPLUS_ADJUST_HINT : '-',
+                dateKey: `surplus_${proj.id}`,
+                transactionDate: '-',
+                isLaborMember: false,
               });
 
               const totalRows = items.length;
@@ -990,6 +1090,46 @@ export function RewardAllocationPage() {
                         <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontVariantNumeric: 'tabular-nums' }}>
                           ¥{totalSurplus.toLocaleString()}
                         </strong>
+                      )}
+                    </td>
+                    {/* 取引時期カラム（金額の直後） */}
+                    <td style={{ textAlign: 'center' }}>
+                      {isSurplusRow ? (
+                        <span style={{ color: 'var(--color-text-muted)' }}>-</span>
+                      ) : rowItem.isLaborMember ? (
+                        <input
+                          type="date"
+                          disabled={true}
+                          value={autoWagePaymentDate}
+                          title="工賃支給日（基準日設定より自動算出・変更不可）"
+                          style={{
+                            border: '1px solid var(--color-border, #d1d5db)',
+                            borderRadius: '4px',
+                            padding: '2px 6px',
+                            fontSize: 'var(--text-body, 13px)',
+                            backgroundColor: 'var(--color-bg-subtle, #f3f4f6)',
+                            color: 'var(--color-text-muted, #6b7280)',
+                            cursor: 'not-allowed',
+                            width: '130px',
+                          }}
+                        />
+                      ) : (
+                        <input
+                          type="date"
+                          disabled={isConfirmed}
+                          value={rowItem.transactionDate || `${currentMonth}-01`}
+                          onChange={e => handleDateChange(rowItem.dateKey || '', e.target.value, proj.id, rowItem.categoryType as any, rowItem.subject)}
+                          style={{
+                            border: '1px solid var(--color-border, #d1d5db)',
+                            borderRadius: '4px',
+                            padding: '2px 6px',
+                            fontSize: 'var(--text-body, 13px)',
+                            backgroundColor: isConfirmed ? 'var(--color-bg-subtle, #f3f4f6)' : '#ffffff',
+                            color: 'var(--color-text-main, #111827)',
+                            cursor: isConfirmed ? 'not-allowed' : 'pointer',
+                            width: '130px',
+                          }}
+                        />
                       )}
                     </td>
                     <td style={{ color: isSurplusRow && totalSurplus !== 0 ? 'var(--color-error)' : 'inherit' }}>

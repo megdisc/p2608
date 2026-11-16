@@ -110,7 +110,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
-            className={`nav-button ${['screenRewardAllocation', 'rewardAllocation', 'transactionPeriod'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('rewardAllocation')}
           >
             {PAGE_NAMES.SCREEN_REWARD_ALLOCATION}

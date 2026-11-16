@@ -21,23 +21,10 @@ export function useWageClosingSettings() {
     try {
       setLoading(true);
 
-      // 1. 全事業所または指定事業所を取得
-      let officeQuery = supabase
-        .from('offices')
-        .select('id, name, short_name')
-        .order('code', { ascending: true });
-
-      if (officeId && officeId !== 'all') {
-        officeQuery = officeQuery.eq('id', officeId);
-      }
-
-      const { data: officesData, error: officeError } = await officeQuery;
-      if (officeError) throw officeError;
-
-      // 2. 工賃基準日設定を取得
       let settingsQuery = supabase
         .from('wage_closing_settings')
-        .select('*');
+        .select('*, offices(id, name, short_name)')
+        .order('valid_from', { ascending: false });
 
       if (officeId && officeId !== 'all') {
         settingsQuery = settingsQuery.eq('office_id', officeId);
@@ -46,11 +33,6 @@ export function useWageClosingSettings() {
       const { data: settingsData, error: settingsError } = await settingsQuery;
       if (settingsError) throw settingsError;
 
-      interface OfficeRow {
-        id: string;
-        name: string;
-        short_name: string | null;
-      }
       interface SettingRow {
         id: string;
         office_id: string;
@@ -60,36 +42,34 @@ export function useWageClosingSettings() {
         average_wage_calc_basis: 'closing_date' | 'payment_date';
         valid_from: string;
         valid_to: string | null;
+        offices?: { id: string; name: string; short_name: string | null } | null;
       }
 
-      const formatted: WageClosingSettingItem[] = ((officesData || []) as OfficeRow[]).map(office => {
-        const existing = ((settingsData || []) as SettingRow[]).find(s => s.office_id === office.id);
-        if (existing) {
-          return {
-            id: existing.id,
-            office_id: office.id,
-            office_name: office.short_name || office.name,
-            closing_day: Number(existing.closing_day) || 25,
-            payment_month_type: existing.payment_month_type || 'next',
-            payment_day: Number(existing.payment_day) || 10,
-            average_wage_calc_basis: existing.average_wage_calc_basis || 'payment_date',
-            valid_from: existing.valid_from || '2024-04-01',
-            valid_to: existing.valid_to || null,
-          };
-        }
+      const formatted: WageClosingSettingItem[] = ((settingsData || []) as SettingRow[]).map(s => ({
+        id: s.id,
+        office_id: s.office_id,
+        office_name: s.offices?.short_name || s.offices?.name || '',
+        closing_day: Number(s.closing_day) || 25,
+        payment_month_type: s.payment_month_type || 'next',
+        payment_day: Number(s.payment_day) || 10,
+        average_wage_calc_basis: s.average_wage_calc_basis || 'payment_date',
+        valid_from: s.valid_from || '2024-04-01',
+        valid_to: s.valid_to || null,
+      }));
 
-        return {
-          id: `TEMP-${office.id}`,
-          office_id: office.id,
-          office_name: office.short_name || office.name,
+      if (formatted.length === 0 && officeId && officeId !== 'all') {
+        formatted.push({
+          id: `TEMP-${officeId}`,
+          office_id: officeId,
+          office_name: '',
           closing_day: 25,
           payment_month_type: 'next',
           payment_day: 10,
           average_wage_calc_basis: 'payment_date',
           valid_from: '2024-04-01',
           valid_to: null,
-        };
-      });
+        });
+      }
 
       setItems(formatted);
     } catch (err) {
@@ -100,26 +80,44 @@ export function useWageClosingSettings() {
     }
   }, []);
 
-  const batchSaveWageClosingSettings = async (drafts: WageClosingSettingItem[]) => {
+  const batchSaveWageClosingSettings = async (drafts: WageClosingSettingItem[], deletedIds: string[] = []) => {
     try {
       setLoading(true);
 
-      const upserts = drafts.map(item => ({
-        ...(item.id.startsWith('TEMP-') ? {} : { id: item.id }),
-        office_id: item.office_id,
-        closing_day: Number(item.closing_day) || 25,
-        payment_month_type: item.payment_month_type || 'next',
-        payment_day: Number(item.payment_day) || 10,
-        average_wage_calc_basis: item.average_wage_calc_basis || 'payment_date',
-        valid_from: item.valid_from || '2024-04-01',
-        valid_to: item.valid_to || null,
-      }));
+      if (deletedIds && deletedIds.length > 0) {
+        const validDeleteIds = deletedIds.filter(id => !id.startsWith('new_') && !id.startsWith('TEMP-'));
+        if (validDeleteIds.length > 0) {
+          const { error: delError } = await supabase
+            .from('wage_closing_settings')
+            .delete()
+            .in('id', validDeleteIds);
+          if (delError) throw delError;
+        }
+      }
 
-      if (upserts.length > 0) {
-        const { error } = await supabase
-          .from('wage_closing_settings')
-          .upsert(upserts, { onConflict: 'office_id,valid_from' });
-        if (error) throw error;
+      for (const item of drafts) {
+        const payload = {
+          office_id: item.office_id,
+          closing_day: Number(item.closing_day) || 25,
+          payment_month_type: item.payment_month_type || 'next',
+          payment_day: Number(item.payment_day) || 10,
+          average_wage_calc_basis: item.average_wage_calc_basis || 'payment_date',
+          valid_from: item.valid_from || '2024-04-01',
+          valid_to: item.valid_to || null,
+        };
+
+        if (item.id.startsWith('new_') || item.id.startsWith('TEMP-')) {
+          const { error } = await supabase
+            .from('wage_closing_settings')
+            .insert(payload);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase
+            .from('wage_closing_settings')
+            .update(payload)
+            .eq('id', item.id);
+          if (error) throw error;
+        }
       }
     } catch (err) {
       console.error('Error saving wage closing settings:', err);

@@ -258,12 +258,27 @@ export function RewardAllocationPage() {
     } catch {}
   }, [selectedOfficeId]);
 
+  // 工賃支給日の自動算出（労務費・利用者工賃用：変更不可）
+  const autoWagePaymentDate = useMemo(() => {
+    const currentSetting = (selectedOfficeId && selectedOfficeId !== 'all')
+      ? closingSettings.find(s => s.office_id === selectedOfficeId) || closingSettings[0]
+      : closingSettings[0];
+    return calcWagePaymentDate(currentMonth, currentSetting);
+  }, [currentMonth, closingSettings, selectedOfficeId]);
+
   const fetchIncentiveRecords = useCallback(async () => {
     try {
+      const paymentDate = autoWagePaymentDate || `${currentMonth}-10`;
+      const [y, m] = currentMonth.split('-').map(Number);
+      const startOfMonth = `${currentMonth}-01`;
+      const lastDay = new Date(y, m, 0).getDate();
+      const endOfMonth = `${currentMonth}-${String(lastDay).padStart(2, '0')}`;
+
       const { data, error } = await supabase
         .from('incentive_records')
-        .select('member_id, task_id, allocation_amount')
-        .eq('target_period', currentMonth);
+        .select('member_id, task_id, allocation_amount, target_period')
+        .or(`target_period.eq.${paymentDate},and(target_period.gte.${startOfMonth},target_period.lte.${endOfMonth})`);
+
       if (!error && data && data.length > 0) {
         const dbMap = new Map<string, number>();
         data.forEach(d => {
@@ -284,7 +299,7 @@ export function RewardAllocationPage() {
     } catch (err) {
       console.warn('Error fetching incentive records:', err);
     }
-  }, [currentMonth, progressRecords]);
+  }, [currentMonth, autoWagePaymentDate, progressRecords]);
 
   useEffect(() => {
     fetchMonthlyConfirmations();
@@ -295,20 +310,13 @@ export function RewardAllocationPage() {
     return confirmedMonths.includes(currentMonth);
   }, [confirmedMonths, currentMonth]);
 
-  // 工賃支給日の自動算出（労務費・利用者工賃用：変更不可）
-  const autoWagePaymentDate = useMemo(() => {
-    const currentSetting = (selectedOfficeId && selectedOfficeId !== 'all')
-      ? closingSettings.find(s => s.office_id === selectedOfficeId) || closingSettings[0]
-      : closingSettings[0];
-    return calcWagePaymentDate(currentMonth, currentSetting);
-  }, [currentMonth, closingSettings, selectedOfficeId]);
-
   const handleDateChange = (
     dateKey: string,
     newDate: string,
     projectId: string,
     type: 'revenue' | 'expense' | 'reserve',
-    subject: string
+    subject: string,
+    currentAmount?: number
   ) => {
     if (isConfirmed) return;
     setTransactionDateDrafts(prev => ({
@@ -326,7 +334,7 @@ export function RewardAllocationPage() {
           project_id: projectId,
           type,
           subject,
-          amount: 0,
+          amount: Number(currentAmount) || 0,
           target_period: newDate,
           office_id: selectedOfficeId || null
         }];
@@ -341,7 +349,8 @@ export function RewardAllocationPage() {
       if (existing) {
         return prev.map(f => f.id === existing.id ? { ...f, amount: Number(value) || 0 } : f);
       } else {
-        const dateKey = `${type}_${projectId}_${subject}`;
+        const prefix = type === 'revenue' ? 'rev' : type === 'reserve' ? 'res' : 'exp';
+        const dateKey = `${prefix}_${projectId}_${subject}`;
         const targetDate = transactionDateDrafts[dateKey] || `${currentMonth}-01`;
         return [...prev, {
           id: `TEMP-${Date.now()}-${Math.random()}`,
@@ -356,9 +365,37 @@ export function RewardAllocationPage() {
     });
   };
 
-  const handleAllocationChange = (id: string, value: string | number) => {
+  const handleAllocationChange = (
+    id: string,
+    value: string | number,
+    projectId?: string,
+    subject?: string,
+    dateKey?: string
+  ) => {
     if (isConfirmed) return;
-    setAllocationDrafts(prev => ({ ...prev, [id]: Number(value) || 0 }));
+    const numVal = Number(value) || 0;
+    setAllocationDrafts(prev => ({ ...prev, [id]: numVal }));
+
+    // 外注加工費または職員給与等労務費の場合は financialDrafts にも同期
+    if (projectId && subject && subject !== WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER) {
+      setFinancialDrafts(prev => {
+        const existing = prev.find(f => f.project_id === projectId && f.type === 'expense' && f.subject === subject);
+        const targetDate = (dateKey && transactionDateDrafts[dateKey]) || `${currentMonth}-01`;
+        if (existing) {
+          return prev.map(f => f.id === existing.id ? { ...f, amount: numVal } : f);
+        } else {
+          return [...prev, {
+            id: `TEMP-${Date.now()}-${Math.random()}`,
+            project_id: projectId,
+            type: 'expense',
+            subject,
+            amount: numVal,
+            target_period: targetDate,
+            office_id: selectedOfficeId || null
+          }];
+        }
+      });
+    }
   };
 
   const isAutoCalculatedSubject = (subject: string) => {
@@ -398,7 +435,68 @@ export function RewardAllocationPage() {
 
   const handleBatchSave = async () => {
     try {
-      const upsertFin = Object.values(financialDrafts).filter(f => 
+      // 1-a. 売上高・積立金・外注加工費・職員労務費の保存用ドラフトを構築
+      const finalFinDrafts: MonthlyFinancialRecord[] = [...financialDrafts];
+
+      displayProjects.forEach(proj => {
+        // 売上高
+        proj.revenues.forEach(rev => {
+          const exists = finalFinDrafts.find(f => f.project_id === proj.id && f.type === 'revenue' && f.subject === rev.subject);
+          const dateKey = `rev_${proj.id}_${rev.subject}`;
+          const targetDate = transactionDateDrafts[dateKey] || rev.target_period || `${currentMonth}-01`;
+          if (!exists && Number(rev.amount) > 0) {
+            finalFinDrafts.push({
+              id: `TEMP-${Date.now()}-${Math.random()}`,
+              project_id: proj.id,
+              type: 'revenue',
+              subject: rev.subject,
+              amount: Number(rev.amount) || 0,
+              target_period: targetDate,
+              office_id: selectedOfficeId || null
+            });
+          }
+        });
+
+        // 積立金
+        proj.reserves.forEach(res => {
+          const exists = finalFinDrafts.find(f => f.project_id === proj.id && f.type === 'reserve' && f.subject === res.subject);
+          const dateKey = `res_${proj.id}_${res.subject}`;
+          const targetDate = transactionDateDrafts[dateKey] || res.target_period || `${currentMonth}-01`;
+          if (!exists && Number(res.amount) > 0) {
+            finalFinDrafts.push({
+              id: `TEMP-${Date.now()}-${Math.random()}`,
+              project_id: proj.id,
+              type: 'reserve',
+              subject: res.subject,
+              amount: Number(res.amount) || 0,
+              target_period: targetDate,
+              office_id: selectedOfficeId || null
+            });
+          }
+        });
+
+        // 支出のうち、外注加工費と職員等労務費
+        proj.expenses.forEach(exp => {
+          if (!exp.isLaborMember && !exp.isAutoCalculated && (exp.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE || exp.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER)) {
+            const exists = finalFinDrafts.find(f => f.project_id === proj.id && f.type === 'expense' && f.subject === exp.subject);
+            const dateKey = `exp_labor_${exp.id}`;
+            const targetDate = transactionDateDrafts[dateKey] || exp.target_period || `${currentMonth}-01`;
+            if (!exists && Number(exp.amount) > 0) {
+              finalFinDrafts.push({
+                id: `TEMP-${Date.now()}-${Math.random()}`,
+                project_id: proj.id,
+                type: 'expense',
+                subject: exp.subject,
+                amount: Number(exp.amount) || 0,
+                target_period: targetDate,
+                office_id: selectedOfficeId || null
+              });
+            }
+          }
+        });
+      });
+
+      const upsertFin = finalFinDrafts.filter(f => 
         f &&
         f.subject &&
         !isAutoCalculatedSubject(f.subject) &&
@@ -1067,7 +1165,7 @@ export function RewardAllocationPage() {
                           <CurrencyInput
                             disabled={isConfirmed}
                             value={rowItem.amount}
-                            onChange={val => handleAllocationChange(rowItem.expenseId || '', val)}
+                            onChange={val => handleAllocationChange(rowItem.expenseId || '', val, proj.id, rowItem.subject, rowItem.dateKey)}
                           />
                         ) : rowItem.isAutoCalculated ? (
                           <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
@@ -1118,7 +1216,7 @@ export function RewardAllocationPage() {
                         <DateInput
                           disabled={isConfirmed}
                           value={rowItem.transactionDate || `${currentMonth}-01`}
-                          onChange={(newVal) => handleDateChange(rowItem.dateKey || '', newVal, proj.id, rowItem.categoryType as any, rowItem.subject)}
+                          onChange={(newVal) => handleDateChange(rowItem.dateKey || '', newVal, proj.id, rowItem.categoryType as any, rowItem.subject, rowItem.amount)}
                         />
                       )}
                     </td>

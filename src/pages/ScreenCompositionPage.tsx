@@ -34,24 +34,26 @@ const getTabCategory = (tabId: string): string => {
     'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'baseWageAssignment', 'skillEvaluation',
   ];
 
-  // 3. 日々の記録（案件、会計帳簿、カレンダー、予定、日報）
+  // 3. 日々の記録（案件、収益分配、会計帳簿、予定、日報、工賃・控除明細）
   const dailyRecordsTabIds = [
     // 案件
-    'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation',
+    'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord',
+    // 収益分配
+    'rewardAllocation',
     // 会計帳簿
     'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord',
-    // カレンダー
-    'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth',
-    // 予定
-    'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay',
+    // 予定（カレンダー統合）
+    'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay',
     // 日報
     'dailyWorkRecord', 'staffAttendanceRecord', 'calendarDailyReportDay', 'screenDailyWork', 'screenStaffDailyReport',
+    // 工賃・控除明細
+    'wageSummary',
   ];
 
   // 4. 集計結果（収支、ダッシュボード、システム構成（開発用））
   const reportsTabIds = [
     // 収支
-    'wageSummary', 'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary',
+    'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary',
     // ダッシュボード
     'dashboard',
     // システム構成

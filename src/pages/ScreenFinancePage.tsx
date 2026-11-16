@@ -1,17 +1,15 @@
-
 import { PAGE_NAMES } from '../constants';
 import { getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 import { FinancialSummaryPage } from './FinancialSummaryPage';
-import { WageSummaryPage } from './WageSummaryPage';
 import { ProjectFinancialSummaryPage } from './ProjectFinancialSummaryPage';
 import { AverageWagePage } from './AverageWagePage';
 
 export function ScreenFinancePage() {
   const navContext = useNavigation();
-  const currentTab = (navContext.activeTab === 'screenFinance' || navContext.activeTab === 'financialRecord')
-    ? 'wageSummary'
+  const currentTab = (navContext.activeTab === 'screenFinance' || navContext.activeTab === 'financialRecord' || navContext.activeTab === 'wageSummary')
+    ? 'averageWage'
     : navContext.activeTab;
   const screenConfig = getScreenConfigForTab(currentTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_FINANCE;
@@ -27,16 +25,14 @@ export function ScreenFinancePage() {
         </div>
       </div>
       
-      {currentTab === 'averageWage' ? (
-        <AverageWagePage />
-      ) : currentTab === 'projectFinancialSummary' ? (
+      {currentTab === 'projectFinancialSummary' ? (
         <ProjectFinancialSummaryPage />
       ) : currentTab === 'welfareFinancialSummary' ? (
         <FinancialSummaryPage activityCategory="welfare" />
       ) : currentTab === 'financialSummary' ? (
         <FinancialSummaryPage activityCategory="production" />
       ) : (
-        <WageSummaryPage />
+        <AverageWagePage />
       )}
     </>
   );

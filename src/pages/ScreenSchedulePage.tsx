@@ -3,30 +3,48 @@ import { PAGE_NAMES } from '../constants';
 import { SCREEN_CONFIGS, getScreenConfigForTab } from '../config';
 import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
-import { getCurrentJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly, getCurrentJSTMonth } from '../utils';
 import { AttendanceDayPage } from './AttendanceDayPage';
+import { AttendanceMonthPage } from './AttendanceMonthPage';
 
 export function ScreenSchedulePage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_SCHEDULE;
   const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_SCHEDULE || '予定';
 
-  // 画面表示時のデフォルト表示タブは職員タブとする
+  // 画面表示時のデフォルト表示タブは利用者タブとする
   useEffect(() => {
-    if (navContext.activeTab === 'screenSchedule' || navContext.activeTab === 'attendanceDay') {
-      navContext.setActiveTab('scheduleStaff');
+    if (
+      navContext.activeTab === 'screenSchedule' ||
+      navContext.activeTab === 'screenCalendar' ||
+      navContext.activeTab === 'attendanceDay'
+    ) {
+      navContext.setActiveTab('scheduleMember');
     }
   }, [navContext]);
 
   // 日付の状態管理（デフォルトは本日）
   const [currentDate, setCurrentDate] = useState(() => getCurrentJSTDateOnly());
+  // 年月の状態管理（デフォルトは今月）
+  const [currentMonth, setCurrentMonth] = useState(() => getCurrentJSTMonth());
 
   const handleDateChange = useCallback((date: string) => {
     setCurrentDate(date);
   }, []);
 
-  const activeTab = navContext.activeTab === 'scheduleMember' ? 'scheduleMember' : 'scheduleStaff';
-  const targetType = activeTab === 'scheduleMember' ? 'member' : 'staff';
+  // カレンダーの日付行クリックで日報画面へ遷移
+  const handleSelectDateFromCalendar = useCallback(
+    (_date: string) => {
+      navContext.setActiveTab('dailyWorkRecord');
+    },
+    [navContext]
+  );
+
+  const activeTab = navContext.activeTab === 'attendanceMonth'
+    ? 'attendanceMonth'
+    : navContext.activeTab === 'scheduleStaff'
+    ? 'scheduleStaff'
+    : 'scheduleMember';
 
   return (
     <>
@@ -43,13 +61,27 @@ export function ScreenSchedulePage() {
         </div>
       </div>
 
-      <AttendanceDayPage
-        key={targetType}
-        targetType={targetType}
-        currentDate={currentDate}
-        onDateChange={handleDateChange}
-      />
+      {activeTab === 'attendanceMonth' ? (
+        <AttendanceMonthPage
+          currentMonth={currentMonth}
+          onMonthChange={setCurrentMonth}
+          onSelectDate={handleSelectDateFromCalendar}
+        />
+      ) : activeTab === 'scheduleStaff' ? (
+        <AttendanceDayPage
+          key="staff"
+          targetType="staff"
+          currentDate={currentDate}
+          onDateChange={handleDateChange}
+        />
+      ) : (
+        <AttendanceDayPage
+          key="member"
+          targetType="member"
+          currentDate={currentDate}
+          onDateChange={handleDateChange}
+        />
+      )}
     </>
   );
 }
-

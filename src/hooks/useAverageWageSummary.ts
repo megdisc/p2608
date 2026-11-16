@@ -32,12 +32,12 @@ export function useAverageWageSummary(officeId?: string) {
     try {
       setLoading(true);
 
-      let workQuery = supabase.from('daily_work_records').select('target_period, member_id, work_time, office_id');
+      let workQuery = supabase.from('member_work_records').select('target_period, member_id, work_time, office_id');
       let wageQuery = supabase.from('wage_snapshot').select('target_period, payment, wage_total, member_id, office_id');
       let finSnapQuery = supabase.from('financial_snapshot').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
       let finRecQuery = supabase.from('financial_records').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
 
-      if (officeId) {
+      if (officeId && officeId !== 'all') {
         workQuery = workQuery.eq('office_id', officeId);
         wageQuery = wageQuery.eq('office_id', officeId);
         finSnapQuery = finSnapQuery.eq('office_id', officeId);

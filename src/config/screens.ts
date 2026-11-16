@@ -87,6 +87,11 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'budgetPlanning', label: PAGE_NAMES.BUDGET_PLANNING },
       { id: 'assigneeAllocation', label: PAGE_NAMES.ASSIGNEE_ALLOCATION },
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
+    ],
+  },
+  SCREEN_REWARD_ALLOCATION: {
+    screenName: PAGE_NAMES.SCREEN_REWARD_ALLOCATION,
+    tabs: [
       { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
@@ -96,15 +101,10 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'expenseLedger', label: PAGE_NAMES.EXPENSE_LEDGER },
     ],
   },
-  SCREEN_CALENDAR: {
-    screenName: PAGE_NAMES.SCREEN_CALENDAR,
-    tabs: [
-      { id: 'attendanceMonth', label: PAGE_NAMES.TAB_CALENDAR },
-    ],
-  },
   SCREEN_SCHEDULE: {
     screenName: PAGE_NAMES.SCREEN_SCHEDULE,
     tabs: [
+      { id: 'attendanceMonth', label: PAGE_NAMES.TAB_CALENDAR },
       { id: 'scheduleStaff', label: PAGE_NAMES.TAB_STAFF },
       { id: 'scheduleMember', label: PAGE_NAMES.TAB_MEMBER },
     ],
@@ -116,10 +116,15 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'dailyWorkRecord', label: PAGE_NAMES.TAB_MEMBER },
     ],
   },
+  SCREEN_WAGE_SUMMARY: {
+    screenName: PAGE_NAMES.SCREEN_WAGE_SUMMARY,
+    tabs: [
+      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
+    ],
+  },
   SCREEN_FINANCE: {
     screenName: PAGE_NAMES.SCREEN_FINANCE,
     tabs: [
-      { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
       { id: 'averageWage', label: PAGE_NAMES.AVERAGE_WAGE_SUMMARY },
       { id: 'projectFinancialSummary', label: PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY },
       { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
@@ -142,14 +147,13 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 };
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
-  if (tabId === 'screenCalendar' || tabId === 'attendanceMonth') return SCREEN_CONFIGS.SCREEN_CALENDAR;
-  if (tabId === 'screenSchedule' || tabId === 'attendanceDay' || tabId === 'scheduleStaff' || tabId === 'scheduleMember') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
-  if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
-  if (tabId === 'screenAttendance') return SCREEN_CONFIGS.SCREEN_CALENDAR;
-  if (tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_CALENDAR;
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
+  if (tabId === 'screenRewardAllocation' || tabId === 'rewardAllocation') return SCREEN_CONFIGS.SCREEN_REWARD_ALLOCATION;
   if (tabId === 'screenExpenseLedger' || tabId === 'expenseLedger' || tabId === 'projectFinancialRecord') return SCREEN_CONFIGS.SCREEN_EXPENSE_LEDGER;
-  if (tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_FINANCE;
+  if (tabId === 'screenCalendar' || tabId === 'attendanceMonth' || tabId === 'screenSchedule' || tabId === 'scheduleStaff' || tabId === 'scheduleMember' || tabId === 'attendanceDay' || tabId === 'screenAttendance' || tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
+  if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
+  if (tabId === 'screenWageSummary' || tabId === 'wageSummary') return SCREEN_CONFIGS.SCREEN_WAGE_SUMMARY;
+  if (tabId === 'screenFinance' || tabId === 'averageWage' || tabId === 'financialRecord' || tabId === 'financialSummary' || tabId === 'projectFinancialSummary' || tabId === 'welfareFinancialSummary') return SCREEN_CONFIGS.SCREEN_FINANCE;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
   if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;

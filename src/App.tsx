@@ -16,8 +16,9 @@ import {
   ScreenReservePage,
   ScreenExpenseLedgerPage,
   ScreenDailyReportPage,
-  ScreenCalendarPage,
   ScreenSchedulePage,
+  ScreenRewardAllocationPage,
+  ScreenWageSummaryPage,
   LoginPage,
   DashboardPage
 } from './pages';
@@ -59,9 +60,7 @@ function AppContent() {
           <ProjectAppLayout activeTab={activeTab} setActiveTab={setActiveTab}>
             {['dashboard'].includes(activeTab) ? (
               <DashboardPage />
-            ) : ['screenCalendar', 'calendarMonth', 'attendanceMonth'].includes(activeTab) ? (
-              <ScreenCalendarPage />
-            ) : ['screenSchedule', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenAttendance'].includes(activeTab) ? (
+            ) : ['screenSchedule', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenAttendance', 'screenCalendar', 'calendarMonth', 'attendanceMonth', 'screenCalendarDailyReport', 'calendarDailyReportCalendar', 'calendarDailyReportDay'].includes(activeTab) ? (
               <ScreenSchedulePage />
             ) : ['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? (
               <ScreenDailyReportPage />
@@ -81,11 +80,15 @@ function AppContent() {
               <ScreenWagePage />
             ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
               <ScreenReservePage />
-            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'rewardAllocation', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (
+            ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (
               <ScreenProjectPage />
+            ) : ['screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? (
+              <ScreenRewardAllocationPage />
             ) : ['screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord'].includes(activeTab) ? (
               <ScreenExpenseLedgerPage />
-            ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'wageSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
+            ) : ['screenWageSummary', 'wageSummary'].includes(activeTab) ? (
+              <ScreenWageSummaryPage />
+            ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
               <ScreenFinancePage />
             ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
               <ScreenCompositionPage />

@@ -7,7 +7,6 @@ import { ProjectPage } from './ProjectPage';
 import { BudgetPlanningPage } from './BudgetPlanningPage';
 import { AssigneeAllocationPage } from './AssigneeAllocationPage';
 import { ProgressRecordPage } from './ProgressRecordPage';
-import { RewardAllocationPage } from './RewardAllocationPage';
 
 export function ScreenProjectPage() {
   const navContext = useNavigation();
@@ -24,9 +23,6 @@ export function ScreenProjectPage() {
       case 'assigneeAllocation':
         return <AssigneeAllocationPage />;
       case 'progressRecord':
-        return <ProgressRecordPage />;
-      case 'rewardAllocation':
-        return <RewardAllocationPage />;
       default:
         return <ProgressRecordPage />;
     }

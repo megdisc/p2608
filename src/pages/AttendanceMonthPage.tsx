@@ -109,7 +109,7 @@ export function AttendanceMonthPage({
           .gte('target_date', startDateStr)
           .lte('target_date', endDateStr),
         supabase
-          .from('daily_work_confirmations')
+          .from('daily_closings')
           .select('target_period')
           .eq('is_confirmed', true)
           .gte('target_period', startDateStr)

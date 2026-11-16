@@ -33,7 +33,7 @@ export function useDailyConfirmation(currentDate?: string) {
   const fetchConfirmations = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('daily_work_confirmations')
+        .from('daily_closings')
         .select('target_period')
         .eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
@@ -63,7 +63,7 @@ export function useDailyConfirmation(currentDate?: string) {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').upsert(
+      await supabase.from('daily_closings').upsert(
         { target_period: date, is_confirmed: true, confirmed_at: new Date().toISOString() },
         { onConflict: 'target_period' }
       );
@@ -80,7 +80,7 @@ export function useDailyConfirmation(currentDate?: string) {
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').delete().eq('target_period', date);
+      await supabase.from('daily_closings').delete().eq('target_period', date);
     } catch (err) {
       console.error('Error unconfirming date:', err);
       throw err;

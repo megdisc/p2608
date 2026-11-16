@@ -754,7 +754,7 @@ export function useDailyWorkRecords(externalDate?: string, externalIsConfirmed?:
 
   const fetchConfirmations = useCallback(async () => {
     try {
-      const { data, error } = await supabase.from('daily_work_confirmations').select('target_period').eq('is_confirmed', true);
+      const { data, error } = await supabase.from('daily_closings').select('target_period').eq('is_confirmed', true);
       if (!error && data && data.length > 0) {
         const dbDates = data.map((d: any) => d.target_period);
         setConfirmedDates(prev => {
@@ -776,7 +776,7 @@ export function useDailyWorkRecords(externalDate?: string, externalIsConfirmed?:
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').upsert({ target_period: date, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'target_period' });
+      await supabase.from('daily_closings').upsert({ target_period: date, is_confirmed: true, confirmed_at: new Date().toISOString() }, { onConflict: 'target_period' });
     } catch (err) {
       console.error('Error confirming date:', err);
     }
@@ -789,7 +789,7 @@ export function useDailyWorkRecords(externalDate?: string, externalIsConfirmed?:
         localStorage.setItem('daily_work_confirmations', JSON.stringify(next));
         return next;
       });
-      await supabase.from('daily_work_confirmations').delete().eq('target_period', date);
+      await supabase.from('daily_closings').delete().eq('target_period', date);
     } catch (err) {
       console.error('Error unconfirming date:', err);
     }

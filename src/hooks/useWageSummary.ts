@@ -93,7 +93,7 @@ export function useWageSummary() {
         supabase.from('member_attendance_records').select('*').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`),
         supabase.from('allowances').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
         supabase.from('deductions').select('*').eq('is_deleted', false).order('sort_order', { ascending: true }),
-        supabase.from('daily_work_confirmations').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
+        supabase.from('daily_closings').select('target_period').gte('target_period', `${monthStr}-01`).lt('target_period', `${nextMonthStr}-01`).eq('is_confirmed', true),
         supabase.from('monthly_closings').select('target_period').eq('target_period', monthStr).eq('is_settlement_confirmed', true),
         supabase.from('incentive_records').select('*').eq('target_period', monthStr),
         supabase.from('wage_snapshot').select('*').eq('target_period', monthStr),
@@ -868,7 +868,7 @@ export function useWageSummary() {
                 await supabase.from('allowance_deduction_snapshot').insert(allAllowanceDeductionDetails);
               }
 
-              // インセンティブ明細スナップショット (incentive_snapshot) へ保存
+              // インセンティブスナップショット (incentive_snapshot) へ保存
               await supabase.from('incentive_snapshot').delete().in('summary_id', summaryIds);
               if (allIncentiveDetails.length > 0) {
                 await supabase.from('incentive_snapshot').insert(allIncentiveDetails);

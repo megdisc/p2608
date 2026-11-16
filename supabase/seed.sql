@@ -863,7 +863,7 @@ ON CONFLICT (id) DO UPDATE SET
   staff_role = EXCLUDED.staff_role,
   staff_role_id = EXCLUDED.staff_role_id;
 
--- 13. 作業実績データ (member_work_records) 2026年1月〜12月 各事業所
+-- 13. 利用者作業レコード (member_work_records) 2026年1月〜12月 各事業所
 INSERT INTO public.member_work_records (office_id, target_period, member_id, task_id, work_time, work_location_id) VALUES
 -- 事業所1 (WS未来)
 ('22222222-2222-2222-2222-222222222222', '2026-01-15', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 4, '73ab0c05-9915-4894-a083-6bccf7a66d2a'),
@@ -905,7 +905,7 @@ INSERT INTO public.member_work_records (office_id, target_period, member_id, tas
 ('44444444-4444-4444-4444-444444444444', '2026-06-16', 'c6666666-6666-6666-6666-666666666666', '44444444-1111-0000-0000-000000000006', 5, '0ff5f11e-b752-4b06-aaab-86984a67eec7')
 ON CONFLICT DO NOTHING;
 
--- 14. 月次工賃サマリー (wage_snapshot) 各事業所 2026年1月〜12月
+-- 14. 工賃・控除総額スナップショット (wage_snapshot) 各事業所 2026年1月〜12月
 INSERT INTO public.wage_snapshot (id, office_id, target_period, member_id, work_time, wage_rate, basic_wage, incentive_total, other_allowance_total, wage_total, service_fee_deduction, actual_expense_deduction, deduction_total, payment) VALUES
 -- WS未来
 ('a0000001-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', '2026-01', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 50, 100, 5000, 8000, 3000, 16000, 0, 200, 200, 15800),
@@ -1011,7 +1011,7 @@ INSERT INTO public.financial_snapshot (id, office_id, target_period, project_id,
 ('f3333333-4444-0628-a111-444444444444', '44444444-4444-4444-4444-444444444444', '2026-06-28', '44444444-0000-0000-0000-000000000006', NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'reserve', 'production', 'manufacturing', '設備等修繕維持積立金', 8000, '6月度PC機材修繕積立'),
 ON CONFLICT (id) DO NOTHING;
 
--- 15.1 収支実績 (financial_records) 各事業所 2026年1月〜12月（月次実績層）
+-- 15.1 収支レコード (financial_records) 各事業所 2026年1月〜12月（月次実績層）
 INSERT INTO public.financial_records (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks)
 SELECT id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks
 FROM public.financial_snapshot
@@ -1068,7 +1068,24 @@ ON CONFLICT (office_id, target_period) DO UPDATE SET
   financial_confirmed_at = EXCLUDED.financial_confirmed_at,
   financial_confirmed_by = EXCLUDED.financial_confirmed_by;
 
--- 17. インセンティブ実績 (incentive_records)
+-- 16.1 日次締め (daily_closings)
+INSERT INTO public.daily_closings (target_period, confirmed_at, confirmed_by, is_confirmed) VALUES
+('2026-06-15', '2026-06-15 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-06-16', '2026-06-16 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-06-17', '2026-06-17 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-06-29', '2026-06-29 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-06-30', '2026-06-30 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-10-15', '2026-10-15 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-10-16', '2026-10-16 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-10-19', '2026-10-19 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-10-20', '2026-10-20 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true),
+('2026-10-21', '2026-10-21 18:00:00+09', '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', true)
+ON CONFLICT (target_period) DO UPDATE SET
+  confirmed_at = EXCLUDED.confirmed_at,
+  confirmed_by = EXCLUDED.confirmed_by,
+  is_confirmed = EXCLUDED.is_confirmed;
+
+-- 17. インセンティブ配分レコード (incentive_records)
 -- WS未来 2026年10月精算案件のタスク別インセンティブ配分
 INSERT INTO public.incentive_records (id, target_period, member_id, task_id, allocation_amount) VALUES
 ('e1111111-2222-1001-a111-111111111111', '2026-10', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', 'aaceaea1-43df-42c1-bfc6-1794a4eb9e16', 90000),
@@ -1076,8 +1093,8 @@ INSERT INTO public.incentive_records (id, target_period, member_id, task_id, all
 ON CONFLICT (id) DO UPDATE SET
   allocation_amount = EXCLUDED.allocation_amount;
 
--- 18. インセンティブ明細 (incentive_snapshot)
--- 工賃サマリー(wage_snapshot)とタスクの紐付け明細
+-- 18. インセンティブスナップショット (incentive_snapshot)
+-- 工賃・控除総額スナップショット(wage_snapshot)とタスクの紐付け明細
 INSERT INTO public.incentive_snapshot (id, summary_id, task_id, allocation_amount) VALUES
 -- 2026年1月
 ('d1111111-2222-0101-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c581', 'e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a', 8000),
@@ -1099,7 +1116,7 @@ INSERT INTO public.incentive_snapshot (id, summary_id, task_id, allocation_amoun
 ON CONFLICT (id) DO UPDATE SET
   allocation_amount = EXCLUDED.allocation_amount;
 
--- 19. 加算手当・控除明細 (allowance_deduction_snapshot) 各事業所 2026年1月, 6月, 10月
+-- 19. 加算手当・実費控除スナップショット (allowance_deduction_snapshot) 各事業所 2026年1月, 6月, 10月
 INSERT INTO public.allowance_deduction_snapshot (id, summary_id, item_category, item_name, unit_price, quantity, amount) VALUES
 -- 加算手当: WS未来
 ('d2222222-2222-0101-a111-111111111111', 'a0000001-2222-42ea-800b-5e476066c581', 'allowance', '精勤手当', 3000, 1, 3000),
@@ -1140,7 +1157,7 @@ ON CONFLICT (id) DO UPDATE SET
   item_name = EXCLUDED.item_name,
   amount = EXCLUDED.amount;
 
--- 21. 利用者出欠・通所記録 (member_attendance_records) 2026年1月, 6月, 10月
+-- 21. 利用者出欠レコード (member_attendance_records) 2026年1月, 6月, 10月
 INSERT INTO public.member_attendance_records (office_id, target_period, member_id, status, start_time, end_time, break_minutes, service_hours, has_meal, is_absentee_supported, has_pickup, has_dropoff)
 SELECT 
   m.office_id,
@@ -1171,7 +1188,7 @@ CROSS JOIN (
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 ON CONFLICT DO NOTHING;
 
--- 22. 職員勤務実績 (staff_attendance_records) 2026年1月, 6月, 10月
+-- 22. 職員勤務レコード (staff_attendance_records) 2026年1月, 6月, 10月
 INSERT INTO public.staff_attendance_records (office_id, staff_id, work_date, start_time, end_time, break_minutes, actual_work_hours, assigned_role)
 -- 1. WS未来: 相澤翔太 (専従・サビ管)
 SELECT 

@@ -1030,7 +1030,7 @@ export function ScreenCompositionPage() {
       subCategory: '6.1. 職員の予定と実績',
       physicalName: 'staff_attendance_records',
       tableType: 'レコード',
-      logicalName: '職員勤務実績',
+      logicalName: '職員勤務レコード',
       description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種・実労働時間記録',
       status: 'modified',
       columns: [
@@ -1079,7 +1079,7 @@ export function ScreenCompositionPage() {
       subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'member_attendance_records',
       tableType: 'レコード',
-      logicalName: '利用者出欠実績',
+      logicalName: '利用者出欠レコード',
       description: '利用者の日々の出欠・通所・提供時間帯（開始/終了/休憩）・欠席連絡・加算判定（送迎・食事・訪問・施設外就労）記録',
       status: 'modified',
       columns: [
@@ -1110,7 +1110,7 @@ export function ScreenCompositionPage() {
       subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'member_work_records',
       tableType: 'レコード',
-      logicalName: '利用者作業実績',
+      logicalName: '利用者作業レコード',
       description: '利用者のタスクごとの日次作業時間・作業場所記録',
       status: 'modified',
       columns: [
@@ -1130,7 +1130,7 @@ export function ScreenCompositionPage() {
       subCategory: '6.2. 利用者の予定と実績',
       physicalName: 'allowance_deduction_records',
       tableType: 'レコード',
-      logicalName: '加算手当・控除実績',
+      logicalName: '加算手当・控除レコード',
       description: '日次発生の加算手当・控除記録（例: 送迎利用、資格手当、昼食利用、物品購入費等）',
       columns: [
         { name: 'id', desc: '手当・控除記録ID' },
@@ -1146,9 +1146,9 @@ export function ScreenCompositionPage() {
     {
       category: '6. 日次実績の記録',
       subCategory: '6.3. 確定',
-      physicalName: 'daily_record_closings',
+      physicalName: 'daily_closings',
       tableType: 'レコード',
-      logicalName: '日次実績確定',
+      logicalName: '日次締め',
       description: '作業日ごとの確定状態および確定履歴',
       columns: [
         { name: 'id', desc: '確定ID' },
@@ -1165,7 +1165,7 @@ export function ScreenCompositionPage() {
       subCategory: '7.1. 案件・一般収支',
       physicalName: 'financial_records',
       tableType: 'レコード',
-      logicalName: '収支実績',
+      logicalName: '収支レコード',
       description: '日々の出納、材料費購入、経費発生、売上請求などのUI直接入力による一次収支明細データ（※演算値・仮計上は保持しない）',
       columns: [
         { name: 'id', desc: '収支記録ID' },
@@ -1189,7 +1189,7 @@ export function ScreenCompositionPage() {
       subCategory: '7.1. 案件・一般収支',
       physicalName: 'incentive_records',
       tableType: 'レコード',
-      logicalName: 'インセンティブ配分実績',
+      logicalName: 'インセンティブ配分レコード',
       description: '案件タスクの成果・貢献度に応じた各利用者の月次インセンティブ配分決定記録（スタッフによる手動配分入力値）',
       columns: [
         { name: 'id', desc: '記録ID' },
@@ -1259,10 +1259,10 @@ export function ScreenCompositionPage() {
     },
     {
       category: '8. 集計結果の記録',
-      subCategory: '8.3. 工賃・控除スナップショット（工賃支給）',
+      subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'wage_snapshot',
       tableType: 'スナップショット',
-      logicalName: '工賃・控除スナップショット',
+      logicalName: '工賃・控除総額スナップショット',
       description: '月ごとの各利用者の総作業時間、工賃単価、基本工賃、工賃合計、各種控除、および差引支給額（手取振込額）の確定サマリ（親テーブル）',
       status: 'modified',
       columns: [
@@ -1286,15 +1286,15 @@ export function ScreenCompositionPage() {
     },
     {
       category: '8. 集計結果の記録',
-      subCategory: '8.3. 工賃・控除スナップショット（工賃支給）',
+      subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'incentive_snapshot',
       tableType: 'スナップショット',
-      logicalName: 'インセンティブ明細スナップショット',
+      logicalName: 'インセンティブスナップショット',
       description: '工賃確定時点の案件・タスク別インセンティブ配分確定内訳スナップショット（子明細）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID' },
-        { name: 'summary_id', desc: '工賃・控除スナップショットID（FK -> wage_snapshot.id）' },
+        { name: 'summary_id', desc: '工賃・控除総額スナップショットID（FK -> wage_snapshot.id）' },
         { name: 'task_id', desc: 'タスクID' },
         { name: 'allocation_amount', desc: '分配金額' },
         { name: 'created_at', desc: '作成日時' },
@@ -1303,15 +1303,15 @@ export function ScreenCompositionPage() {
     },
     {
       category: '8. 集計結果の記録',
-      subCategory: '8.3. 工賃・控除スナップショット（工賃支給）',
+      subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'allowance_deduction_snapshot',
       tableType: 'スナップショット',
-      logicalName: '加算手当・実費控除明細スナップショット',
+      logicalName: '加算手当・実費控除スナップショット',
       description: '工賃確定時点の加算手当項目および実費控除（食事代・送迎代等）の確定内訳スナップショット（子明細）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '明細ID' },
-        { name: 'summary_id', desc: '工賃・控除スナップショットID（FK -> wage_snapshot.id）' },
+        { name: 'summary_id', desc: '工賃・控除総額スナップショットID（FK -> wage_snapshot.id）' },
         { name: 'item_id', desc: '項目ID（FK -> allowance_deduction_items.id）' },
         { name: 'item_category', desc: '項目区分（allowance: 加算手当, deduction: 実費控除）' },
         { name: 'item_name', desc: '項目名（手当名または控除名）' },

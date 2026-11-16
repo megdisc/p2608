@@ -118,7 +118,7 @@ export function DashboardPage() {
       // 1. 通知判定（前日の日報確定未処理チェック）
       const yesterdayStr = getYesterdayString(todayDateStr);
       const { data: yesterdayConf } = await supabase
-        .from('daily_work_confirmations')
+        .from('daily_closings')
         .select('target_period, is_confirmed')
         .eq('target_period', yesterdayStr);
 

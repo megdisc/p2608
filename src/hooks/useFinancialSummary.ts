@@ -60,7 +60,7 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         .gte('target_period', `${year}-01-01`)
         .lte('target_period', `${year}-12-31`);
 
-      // 4. 工賃サマリスナップショットクエリ（サービス利用料・実費控除のバックアップ集計用）
+      // 4. 工賃・控除総額スナップショットクエリ（サービス利用料・実費控除のバックアップ集計用）
       let wageQuery = supabase
         .from('wage_snapshot')
         .select('target_period, service_fee_copayment, service_fee_deduction, actual_expense_deduction, deduction_total, office_id')

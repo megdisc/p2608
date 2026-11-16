@@ -516,6 +516,19 @@ export type AllowanceDeductionDetailTableItem = {
 export type AllowanceDetailTableItem = AllowanceDeductionDetailTableItem;
 export type DeductionDetailTableItem = AllowanceDeductionDetailTableItem;
 
+// 6. 日次実績の記録
+export type DailyClosingTableItem = {
+  id?: string;
+  target_period: string; // YYYY-MM-DD
+  confirmed_at: string;
+  confirmed_by?: string | null;
+  is_confirmed: boolean;
+  created_at?: string;
+  updated_at?: string;
+};
+export type DailyRecordClosingTableItem = DailyClosingTableItem;
+export type DailyWorkConfirmationTableItem = DailyClosingTableItem;
+
 // 7. 月次実績の記録
 export type FinancialRecordTableItem = {
   id?: string;
@@ -530,6 +543,16 @@ export type FinancialRecordTableItem = {
   subject: string;
   amount: number;
   remarks?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type IncentiveRecordTableItem = {
+  id?: string;
+  target_period: string; // YYYY-MM
+  member_id: string;
+  task_id: string;
+  allocation_amount: number;
   created_at?: string;
   updated_at?: string;
 };
@@ -574,6 +597,7 @@ export type ServiceBillingSnapshotTableItem = {
   updated_at?: string;
 };
 
+// 工賃・控除総額スナップショット
 export type WageSnapshotTableItem = {
   id?: string;
   office_id: string;
@@ -593,16 +617,19 @@ export type WageSnapshotTableItem = {
   updated_at?: string;
 };
 
+// インセンティブスナップショット
 export type IncentiveSnapshotTableItem = {
   id?: string;
-  summary_id: string; // FK -> wage_snapshot.id
+  summary_id: string; // FK -> wage_snapshot.id (工賃・控除総額スナップショット)
   task_id: string;
   allocation_amount: number;
   created_at?: string;
   updated_at?: string;
 };
 
+// 加算手当・実費控除スナップショット
 export type AllowanceDeductionSnapshotTableItem = AllowanceDeductionDetailTableItem;
+
 
 
 

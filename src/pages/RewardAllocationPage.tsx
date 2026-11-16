@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button, CurrencyInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
+import { Button, CurrencyInput, DateInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
 import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate } from '../utils';
 import { useAlert, useOffice } from '../contexts';
@@ -584,7 +584,7 @@ export function RewardAllocationPage() {
       { label: TABLE_COLUMNS.ACCOUNT_SUBJECT, width: '220px' },
       { label: TABLE_COLUMNS.SUMMARY, width: '160px' },
       { label: TABLE_COLUMNS.AMOUNT, width: '120px' },
-      { label: TABLE_COLUMNS.TRANSACTION_PERIOD, width: '140px' },
+      { label: TABLE_COLUMNS.TRANSACTION_PERIOD, width: '150px' },
       { label: TABLE_COLUMNS.REMARKS, width: '300px' },
       { label: TABLE_COLUMNS.RESTRICTION, width: '50px' },
     ]
@@ -1093,42 +1093,32 @@ export function RewardAllocationPage() {
                       )}
                     </td>
                     {/* 取引時期カラム（金額の直後） */}
-                    <td style={{ textAlign: 'center' }}>
+                    <td
+                      className={
+                        !isConfirmed && !isSurplusRow
+                          ? 'bg-input-highlight'
+                          : undefined
+                      }
+                      style={{
+                        textAlign: isSurplusRow ? 'center' : 'left',
+                        padding: isSurplusRow ? undefined : '0 8px',
+                      }}
+                    >
                       {isSurplusRow ? (
                         <span style={{ color: 'var(--color-text-muted)' }}>-</span>
                       ) : rowItem.isLaborMember ? (
-                        <input
-                          type="date"
-                          disabled={true}
-                          value={autoWagePaymentDate}
-                          title="工賃支給日（基準日設定より自動算出・変更不可）"
-                          style={{
-                            border: '1px solid var(--color-border, #d1d5db)',
-                            borderRadius: '4px',
-                            padding: '2px 6px',
-                            fontSize: 'var(--text-body, 13px)',
-                            backgroundColor: 'var(--color-bg-subtle, #f3f4f6)',
-                            color: 'var(--color-text-muted, #6b7280)',
-                            cursor: 'not-allowed',
-                            width: '130px',
-                          }}
-                        />
+                        <Tooltip text="工賃支給日（基準日設定より自動算出・変更不可）">
+                          <DateInput
+                            disabled={true}
+                            value={autoWagePaymentDate}
+                            onChange={() => {}}
+                          />
+                        </Tooltip>
                       ) : (
-                        <input
-                          type="date"
+                        <DateInput
                           disabled={isConfirmed}
                           value={rowItem.transactionDate || `${currentMonth}-01`}
-                          onChange={e => handleDateChange(rowItem.dateKey || '', e.target.value, proj.id, rowItem.categoryType as any, rowItem.subject)}
-                          style={{
-                            border: '1px solid var(--color-border, #d1d5db)',
-                            borderRadius: '4px',
-                            padding: '2px 6px',
-                            fontSize: 'var(--text-body, 13px)',
-                            backgroundColor: isConfirmed ? 'var(--color-bg-subtle, #f3f4f6)' : '#ffffff',
-                            color: 'var(--color-text-main, #111827)',
-                            cursor: isConfirmed ? 'not-allowed' : 'pointer',
-                            width: '130px',
-                          }}
+                          onChange={(newVal) => handleDateChange(rowItem.dateKey || '', newVal, proj.id, rowItem.categoryType as any, rowItem.subject)}
                         />
                       )}
                     </td>

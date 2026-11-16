@@ -47,6 +47,14 @@ BEGIN
 END $$;
 
 -- 2. テーブル名の改名（RENAME）
+-- 既存の同名VIEWが存在する場合は事前に削除
+DROP VIEW IF EXISTS public.financial_records CASCADE;
+DROP VIEW IF EXISTS public.financial_snapshot CASCADE;
+DROP VIEW IF EXISTS public.service_billing_snapshot CASCADE;
+DROP VIEW IF EXISTS public.wage_snapshot CASCADE;
+DROP VIEW IF EXISTS public.incentive_snapshot CASCADE;
+DROP VIEW IF EXISTS public.allowance_deduction_snapshot CASCADE;
+
 -- 2.1 general_financial_records -> financial_records
 ALTER TABLE IF EXISTS public.general_financial_records RENAME TO financial_records;
 

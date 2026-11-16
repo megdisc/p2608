@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { useAverageWageSummary } from '../hooks/useAverageWageSummary';
 import { MESSAGES } from '../constants';
 import { useOffice } from '../contexts';
@@ -56,7 +56,7 @@ export function AverageWagePage() {
               const isExpanded = !!expandedYears[annualRow.year];
 
               return (
-                <tbody key={annualRow.year} style={{ display: 'contents' }}>
+                <Fragment key={annualRow.year}>
                   {/* Annual Summary Row */}
                   <tr 
                     onClick={() => toggleYear(annualRow.year)}
@@ -121,7 +121,7 @@ export function AverageWagePage() {
                       </td>
                     </tr>
                   ))}
-                </tbody>
+                </Fragment>
               );
             })
           )}

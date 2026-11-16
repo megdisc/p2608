@@ -5,6 +5,7 @@
 -- ==============================================================================
 
 -- 1. daily_record_closings -> daily_closings への改名
+DROP VIEW IF EXISTS public.daily_closings CASCADE;
 ALTER TABLE IF EXISTS public.daily_record_closings RENAME TO daily_closings;
 
 -- 2. 全9テーブルの論理名 (COMMENT ON TABLE) の更新

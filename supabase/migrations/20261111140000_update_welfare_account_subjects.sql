@@ -18,33 +18,38 @@ UPDATE public.general_financial_snapshot_details
 SET subject = '実費控除'
 WHERE activity_category = 'welfare' AND subject = '控除';
 
--- 3. サービス利用料の初期スナップショットおよび実績データの投入
-INSERT INTO public.general_financial_snapshot_details (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
--- 事業所1 (WS未来): 1月, 6月, 10月
-('f1111111-2222-0128-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-01-28', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '1月度サービス利用料（自己負担）'),
-('f1111111-2222-0630-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '6月度サービス利用料（自己負担）'),
-('f1111111-2222-1028-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-10-28', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '10月度サービス利用料（自己負担）'),
+-- 3. サービス利用料の初期スナップショットおよび実績データの投入（事業所が存在する場合のみ）
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM public.offices WHERE id = '22222222-2222-2222-2222-222222222222') THEN
+        INSERT INTO public.general_financial_snapshot_details (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks) VALUES
+        -- 事業所1 (WS未来): 1月, 6月, 10月
+        ('f1111111-2222-0128-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-01-28', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '1月度サービス利用料（自己負担）'),
+        ('f1111111-2222-0630-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-06-30', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '6月度サービス利用料（自己負担）'),
+        ('f1111111-2222-1028-b111-333333333333', '22222222-2222-2222-2222-222222222222', '2026-10-28', NULL, NULL, '563bb18c-8d3b-44ca-8fec-1fb32a71c8aa', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 9300, '10月度サービス利用料（自己負担）'),
 
--- 事業所2 (未来ワークスあすか): 1月, 6月
-('f2222222-3333-0128-b111-333333333333', '33333333-3333-3333-3333-333333333333', '2026-01-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 6200, '1月度サービス利用料（自己負担）'),
-('f2222222-3333-0628-b111-333333333333', '33333333-3333-3333-3333-333333333333', '2026-06-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 6200, '6月度サービス利用料（自己負担）'),
+        -- 事業所2 (未来ワークスあすか): 1月, 6月
+        ('f2222222-3333-0128-b111-333333333333', '33333333-3333-3333-3333-333333333333', '2026-01-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 6200, '1月度サービス利用料（自己負担）'),
+        ('f2222222-3333-0628-b111-333333333333', '33333333-3333-3333-3333-333333333333', '2026-06-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 6200, '6月度サービス利用料（自己負担）'),
 
--- 事業所3 (未来オアシスガーデン): 1月, 6月
-('f3333333-4444-0128-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-01-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 12400, '1月度サービス利用料（自己負担）'),
-('f3333333-4444-0628-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-06-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 12400, '6月度サービス利用料（自己負担）')
-ON CONFLICT (id) DO UPDATE SET
-  subject = EXCLUDED.subject,
-  amount = EXCLUDED.amount,
-  remarks = EXCLUDED.remarks;
+        -- 事業所3 (未来オアシスガーデン): 1月, 6月
+        ('f3333333-4444-0128-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-01-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 12400, '1月度サービス利用料（自己負担）'),
+        ('f3333333-4444-0628-b111-333333333333', '44444444-4444-4444-4444-444444444444', '2026-06-28', NULL, NULL, '5ff5e55e-186f-43ce-84d2-aa751d8341b5', 'revenue', 'welfare', 'manufacturing', 'サービス利用料', 12400, '6月度サービス利用料（自己負担）')
+        ON CONFLICT (id) DO UPDATE SET
+          subject = EXCLUDED.subject,
+          amount = EXCLUDED.amount,
+          remarks = EXCLUDED.remarks;
 
-INSERT INTO public.general_financial_records (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks)
-SELECT id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks
-FROM public.general_financial_snapshot_details
-WHERE subject = 'サービス利用料'
-ON CONFLICT (id) DO UPDATE SET
-  subject = EXCLUDED.subject,
-  amount = EXCLUDED.amount,
-  remarks = EXCLUDED.remarks;
+        INSERT INTO public.general_financial_records (id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks)
+        SELECT id, office_id, target_period, project_id, client_id, recorded_by, type, activity_category, cost_category, subject, amount, remarks
+        FROM public.general_financial_snapshot_details
+        WHERE subject = 'サービス利用料'
+        ON CONFLICT (id) DO UPDATE SET
+          subject = EXCLUDED.subject,
+          amount = EXCLUDED.amount,
+          remarks = EXCLUDED.remarks;
+    END IF;
+END $$;
 
 -- 4. 受給者証の有効期限を2027年3月31日まで延長（2026年度通年対応）
 UPDATE public.member_recipient_certificates

@@ -106,7 +106,7 @@ export function useAverageWageSummary(officeId?: string) {
 
           // Total wage paid
           const monthWages = (wageRecords || []).filter(r => r.target_period === monthStr);
-          const wageSumFromRecord = monthWages.reduce((sum, r) => sum + (Number(r.payment || r.wage_total) || 0), 0);
+          const wageSumFromRecord = monthWages.reduce((sum, r) => sum + (Number(r.wage_total ?? r.payment) || 0), 0);
 
           const monthFins = (finRecords || []).filter(r => r.target_period && r.target_period.startsWith(monthStr));
           const memberWageFin = monthFins.find(r => r.subject && r.subject.includes('利用者工賃'));

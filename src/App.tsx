@@ -76,13 +76,13 @@ function AppContent() {
               <ScreenFacilityPage />
             ) : ['skillCategory', 'skill', 'skillLevel', 'screenSkill'].includes(activeTab) ? (
               <ScreenSkillPage />
-            ) : ['baseWage', 'allowance', 'deduction', 'screenWage'].includes(activeTab) ? (
+            ) : ['baseWage', 'allowance', 'deduction', 'closingDate', 'screenWage'].includes(activeTab) ? (
               <ScreenWagePage />
             ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
               <ScreenReservePage />
             ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (
               <ScreenProjectPage />
-            ) : ['screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? (
+            ) : ['screenRewardAllocation', 'rewardAllocation', 'transactionPeriod'].includes(activeTab) ? (
               <ScreenRewardAllocationPage />
             ) : ['screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord'].includes(activeTab) ? (
               <ScreenExpenseLedgerPage />

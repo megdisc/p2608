@@ -72,7 +72,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_SKILL}
           </button>
           <button 
-            className={`nav-button ${['screenWage', 'baseWage', 'allowance', 'deduction'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenWage', 'baseWage', 'allowance', 'deduction', 'closingDate'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('baseWage')}
           >
             {PAGE_NAMES.SCREEN_WAGE}
@@ -110,7 +110,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_PROJECT}
           </button>
           <button 
-            className={`nav-button ${['screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenRewardAllocation', 'rewardAllocation', 'transactionPeriod'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('rewardAllocation')}
           >
             {PAGE_NAMES.SCREEN_REWARD_ALLOCATION}

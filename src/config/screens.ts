@@ -45,6 +45,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'skillLevel', label: PAGE_NAMES.SKILL_LEVEL },
     ],
   },
+  SCREEN_SALARY: {
+    screenName: PAGE_NAMES.SCREEN_SALARY,
+    tabs: [
+      { id: 'salaryClosingDate', label: PAGE_NAMES.TAB_CLOSING_DATE },
+    ],
+  },
   SCREEN_WAGE: {
     screenName: PAGE_NAMES.SCREEN_WAGE,
     tabs: [
@@ -162,6 +168,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenFacility') return SCREEN_CONFIGS.SCREEN_FACILITY;
   if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;
   if (tabId === 'screenWage' || tabId === 'baseWage' || tabId === 'allowance' || tabId === 'deduction' || tabId === 'closingDate') return SCREEN_CONFIGS.SCREEN_WAGE;
+  if (tabId === 'screenSalary' || tabId === 'salaryClosingDate') return SCREEN_CONFIGS.SCREEN_SALARY;
   if (tabId === 'screenReserve') return SCREEN_CONFIGS.SCREEN_RESERVE;
   if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_COMPOSITION;
 

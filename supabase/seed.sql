@@ -418,6 +418,16 @@ ON CONFLICT (office_id, valid_from) DO UPDATE SET
   payment_day = EXCLUDED.payment_day,
   average_wage_calc_basis = EXCLUDED.average_wage_calc_basis;
 
+-- 4.06 給与基準日設定 (salary_closing_settings)
+INSERT INTO public.salary_closing_settings (id, office_id, closing_day, payment_month_type, payment_day, valid_from, valid_to) VALUES
+('d1111111-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', 20, 'next', 5, '2024-04-01', NULL),
+('d1111111-3333-42ea-800b-5e476066c581', '33333333-3333-3333-3333-333333333333', 99, 'next', 25, '2024-04-01', NULL),
+('d1111111-4444-42ea-800b-5e476066c581', '44444444-4444-4444-4444-444444444444', 15, 'current', 25, '2024-04-01', NULL)
+ON CONFLICT (office_id, valid_from) DO UPDATE SET
+  closing_day = EXCLUDED.closing_day,
+  payment_month_type = EXCLUDED.payment_month_type,
+  payment_day = EXCLUDED.payment_day;
+
 -- 4.1 積立金項目マスタ (reserve_items)
 INSERT INTO public.reserve_items (id, office_id, name, calc_type, fixed_amount, fixed_rate) VALUES
 ('77777777-7777-7777-7777-777777777777', '22222222-2222-2222-2222-222222222222', '工賃変動積立金', 'fixed_amount', 1000.00, 0.00),

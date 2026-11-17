@@ -35,5 +35,6 @@ export * from './useFinancialSummary';
 export * from './useProjectFinancialSummary';
 export * from './useReserveSettings';
 export * from './useWageClosingSettings';
+export * from './useSalaryClosingSettings';
 export * from './useRecipientCertificates';
 

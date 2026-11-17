@@ -13,6 +13,7 @@ import {
   ScreenFacilityPage,
   ScreenSkillPage,
   ScreenWagePage,
+  ScreenSalaryPage,
   ScreenReservePage,
   ScreenExpenseLedgerPage,
   ScreenDailyReportPage,
@@ -78,6 +79,8 @@ function AppContent() {
               <ScreenSkillPage />
             ) : ['baseWage', 'allowance', 'deduction', 'closingDate', 'screenWage'].includes(activeTab) ? (
               <ScreenWagePage />
+            ) : ['salaryClosingDate', 'screenSalary'].includes(activeTab) ? (
+              <ScreenSalaryPage />
             ) : ['reserveSetting', 'reserve', 'screenReserve'].includes(activeTab) ? (
               <ScreenReservePage />
             ) : ['project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord', 'assigneeSummary', 'screenProject'].includes(activeTab) ? (

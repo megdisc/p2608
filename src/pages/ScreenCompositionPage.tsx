@@ -20,6 +20,8 @@ const getTabCategory = (tabId: string): string => {
     'client',
     // スキル体系
     'skillCategory', 'skill', 'skillLevel',
+    // 給与体系（基準日）
+    'salaryClosingDate',
     // 工賃・控除体系
     'baseWage', 'allowance', 'deduction', 'closingDate',
     // 積立金体系
@@ -424,6 +426,26 @@ export function ScreenCompositionPage() {
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'salary_closing_settings',
+      tableType: '従属マスタ',
+      logicalName: '給与基準日設定',
+      description: '事業所の給与締め日、給与支給日のマスターデータ（給与体系画面の「基準日」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '設定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'closing_day', desc: '給与締め日（1〜31日、または99: 末日。勤務実績の月次集計締切日）', status: 'added' },
+        { name: 'payment_month_type', desc: '給与支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'payment_day', desc: '給与支給日（1〜31日、または99: 末日。給与費の取引計上基準日）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {

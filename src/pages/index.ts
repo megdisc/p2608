@@ -46,6 +46,8 @@ export * from './ScreenClientPage';
 export * from './ScreenSkillPage';
 export * from './ScreenWagePage';
 export * from './WageClosingSettingPage';
+export * from './ScreenSalaryPage';
+export * from './SalaryClosingSettingPage';
 export * from './ScreenReservePage';
 export * from './ReserveSettingPage';
 export * from './ScreenDailyWorkPage';

@@ -155,10 +155,15 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'reserveSummary', label: PAGE_NAMES.TAB_RESERVE_SUMMARY },
     ],
   },
-  SCREEN_COMPOSITION: {
-    screenName: PAGE_NAMES.SCREEN_COMPOSITION,
+  SCREEN_TAB_COMPOSITION: {
+    screenName: PAGE_NAMES.TAB_SCREEN_COMPOSITION,
     tabs: [
       { id: 'screenComposition', label: PAGE_NAMES.TAB_SCREEN_COMPOSITION },
+    ],
+  },
+  SCREEN_TABLE_COMPOSITION: {
+    screenName: PAGE_NAMES.TAB_TABLE_COMPOSITION,
+    tabs: [
       { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },
     ],
   }
@@ -193,7 +198,8 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenWage' || tabId === 'baseWage' || tabId === 'allowance' || tabId === 'deduction' || tabId === 'closingDate') return SCREEN_CONFIGS.SCREEN_WAGE;
   if (tabId === 'screenSalary' || tabId === 'salaryClosingDate') return SCREEN_CONFIGS.SCREEN_SALARY;
   if (tabId === 'screenReserve') return SCREEN_CONFIGS.SCREEN_RESERVE;
-  if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_COMPOSITION;
+  if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_TAB_COMPOSITION;
+  if (tabId === 'tableComposition') return SCREEN_CONFIGS.SCREEN_TABLE_COMPOSITION;
 
   for (const config of Object.values(SCREEN_CONFIGS)) {
     if (config.tabs.some(t => t.id === tabId)) {

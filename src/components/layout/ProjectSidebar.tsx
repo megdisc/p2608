@@ -55,6 +55,84 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         </div>
 
         <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.DAILY_RECORDS}</div>
+          <button 
+            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('progressRecord')}
+          >
+            {PAGE_NAMES.SCREEN_PROJECT}
+          </button>
+          <button 
+            className={`nav-button ${['screenAccounting', 'accounting', 'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord', 'screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('expenseLedger')}
+          >
+            {PAGE_NAMES.SCREEN_ACCOUNTING}
+          </button>
+          <button 
+            className={`nav-button ${['screenSchedule', 'attendanceMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenCalendar', 'calendarMonth', 'screenAttendance', 'screenCalendarDailyReport', 'calendarDailyReportCalendar', 'calendarDailyReportDay'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('scheduleMember')}
+          >
+            {PAGE_NAMES.SCREEN_SCHEDULE || '予定'}
+          </button>
+          <button 
+            className={`nav-button ${['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('dailyWorkRecord')}
+          >
+            {PAGE_NAMES.SCREEN_DAILY_REPORT || '日報'}
+          </button>
+          <button 
+            className={`nav-button ${['screenWageSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('wageSummary')}
+          >
+            {PAGE_NAMES.SCREEN_WAGE_SUMMARY}
+          </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.PEOPLE}</div>
+          <button 
+            className={`nav-button ${['screenUser', 'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'skillEvaluation', 'baseWageAssignment'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('projectUser')}
+          >
+            {PAGE_NAMES.SCREEN_USER}
+          </button>
+          <button 
+            className={`nav-button ${['screenStaff', 'staff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('staff')}
+          >
+            {PAGE_NAMES.SCREEN_STAFF}
+          </button>
+        </div>
+
+        <div className="nav-section">
+          <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
+          <button 
+            className={`nav-button ${['screenAverageWage', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('averageWage')}
+          >
+            {PAGE_NAMES.SCREEN_AVERAGE_WAGE}
+          </button>
+          <button 
+            className={`nav-button ${['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('financialSummary')}
+          >
+            {PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS}
+          </button>
+          <button 
+            className={`nav-button ${['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('welfareFinancialSummary')}
+          >
+            {PAGE_NAMES.SCREEN_WELFARE_BUSINESS}
+          </button>
+          <button 
+            className={`nav-button ${['screenReserveReport', 'reserveSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('reserveSummary')}
+          >
+            {PAGE_NAMES.SCREEN_RESERVE_REPORT}
+          </button>
+        </div>
+
+        <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.SETTINGS}</div>
           <button 
             className={`nav-button ${['screenWelfare', 'serviceType', 'qualification', 'staffRole', 'rewardItem', 'regionalGrade'].includes(activeTab) ? 'active' : ''}`}
@@ -101,90 +179,18 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         </div>
 
         <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.PEOPLE}</div>
-          <button 
-            className={`nav-button ${['screenUser', 'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'skillEvaluation', 'baseWageAssignment'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('projectUser')}
-          >
-            {PAGE_NAMES.SCREEN_USER}
-          </button>
-          <button 
-            className={`nav-button ${['screenStaff', 'staff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('staff')}
-          >
-            {PAGE_NAMES.SCREEN_STAFF}
-          </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.DAILY_RECORDS}</div>
-          <button 
-            className={`nav-button ${['screenProject', 'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('progressRecord')}
-          >
-            {PAGE_NAMES.SCREEN_PROJECT}
-          </button>
-          <button 
-            className={`nav-button ${['screenAccounting', 'accounting', 'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord', 'screenRewardAllocation', 'rewardAllocation'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('expenseLedger')}
-          >
-            {PAGE_NAMES.SCREEN_ACCOUNTING}
-          </button>
-          <button 
-            className={`nav-button ${['screenSchedule', 'attendanceMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenCalendar', 'calendarMonth', 'screenAttendance', 'screenCalendarDailyReport', 'calendarDailyReportCalendar', 'calendarDailyReportDay'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('scheduleMember')}
-          >
-            {PAGE_NAMES.SCREEN_SCHEDULE || '予定'}
-          </button>
-          <button 
-            className={`nav-button ${['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('dailyWorkRecord')}
-          >
-            {PAGE_NAMES.SCREEN_DAILY_REPORT || '日報'}
-          </button>
-          <button 
-            className={`nav-button ${['screenWageSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('wageSummary')}
-          >
-            {PAGE_NAMES.SCREEN_WAGE_SUMMARY}
-          </button>
-        </div>
-
-        <div className="nav-section">
-          <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
-          <button 
-            className={`nav-button ${['screenAverageWage', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('averageWage')}
-          >
-            {PAGE_NAMES.SCREEN_AVERAGE_WAGE}
-          </button>
-          <button 
-            className={`nav-button ${['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('financialSummary')}
-          >
-            {PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS}
-          </button>
-          <button 
-            className={`nav-button ${['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('welfareFinancialSummary')}
-          >
-            {PAGE_NAMES.SCREEN_WELFARE_BUSINESS}
-          </button>
-          <button 
-            className={`nav-button ${['screenReserveReport', 'reserveSummary'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('reserveSummary')}
-          >
-            {PAGE_NAMES.SCREEN_RESERVE_REPORT}
-          </button>
-        </div>
-
-        <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.DEVELOPMENT}</div>
           <button 
-            className={`nav-button ${['screenComposition', 'tableComposition'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenComposition'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('screenComposition')}
           >
-            {PAGE_NAMES.SCREEN_COMPOSITION}
+            {PAGE_NAMES.TAB_SCREEN_COMPOSITION}
+          </button>
+          <button 
+            className={`nav-button ${['tableComposition'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('tableComposition')}
+          >
+            {PAGE_NAMES.TAB_TABLE_COMPOSITION}
           </button>
         </div>
       </nav>

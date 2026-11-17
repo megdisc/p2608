@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MultiRowHeader, type HeaderCell, YearInput } from '../components/ui';
+import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useAlert, useOffice } from '../contexts';
 import { useReserveSummary } from '../hooks';
@@ -79,14 +79,7 @@ export function ReserveSummaryPage() {
   ];
 
   return (
-    <div className="summary-page">
-      <div className="filter-bar" style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px' }}>
-        <YearInput
-          value={currentYear}
-          onChange={setCurrentYear}
-        />
-      </div>
-
+    <>
       <div className="table-container">
         <table className="inventory-table">
           <MultiRowHeader
@@ -138,6 +131,43 @@ export function ReserveSummaryPage() {
           </tbody>
         </table>
       </div>
-    </div>
+
+      <div className="action-bar">
+        <div className="filter-controls">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                setCurrentYear(String(parseInt(currentYear) - 1));
+              }}
+            >
+              ＜
+            </Button>
+            <YearInput 
+              value={currentYear}
+              onChange={setCurrentYear}
+              className="date-filter-pill"
+              style={{ width: 'auto', minWidth: '100px' }}
+            />
+            <Button 
+              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              onClick={() => {
+                setCurrentYear(String(parseInt(currentYear) + 1));
+              }}
+            >
+              ＞
+            </Button>
+            <Button 
+              variant="secondary"
+              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              onClick={() => setCurrentYear(new Date().getFullYear().toString())}
+              disabled={currentYear === new Date().getFullYear().toString()}
+            >
+              今年
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

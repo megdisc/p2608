@@ -96,16 +96,11 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'progressRecord', label: PAGE_NAMES.PROGRESS_RECORD },
     ],
   },
-  SCREEN_REWARD_ALLOCATION: {
-    screenName: PAGE_NAMES.SCREEN_REWARD_ALLOCATION,
-    tabs: [
-      { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
-    ],
-  },
-  SCREEN_EXPENSE_LEDGER: {
-    screenName: PAGE_NAMES.SCREEN_EXPENSE_LEDGER,
+  SCREEN_ACCOUNTING: {
+    screenName: PAGE_NAMES.SCREEN_ACCOUNTING,
     tabs: [
       { id: 'expenseLedger', label: PAGE_NAMES.EXPENSE_LEDGER },
+      { id: 'rewardAllocation', label: PAGE_NAMES.REWARD_ALLOCATION },
     ],
   },
   SCREEN_SCHEDULE: {
@@ -155,8 +150,17 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
 
 export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenProject') return SCREEN_CONFIGS.SCREEN_PROJECT;
-  if (tabId === 'screenRewardAllocation' || tabId === 'rewardAllocation') return SCREEN_CONFIGS.SCREEN_REWARD_ALLOCATION;
-  if (tabId === 'screenExpenseLedger' || tabId === 'expenseLedger' || tabId === 'projectFinancialRecord') return SCREEN_CONFIGS.SCREEN_EXPENSE_LEDGER;
+  if (
+    tabId === 'screenAccounting' ||
+    tabId === 'accounting' ||
+    tabId === 'screenRewardAllocation' ||
+    tabId === 'rewardAllocation' ||
+    tabId === 'screenExpenseLedger' ||
+    tabId === 'expenseLedger' ||
+    tabId === 'projectFinancialRecord'
+  ) {
+    return SCREEN_CONFIGS.SCREEN_ACCOUNTING;
+  }
   if (tabId === 'screenCalendar' || tabId === 'attendanceMonth' || tabId === 'screenSchedule' || tabId === 'scheduleStaff' || tabId === 'scheduleMember' || tabId === 'attendanceDay' || tabId === 'screenAttendance' || tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
   if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenWageSummary' || tabId === 'wageSummary') return SCREEN_CONFIGS.SCREEN_WAGE_SUMMARY;

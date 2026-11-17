@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, DateInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
-import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate } from '../utils';
+import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate, getDefaultTransactionDate } from '../utils';
 import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
 import { useMonthlyFinancials, type MonthlyFinancialRecord } from '../hooks/useMonthlyFinancials';
 import { useBudgetPlanning } from '../hooks/useBudgetPlanning';
-import { useWageClosingSettings } from '../hooks';
+import { useWageClosingSettings, useSalaryClosingSettings, useReserveSettings } from '../hooks';
 import { supabase } from '../lib';
 
 /**
@@ -150,6 +150,8 @@ export function RewardAllocationPage() {
   const { selectedOfficeId } = useOffice();
 
   const { items: closingSettings, fetchWageClosingSettings } = useWageClosingSettings();
+  const { items: salaryClosingSettings, fetchSalaryClosingSettings } = useSalaryClosingSettings();
+  const { items: reserveSettings, fetchReserveSettings } = useReserveSettings();
   const [transactionDateDrafts, setTransactionDateDrafts] = useState<Record<string, string>>({});
 
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>({ key: 'projectCode', direction: 'desc' });
@@ -203,11 +205,13 @@ export function RewardAllocationPage() {
       fetchBudgetPlanning(selectedOfficeId),
       fetchWageAndWorkRecords(),
       fetchWageClosingSettings(selectedOfficeId),
+      fetchSalaryClosingSettings(selectedOfficeId),
+      fetchReserveSettings(selectedOfficeId),
     ]).then(() => {
       fetchProgress(currentMonth);
       fetchFinancials(currentMonth, selectedOfficeId);
     }).catch(console.error);
-  }, [currentMonth, selectedOfficeId, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords, fetchWageClosingSettings]);
+  }, [currentMonth, selectedOfficeId, fetchProgress, fetchProgressMasters, fetchFinancials, fetchBudgetPlanning, fetchWageAndWorkRecords, fetchWageClosingSettings, fetchSalaryClosingSettings, fetchReserveSettings]);
 
   useEffect(() => {
     setFinancialDrafts(JSON.parse(JSON.stringify(financials)));
@@ -258,13 +262,23 @@ export function RewardAllocationPage() {
     } catch {}
   }, [selectedOfficeId]);
 
-  // 工賃支給日の自動算出（労務費・利用者工賃用：変更不可）
-  const autoWagePaymentDate = useMemo(() => {
-    const currentSetting = (selectedOfficeId && selectedOfficeId !== 'all')
+  // 基準日設定（事業所別またはデフォルト）
+  const currentWageSetting = useMemo(() => {
+    return (selectedOfficeId && selectedOfficeId !== 'all')
       ? closingSettings.find(s => s.office_id === selectedOfficeId) || closingSettings[0]
       : closingSettings[0];
-    return calcWagePaymentDate(currentMonth, currentSetting);
-  }, [currentMonth, closingSettings, selectedOfficeId]);
+  }, [closingSettings, selectedOfficeId]);
+
+  const currentSalarySetting = useMemo(() => {
+    return (selectedOfficeId && selectedOfficeId !== 'all')
+      ? salaryClosingSettings.find(s => s.office_id === selectedOfficeId) || salaryClosingSettings[0]
+      : salaryClosingSettings[0];
+  }, [salaryClosingSettings, selectedOfficeId]);
+
+  // 工賃支給日の自動算出（労務費・利用者工賃用：変更不可）
+  const autoWagePaymentDate = useMemo(() => {
+    return calcWagePaymentDate(currentMonth, currentWageSetting);
+  }, [currentMonth, currentWageSetting]);
 
   const fetchIncentiveRecords = useCallback(async () => {
     try {
@@ -694,16 +708,24 @@ export function RewardAllocationPage() {
     const firstRec = projRecords[0];
     const budgetDraft = budgetDrafts.find(b => b.project.id === pid);
     const projDbInfo = dbProjects.find(p => p.id === pid);
-    const clientName = dbClients.find(c => c.id === projDbInfo?.customerId)?.name || '';
+    const targetClient = dbClients.find(c => c.id === projDbInfo?.customerId || c.id === (projDbInfo as any)?.clientId);
+    const clientName = targetClient?.name || '';
     const isOngoing = projDbInfo?.projectType === 'ongoing';
     
     const revenues = (budgetDraft?.revenues || []).map(b => {
       const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'revenue' && f.subject === b.subject);
+      const autoDate = getDefaultTransactionDate(b.subject, {
+        targetYearMonth: currentMonth,
+        client: targetClient,
+        wageClosingSetting: currentWageSetting,
+        salaryClosingSetting: currentSalarySetting,
+        reserveSettings,
+      });
       return {
         subject: b.subject,
         billingDest: clientName,
         amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0),
-        target_period: fin?.target_period || null,
+        target_period: fin?.target_period || autoDate,
       };
     });
 
@@ -842,20 +864,42 @@ export function RewardAllocationPage() {
 
       outsourceRecords.forEach(o => {
         const customVal = allocationDrafts[o.id];
+        const rawClientId = o.userId ? o.userId.replace(/^outsource_/, '') : '';
+        const outsourceClient = dbClients.find(c => c.id === rawClientId || c.name === o.userName);
+        const autoDate = getDefaultTransactionDate(WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, {
+          targetYearMonth: currentMonth,
+          client: targetClient,
+          outsourceClient: outsourceClient || targetClient,
+          wageClosingSetting: currentWageSetting,
+          salaryClosingSetting: currentSalarySetting,
+          reserveSettings,
+        });
+        const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'expense' && f.subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE);
+
         laborExpenses.push({
           id: o.id,
           subject: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE,
           taskName: cleanTaskName,
           payee: o.userName,
+          payeeId: rawClientId,
           amount: customVal !== undefined ? customVal : budgetAmount,
           type: 'labor',
-          isAutoCalculated: false
+          isAutoCalculated: false,
+          target_period: fin?.target_period || autoDate,
         });
       });
     });
 
     const staffKey = `STAFF_ALLOC_${pid}`;
     const customStaffVal = allocationDrafts[staffKey];
+    const autoStaffDate = getDefaultTransactionDate(WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, {
+      targetYearMonth: currentMonth,
+      client: targetClient,
+      wageClosingSetting: currentWageSetting,
+      salaryClosingSetting: currentSalarySetting,
+      reserveSettings,
+    });
+    const staffFin = financialDrafts.find(f => f.project_id === pid && f.type === 'expense' && f.subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER);
 
     laborExpenses.push({
       id: staffKey,
@@ -864,7 +908,8 @@ export function RewardAllocationPage() {
       payee: '（職員等）',
       amount: customStaffVal !== undefined ? customStaffVal : totalProjectStaffAlloc,
       type: 'labor',
-      isAutoCalculated: false
+      isAutoCalculated: false,
+      target_period: staffFin?.target_period || autoStaffDate,
     });
 
     const materialExpense = nonLaborExpenses.find(e => e.subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL);
@@ -891,10 +936,14 @@ export function RewardAllocationPage() {
 
     const reserves = (budgetDraft?.reserves || []).map(b => {
       const fin = financialDrafts.find(f => f.project_id === pid && f.type === 'reserve' && f.subject === b.subject);
+      const autoDate = getDefaultTransactionDate(b.subject, {
+        targetYearMonth: currentMonth,
+        reserveSettings,
+      });
       return {
         subject: b.subject,
         amount: fin !== undefined ? Number(fin.amount || 0) : Number(b.amount || 0),
-        target_period: fin?.target_period || null,
+        target_period: fin?.target_period || autoDate,
       };
     });
 

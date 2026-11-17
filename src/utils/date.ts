@@ -1,3 +1,5 @@
+import { WORDS_PROJECT } from '../constants';
+
 /**
  * Parses a date input (string or Date) and returns a valid Date object.
  * If the string comes from Supabase and lacks timezone information, we treat it as UTC.
@@ -207,13 +209,15 @@ export function parseLocalInputAsUTC(input: string): string {
 }
 
 /**
- * 工賃基準日設定と対象年月から、工賃支給日（取引時期）を自動算出する
+ * 基準日設定（月区分・日）と対象年月から、具体的な日付（YYYY-MM-DD）を算出する
  */
-export function calcWagePaymentDate(
+export function calcPaymentDate(
   yearMonth: string,
-  closingSetting?: {
-    payment_month_type?: 'current' | 'next' | 'next_next';
-    payment_day?: number;
+  setting?: {
+    monthType?: 'current' | 'next' | 'next_next' | string | null;
+    payment_month_type?: 'current' | 'next' | 'next_next' | string | null;
+    day?: number | string | null;
+    payment_day?: number | string | null;
   }
 ): string {
   if (!yearMonth || !yearMonth.includes('-')) return '';
@@ -221,8 +225,9 @@ export function calcWagePaymentDate(
   let year = parseInt(yearStr, 10);
   let month = parseInt(monthStr, 10); // 1-12
 
-  const monthType = closingSetting?.payment_month_type || 'next';
-  const paymentDay = Number(closingSetting?.payment_day) || 10;
+  const monthType = setting?.monthType || setting?.payment_month_type || 'next';
+  const rawDay = setting?.day !== undefined ? setting?.day : setting?.payment_day;
+  const targetDay = Number(rawDay) || 99;
 
   if (monthType === 'next') {
     month += 1;
@@ -240,7 +245,159 @@ export function calcWagePaymentDate(
 
   // その月の末日を取得
   const daysInMonth = new Date(year, month, 0).getDate();
-  const day = (paymentDay === 99 || paymentDay > daysInMonth) ? daysInMonth : paymentDay;
+  const day = (targetDay === 99 || targetDay > daysInMonth) ? daysInMonth : targetDay;
 
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+/**
+ * 工賃基準日設定と対象年月から、工賃支給日（取引時期）を自動算出する（互換用）
+ */
+export function calcWagePaymentDate(
+  yearMonth: string,
+  closingSetting?: {
+    payment_month_type?: 'current' | 'next' | 'next_next';
+    payment_day?: number;
+  }
+): string {
+  return calcPaymentDate(yearMonth, closingSetting);
+}
+
+export interface DefaultTransactionDateContext {
+  targetYearMonth?: string;
+  client?: any | null; // 案件の取引先（顧客、または外注先）
+  outsourceClient?: any | null; // 外注先
+  salaryClosingSetting?: { payment_month_type?: any; payment_day?: any } | null;
+  wageClosingSetting?: { payment_month_type?: any; payment_day?: any } | null;
+  reserveSettings?: any[] | null;
+}
+
+/**
+ * 勘定科目に応じた取引時期（デフォルト日付 YYYY-MM-DD）を算出する
+ * - 就労支援事業収益：当該取引先顧客の入金日
+ * - 外注加工費：当該取引先外注先への支払日（出金日）
+ * - 材料費：本日の日付
+ * - 経費：本日の日付
+ * - 労務費（利用者工賃以外）：給与体系画面の給与支給日
+ * - 労務費（利用者工賃）：工賃・控除体系画面で定義した工賃支給日
+ * - 工賃変動積立金・設備等修繕維持積立金（繰入・取崩）：積立金画面で定義した各日付
+ */
+export function getDefaultTransactionDate(
+  subject: string,
+  context: DefaultTransactionDateContext = {}
+): string {
+  const ym = context.targetYearMonth || getCurrentJSTMonth();
+  const today = getCurrentJSTDateOnly();
+
+  // 1. 就労支援事業収益：当該取引先顧客の入金日
+  if (
+    subject === WORDS_PROJECT.SUBJECT_REVENUE_SALES ||
+    subject.includes('就労支援事業収益') ||
+    subject.includes('売上高')
+  ) {
+    const c = context.client;
+    if (c) {
+      const monthType = c.customerPaymentMonthType || c.customer_payment_month_type;
+      const day = c.customerPaymentDay || c.customer_payment_day;
+      if (monthType || day) {
+        return calcPaymentDate(ym, { monthType, day });
+      }
+    }
+    // デフォルト（翌月末日）
+    return calcPaymentDate(ym, { monthType: 'next', day: 99 });
+  }
+
+  // 2. 外注加工費：当該取引先外注先への支払日（出金日）
+  if (
+    subject === WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE ||
+    subject.includes('外注加工費')
+  ) {
+    const c = context.outsourceClient || context.client;
+    if (c) {
+      const monthType = c.subcontractorPaymentMonthType || c.subcontractor_payment_month_type;
+      const day = c.subcontractorPaymentDay || c.subcontractor_payment_day;
+      if (monthType || day) {
+        return calcPaymentDate(ym, { monthType, day });
+      }
+    }
+    // デフォルト（翌月末日）
+    return calcPaymentDate(ym, { monthType: 'next', day: 99 });
+  }
+
+  // 3. 材料費：本日の日付
+  if (
+    subject === WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL ||
+    subject.includes('材料費')
+  ) {
+    return today;
+  }
+
+  // 4. 経費：本日の日付
+  if (
+    subject === WORDS_PROJECT.SUBJECT_EXPENSE_OTHER ||
+    subject.includes('経費')
+  ) {
+    return today;
+  }
+
+  // 5. 労務費（利用者工賃以外）：給与体系画面の給与支給日
+  if (
+    subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER ||
+    subject.includes('労務費（利用者工賃以外）') ||
+    subject.includes('職員等労務費') ||
+    subject.includes('職員給与')
+  ) {
+    const s = context.salaryClosingSetting;
+    return calcPaymentDate(ym, {
+      monthType: s?.payment_month_type || 'next',
+      day: s?.payment_day || 10,
+    });
+  }
+
+  // 6. 労務費（利用者工賃）：工賃・控除体系画面で定義した工賃支給日
+  if (
+    subject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER ||
+    subject.includes('労務費（利用者工賃）') ||
+    subject.includes('利用者工賃') ||
+    subject === '工賃'
+  ) {
+    const w = context.wageClosingSetting;
+    return calcPaymentDate(ym, {
+      monthType: w?.payment_month_type || 'next',
+      day: w?.payment_day || 10,
+    });
+  }
+
+  // 7. 工賃変動積立金・設備等修繕維持積立金（繰入・取崩）
+  if (
+    subject.includes('工賃変動積立金') ||
+    subject.includes('設備等修繕維持積立金') ||
+    subject.includes('積立金')
+  ) {
+    const isWageReserve = subject.includes('工賃変動');
+    const isWithdrawal = subject.includes('取崩');
+
+    const matchedItem = (context.reserveSettings || []).find(r => {
+      const type = r.reserveType || r.name || '';
+      return isWageReserve ? type.includes('工賃変動') : type.includes('設備等修繕');
+    });
+
+    if (matchedItem) {
+      if (isWithdrawal) {
+        return calcPaymentDate(ym, {
+          monthType: matchedItem.transferOutMonthType || matchedItem.transfer_out_month_type,
+          day: matchedItem.transferOutDay || matchedItem.transfer_out_day,
+        });
+      } else {
+        return calcPaymentDate(ym, {
+          monthType: matchedItem.transferInMonthType || matchedItem.transfer_in_month_type,
+          day: matchedItem.transferInDay || matchedItem.transfer_in_day,
+        });
+      }
+    }
+    // デフォルト（翌月末日）
+    return calcPaymentDate(ym, { monthType: 'next', day: 99 });
+  }
+
+  return today;
 }

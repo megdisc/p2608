@@ -36,14 +36,12 @@ const getTabCategory = (tabId: string): string => {
     'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'baseWageAssignment', 'skillEvaluation',
   ];
 
-  // 3. 日々の記録（案件、収益分配、会計帳簿、予定、日報、工賃・控除明細）
+  // 3. 日々の記録（案件、会計、予定、日報、工賃・控除明細）
   const dailyRecordsTabIds = [
     // 案件
     'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord',
-    // 収益分配
-    'rewardAllocation',
-    // 会計帳簿
-    'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord',
+    // 会計
+    'screenAccounting', 'accounting', 'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord', 'screenRewardAllocation', 'rewardAllocation',
     // 予定（カレンダー統合）
     'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay',
     // 日報

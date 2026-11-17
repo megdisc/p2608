@@ -485,6 +485,8 @@ export function ScreenCompositionPage() {
         { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
         { name: 'fixed_amount', desc: '定額金額（円）' },
         { name: 'fixed_rate', desc: '定率（%）' },
+        { name: 'transfer_in_day', desc: '積立金繰入基準日（例: next_99: 翌月末日, current_99: 当月末日）', status: 'added' },
+        { name: 'transfer_out_day', desc: '積立金取崩基準日（例: next_99: 翌月末日, current_99: 当月末日）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

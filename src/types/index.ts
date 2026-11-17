@@ -411,6 +411,8 @@ export type ReserveSettingItem = {
   calcType: 'fixed_amount' | 'fixed_rate';     // 計算方式区分 ('fixed_amount': 定額, 'fixed_rate': 定率)
   fixedAmount: number;                          // 定額金額（円）
   fixedRate: number;                            // 定率（%）
+  transferInDay?: string | null;                // 繰入基準日
+  transferOutDay?: string | null;               // 取崩基準日
   description?: string;                         // 目的・用途
   is_deleted?: boolean;
   office_id?: string;

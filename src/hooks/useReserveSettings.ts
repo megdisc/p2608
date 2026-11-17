@@ -36,6 +36,8 @@ export function useReserveSettings() {
             calcType: existing.calc_type === 'fixed_rate' ? 'fixed_rate' : 'fixed_amount',
             fixedAmount: Number(existing.fixed_amount || existing.default_unit_price || 0),
             fixedRate: Number(existing.fixed_rate || 0),
+            transferInDay: existing.transfer_in_day || 'next_99',
+            transferOutDay: existing.transfer_out_day || 'next_99',
             description: reserveTypeName,
             office_id: existing.office_id,
           };
@@ -46,6 +48,8 @@ export function useReserveSettings() {
           calcType: 'fixed_amount',
           fixedAmount: 0,
           fixedRate: 0,
+          transferInDay: 'next_99',
+          transferOutDay: 'next_99',
           description: reserveTypeName,
           office_id: officeId,
         };
@@ -79,6 +83,8 @@ export function useReserveSettings() {
         calc_type: item.calcType,
         fixed_amount: Number(item.fixedAmount || 0),
         fixed_rate: Number(item.fixedRate || 0),
+        transfer_in_day: item.transferInDay || null,
+        transfer_out_day: item.transferOutDay || null,
       }));
 
       if (upserts.length > 0) {

@@ -16,6 +16,29 @@ export function ReserveSettingPage() {
     });
   }, [fetchReserveSettings, selectedOfficeId, showAlert]);
 
+  const transferDayOptions = [
+    { value: '', label: '未設定' },
+    { value: 'next_99', label: '翌月末日' },
+    { value: 'current_99', label: '当月末日' },
+    { value: 'next_10', label: '翌月10日' },
+    { value: 'next_15', label: '翌月15日' },
+    { value: 'next_20', label: '翌月20日' },
+    { value: 'next_25', label: '翌月25日' },
+    { value: 'current_25', label: '当月25日' },
+    { value: 'next_next_10', label: '翌々月10日' },
+    { value: 'next_next_99', label: '翌々月末日' },
+    ...Array.from({ length: 31 }, (_, i) => {
+      const day = i + 1;
+      return { value: `next_${day}`, label: `翌月${day}日` };
+    }).filter(o => !['next_10', 'next_15', 'next_20', 'next_25'].includes(o.value))
+  ];
+
+  const getTransferDayLabel = (val?: string | null) => {
+    if (!val) return '';
+    const opt = transferDayOptions.find(o => o.value === val);
+    return opt ? opt.label : val;
+  };
+
   const columns: Column<ReserveSettingItem>[] = [
     {
       key: 'reserveType',
@@ -70,6 +93,30 @@ export function ReserveSettingPage() {
         ) : (
           <span style={{ color: 'var(--color-text-muted, #a0aec0)' }}>-</span>
         )
+      )
+    },
+    {
+      key: 'transferInDay',
+      header: TABLE_COLUMNS.RESERVE_INFLOW_DAY,
+      editable: true,
+      inputType: 'select',
+      sortable: false,
+      options: transferDayOptions,
+      style: { width: '150px' },
+      render: (item: ReserveSettingItem) => (
+        <span>{getTransferDayLabel(item.transferInDay) || '-'}</span>
+      )
+    },
+    {
+      key: 'transferOutDay',
+      header: TABLE_COLUMNS.RESERVE_WITHDRAWAL_DAY,
+      editable: true,
+      inputType: 'select',
+      sortable: false,
+      options: transferDayOptions,
+      style: { width: '150px' },
+      render: (item: ReserveSettingItem) => (
+        <span>{getTransferDayLabel(item.transferOutDay) || '-'}</span>
       )
     }
   ];

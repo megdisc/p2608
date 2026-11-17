@@ -66,8 +66,10 @@ export function useClients() {
           isCustomer: d.is_customer ?? false,
           isSubcontractor: d.is_subcontractor ?? false,
           isOther: d.is_other ?? false,
-          customerPaymentDay: d.customer_payment_day || null,
-          subcontractorPaymentDay: d.subcontractor_payment_day || null,
+          customerPaymentMonthType: d.customer_payment_month_type || null,
+          customerPaymentDay: d.customer_payment_day != null ? Number(d.customer_payment_day) : null,
+          subcontractorPaymentMonthType: d.subcontractor_payment_month_type || null,
+          subcontractorPaymentDay: d.subcontractor_payment_day != null ? Number(d.subcontractor_payment_day) : null,
           contacts
         };
       });
@@ -114,8 +116,10 @@ export function useClients() {
           is_customer: item.isCustomer ?? false,
           is_subcontractor: item.isSubcontractor ?? false,
           is_other: item.isOther ?? false,
-          customer_payment_day: item.isCustomer ? (item.customerPaymentDay || null) : null,
-          subcontractor_payment_day: item.isSubcontractor ? (item.subcontractorPaymentDay || null) : null
+          customer_payment_month_type: item.isCustomer ? (item.customerPaymentMonthType || 'next') : null,
+          customer_payment_day: item.isCustomer ? (item.customerPaymentDay != null ? Number(item.customerPaymentDay) : 99) : null,
+          subcontractor_payment_month_type: item.isSubcontractor ? (item.subcontractorPaymentMonthType || 'next') : null,
+          subcontractor_payment_day: item.isSubcontractor ? (item.subcontractorPaymentDay != null ? Number(item.subcontractorPaymentDay) : 99) : null
         };
         if (!item.id.startsWith('CLI-')) {
           upsertPartnerData.id = item.id;

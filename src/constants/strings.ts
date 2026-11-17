@@ -425,7 +425,9 @@ export const TABLE_COLUMNS = {
   PERSON_IN_CHARGE: WORDS_PERSON.PERSON_IN_CHARGE,
   RESERVE_TYPE: '積立金種別',
   RESERVE_SETTING: '設定',
+  RESERVE_INFLOW_MONTH: '繰入月',
   RESERVE_INFLOW_DAY: '繰入日',
+  RESERVE_WITHDRAWAL_MONTH: '取崩月',
   RESERVE_WITHDRAWAL_DAY: '取崩日',
   ALLOWANCE_NAME: '加算手当名',
   DEDUCTION_NAME: '控除名',
@@ -445,7 +447,9 @@ export const TABLE_COLUMNS = {
   IS_CUSTOMER: '顧客',
   IS_SUBCONTRACTOR: '外注先',
   IS_OTHER: 'その他',
+  CUSTOMER_PAYMENT_MONTH: '顧客入金月',
   CUSTOMER_PAYMENT_DAY: '顧客入金日',
+  SUBCONTRACTOR_PAYMENT_MONTH: '外注先出金月',
   SUBCONTRACTOR_PAYMENT_DAY: '外注先出金日',
 
   // アカウント
@@ -818,5 +822,59 @@ export const OFFICE_STAFF_ROLE_OPTIONS = [
   { label: '就労支援員', value: '06' },
   { label: 'ピアサポート専門員', value: '07' },
 ];
+
+/**
+ * 締め日・支給日・入出金日・基準日に関する定数群
+ * ※29〜31日は月によって存在しないため除外（28日より後は「末日（99）」で統一）
+ */
+export const CLOSING_MONTH_TYPES = {
+  CURRENT: 'current',
+  NEXT: 'next',
+  NEXT_NEXT: 'next_next',
+} as const;
+
+export type ClosingMonthType = (typeof CLOSING_MONTH_TYPES)[keyof typeof CLOSING_MONTH_TYPES];
+
+export const CLOSING_MONTH_TYPE_OPTIONS = [
+  { value: 'current', label: '当月' },
+  { value: 'next', label: '翌月' },
+  { value: 'next_next', label: '翌々月' },
+];
+
+// 数値型 value の日選択肢（末日99、1〜28日）
+export const CLOSING_DAY_OPTIONS = [
+  { value: 99, label: '末日' },
+  ...Array.from({ length: 28 }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1}日`,
+  })),
+];
+
+// 文字列型 value の日選択肢（末日"99"、"1"〜"28"日）
+export const CLOSING_DAY_STRING_OPTIONS = CLOSING_DAY_OPTIONS.map(opt => ({
+  value: String(opt.value),
+  label: opt.label,
+}));
+
+/**
+ * 締め日・支給日の数値を「○日」または「末日」に整形
+ */
+export const formatClosingDay = (day?: number | string | null): string => {
+  if (day === null || day === undefined || day === '') return '-';
+  const num = Number(day);
+  if (isNaN(num)) return '-';
+  if (num === 99) return '末日';
+  return `${num}日`;
+};
+
+/**
+ * 支給月区分の文字列を「当月」「翌月」「翌々月」に整形
+ */
+export const formatClosingMonthType = (type?: string | null): string => {
+  if (!type) return '-';
+  const opt = CLOSING_MONTH_TYPE_OPTIONS.find(o => o.value === type);
+  return opt ? opt.label : type;
+};
+
 
 

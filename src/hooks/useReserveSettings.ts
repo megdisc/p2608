@@ -36,8 +36,10 @@ export function useReserveSettings() {
             calcType: existing.calc_type === 'fixed_rate' ? 'fixed_rate' : 'fixed_amount',
             fixedAmount: Number(existing.fixed_amount || existing.default_unit_price || 0),
             fixedRate: Number(existing.fixed_rate || 0),
-            transferInDay: existing.transfer_in_day || 'next_99',
-            transferOutDay: existing.transfer_out_day || 'next_99',
+            transferInMonthType: existing.transfer_in_month_type || 'next',
+            transferInDay: existing.transfer_in_day != null ? Number(existing.transfer_in_day) : 99,
+            transferOutMonthType: existing.transfer_out_month_type || 'next',
+            transferOutDay: existing.transfer_out_day != null ? Number(existing.transfer_out_day) : 99,
             description: reserveTypeName,
             office_id: existing.office_id,
           };
@@ -48,8 +50,10 @@ export function useReserveSettings() {
           calcType: 'fixed_amount',
           fixedAmount: 0,
           fixedRate: 0,
-          transferInDay: 'next_99',
-          transferOutDay: 'next_99',
+          transferInMonthType: 'next',
+          transferInDay: 99,
+          transferOutMonthType: 'next',
+          transferOutDay: 99,
           description: reserveTypeName,
           office_id: officeId,
         };
@@ -83,8 +87,10 @@ export function useReserveSettings() {
         calc_type: item.calcType,
         fixed_amount: Number(item.fixedAmount || 0),
         fixed_rate: Number(item.fixedRate || 0),
-        transfer_in_day: item.transferInDay || null,
-        transfer_out_day: item.transferOutDay || null,
+        transfer_in_month_type: item.transferInMonthType || 'next',
+        transfer_in_day: item.transferInDay != null ? Number(item.transferInDay) : 99,
+        transfer_out_month_type: item.transferOutMonthType || 'next',
+        transfer_out_day: item.transferOutDay != null ? Number(item.transferOutDay) : 99,
       }));
 
       if (upserts.length > 0) {

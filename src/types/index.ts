@@ -165,8 +165,10 @@ export type ClientItem = {
   isCustomer?: boolean;
   isSubcontractor?: boolean;
   isOther?: boolean;
-  customerPaymentDay?: string | null;
-  subcontractorPaymentDay?: string | null;
+  customerPaymentMonthType?: 'current' | 'next' | 'next_next' | null;
+  customerPaymentDay?: number | null;
+  subcontractorPaymentMonthType?: 'current' | 'next' | 'next_next' | null;
+  subcontractorPaymentDay?: number | null;
   contacts?: PartnerContactItem[];
   deleted_at?: string | null;
   is_deleted?: boolean;
@@ -411,8 +413,10 @@ export type ReserveSettingItem = {
   calcType: 'fixed_amount' | 'fixed_rate';     // 計算方式区分 ('fixed_amount': 定額, 'fixed_rate': 定率)
   fixedAmount: number;                          // 定額金額（円）
   fixedRate: number;                            // 定率（%）
-  transferInDay?: string | null;                // 繰入基準日
-  transferOutDay?: string | null;               // 取崩基準日
+  transferInMonthType?: 'current' | 'next' | 'next_next'; // 繰入月区分
+  transferInDay?: number;                       // 繰入基準日 (1〜28, 99)
+  transferOutMonthType?: 'current' | 'next' | 'next_next'; // 取崩月区分
+  transferOutDay?: number;                      // 取崩基準日 (1〜28, 99)
   description?: string;                         // 目的・用途
   is_deleted?: boolean;
   office_id?: string;

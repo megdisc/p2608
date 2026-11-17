@@ -2,7 +2,15 @@ import { DataPage, Button, type Column } from '../components';
 import { useEffect } from 'react';
 import type { ClientItem, PartnerContactItem } from '../types';
 import { useAlert } from '../contexts';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import {
+  TABLE_COLUMNS,
+  PAGE_NAMES,
+  MESSAGES,
+  CLOSING_DAY_STRING_OPTIONS,
+  CLOSING_MONTH_TYPE_OPTIONS,
+  formatClosingDay,
+  formatClosingMonthType,
+} from '../constants';
 import { useClients } from '../hooks';
 import { generateNextUnifiedCode } from '../utils';
 
@@ -15,29 +23,6 @@ export function ClientPage() {
       showAlert('データ取得に失敗しました', 'error');
     });
   }, [fetchClients, showAlert]);
-
-  const paymentDayOptions = [
-    { value: '', label: '未設定' },
-    { value: 'next_99', label: '翌月末日' },
-    { value: 'next_10', label: '翌月10日' },
-    { value: 'next_15', label: '翌月15日' },
-    { value: 'next_20', label: '翌月20日' },
-    { value: 'next_25', label: '翌月25日' },
-    { value: 'current_99', label: '当月末日' },
-    { value: 'current_25', label: '当月25日' },
-    { value: 'next_next_10', label: '翌々月10日' },
-    { value: 'next_next_99', label: '翌々月末日' },
-    ...Array.from({ length: 31 }, (_, i) => {
-      const day = i + 1;
-      return { value: `next_${day}`, label: `翌月${day}日` };
-    }).filter(o => !['next_10', 'next_15', 'next_20', 'next_25'].includes(o.value))
-  ];
-
-  const getPaymentDayLabel = (val?: string | null) => {
-    if (!val) return '';
-    const opt = paymentDayOptions.find(o => o.value === val);
-    return opt ? opt.label : val;
-  };
 
   const columns: Column<ClientItem>[] = [
     { 
@@ -71,9 +56,9 @@ export function ClientPage() {
       rowType: 'main',
       onCellChange: (val) => {
         if (!val) {
-          return { customerPaymentDay: '' };
+          return { customerPaymentMonthType: null, customerPaymentDay: null };
         } else {
-          return { customerPaymentDay: 'next_99' };
+          return { customerPaymentMonthType: 'next', customerPaymentDay: 99 };
         }
       }
     },
@@ -85,9 +70,9 @@ export function ClientPage() {
       rowType: 'main',
       onCellChange: (val) => {
         if (!val) {
-          return { subcontractorPaymentDay: '' };
+          return { subcontractorPaymentMonthType: null, subcontractorPaymentDay: null };
         } else {
-          return { subcontractorPaymentDay: 'next_99' };
+          return { subcontractorPaymentMonthType: 'next', subcontractorPaymentDay: 99 };
         }
       }
     },
@@ -99,22 +84,40 @@ export function ClientPage() {
       rowType: 'main'
     },
     { 
+      key: 'customerPaymentMonthType', 
+      header: TABLE_COLUMNS.CUSTOMER_PAYMENT_MONTH, 
+      editable: (item) => Boolean(item.isCustomer),
+      inputType: 'select',
+      options: CLOSING_MONTH_TYPE_OPTIONS,
+      rowType: 'main',
+      render: (item) => item.isCustomer ? formatClosingMonthType(item.customerPaymentMonthType) : '-'
+    },
+    { 
       key: 'customerPaymentDay', 
       header: TABLE_COLUMNS.CUSTOMER_PAYMENT_DAY, 
       editable: (item) => Boolean(item.isCustomer),
       inputType: 'select',
-      options: paymentDayOptions,
+      options: CLOSING_DAY_STRING_OPTIONS,
       rowType: 'main',
-      render: (item) => item.isCustomer ? (getPaymentDayLabel(item.customerPaymentDay) || '-') : '-'
+      render: (item) => item.isCustomer ? formatClosingDay(item.customerPaymentDay) : '-'
+    },
+    { 
+      key: 'subcontractorPaymentMonthType', 
+      header: TABLE_COLUMNS.SUBCONTRACTOR_PAYMENT_MONTH, 
+      editable: (item) => Boolean(item.isSubcontractor),
+      inputType: 'select',
+      options: CLOSING_MONTH_TYPE_OPTIONS,
+      rowType: 'main',
+      render: (item) => item.isSubcontractor ? formatClosingMonthType(item.subcontractorPaymentMonthType) : '-'
     },
     { 
       key: 'subcontractorPaymentDay', 
       header: TABLE_COLUMNS.SUBCONTRACTOR_PAYMENT_DAY, 
       editable: (item) => Boolean(item.isSubcontractor),
       inputType: 'select',
-      options: paymentDayOptions,
+      options: CLOSING_DAY_STRING_OPTIONS,
       rowType: 'main',
-      render: (item) => item.isSubcontractor ? (getPaymentDayLabel(item.subcontractorPaymentDay) || '-') : '-'
+      render: (item) => item.isSubcontractor ? formatClosingDay(item.subcontractorPaymentDay) : '-'
     },
     { 
       key: 'contactName', 
@@ -203,8 +206,10 @@ export function ClientPage() {
       isCustomer: true,
       isSubcontractor: true,
       isOther: false,
-      customerPaymentDay: 'next_99',
-      subcontractorPaymentDay: 'next_99',
+      customerPaymentMonthType: 'next',
+      customerPaymentDay: 99,
+      subcontractorPaymentMonthType: 'next',
+      subcontractorPaymentDay: 99,
       contacts: []
     } as ClientItem;
   };

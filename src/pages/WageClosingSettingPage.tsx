@@ -1,7 +1,13 @@
 import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import { useAlert, useOffice } from '../contexts';
-import { MESSAGES } from '../constants';
+import {
+  MESSAGES,
+  CLOSING_DAY_STRING_OPTIONS,
+  CLOSING_MONTH_TYPE_OPTIONS,
+  formatClosingDay,
+  formatClosingMonthType,
+} from '../constants';
 import { useWageClosingSettings, type WageClosingSettingItem } from '../hooks';
 
 export function WageClosingSettingPage() {
@@ -15,20 +21,6 @@ export function WageClosingSettingPage() {
     });
   }, [fetchWageClosingSettings, selectedOfficeId, showAlert]);
 
-  const dayOptions = [
-    { value: '99', label: '末日' },
-    ...Array.from({ length: 31 }, (_, i) => ({
-      value: String(i + 1),
-      label: `${i + 1}日`,
-    })),
-  ];
-
-  const monthTypeOptions = [
-    { value: 'current', label: '当月' },
-    { value: 'next', label: '翌月' },
-    { value: 'next_next', label: '翌々月' },
-  ];
-
   const basisOptions = [
     { value: 'payment_date', label: '工賃支給日' },
     { value: 'closing_date', label: '工賃締め日' },
@@ -41,8 +33,8 @@ export function WageClosingSettingPage() {
       sortable: false,
       editable: true,
       inputType: 'select',
-      options: dayOptions,
-      render: (item) => (Number(item.closing_day) === 99 ? '末日' : `${item.closing_day}日`),
+      options: CLOSING_DAY_STRING_OPTIONS,
+      render: (item) => formatClosingDay(item.closing_day),
     },
     {
       key: 'payment_month_type',
@@ -50,11 +42,8 @@ export function WageClosingSettingPage() {
       sortable: false,
       editable: true,
       inputType: 'select',
-      options: monthTypeOptions,
-      render: (item) => {
-        const opt = monthTypeOptions.find(o => o.value === item.payment_month_type);
-        return opt ? opt.label : item.payment_month_type;
-      },
+      options: CLOSING_MONTH_TYPE_OPTIONS,
+      render: (item) => formatClosingMonthType(item.payment_month_type),
     },
     {
       key: 'payment_day',
@@ -62,8 +51,8 @@ export function WageClosingSettingPage() {
       sortable: false,
       editable: true,
       inputType: 'select',
-      options: dayOptions,
-      render: (item) => (Number(item.payment_day) === 99 ? '末日' : `${item.payment_day}日`),
+      options: CLOSING_DAY_STRING_OPTIONS,
+      render: (item) => formatClosingDay(item.payment_day),
     },
     {
       key: 'average_wage_calc_basis',

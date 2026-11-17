@@ -2,7 +2,15 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { ReserveSettingItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import {
+  TABLE_COLUMNS,
+  PAGE_NAMES,
+  MESSAGES,
+  CLOSING_DAY_STRING_OPTIONS,
+  CLOSING_MONTH_TYPE_OPTIONS,
+  formatClosingDay,
+  formatClosingMonthType,
+} from '../constants';
 import { useReserveSettings } from '../hooks';
 
 export function ReserveSettingPage() {
@@ -15,29 +23,6 @@ export function ReserveSettingPage() {
       showAlert('データ取得に失敗しました', 'error');
     });
   }, [fetchReserveSettings, selectedOfficeId, showAlert]);
-
-  const transferDayOptions = [
-    { value: '', label: '未設定' },
-    { value: 'next_99', label: '翌月末日' },
-    { value: 'current_99', label: '当月末日' },
-    { value: 'next_10', label: '翌月10日' },
-    { value: 'next_15', label: '翌月15日' },
-    { value: 'next_20', label: '翌月20日' },
-    { value: 'next_25', label: '翌月25日' },
-    { value: 'current_25', label: '当月25日' },
-    { value: 'next_next_10', label: '翌々月10日' },
-    { value: 'next_next_99', label: '翌々月末日' },
-    ...Array.from({ length: 31 }, (_, i) => {
-      const day = i + 1;
-      return { value: `next_${day}`, label: `翌月${day}日` };
-    }).filter(o => !['next_10', 'next_15', 'next_20', 'next_25'].includes(o.value))
-  ];
-
-  const getTransferDayLabel = (val?: string | null) => {
-    if (!val) return '';
-    const opt = transferDayOptions.find(o => o.value === val);
-    return opt ? opt.label : val;
-  };
 
   const columns: Column<ReserveSettingItem>[] = [
     {
@@ -96,15 +81,39 @@ export function ReserveSettingPage() {
       )
     },
     {
+      key: 'transferInMonthType',
+      header: TABLE_COLUMNS.RESERVE_INFLOW_MONTH,
+      editable: true,
+      inputType: 'select',
+      sortable: false,
+      options: CLOSING_MONTH_TYPE_OPTIONS,
+      style: { width: '120px' },
+      render: (item: ReserveSettingItem) => (
+        <span>{formatClosingMonthType(item.transferInMonthType)}</span>
+      )
+    },
+    {
       key: 'transferInDay',
       header: TABLE_COLUMNS.RESERVE_INFLOW_DAY,
       editable: true,
       inputType: 'select',
       sortable: false,
-      options: transferDayOptions,
-      style: { width: '150px' },
+      options: CLOSING_DAY_STRING_OPTIONS,
+      style: { width: '120px' },
       render: (item: ReserveSettingItem) => (
-        <span>{getTransferDayLabel(item.transferInDay) || '-'}</span>
+        <span>{formatClosingDay(item.transferInDay)}</span>
+      )
+    },
+    {
+      key: 'transferOutMonthType',
+      header: TABLE_COLUMNS.RESERVE_WITHDRAWAL_MONTH,
+      editable: true,
+      inputType: 'select',
+      sortable: false,
+      options: CLOSING_MONTH_TYPE_OPTIONS,
+      style: { width: '120px' },
+      render: (item: ReserveSettingItem) => (
+        <span>{formatClosingMonthType(item.transferOutMonthType)}</span>
       )
     },
     {
@@ -113,10 +122,10 @@ export function ReserveSettingPage() {
       editable: true,
       inputType: 'select',
       sortable: false,
-      options: transferDayOptions,
-      style: { width: '150px' },
+      options: CLOSING_DAY_STRING_OPTIONS,
+      style: { width: '120px' },
       render: (item: ReserveSettingItem) => (
-        <span>{getTransferDayLabel(item.transferOutDay) || '-'}</span>
+        <span>{formatClosingDay(item.transferOutDay)}</span>
       )
     }
   ];

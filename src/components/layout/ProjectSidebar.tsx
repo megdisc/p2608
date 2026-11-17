@@ -70,7 +70,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           </button>
           <button 
             className={`nav-button ${['screenSchedule', 'attendanceMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenCalendar', 'calendarMonth', 'screenAttendance', 'screenCalendarDailyReport', 'calendarDailyReportCalendar', 'calendarDailyReportDay'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('scheduleMember')}
+            onClick={() => setActiveTab('attendanceMonth')}
           >
             {PAGE_NAMES.SCREEN_SCHEDULE || '予定'}
           </button>

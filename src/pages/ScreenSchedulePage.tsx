@@ -12,14 +12,14 @@ export function ScreenSchedulePage() {
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_SCHEDULE;
   const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_SCHEDULE || '予定';
 
-  // 画面表示時のデフォルト表示タブは利用者タブとする
+  // 画面表示時のデフォルト表示タブはカレンダータブとする
   useEffect(() => {
     if (
       navContext.activeTab === 'screenSchedule' ||
       navContext.activeTab === 'screenCalendar' ||
       navContext.activeTab === 'attendanceDay'
     ) {
-      navContext.setActiveTab('scheduleMember');
+      navContext.setActiveTab('attendanceMonth');
     }
   }, [navContext]);
 
@@ -40,11 +40,11 @@ export function ScreenSchedulePage() {
     [navContext]
   );
 
-  const activeTab = navContext.activeTab === 'attendanceMonth'
-    ? 'attendanceMonth'
+  const activeTab = navContext.activeTab === 'scheduleMember'
+    ? 'scheduleMember'
     : navContext.activeTab === 'scheduleStaff'
     ? 'scheduleStaff'
-    : 'scheduleMember';
+    : 'attendanceMonth';
 
   return (
     <>

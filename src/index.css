@@ -328,6 +328,67 @@ button {
   display: none;
 }
 
+.dashboard-container {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-bottom: var(--space-10);
+  padding-right: var(--space-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-container::-webkit-scrollbar {
+  display: none;
+}
+
+.dashboard-panel {
+  background-color: var(--color-bg-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  color: var(--color-text-main);
+  animation: rowFadeIn 0.3s ease-out forwards;
+}
+
+.dashboard-quick-access-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 var(--space-2);
+  background-color: var(--color-bg-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text-main);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  text-align: center;
+  font-family: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.2s;
+}
+
+.dashboard-quick-access-btn:hover {
+  background-color: var(--color-bg-subtle);
+  border-color: var(--color-border-focus);
+}
+
+.dashboard-scroll-area {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.dashboard-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
 .table-container:last-child {
   margin-bottom: var(--space-12);
 }

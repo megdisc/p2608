@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { PAGE_NAMES } from '../constants';
+import { PAGE_NAMES, MESSAGES } from '../constants';
 import { useNavigation, useOffice } from '../contexts';
+import { Button } from '../components/ui';
 import { supabase } from '../lib';
 import { getCurrentJSTDateOnly } from '../utils';
 import type { Tab } from '../types';
@@ -66,7 +67,7 @@ const getYesterdayString = (dateStr: string): string => {
 
 export function DashboardPage() {
   const { setActiveTab } = useNavigation();
-  const { offices, selectedOfficeId, selectedOffice } = useOffice();
+  const { offices, selectedOfficeId } = useOffice();
 
   // 今日の日付 (JST)
   const todayDateStr = useMemo(() => getCurrentJSTDateOnly(), []);
@@ -83,28 +84,22 @@ export function DashboardPage() {
 
   const targetOfficeId = selectedOfficeId || (offices.length > 0 ? offices[0].id : '');
 
-  // 12個のクイックアクセスワーク（2行 × 6列）
+  // 6個のクイックアクセスワーク
   const quickAccessItems: QuickAccessButton[] = [
-    // 1行目
-    { id: 'work-schedule-change', title: '予定変更', tab: 'scheduleMember' },
-    { id: 'work-project-manage', title: '案件登録・変更', tab: 'project' },
-    { id: 'work-finance-check', title: '収支確認', tab: 'financialSummary' },
-    { id: 'work-member-daily', title: '利用者日報', tab: 'dailyWorkRecord' },
-    { id: 'work-staff-daily', title: '職員日報', tab: 'staffAttendanceRecord' },
-    { id: 'work-daily-confirm', title: '日報確定', tab: 'dailyWorkRecord' },
-
-    // 2行目
-    { id: 'work-project-progress', title: '案件進捗確認', tab: 'progressRecord' },
-    { id: 'work-project-settlement', title: '案件精算', tab: 'rewardAllocation' },
-    { id: 'work-monthly-closing', title: '月次決算', tab: 'wageSummary' },
-    { id: 'work-certificate-renewal', title: '受給者証更新', tab: 'memberRecipientCertificate' },
-    { id: 'work-skill-evaluation', title: 'スキル評価', tab: 'skillEvaluation' },
-    { id: 'work-base-wage-evaluation', title: '基本工賃評価', tab: 'baseWageAssignment' },
+    { id: 'work-attendance', title: '出欠', tab: 'attendanceMonth' },
+    { id: 'work-daily-report', title: '日報', tab: 'dailyWorkRecord' },
+    { id: 'work-progress', title: '進捗', tab: 'progressRecord' },
+    { id: 'work-expense-ledger', title: '会計帳簿', tab: 'expenseLedger' },
+    { id: 'work-reward-allocation', title: '収益分配', tab: 'rewardAllocation' },
+    { id: 'work-wage-summary', title: '月締め', tab: 'wageSummary' },
   ];
 
   // 通知ステート（1パネル構成）
   const [notificationMessage, setNotificationMessage] = useState<string>('通知はありません');
   const [hasPendingNotification, setHasPendingNotification] = useState<boolean>(false);
+
+  // ローディングステート
+  const [loading, setLoading] = useState<boolean>(true);
 
   // 今日の予定ステート
   const [memberSchedules, setMemberSchedules] = useState<MemberTodaySchedule[]>([]);
@@ -114,6 +109,7 @@ export function DashboardPage() {
   const fetchDashboardData = useCallback(async () => {
     if (!targetOfficeId) return;
 
+    setLoading(true);
     try {
       // 1. 通知判定（前日の日報確定未処理チェック）
       const yesterdayStr = getYesterdayString(todayDateStr);
@@ -279,6 +275,8 @@ export function DashboardPage() {
 
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
+    } finally {
+      setLoading(false);
     }
   }, [targetOfficeId, todayDateStr, dayOfWeek]);
 
@@ -305,30 +303,26 @@ export function DashboardPage() {
   }, [staffSchedules]);
 
   return (
-    <div style={{
-      flex: 1,
-      minHeight: 0,
-      overflowY: 'auto',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 'var(--space-6)',
-      paddingBottom: 'var(--space-10)',
-      paddingRight: 'var(--space-2)'
-    }}>
-      {/* ページヘッダー */}
-      <div style={{
+    <div
+      className="dashboard-container"
+      style={{
+        flex: 1,
+        minHeight: 0,
+        overflowY: 'auto',
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline'
-      }}>
+        flexDirection: 'column',
+        gap: 'var(--space-6)',
+        paddingBottom: 'var(--space-10)',
+        paddingRight: 'var(--space-2)',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none'
+      }}
+    >
+      {/* ページヘッダー */}
+      <div>
         <h2 style={{ margin: 0, fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
           {PAGE_NAMES.SCREEN_DASHBOARD}
         </h2>
-        {selectedOffice && (
-          <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
-            事業所: {selectedOffice.name}
-          </div>
-        )}
       </div>
 
       {/* 1. 通知セクション（1パネル構成） */}
@@ -341,39 +335,26 @@ export function DashboardPage() {
         }}>
           通知
         </h3>
-        <div style={{
-          backgroundColor: 'var(--color-bg-main)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
+        <div className="dashboard-panel" style={{
           padding: 'var(--space-3) var(--space-4)',
-          fontSize: 'var(--text-body)',
-          color: 'var(--color-text-main)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
           <span>{notificationMessage}</span>
           {hasPendingNotification && (
-            <button
-              type="button"
+            <Button
+              variant="edit"
+              style={{ height: '24px', fontSize: 'var(--text-caption)', padding: '0 var(--space-3)' }}
               onClick={() => setActiveTab('dailyWorkRecord')}
-              style={{
-                fontSize: 'var(--text-caption)',
-                padding: '4px 12px',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-sm)',
-                backgroundColor: 'var(--color-bg-subtle)',
-                color: 'var(--color-text-main)',
-                cursor: 'pointer'
-              }}
             >
               日報画面を開く
-            </button>
+            </Button>
           )}
         </div>
       </section>
 
-      {/* 2. クイックアクセスセクション（2行 × 6列） */}
+      {/* 2. クイックアクセスセクション（6個） */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         <h3 style={{
           fontSize: 'var(--text-heading-3)',
@@ -392,34 +373,8 @@ export function DashboardPage() {
             <button
               key={item.id}
               type="button"
+              className="dashboard-quick-access-btn"
               onClick={() => setActiveTab(item.tab)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '42px',
-                padding: '0 var(--space-2)',
-                backgroundColor: 'var(--color-bg-main)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-md)',
-                cursor: 'pointer',
-                color: 'var(--color-text-main)',
-                fontSize: 'var(--text-caption)',
-                fontWeight: 'var(--weight-heading)',
-                textAlign: 'center',
-                fontFamily: 'inherit',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)';
-                e.currentTarget.style.borderColor = 'var(--color-border-focus)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = 'var(--color-bg-main)';
-                e.currentTarget.style.borderColor = 'var(--color-border)';
-              }}
             >
               {item.title}
             </button>
@@ -429,69 +384,52 @@ export function DashboardPage() {
 
       {/* 3. 今日の予定セクション */}
       <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)' }}>
-            <h3 style={{
-              fontSize: 'var(--text-heading-3)',
-              fontWeight: 'var(--weight-heading)',
-              color: 'var(--color-text-main)',
-              margin: 0
-            }}>
-              今日の予定
-            </h3>
-            <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
-              {formattedTodayJP}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setActiveTab('scheduleMember')}
-            style={{
-              fontSize: 'var(--text-caption)',
-              padding: '4px 12px',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'var(--color-bg-main)',
-              color: 'var(--color-text-main)',
-              cursor: 'pointer'
-            }}
-          >
-            予定表を開く
-          </button>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)' }}>
+          <h3 style={{
+            fontSize: 'var(--text-heading-3)',
+            fontWeight: 'var(--weight-heading)',
+            color: 'var(--color-text-main)',
+            margin: 0
+          }}>
+            今日の予定
+          </h3>
+          <span style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)' }}>
+            {formattedTodayJP}
+          </span>
         </div>
 
         {/* サマリーパネル */}
-        <div style={{
-          backgroundColor: 'var(--color-bg-main)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-md)',
-          padding: 'var(--space-4)',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: 'var(--space-4)'
-        }}>
+        <div
+          key={`summary-${targetOfficeId}`}
+          className="dashboard-panel"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 'var(--space-4)'
+          }}
+        >
           {/* 職員 勤怠状況 */}
           <div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>
+            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
               職員 勤怠状況
             </div>
             <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
               {staffSummary.working} / {staffSummary.total} 名
             </div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
               内訳: 勤務 {staffSummary.working}名 / 休み {staffSummary.off}名
             </div>
           </div>
 
           {/* 利用者 出欠状況 */}
           <div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginBottom: 'var(--space-1)' }}>
+            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
               利用者 出欠状況
             </div>
             <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
               {memberSummary.totalScheduled} / {memberSummary.total} 名
             </div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
               内訳: 通所 {memberSummary.present}名 / 施設外 {memberSummary.offsite}名 / 在宅 {memberSummary.remote}名 / 欠席 {memberSummary.absent}名
             </div>
           </div>
@@ -504,42 +442,40 @@ export function DashboardPage() {
             <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
               利用者 当日状況 ({memberSchedules.length}名)
             </div>
-            <div style={{
-              maxHeight: '260px',
-              overflowY: 'auto',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-bg-main)'
-            }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 'var(--text-caption)' }}>
+            <div className="table-container" style={{ maxHeight: '260px' }}>
+              <table className="inventory-table">
                 <thead>
-                  <tr style={{ backgroundColor: 'var(--color-bg-subtle)', position: 'sticky', top: 0, zIndex: 1 }}>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>コード</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>氏名</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>状況</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>予定時間</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>昼食</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>送迎</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>備考</th>
+                  <tr>
+                    <th>コード</th>
+                    <th>氏名</th>
+                    <th>状況</th>
+                    <th>予定時間</th>
+                    <th>昼食</th>
+                    <th>送迎</th>
+                    <th>備考</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {memberSchedules.length === 0 ? (
+                <tbody key={`members-${targetOfficeId}`}>
+                  {loading ? (
                     <tr>
-                      <td colSpan={7} style={{ padding: '16px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                        データがありません
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '24px' }}>
+                        {MESSAGES.LOADING}
                       </td>
+                    </tr>
+                  ) : memberSchedules.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="empty-message">表示するデータがありません</td>
                     </tr>
                   ) : (
                     memberSchedules.map(m => (
-                      <tr key={m.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                        <td style={{ padding: '8px var(--space-3)' }}>{m.code}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{m.name}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{STATUS_TEXT[m.status] || '通所'}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{m.isScheduled && m.startTime ? `${m.startTime} 〜 ${m.endTime}` : '-'}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{m.hasMeal ? 'あり' : '-'}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{getPickupText(m.hasPickup, m.hasDropoff)}</td>
-                        <td style={{ padding: '8px var(--space-3)', color: 'var(--color-text-muted)' }}>{m.remarks || '-'}</td>
+                      <tr key={m.id}>
+                        <td>{m.code}</td>
+                        <td>{m.name}</td>
+                        <td>{STATUS_TEXT[m.status] || '通所'}</td>
+                        <td>{m.isScheduled && m.startTime ? `${m.startTime} 〜 ${m.endTime}` : '-'}</td>
+                        <td>{m.hasMeal ? 'あり' : '-'}</td>
+                        <td>{getPickupText(m.hasPickup, m.hasDropoff)}</td>
+                        <td>{m.remarks || '-'}</td>
                       </tr>
                     ))
                   )}
@@ -553,40 +489,38 @@ export function DashboardPage() {
             <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
               職員 当日状況 ({staffSchedules.length}名)
             </div>
-            <div style={{
-              maxHeight: '260px',
-              overflowY: 'auto',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: 'var(--color-bg-main)'
-            }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 'var(--text-caption)' }}>
+            <div className="table-container" style={{ maxHeight: '260px' }}>
+              <table className="inventory-table">
                 <thead>
-                  <tr style={{ backgroundColor: 'var(--color-bg-subtle)', position: 'sticky', top: 0, zIndex: 1 }}>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>コード</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>氏名</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>勤怠</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>勤務時間</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>休憩</th>
-                    <th style={{ padding: '8px var(--space-3)', borderBottom: '1px solid var(--color-border)', fontWeight: 'var(--weight-heading)' }}>備考</th>
+                  <tr>
+                    <th>コード</th>
+                    <th>氏名</th>
+                    <th>勤怠</th>
+                    <th>勤務時間</th>
+                    <th>休憩</th>
+                    <th>備考</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {staffSchedules.length === 0 ? (
+                <tbody key={`staff-${targetOfficeId}`}>
+                  {loading ? (
                     <tr>
-                      <td colSpan={6} style={{ padding: '16px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                        データがありません
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>
+                        {MESSAGES.LOADING}
                       </td>
+                    </tr>
+                  ) : staffSchedules.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="empty-message">表示するデータがありません</td>
                     </tr>
                   ) : (
                     staffSchedules.map(s => (
-                      <tr key={s.id} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                        <td style={{ padding: '8px var(--space-3)' }}>{s.code}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{s.name}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay ? '出勤' : '休み'}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
-                        <td style={{ padding: '8px var(--space-3)' }}>{s.isWorkDay && s.breakMinutes > 0 ? `${s.breakMinutes}分` : '-'}</td>
-                        <td style={{ padding: '8px var(--space-3)', color: 'var(--color-text-muted)' }}>{s.remarks || '-'}</td>
+                      <tr key={s.id}>
+                        <td>{s.code}</td>
+                        <td>{s.name}</td>
+                        <td>{s.isWorkDay ? '出勤' : '休み'}</td>
+                        <td>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
+                        <td>{s.isWorkDay && s.breakMinutes > 0 ? `${s.breakMinutes}分` : '-'}</td>
+                        <td>{s.remarks || '-'}</td>
                       </tr>
                     ))
                   )}

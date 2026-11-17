@@ -443,6 +443,8 @@ export const TABLE_COLUMNS = {
   IS_CUSTOMER: '顧客',
   IS_SUBCONTRACTOR: '外注先',
   IS_OTHER: 'その他',
+  CUSTOMER_PAYMENT_DAY: '顧客入金日',
+  SUBCONTRACTOR_PAYMENT_DAY: '外注先出金日',
 
   // アカウント
   ROLE: WORDS_PERSON.ROLE,

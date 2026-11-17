@@ -358,6 +358,8 @@ export function ScreenCompositionPage() {
         { name: 'is_customer', desc: '顧客フラグ' },
         { name: 'is_subcontractor', desc: '外注先フラグ' },
         { name: 'is_other', desc: 'その他フラグ' },
+        { name: 'customer_payment_day', desc: '顧客入金基準日（例: next_99: 翌月末日, next_10: 翌月10日）', status: 'added' },
+        { name: 'subcontractor_payment_day', desc: '外注先出金基準日（例: next_99: 翌月末日, next_20: 翌月20日）', status: 'added' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
         { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
         { name: 'created_at', desc: '作成日時' },

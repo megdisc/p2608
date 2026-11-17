@@ -165,6 +165,8 @@ export type ClientItem = {
   isCustomer?: boolean;
   isSubcontractor?: boolean;
   isOther?: boolean;
+  customerPaymentDay?: string | null;
+  subcontractorPaymentDay?: string | null;
   contacts?: PartnerContactItem[];
   deleted_at?: string | null;
   is_deleted?: boolean;

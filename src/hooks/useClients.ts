@@ -66,6 +66,8 @@ export function useClients() {
           isCustomer: d.is_customer ?? false,
           isSubcontractor: d.is_subcontractor ?? false,
           isOther: d.is_other ?? false,
+          customerPaymentDay: d.customer_payment_day || null,
+          subcontractorPaymentDay: d.subcontractor_payment_day || null,
           contacts
         };
       });
@@ -111,7 +113,9 @@ export function useClients() {
           yomigana: item.yomigana,
           is_customer: item.isCustomer ?? false,
           is_subcontractor: item.isSubcontractor ?? false,
-          is_other: item.isOther ?? false
+          is_other: item.isOther ?? false,
+          customer_payment_day: item.isCustomer ? (item.customerPaymentDay || null) : null,
+          subcontractor_payment_day: item.isSubcontractor ? (item.subcontractorPaymentDay || null) : null
         };
         if (!item.id.startsWith('CLI-')) {
           upsertPartnerData.id = item.id;

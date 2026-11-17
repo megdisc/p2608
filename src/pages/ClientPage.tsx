@@ -16,6 +16,29 @@ export function ClientPage() {
     });
   }, [fetchClients, showAlert]);
 
+  const paymentDayOptions = [
+    { value: '', label: '未設定' },
+    { value: 'next_99', label: '翌月末日' },
+    { value: 'next_10', label: '翌月10日' },
+    { value: 'next_15', label: '翌月15日' },
+    { value: 'next_20', label: '翌月20日' },
+    { value: 'next_25', label: '翌月25日' },
+    { value: 'current_99', label: '当月末日' },
+    { value: 'current_25', label: '当月25日' },
+    { value: 'next_next_10', label: '翌々月10日' },
+    { value: 'next_next_99', label: '翌々月末日' },
+    ...Array.from({ length: 31 }, (_, i) => {
+      const day = i + 1;
+      return { value: `next_${day}`, label: `翌月${day}日` };
+    }).filter(o => !['next_10', 'next_15', 'next_20', 'next_25'].includes(o.value))
+  ];
+
+  const getPaymentDayLabel = (val?: string | null) => {
+    if (!val) return '';
+    const opt = paymentDayOptions.find(o => o.value === val);
+    return opt ? opt.label : val;
+  };
+
   const columns: Column<ClientItem>[] = [
     { 
       key: 'code', 
@@ -45,14 +68,28 @@ export function ClientPage() {
       header: TABLE_COLUMNS.IS_CUSTOMER, 
       editable: true, 
       inputType: 'checkbox',
-      rowType: 'main'
+      rowType: 'main',
+      onCellChange: (val) => {
+        if (!val) {
+          return { customerPaymentDay: '' };
+        } else {
+          return { customerPaymentDay: 'next_99' };
+        }
+      }
     },
     { 
       key: 'isSubcontractor', 
       header: TABLE_COLUMNS.IS_SUBCONTRACTOR, 
       editable: true, 
       inputType: 'checkbox',
-      rowType: 'main'
+      rowType: 'main',
+      onCellChange: (val) => {
+        if (!val) {
+          return { subcontractorPaymentDay: '' };
+        } else {
+          return { subcontractorPaymentDay: 'next_99' };
+        }
+      }
     },
     { 
       key: 'isOther', 
@@ -60,6 +97,24 @@ export function ClientPage() {
       editable: true, 
       inputType: 'checkbox',
       rowType: 'main'
+    },
+    { 
+      key: 'customerPaymentDay', 
+      header: TABLE_COLUMNS.CUSTOMER_PAYMENT_DAY, 
+      editable: (item) => Boolean(item.isCustomer),
+      inputType: 'select',
+      options: paymentDayOptions,
+      rowType: 'main',
+      render: (item) => item.isCustomer ? (getPaymentDayLabel(item.customerPaymentDay) || '-') : '-'
+    },
+    { 
+      key: 'subcontractorPaymentDay', 
+      header: TABLE_COLUMNS.SUBCONTRACTOR_PAYMENT_DAY, 
+      editable: (item) => Boolean(item.isSubcontractor),
+      inputType: 'select',
+      options: paymentDayOptions,
+      rowType: 'main',
+      render: (item) => item.isSubcontractor ? (getPaymentDayLabel(item.subcontractorPaymentDay) || '-') : '-'
     },
     { 
       key: 'contactName', 
@@ -148,6 +203,8 @@ export function ClientPage() {
       isCustomer: true,
       isSubcontractor: true,
       isOther: false,
+      customerPaymentDay: 'next_99',
+      subcontractorPaymentDay: 'next_99',
       contacts: []
     } as ClientItem;
   };

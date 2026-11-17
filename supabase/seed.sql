@@ -578,11 +578,13 @@ ON CONFLICT (id) DO UPDATE SET
   remarks = EXCLUDED.remarks;
 
 -- 9. 取引先マスタ (partners)
-INSERT INTO public.partners (id, code, name, yomigana, is_customer, is_subcontractor, is_other) VALUES 
-('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', true, false, false),
-('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', true, true, false),
-('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', false, true, false)
-ON CONFLICT (id) DO NOTHING;
+INSERT INTO public.partners (id, code, name, yomigana, is_customer, is_subcontractor, is_other, customer_payment_day, subcontractor_payment_day) VALUES 
+('73ab0c05-9915-4894-a083-6bccf7a66d2a', 'C-000001', '株式会社テクノソリューションズ', 'かぶしきがいしゃてくのそりゅーしょんず', true, false, false, 'next_99', NULL),
+('bac1fb37-abfa-4eb3-9454-d72fb7b3b7e8', 'C-000002', 'グローバルインダストリー株式会社', 'ぐろーばるいんだすとりーかぶしきがいしゃ', true, true, false, 'next_99', 'next_99'),
+('0ff5f11e-b752-4b06-aaab-86984a67eec7', 'C-000003', '合同会社イノベーションラボ', 'ごうどうがいしゃいのべーしょんらぼ', false, true, false, NULL, 'next_99')
+ON CONFLICT (id) DO UPDATE SET
+  customer_payment_day = EXCLUDED.customer_payment_day,
+  subcontractor_payment_day = EXCLUDED.subcontractor_payment_day;
 
 -- 9.1 取引先担当者マスタ (partner_contacts)
 INSERT INTO public.partner_contacts (id, partner_id, name, yomigana, department, position) VALUES

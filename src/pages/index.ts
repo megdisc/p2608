@@ -67,3 +67,8 @@ export * from './ScreenCalendarPage';
 export * from './ScreenSchedulePage';
 export * from './ScreenRewardAllocationPage';
 export * from './ScreenWageSummaryPage';
+export * from './ReserveSummaryPage';
+export * from './ScreenAverageWagePage';
+export * from './ScreenProductionBusinessPage';
+export * from './ScreenWelfareBusinessPage';
+export * from './ScreenReserveSummaryPage';

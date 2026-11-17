@@ -130,13 +130,29 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'wageSummary', label: PAGE_NAMES.WAGE_SUMMARY },
     ],
   },
-  SCREEN_FINANCE: {
-    screenName: PAGE_NAMES.SCREEN_FINANCE,
+  SCREEN_AVERAGE_WAGE: {
+    screenName: PAGE_NAMES.SCREEN_AVERAGE_WAGE,
     tabs: [
       { id: 'averageWage', label: PAGE_NAMES.AVERAGE_WAGE_SUMMARY },
-      { id: 'projectFinancialSummary', label: PAGE_NAMES.PROJECT_FINANCIAL_SUMMARY },
-      { id: 'financialSummary', label: PAGE_NAMES.FINANCIAL_SUMMARY },
-      { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
+    ],
+  },
+  SCREEN_PRODUCTION_BUSINESS: {
+    screenName: PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS,
+    tabs: [
+      { id: 'financialSummary', label: PAGE_NAMES.TAB_PERIOD_FINANCIAL },
+      { id: 'projectFinancialSummary', label: PAGE_NAMES.TAB_PROJECT_FINANCIAL },
+    ],
+  },
+  SCREEN_WELFARE_BUSINESS: {
+    screenName: PAGE_NAMES.SCREEN_WELFARE_BUSINESS,
+    tabs: [
+      { id: 'welfareFinancialSummary', label: PAGE_NAMES.TAB_WELFARE_FINANCIAL },
+    ],
+  },
+  SCREEN_RESERVE_REPORT: {
+    screenName: PAGE_NAMES.SCREEN_RESERVE_REPORT,
+    tabs: [
+      { id: 'reserveSummary', label: PAGE_NAMES.TAB_RESERVE_SUMMARY },
     ],
   },
   SCREEN_COMPOSITION: {
@@ -164,7 +180,10 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenCalendar' || tabId === 'attendanceMonth' || tabId === 'screenSchedule' || tabId === 'scheduleStaff' || tabId === 'scheduleMember' || tabId === 'attendanceDay' || tabId === 'screenAttendance' || tabId === 'screenCalendarDailyReport' || tabId === 'calendarDailyReportCalendar' || tabId === 'calendarDailyReportDay') return SCREEN_CONFIGS.SCREEN_SCHEDULE;
   if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenWageSummary' || tabId === 'wageSummary') return SCREEN_CONFIGS.SCREEN_WAGE_SUMMARY;
-  if (tabId === 'screenFinance' || tabId === 'averageWage' || tabId === 'financialRecord' || tabId === 'financialSummary' || tabId === 'projectFinancialSummary' || tabId === 'welfareFinancialSummary') return SCREEN_CONFIGS.SCREEN_FINANCE;
+  if (tabId === 'screenAverageWage' || tabId === 'averageWage') return SCREEN_CONFIGS.SCREEN_AVERAGE_WAGE;
+  if (tabId === 'screenProductionBusiness' || tabId === 'financialSummary' || tabId === 'projectFinancialSummary' || tabId === 'financialRecord' || tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_PRODUCTION_BUSINESS;
+  if (tabId === 'screenWelfareBusiness' || tabId === 'welfareFinancialSummary') return SCREEN_CONFIGS.SCREEN_WELFARE_BUSINESS;
+  if (tabId === 'screenReserveReport' || tabId === 'reserveSummary') return SCREEN_CONFIGS.SCREEN_RESERVE_REPORT;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
   if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;

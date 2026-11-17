@@ -153,10 +153,28 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
           <button 
-            className={`nav-button ${['screenFinance', 'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary', 'financialRecord'].includes(activeTab) ? 'active' : ''}`}
+            className={`nav-button ${['screenAverageWage', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('averageWage')}
           >
-            {PAGE_NAMES.SCREEN_FINANCE}
+            {PAGE_NAMES.SCREEN_AVERAGE_WAGE}
+          </button>
+          <button 
+            className={`nav-button ${['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('financialSummary')}
+          >
+            {PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS}
+          </button>
+          <button 
+            className={`nav-button ${['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('welfareFinancialSummary')}
+          >
+            {PAGE_NAMES.SCREEN_WELFARE_BUSINESS}
+          </button>
+          <button 
+            className={`nav-button ${['screenReserveReport', 'reserveSummary'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('reserveSummary')}
+          >
+            {PAGE_NAMES.SCREEN_RESERVE_REPORT}
           </button>
         </div>
 

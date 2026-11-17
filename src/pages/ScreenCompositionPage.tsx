@@ -7,7 +7,7 @@ import { Tabs } from '../components/ui';
 const CATEGORY_SETTINGS = MENU_CATEGORIES.SETTINGS || '設定';
 const CATEGORY_PEOPLE = MENU_CATEGORIES.PEOPLE || '人の情報';
 const CATEGORY_DAILY_RECORDS = MENU_CATEGORIES.DAILY_RECORDS || '日々の記録';
-const CATEGORY_REPORTS = MENU_CATEGORIES.REPORTS || '集計資料';
+const CATEGORY_REPORTS = MENU_CATEGORIES.REPORTS || 'レポート';
 const CATEGORY_DEVELOPMENT = MENU_CATEGORIES.DEVELOPMENT || '開発用';
 
 const getTabCategory = (tabId: string): string => {
@@ -51,10 +51,16 @@ const getTabCategory = (tabId: string): string => {
     'wageSummary',
   ];
 
-  // 4. 集計資料（収支）
+  // 4. レポート（平均工賃、就労支援事業、福祉事業、積立金）
   const reportsTabIds = [
-    // 収支
-    'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary',
+    // 平均工賃
+    'averageWage',
+    // 就労支援事業
+    'financialSummary', 'projectFinancialSummary',
+    // 福祉事業
+    'welfareFinancialSummary',
+    // 積立金
+    'reserveSummary',
   ];
 
   // 5. 開発用（システム構成）
@@ -1261,7 +1267,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.1. 収支スナップショット（財務決算）',
       physicalName: 'financial_snapshot',
       tableType: 'スナップショット',
@@ -1286,7 +1292,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.2. サービス費用スナップショット（国保連・給付費請求）',
       physicalName: 'service_billing_snapshot',
       tableType: 'スナップショット',
@@ -1317,7 +1323,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'wage_snapshot',
       tableType: 'スナップショット',
@@ -1345,7 +1351,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'incentive_snapshot',
       tableType: 'スナップショット',
@@ -1363,7 +1369,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'allowance_deduction_snapshot',
       tableType: 'スナップショット',
@@ -1384,7 +1390,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計資料の記録',
+      category: '8. レポートの記録',
       subCategory: '8.4. 月次確定（締め状態管理）',
       physicalName: 'monthly_closings',
       tableType: 'スナップショット',

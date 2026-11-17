@@ -4,7 +4,10 @@ import './index.css';
 import type { Tab } from './types';
 import {
   ScreenCompositionPage,
-  ScreenFinancePage,
+  ScreenAverageWagePage,
+  ScreenProductionBusinessPage,
+  ScreenWelfareBusinessPage,
+  ScreenReserveSummaryPage,
   ScreenProjectPage,
   ScreenUserPage,
   ScreenStaffPage,
@@ -88,8 +91,14 @@ function AppContent() {
               <ScreenAccountingPage />
             ) : ['screenWageSummary', 'wageSummary'].includes(activeTab) ? (
               <ScreenWageSummaryPage />
-            ) : ['financialRecord', 'financialSummary', 'projectFinancialSummary', 'welfareFinancialSummary', 'averageWage', 'screenFinance'].includes(activeTab) ? (
-              <ScreenFinancePage />
+            ) : ['screenAverageWage', 'averageWage'].includes(activeTab) ? (
+              <ScreenAverageWagePage />
+            ) : ['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? (
+              <ScreenProductionBusinessPage />
+            ) : ['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? (
+              <ScreenWelfareBusinessPage />
+            ) : ['screenReserveReport', 'reserveSummary'].includes(activeTab) ? (
+              <ScreenReserveSummaryPage />
             ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
               <ScreenCompositionPage />
             ) : (

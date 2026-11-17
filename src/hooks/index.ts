@@ -37,4 +37,5 @@ export * from './useReserveSettings';
 export * from './useWageClosingSettings';
 export * from './useSalaryClosingSettings';
 export * from './useRecipientCertificates';
+export * from './useReserveSummary';
 

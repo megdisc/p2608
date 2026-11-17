@@ -7,7 +7,7 @@ import { WageSummaryPage } from './WageSummaryPage';
 export function ScreenWageSummaryPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_WAGE_SUMMARY;
-  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_WAGE_SUMMARY || '工賃・控除明細';
+  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_WAGE_SUMMARY || '工賃・控除';
 
   return (
     <>

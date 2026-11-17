@@ -12,6 +12,12 @@ export type ScreenConfig = {
 };
 
 export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
+  SCREEN_DASHBOARD: {
+    screenName: PAGE_NAMES.SCREEN_DASHBOARD,
+    tabs: [
+      { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
+    ],
+  },
   SCREEN_WELFARE: {
     screenName: PAGE_NAMES.SCREEN_WELFARE,
     tabs: [
@@ -45,12 +51,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'skillLevel', label: PAGE_NAMES.SKILL_LEVEL },
     ],
   },
-  SCREEN_SALARY: {
-    screenName: PAGE_NAMES.SCREEN_SALARY,
-    tabs: [
-      { id: 'salaryClosingDate', label: PAGE_NAMES.TAB_CLOSING_DATE },
-    ],
-  },
   SCREEN_WAGE: {
     screenName: PAGE_NAMES.SCREEN_WAGE,
     tabs: [
@@ -60,20 +60,16 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'closingDate', label: PAGE_NAMES.TAB_CLOSING_DATE },
     ],
   },
+  SCREEN_SALARY: {
+    screenName: PAGE_NAMES.SCREEN_SALARY,
+    tabs: [
+      { id: 'salaryClosingDate', label: PAGE_NAMES.TAB_CLOSING_DATE },
+    ],
+  },
   SCREEN_RESERVE: {
     screenName: PAGE_NAMES.SCREEN_RESERVE,
     tabs: [
       { id: 'reserveSetting', label: PAGE_NAMES.TAB_RESERVE_SETTING },
-    ],
-  },
-  SCREEN_STAFF: {
-    screenName: PAGE_NAMES.SCREEN_STAFF,
-    tabs: [
-      { id: 'staff', label: PAGE_NAMES.STAFF },
-      { id: 'staffQualification', label: PAGE_NAMES.QUALIFICATION },
-      { id: 'staffOffice', label: PAGE_NAMES.OFFICE },
-      { id: 'staffWorkStyle', label: PAGE_NAMES.WORK_STYLE },
-      { id: 'staffSchedule', label: PAGE_NAMES.WORK_SCHEDULE },
     ],
   },
   SCREEN_USER: {
@@ -85,6 +81,16 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'memberSchedule', label: PAGE_NAMES.SERVICE_SCHEDULE },
       { id: 'skillEvaluation', label: PAGE_NAMES.SKILL_EVALUATION },
       { id: 'baseWageAssignment', label: PAGE_NAMES.BASE_WAGE_ASSIGNMENT },
+    ],
+  },
+  SCREEN_STAFF: {
+    screenName: PAGE_NAMES.SCREEN_STAFF,
+    tabs: [
+      { id: 'staff', label: PAGE_NAMES.STAFF },
+      { id: 'staffQualification', label: PAGE_NAMES.QUALIFICATION },
+      { id: 'staffOffice', label: PAGE_NAMES.OFFICE },
+      { id: 'staffWorkStyle', label: PAGE_NAMES.WORK_STYLE },
+      { id: 'staffSchedule', label: PAGE_NAMES.WORK_SCHEDULE },
     ],
   },
   SCREEN_PROJECT: {
@@ -107,15 +113,15 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_SCHEDULE,
     tabs: [
       { id: 'attendanceMonth', label: PAGE_NAMES.TAB_CALENDAR },
-      { id: 'scheduleStaff', label: PAGE_NAMES.TAB_STAFF },
       { id: 'scheduleMember', label: PAGE_NAMES.TAB_MEMBER },
+      { id: 'scheduleStaff', label: PAGE_NAMES.TAB_STAFF },
     ],
   },
   SCREEN_DAILY_REPORT: {
     screenName: PAGE_NAMES.SCREEN_DAILY_REPORT,
     tabs: [
-      { id: 'staffAttendanceRecord', label: PAGE_NAMES.TAB_STAFF },
       { id: 'dailyWorkRecord', label: PAGE_NAMES.TAB_MEMBER },
+      { id: 'staffAttendanceRecord', label: PAGE_NAMES.TAB_STAFF },
     ],
   },
   SCREEN_WAGE_SUMMARY: {
@@ -133,14 +139,8 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'welfareFinancialSummary', label: PAGE_NAMES.WELFARE_FINANCIAL_SUMMARY },
     ],
   },
-  SCREEN_DASHBOARD: {
-    screenName: PAGE_NAMES.SCREEN_DASHBOARD,
-    tabs: [
-      { id: 'dashboard', label: PAGE_NAMES.SCREEN_DASHBOARD },
-    ],
-  },
   SCREEN_COMPOSITION: {
-    screenName: 'システム構成（開発用）',
+    screenName: PAGE_NAMES.SCREEN_COMPOSITION,
     tabs: [
       { id: 'screenComposition', label: PAGE_NAMES.TAB_SCREEN_COMPOSITION },
       { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },

@@ -7,12 +7,13 @@ import { Tabs } from '../components/ui';
 const CATEGORY_SETTINGS = MENU_CATEGORIES.SETTINGS || '設定';
 const CATEGORY_PEOPLE = MENU_CATEGORIES.PEOPLE || '人の情報';
 const CATEGORY_DAILY_RECORDS = MENU_CATEGORIES.DAILY_RECORDS || '日々の記録';
-const CATEGORY_REPORTS = MENU_CATEGORIES.REPORTS || '集計結果';
+const CATEGORY_REPORTS = MENU_CATEGORIES.REPORTS || '集計資料';
+const CATEGORY_DEVELOPMENT = MENU_CATEGORIES.DEVELOPMENT || '開発用';
 
 const getTabCategory = (tabId: string): string => {
-  // 1. 設定（福祉制度、施設、取引先、スキル体系、工賃・控除体系、積立金体系）
+  // 1. 設定（制度、施設、取引先、スキル体系、工賃・控除体系、給与体系、積立金体系）
   const settingsTabIds = [
-    // 福祉制度
+    // 制度
     'serviceType', 'qualification', 'staffRole', 'regionalGrade', 'rewardItem',
     // 施設
     'organization', 'office', 'officeServiceType', 'officeReward',
@@ -20,42 +21,44 @@ const getTabCategory = (tabId: string): string => {
     'client',
     // スキル体系
     'skillCategory', 'skill', 'skillLevel',
-    // 給与体系（基準日）
-    'salaryClosingDate',
     // 工賃・控除体系
     'baseWage', 'allowance', 'deduction', 'closingDate',
+    // 給与体系
+    'salaryClosingDate',
     // 積立金体系
     'reserveSetting', 'reserve',
   ];
 
-  // 2. 人の情報（職員、利用者）
+  // 2. 人の情報（利用者、職員）
   const peopleTabIds = [
+    // 利用者
+    'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'skillEvaluation', 'baseWageAssignment',
     // 職員
     'staff', 'staffQualification', 'staffOffice', 'staffWorkStyle', 'staffSchedule',
-    // 利用者
-    'projectUser', 'memberRecipientCertificate', 'memberOffice', 'memberSchedule', 'baseWageAssignment', 'skillEvaluation',
   ];
 
-  // 3. 日々の記録（案件、会計、予定、日報、工賃・控除明細）
+  // 3. 日々の記録（案件、会計、予定、日報、工賃・控除）
   const dailyRecordsTabIds = [
     // 案件
     'project', 'budgetPlanning', 'assigneeAllocation', 'progressRecord',
     // 会計
     'screenAccounting', 'accounting', 'screenExpenseLedger', 'expenseLedger', 'projectFinancialRecord', 'screenRewardAllocation', 'rewardAllocation',
     // 予定（カレンダー統合）
-    'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay',
+    'calendarDailyReportCalendar', 'attendanceMonth', 'calendarMonth', 'scheduleMember', 'scheduleStaff', 'scheduleDay', 'attendanceDay',
     // 日報
     'dailyWorkRecord', 'staffAttendanceRecord', 'calendarDailyReportDay', 'screenDailyWork', 'screenStaffDailyReport',
-    // 工賃・控除明細
+    // 工賃・控除
     'wageSummary',
   ];
 
-  // 4. 集計結果（収支、ダッシュボード、システム構成（開発用））
+  // 4. 集計資料（収支）
   const reportsTabIds = [
     // 収支
     'averageWage', 'projectFinancialSummary', 'financialSummary', 'welfareFinancialSummary',
-    // ダッシュボード
-    'dashboard',
+  ];
+
+  // 5. 開発用（システム構成）
+  const developmentTabIds = [
     // システム構成
     'screenComposition', 'tableComposition',
   ];
@@ -64,6 +67,7 @@ const getTabCategory = (tabId: string): string => {
   if (peopleTabIds.includes(tabId)) return CATEGORY_PEOPLE;
   if (dailyRecordsTabIds.includes(tabId)) return CATEGORY_DAILY_RECORDS;
   if (reportsTabIds.includes(tabId)) return CATEGORY_REPORTS;
+  if (developmentTabIds.includes(tabId)) return CATEGORY_DEVELOPMENT;
 
   return CATEGORY_SETTINGS;
 };
@@ -73,6 +77,7 @@ const getCategoryColor = (category: string) => {
   if (category === CATEGORY_PEOPLE) return 'var(--palette-blue-300)';
   if (category === CATEGORY_DAILY_RECORDS) return 'var(--palette-bluegreen-300)';
   if (category === CATEGORY_REPORTS) return 'var(--palette-yellow-300)';
+  if (category === CATEGORY_DEVELOPMENT) return 'var(--palette-gray-300)';
   return 'transparent';
 };
 
@@ -118,7 +123,7 @@ export function ScreenCompositionPage() {
 
   const dbTables: DBTable[] = [
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'service_types',
       tableType: '独立マスタ',
@@ -135,7 +140,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'reward_items',
       tableType: '従属マスタ',
@@ -158,7 +163,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'qualifications',
       tableType: '独立マスタ',
@@ -175,7 +180,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'staff_roles',
       tableType: '独立マスタ',
@@ -195,7 +200,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'regional_grade_rates',
       tableType: '独立マスタ',
@@ -212,7 +217,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '1. 福祉制度',
+      category: '1. 制度',
       categoryDescription: '福祉制度で定められている値を管理するスキーマ群である。',
       physicalName: 'regional_grade_locations',
       tableType: '独立マスタ',
@@ -389,113 +394,6 @@ export function ScreenCompositionPage() {
     {
       category: '2. 法人・事業所',
       subCategory: '2.3. 運営体系',
-      physicalName: 'wage_rate_items',
-      tableType: '従属マスタ',
-      logicalName: '工賃単価項目',
-      description: '事業所に所属する工賃単価のマスターデータ（直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: '工賃単価ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'wage', desc: '工賃単価（円/時 または 円/日）' },
-        { name: 'description', desc: '説明・摘要' },
-        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '2. 法人・事業所',
-      subCategory: '2.3. 運営体系',
-      physicalName: 'allowance_deduction_items',
-      tableType: '従属マスタ',
-      logicalName: '加算手当・控除項目',
-      description: '事業所に所属する事業所独自規定の加算手当および控除項目のマスターデータ（直持ち所属事業所IDで管理）',
-      columns: [
-        { name: 'id', desc: '項目ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: '項目名（例: 資格手当、皆勤手当、食事代控除、送迎実費控除など）' },
-        { name: 'item_category', desc: '項目分類区分（allowance: 加算手当 / deduction: 控除）' },
-        { name: 'occurrence_type', desc: '頻度（daily: 日次 / monthly: 月次）' },
-        { name: 'calc_trigger_basis', desc: '基準（manual, work_hours, attendance_days, absence_days, attendance_rate, absence_rate, meal_count, transport_round, transport_one_way, transport_outbound, transport_inbound）' },
-        { name: 'threshold_value', desc: '基準値（数値）' },
-        { name: 'threshold_unit', desc: '単位（hours: 時間 / days: 日 / percent: 率 / times: 回）' },
-        { name: 'threshold_operator', desc: '範囲（gte: 以上 / lte: 以下 / gt: 超過 / lt: 未満 / eq: 一致）' },
-        { name: 'unit_price', desc: '標準発生単価・金額（円）' },
-        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '2. 法人・事業所',
-      subCategory: '2.3. 運営体系',
-      physicalName: 'salary_closing_settings',
-      tableType: '従属マスタ',
-      logicalName: '給与基準日設定',
-      description: '事業所の給与締め日、給与支給日のマスターデータ（給与体系画面の「基準日」タブで管理）',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '設定ID', status: 'added' },
-        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'closing_day', desc: '給与締め日（1〜28日、または99: 末日。勤務実績の月次集計締切日）', status: 'added' },
-        { name: 'payment_month_type', desc: '給与支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
-        { name: 'payment_day', desc: '給与支給日（1〜28日、または99: 末日。給与費の取引計上基準日）', status: 'added' },
-        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '2. 法人・事業所',
-      subCategory: '2.3. 運営体系',
-      physicalName: 'wage_closing_settings',
-      tableType: '従属マスタ',
-      logicalName: '工賃基準日設定',
-      description: '事業所の工賃締め日、工賃支給日、および平均工賃算出基準日のマスターデータ（工賃体系画面の「基準日」タブで管理）',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '設定ID', status: 'added' },
-        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'closing_day', desc: '工賃締め日（1〜28日、または99: 末日。作業時間・実績の月次集計締切日）', status: 'added' },
-        { name: 'payment_month_type', desc: '工賃支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
-        { name: 'payment_day', desc: '工賃支給日（1〜28日、または99: 末日。労務費の取引計上基準日）', status: 'added' },
-        { name: 'average_wage_calc_basis', desc: '平均工賃算出基準日区分（closing_date: 工賃締め日 / payment_date: 工賃支給日。デフォルト: payment_date）', status: 'added' },
-        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '2. 法人・事業所',
-      subCategory: '2.3. 運営体系',
-      physicalName: 'reserve_items',
-      tableType: '従属マスタ',
-      logicalName: '積立金項目',
-      description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備等修繕維持積立金など、直持ち所属事業所IDで管理。案件収益に対して定額/定率で設定）',
-      columns: [
-        { name: 'id', desc: '積立金ID' },
-        { name: 'office_id', desc: '所属事業所ID' },
-        { name: 'name', desc: '積立金名' },
-        { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
-        { name: 'fixed_amount', desc: '定額金額（円）' },
-        { name: 'fixed_rate', desc: '定率（%）' },
-        { name: 'transfer_in_month_type', desc: '積立金繰入月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
-        { name: 'transfer_in_day', desc: '積立金繰入日（1〜28日、または99: 末日）', status: 'added' },
-        { name: 'transfer_out_month_type', desc: '積立金取崩月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
-        { name: 'transfer_out_day', desc: '積立金取崩日（1〜28日、または99: 末日）', status: 'added' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '2. 法人・事業所',
-      subCategory: '2.3. 運営体系',
       physicalName: 'skill_categories',
       tableType: '従属マスタ',
       logicalName: 'スキルカテゴリ',
@@ -551,6 +449,113 @@ export function ScreenCompositionPage() {
       ]
     },
     {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'wage_rate_items',
+      tableType: '従属マスタ',
+      logicalName: '工賃単価項目',
+      description: '事業所に所属する工賃単価のマスターデータ（直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: '工賃単価ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'wage', desc: '工賃単価（円/時 または 円/日）' },
+        { name: 'description', desc: '説明・摘要' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'allowance_deduction_items',
+      tableType: '従属マスタ',
+      logicalName: '加算手当・控除項目',
+      description: '事業所に所属する事業所独自規定の加算手当および控除項目のマスターデータ（直持ち所属事業所IDで管理）',
+      columns: [
+        { name: 'id', desc: '項目ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'name', desc: '項目名（例: 資格手当、皆勤手当、食事代控除、送迎実費控除など）' },
+        { name: 'item_category', desc: '項目分類区分（allowance: 加算手当 / deduction: 控除）' },
+        { name: 'occurrence_type', desc: '頻度（daily: 日次 / monthly: 月次）' },
+        { name: 'calc_trigger_basis', desc: '基準（manual, work_hours, attendance_days, absence_days, attendance_rate, absence_rate, meal_count, transport_round, transport_one_way, transport_outbound, transport_inbound）' },
+        { name: 'threshold_value', desc: '基準値（数値）' },
+        { name: 'threshold_unit', desc: '単位（hours: 時間 / days: 日 / percent: 率 / times: 回）' },
+        { name: 'threshold_operator', desc: '範囲（gte: 以上 / lte: 以下 / gt: 超過 / lt: 未満 / eq: 一致）' },
+        { name: 'unit_price', desc: '標準発生単価・金額（円）' },
+        { name: 'sort_order', desc: '表示順序（昇順ソート用数値）' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'wage_closing_settings',
+      tableType: '従属マスタ',
+      logicalName: '工賃基準日設定',
+      description: '事業所の工賃締め日、工賃支給日、および平均工賃算出基準日のマスターデータ（工賃体系画面の「基準日」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '設定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'closing_day', desc: '工賃締め日（1〜28日、または99: 末日。作業時間・実績の月次集計締切日）', status: 'added' },
+        { name: 'payment_month_type', desc: '工賃支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'payment_day', desc: '工賃支給日（1〜28日、または99: 末日。労務費の取引計上基準日）', status: 'added' },
+        { name: 'average_wage_calc_basis', desc: '平均工賃算出基準日区分（closing_date: 工賃締め日 / payment_date: 工賃支給日。デフォルト: payment_date）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'salary_closing_settings',
+      tableType: '従属マスタ',
+      logicalName: '給与基準日設定',
+      description: '事業所の給与締め日、給与支給日のマスターデータ（給与体系画面の「基準日」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '設定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'closing_day', desc: '給与締め日（1〜28日、または99: 末日。勤務実績の月次集計締切日）', status: 'added' },
+        { name: 'payment_month_type', desc: '給与支給月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'payment_day', desc: '給与支給日（1〜28日、または99: 末日。給与費の取引計上基準日）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始日（YYYY-MM-DD）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了日（YYYY-MM-DD。NULL: 継続適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '2. 法人・事業所',
+      subCategory: '2.3. 運営体系',
+      physicalName: 'reserve_items',
+      tableType: '従属マスタ',
+      logicalName: '積立金項目',
+      description: '事業所に所属する積立金のマスターデータ（工賃変動積立金、設備等修繕維持積立金など、直持ち所属事業所IDで管理。案件収益に対して定額/定率で設定）',
+      columns: [
+        { name: 'id', desc: '積立金ID' },
+        { name: 'office_id', desc: '所属事業所ID' },
+        { name: 'name', desc: '積立金名' },
+        { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
+        { name: 'fixed_amount', desc: '定額金額（円）' },
+        { name: 'fixed_rate', desc: '定率（%）' },
+        { name: 'transfer_in_month_type', desc: '積立金繰入月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'transfer_in_day', desc: '積立金繰入日（1〜28日、または99: 末日）', status: 'added' },
+        { name: 'transfer_out_month_type', desc: '積立金取崩月区分（current: 当月 / next: 翌月 / next_next: 翌々月）', status: 'added' },
+        { name: 'transfer_out_day', desc: '積立金取崩日（1〜28日、または99: 末日）', status: 'added' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
       category: '3. アカウントとユーザー',
       subCategory: '3.1. アカウント',
       physicalName: 'auth_users',
@@ -570,138 +575,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'staffs',
-      tableType: '従属マスタ',
-      logicalName: '職員',
-      description: 'システムを利用する職員情報',
-      columns: [
-        { name: 'id', desc: '職員ID' },
-        { name: 'user_id', desc: '認証ユーザーID' },
-        { name: 'code', desc: '職員コード' },
-        { name: 'name', desc: '職員名' },
-        { name: 'yomigana', desc: 'ふりがな' },
-        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
-        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'staff_qualification_settings',
-      tableType: '従属マスタ',
-      logicalName: '職員資格割当',
-      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
-      columns: [
-        { name: 'id', desc: '割当ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'qualification_id', desc: '資格ID' },
-        { name: 'license_number', desc: '資格・登録番号' },
-        { name: 'acquired_on', desc: '取得年月日・修了日' },
-        { name: 'valid_until', desc: '有効期限・更新研修期限' },
-        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'office_staff_setting_summaries',
-      tableType: '従属マスタ',
-      logicalName: '事業所職員割当概要',
-      description: '各事業所における職員配属・所属期間の履歴管理（「事業所」タブで管理）',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '概要ID' },
-        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
-        { name: 'valid_from', desc: '所属開始日（配属・所属開始年月日）' },
-        { name: 'valid_to', desc: '所属終了日（配属・所属終了年月日。NULL: 継続中）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'office_staff_setting_details',
-      tableType: '従属マスタ',
-      logicalName: '事業所職員割当詳細',
-      description: '事業所職員割当概要に紐づく職員の個別所属割当（複数事業所兼務・所属定義対応。「事業所」タブで管理）',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '詳細ID' },
-        { name: 'summary_id', desc: '概要ID（FK -> office_staff_setting_summaries.id）' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'staff_role_setting_summaries',
-      tableType: '従属マスタ',
-      logicalName: '職員職種割当概要',
-      description: '事業所職員割当詳細（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「職種」タブで管理）',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '概要ID' },
-        { name: 'office_staff_setting_id', desc: '事業所職員割当詳細ID（FK -> office_staff_setting_details.id）', status: 'modified' },
-        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
-        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
-        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
-        { name: 'valid_from', desc: '有効期間（開始）' },
-        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'staff_role_setting_details',
-      tableType: '従属マスタ',
-      logicalName: '職員職種割当詳細',
-      description: '職員職種割当概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「職種」タブで管理）',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '詳細ID' },
-        { name: 'summary_id', desc: '概要ID（staff_role_setting_summariesのIDを参照）' },
-        { name: 'staff_role_id', desc: '職種ID（FK -> staff_roles.id）', status: 'added' },
-        { name: 'staff_role', desc: '配置職種区分コード（公定2桁コード。01: 管理者, 02: サービス管理責任者 等。staff_roles.codeと連動）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.2. 職員',
-      physicalName: 'staff_basic_schedules',
-      tableType: '従属マスタ',
-      logicalName: '職員基本勤務予定',
-      description: '曜日（日〜土）ごとの職員の定例勤務パターン（勤務曜日・標準出退勤時刻・休憩・所定時間）。日報（勤務記録）の初期自動セット基準',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '基本勤務予定ID', status: 'added' },
-        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
-        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
-        { name: 'is_work_day', desc: '定例勤務フラグ（true: 勤務日 / false: 公休・法定休日）', status: 'added' },
-        { name: 'start_time', desc: '基本始業時刻（出勤時刻。例: 08:30）', status: 'added' },
-        { name: 'end_time', desc: '基本終業時刻（退勤時刻。例: 17:30）', status: 'added' },
-        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
-        { name: 'scheduled_hours', desc: '基本所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
-        { name: 'remarks', desc: '備考・定例勤務パターンメモ（例: 早番、遅番、通常、時短等）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'members',
       tableType: '従属マスタ',
       logicalName: '利用者',
@@ -720,7 +594,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'member_recipient_certificates',
       tableType: '従属マスタ',
       logicalName: '利用者受給者証',
@@ -748,7 +622,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'office_member_setting_summaries',
       tableType: '従属マスタ',
       logicalName: '事業所利用者割当概要',
@@ -765,7 +639,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'office_member_setting_details',
       tableType: '従属マスタ',
       logicalName: '事業所利用者割当詳細',
@@ -781,7 +655,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'member_skill_setting_summaries',
       tableType: '従属マスタ',
       logicalName: '利用者スキル割当概要',
@@ -798,7 +672,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'member_skill_setting_details',
       tableType: '従属マスタ',
       logicalName: '利用者スキル割当詳細',
@@ -815,7 +689,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'member_wage_settings',
       tableType: '従属マスタ',
       logicalName: '利用者工賃単価割当',
@@ -835,7 +709,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '3. アカウントとユーザー',
-      subCategory: '3.3. 利用者',
+      subCategory: '3.2. 利用者',
       physicalName: 'member_basic_schedules',
       tableType: '従属マスタ',
       logicalName: '利用者基本利用予定',
@@ -856,6 +730,137 @@ export function ScreenCompositionPage() {
         { name: 'has_pickup', desc: '定例送迎（往路・迎え）利用フラグ', status: 'added' },
         { name: 'has_dropoff', desc: '定例送迎（復路・送り）利用フラグ', status: 'added' },
         { name: 'remarks', desc: '備考・週間通所計画メモ', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'staffs',
+      tableType: '従属マスタ',
+      logicalName: '職員',
+      description: 'システムを利用する職員情報',
+      columns: [
+        { name: 'id', desc: '職員ID' },
+        { name: 'user_id', desc: '認証ユーザーID' },
+        { name: 'code', desc: '職員コード' },
+        { name: 'name', desc: '職員名' },
+        { name: 'yomigana', desc: 'ふりがな' },
+        { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
+        { name: 'is_deleted', desc: '削除フラグ（論理削除連動生成列: deleted_at IS NOT NULL）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'staff_qualification_settings',
+      tableType: '従属マスタ',
+      logicalName: '職員資格割当',
+      description: '職員が保有する資格・登録番号・取得日・更新研修期限情報',
+      columns: [
+        { name: 'id', desc: '割当ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'qualification_id', desc: '資格ID' },
+        { name: 'license_number', desc: '資格・登録番号' },
+        { name: 'acquired_on', desc: '取得年月日・修了日' },
+        { name: 'valid_until', desc: '有効期限・更新研修期限' },
+        { name: 'is_primary', desc: '主要資格フラグ（true: 主要資格 / false: サブ資格）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'office_staff_setting_summaries',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当概要',
+      description: '各事業所における職員配属・所属期間の履歴管理（「事業所」タブで管理）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_id', desc: '事業所ID（FK -> offices.id）' },
+        { name: 'valid_from', desc: '所属開始日（配属・所属開始年月日）' },
+        { name: 'valid_to', desc: '所属終了日（配属・所属終了年月日。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'office_staff_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '事業所職員割当詳細',
+      description: '事業所職員割当概要に紐づく職員の個別所属割当（複数事業所兼務・所属定義対応。「事業所」タブで管理）',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（FK -> office_staff_setting_summaries.id）' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'staff_role_setting_summaries',
+      tableType: '従属マスタ',
+      logicalName: '職員職種割当概要',
+      description: '事業所職員割当詳細（親）に紐づく雇用形態・勤務区分・所定時間および適用期間の履歴管理（「職種」タブで管理）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '概要ID' },
+        { name: 'office_staff_setting_id', desc: '事業所職員割当詳細ID（FK -> office_staff_setting_details.id）', status: 'modified' },
+        { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
+        { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
+        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
+        { name: 'valid_from', desc: '有効期間（開始）' },
+        { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'staff_role_setting_details',
+      tableType: '従属マスタ',
+      logicalName: '職員職種割当詳細',
+      description: '職員職種割当概要に紐づく個別の配置職種区分（1人の職員による複数職種の兼務に対応。「職種」タブで管理）',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '詳細ID' },
+        { name: 'summary_id', desc: '概要ID（staff_role_setting_summariesのIDを参照）' },
+        { name: 'staff_role_id', desc: '職種ID（FK -> staff_roles.id）', status: 'added' },
+        { name: 'staff_role', desc: '配置職種区分コード（公定2桁コード。01: 管理者, 02: サービス管理責任者 等。staff_roles.codeと連動）' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '3. アカウントとユーザー',
+      subCategory: '3.3. 職員',
+      physicalName: 'staff_basic_schedules',
+      tableType: '従属マスタ',
+      logicalName: '職員基本勤務予定',
+      description: '曜日（日〜土）ごとの職員の定例勤務パターン（勤務曜日・標準出退勤時刻・休憩・所定時間）。日報（勤務記録）の初期自動セット基準',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '基本勤務予定ID', status: 'added' },
+        { name: 'office_id', desc: '所属事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'day_of_week', desc: '曜日番号（0: 日曜日 〜 6: 土曜日）', status: 'added' },
+        { name: 'is_work_day', desc: '定例勤務フラグ（true: 勤務日 / false: 公休・法定休日）', status: 'added' },
+        { name: 'start_time', desc: '基本始業時刻（出勤時刻。例: 08:30）', status: 'added' },
+        { name: 'end_time', desc: '基本終業時刻（退勤時刻。例: 17:30）', status: 'added' },
+        { name: 'break_minutes', desc: '基本休憩時間（分。例: 60）', status: 'added' },
+        { name: 'scheduled_hours', desc: '基本所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
+        { name: 'remarks', desc: '備考・定例勤務パターンメモ（例: 早番、遅番、通常、時短等）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
@@ -1057,52 +1062,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '6. 日次実績の記録',
-      subCategory: '6.1. 職員の予定と実績',
-      physicalName: 'staff_exception_schedules',
-      tableType: 'レコード',
-      logicalName: '職員例外勤務予定',
-      description: '日別の職員勤務例外（有休・特別休暇・シフト振替・勤務時間変更）。日報（勤務記録）の自動セット時に基本予定より優先適用',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '例外勤務予定ID', status: 'added' },
-        { name: 'office_id', desc: '勤務事業所ID（FK -> offices.id）', status: 'added' },
-        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
-        { name: 'target_date', desc: '対象年月日（特定の対象日。YYYY-MM-DD）', status: 'added' },
-        { name: 'is_work_day', desc: '当日勤務フラグ（true: 勤務日 / false: 休み・休暇）', status: 'added' },
-        { name: 'start_time', desc: '変更後始業時刻（出勤時刻。休みの場合はNULL。例: 08:30）', status: 'added' },
-        { name: 'end_time', desc: '変更後終業時刻（退勤時刻。休みの場合はNULL。例: 17:30）', status: 'added' },
-        { name: 'break_minutes', desc: '変更後休憩時間（分。例: 60）', status: 'added' },
-        { name: 'scheduled_hours', desc: '変更後所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
-        { name: 'remarks', desc: '備考・変更理由メモ（例: 有休取得、シフト振替、研修参加、時短等）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '6. 日次実績の記録',
-      subCategory: '6.1. 職員の予定と実績',
-      physicalName: 'staff_attendance_records',
-      tableType: 'レコード',
-      logicalName: '職員勤務レコード',
-      description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種・実労働時間記録',
-      status: 'modified',
-      columns: [
-        { name: 'id', desc: '勤務記録ID' },
-        { name: 'office_id', desc: '勤務事業所ID' },
-        { name: 'staff_id', desc: '職員ID' },
-        { name: 'work_date', desc: '勤務日' },
-        { name: 'start_time', desc: '出勤時刻' },
-        { name: 'end_time', desc: '退勤時刻' },
-        { name: 'break_minutes', desc: '休憩時間（分）' },
-        { name: 'actual_work_hours', desc: '実労働時間（時間数。出退勤時刻および休憩時間から自動算出。常勤換算や人員配置基準判定用）', status: 'added' },
-        { name: 'assigned_role', desc: '配置職種・役割（サービス管理責任者/生活支援員/職業指導員など）' },
-        { name: 'created_at', desc: '作成日時' },
-        { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '6. 日次実績の記録',
-      subCategory: '6.2. 利用者の予定と実績',
+      subCategory: '6.1. 利用者の予定と実績',
       physicalName: 'member_exception_schedules',
       tableType: 'レコード',
       logicalName: '利用者例外利用予定',
@@ -1129,7 +1089,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '6. 日次実績の記録',
-      subCategory: '6.2. 利用者の予定と実績',
+      subCategory: '6.1. 利用者の予定と実績',
       physicalName: 'member_attendance_records',
       tableType: 'レコード',
       logicalName: '利用者出欠レコード',
@@ -1160,7 +1120,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '6. 日次実績の記録',
-      subCategory: '6.2. 利用者の予定と実績',
+      subCategory: '6.1. 利用者の予定と実績',
       physicalName: 'member_work_records',
       tableType: 'レコード',
       logicalName: '利用者作業レコード',
@@ -1180,7 +1140,7 @@ export function ScreenCompositionPage() {
     },
     {
       category: '6. 日次実績の記録',
-      subCategory: '6.2. 利用者の予定と実績',
+      subCategory: '6.1. 利用者の予定と実績',
       physicalName: 'allowance_deduction_records',
       tableType: 'レコード',
       logicalName: '加算手当・控除レコード',
@@ -1192,6 +1152,51 @@ export function ScreenCompositionPage() {
         { name: 'item_id', desc: '手当・控除項目ID（allowance_deduction_itemsのIDを参照）' },
         { name: 'quantity', desc: '数量・回数' },
         { name: 'unit_price', desc: '発生時単価' },
+        { name: 'created_at', desc: '作成日時' },
+        { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 職員の予定と実績',
+      physicalName: 'staff_exception_schedules',
+      tableType: 'レコード',
+      logicalName: '職員例外勤務予定',
+      description: '日別の職員勤務例外（有休・特別休暇・シフト振替・勤務時間変更）。日報（勤務記録）の自動セット時に基本予定より優先適用',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '例外勤務予定ID', status: 'added' },
+        { name: 'office_id', desc: '勤務事業所ID（FK -> offices.id）', status: 'added' },
+        { name: 'staff_id', desc: '職員ID（FK -> staffs.id）', status: 'added' },
+        { name: 'target_date', desc: '対象年月日（特定の対象日。YYYY-MM-DD）', status: 'added' },
+        { name: 'is_work_day', desc: '当日勤務フラグ（true: 勤務日 / false: 休み・休暇）', status: 'added' },
+        { name: 'start_time', desc: '変更後始業時刻（出勤時刻。休みの場合はNULL。例: 08:30）', status: 'added' },
+        { name: 'end_time', desc: '変更後終業時刻（退勤時刻。休みの場合はNULL。例: 17:30）', status: 'added' },
+        { name: 'break_minutes', desc: '変更後休憩時間（分。例: 60）', status: 'added' },
+        { name: 'scheduled_hours', desc: '変更後所定労働時間（時間数。始業・終業時刻および休憩時間から自動算出。例: 8.00）', status: 'added' },
+        { name: 'remarks', desc: '備考・変更理由メモ（例: 有休取得、シフト振替、研修参加、時短等）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '6. 日次実績の記録',
+      subCategory: '6.2. 職員の予定と実績',
+      physicalName: 'staff_attendance_records',
+      tableType: 'レコード',
+      logicalName: '職員勤務レコード',
+      description: '職員の日次の勤務・出退勤・勤務事業所・現場配置職種・実労働時間記録',
+      status: 'modified',
+      columns: [
+        { name: 'id', desc: '勤務記録ID' },
+        { name: 'office_id', desc: '勤務事業所ID' },
+        { name: 'staff_id', desc: '職員ID' },
+        { name: 'work_date', desc: '勤務日' },
+        { name: 'start_time', desc: '出勤時刻' },
+        { name: 'end_time', desc: '退勤時刻' },
+        { name: 'break_minutes', desc: '休憩時間（分）' },
+        { name: 'actual_work_hours', desc: '実労働時間（時間数。出退勤時刻および休憩時間から自動算出。常勤換算や人員配置基準判定用）', status: 'added' },
+        { name: 'assigned_role', desc: '配置職種・役割（サービス管理責任者/生活支援員/職業指導員など）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -1256,7 +1261,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.1. 収支スナップショット（財務決算）',
       physicalName: 'financial_snapshot',
       tableType: 'スナップショット',
@@ -1281,7 +1286,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.2. サービス費用スナップショット（国保連・給付費請求）',
       physicalName: 'service_billing_snapshot',
       tableType: 'スナップショット',
@@ -1312,7 +1317,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'wage_snapshot',
       tableType: 'スナップショット',
@@ -1340,7 +1345,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'incentive_snapshot',
       tableType: 'スナップショット',
@@ -1358,7 +1363,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.3. 工賃・控除総額スナップショット（工賃支給）',
       physicalName: 'allowance_deduction_snapshot',
       tableType: 'スナップショット',
@@ -1379,7 +1384,7 @@ export function ScreenCompositionPage() {
       ]
     },
     {
-      category: '8. 集計結果の記録',
+      category: '8. 集計資料の記録',
       subCategory: '8.4. 月次確定（締め状態管理）',
       physicalName: 'monthly_closings',
       tableType: 'スナップショット',
@@ -1674,21 +1679,23 @@ export function ScreenCompositionPage() {
           <table className="inventory-table auto-height-table">
             <thead>
               <tr>
-                <th style={{ width: '20%' }}>画面</th>
-                <th style={{ width: '20%' }}>{CATEGORY_SETTINGS}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_PEOPLE}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_DAILY_RECORDS}</th>
-                <th style={{ width: '20%' }}>{CATEGORY_REPORTS}</th>
+                <th style={{ width: '16.6%' }}>画面</th>
+                <th style={{ width: '16.6%' }}>{CATEGORY_SETTINGS}</th>
+                <th style={{ width: '16.6%' }}>{CATEGORY_PEOPLE}</th>
+                <th style={{ width: '16.6%' }}>{CATEGORY_DAILY_RECORDS}</th>
+                <th style={{ width: '16.6%' }}>{CATEGORY_REPORTS}</th>
+                <th style={{ width: '16.6%' }}>{CATEGORY_DEVELOPMENT}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row, i) => {
-                const isNoTabScreen = ['システム構成（開発用）', PAGE_NAMES.SCREEN_COMPOSITION].includes(row.screen);
+                const isNoTabScreen = [PAGE_NAMES.SCREEN_DASHBOARD, 'ダッシュボード'].includes(row.screen);
                 const activeTabs = isNoTabScreen ? [] : row.tabs;
                 const settingsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_SETTINGS);
                 const peopleTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_PEOPLE);
                 const dailyRecordsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_DAILY_RECORDS);
                 const reportsTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_REPORTS);
+                const developmentTabs = activeTabs.filter(t => getTabCategory(t.id) === CATEGORY_DEVELOPMENT);
 
                 return (
                   <tr key={i} style={{ height: 'auto', minHeight: '42px' }}>
@@ -1753,6 +1760,19 @@ export function ScreenCompositionPage() {
                     }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
                         {reportsTabs.map(t => <div key={t.id}>{t.label}</div>)}
+                      </div>
+                    </td>
+                    <td style={{
+                      backgroundColor: getCategoryColor(CATEGORY_DEVELOPMENT),
+                      color: 'var(--color-text-main)',
+                      height: 'auto',
+                      minHeight: '42px',
+                      maxHeight: 'none',
+                      padding: '8px 12px',
+                      verticalAlign: 'middle'
+                    }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)', height: 'auto', maxHeight: 'none' }}>
+                        {developmentTabs.map(t => <div key={t.id}>{t.label}</div>)}
                       </div>
                     </td>
                   </tr>

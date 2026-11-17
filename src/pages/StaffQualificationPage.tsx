@@ -213,7 +213,7 @@ export function StaffQualificationPage() {
       columns={columns}
       emptyMessage={
         qualifications.length === 0
-          ? '適用済の資格マスタが登録されていません。「福祉制度マスタ」画面で資格を登録・適用してください。'
+          ? '適用済の資格マスタが登録されていません。「制度」画面で資格を登録・適用してください。'
           : MESSAGES.EMPTY_STAFF
       }
       initialSort={{ key: 'code', direction: 'asc' }}

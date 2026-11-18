@@ -73,3 +73,5 @@ export * from './ScreenAverageWagePage';
 export * from './ScreenProductionBusinessPage';
 export * from './ScreenWelfareBusinessPage';
 export * from './ScreenReserveSummaryPage';
+export * from './ServiceBillingPage';
+export * from './ScreenServiceBillingPage';

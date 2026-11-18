@@ -51,8 +51,10 @@ const getTabCategory = (tabId: string): string => {
     'wageSummary',
   ];
 
-  // 4. レポート（平均工賃、就労支援事業、福祉事業、積立金）
+  // 4. レポート（平均工賃、サービス費用、就労支援事業、福祉事業、積立金）
   const reportsTabIds = [
+    // サービス費用
+    'serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward',
     // 平均工賃
     'averageWage',
     // 就労支援事業
@@ -1331,6 +1333,26 @@ export function ScreenCompositionPage() {
         { name: 'status', desc: '確定ステータス（draft: 計算中, confirmed: 月次締め確定済み）' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '8. レポートの記録',
+      subCategory: '8.2. サービス費用スナップショット（国保連・給付費請求）',
+      physicalName: 'service_billing_snapshot_details',
+      tableType: 'スナップショット',
+      logicalName: 'サービス費明細スナップショット',
+      description: 'サービス費用総額スナップショットに紐づく基本報酬・加算・減算の項目別算定内訳明細（子テーブル）',
+      columns: [
+        { name: 'id', desc: '明細ID' },
+        { name: 'summary_id', desc: 'サービス費用総額スナップショットID（FK -> service_billing_snapshot.id）' },
+        { name: 'reward_item_id', desc: '加算・減算項目ID（FK -> reward_items.id）' },
+        { name: 'service_code', desc: 'サービスコード（国保連請求コード）' },
+        { name: 'item_name', desc: '項目名（基本報酬名または加算・減算項目名）' },
+        { name: 'item_category', desc: '項目区分（base_reward: 基本報酬, addition: 加算, subtraction: 減算）' },
+        { name: 'unit_value', desc: '単価単位数（1日/1回あたりの公定単位数）' },
+        { name: 'count', desc: '算定回数・日数' },
+        { name: 'total_item_units', desc: '合計単位数（単価単位数 × 算定回数・日数）' },
+        { name: 'created_at', desc: '作成日時' }
       ]
     },
     {

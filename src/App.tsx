@@ -8,6 +8,7 @@ import {
   ScreenProductionBusinessPage,
   ScreenWelfareBusinessPage,
   ScreenReserveSummaryPage,
+  ScreenServiceBillingPage,
   ScreenProjectPage,
   ScreenUserPage,
   ScreenStaffPage,
@@ -93,6 +94,8 @@ function AppContent() {
               <ScreenWageSummaryPage />
             ) : ['screenAverageWage', 'averageWage'].includes(activeTab) ? (
               <ScreenAverageWagePage />
+            ) : ['screenServiceBilling', 'serviceBilling', 'serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward'].includes(activeTab) ? (
+              <ScreenServiceBillingPage />
             ) : ['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? (
               <ScreenProductionBusinessPage />
             ) : ['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? (

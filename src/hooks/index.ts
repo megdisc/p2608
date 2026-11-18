@@ -39,4 +39,5 @@ export * from './useSalaryClosingSettings';
 export * from './useRecipientCertificates';
 export * from './useReserveSummary';
 export * from './useBaseRewards';
+export * from './useServiceBilling';
 

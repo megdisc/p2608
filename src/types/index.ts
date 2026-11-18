@@ -483,7 +483,10 @@ export type Tab =
   | 'dashboard' | 'staff' | 'staffQualification' | 'staffOffice' | 'staffWorkStyle' | 'staffSchedule' | 'project' | 'projectUser' | 'memberRecipientCertificate' | 'memberOffice' | 'memberSchedule' | 'skillCategory' | 'skill' | 'skillLevel' | 'skillEvaluation' | 'baseWage' | 'allowance' | 'deduction' | 'closingDate' | 'salaryClosingDate' | 'baseWageAssignment' | 'client' | 'screenCalendar' | 'screenSchedule' | 'scheduleStaff' | 'scheduleMember' | 'screenAttendance' | 'attendanceMonth' | 'attendanceDay' | 'screenCalendarDailyReport' | 'calendarDailyReportCalendar' | 'calendarDailyReportDay' | 'staffAttendanceRecord' | 'dailyWorkRecord' | 'progressRecord' | 'rewardAllocation' | 'assigneeSummary' | 'budgetPlanning' | 'assigneeAllocation' | 'financialRecord' | 'projectFinancialRecord' | 'financialSummary' | 'projectFinancialSummary' | 'welfareFinancialSummary' | 'wageSummary' | 'averageWage' | 'screenComposition' | 'tableComposition' | 'screenDailyReport' | 'screenStaffDailyReport' | 'screenDailyWork' | 'screenProject' | 'screenRewardAllocation' | 'screenExpenseLedger' | 'expenseLedger' | 'screenAccounting' | 'accounting' | 'screenWageSummary' | 'screenUser' | 'screenStaff' | 'screenClient' | 'screenFinance' | 'screenSkill' | 'screenWage' | 'screenSalary' | 'screenReserve' | 'reserveSetting' | 'reserve'
   | 'screenFacility' | 'organization' | 'office' | 'officeServiceType' | 'officeReward' | 'serviceScheme'
   | 'screenWelfare' | 'serviceType' | 'baseReward' | 'rewardItem' | 'qualification' | 'staffRole' | 'regionalGrade'
-  | 'screenAverageWage' | 'screenProductionBusiness' | 'screenWelfareBusiness' | 'screenReserveReport' | 'reserveSummary';
+  | 'screenAverageWage' | 'screenProductionBusiness' | 'screenWelfareBusiness' | 'screenReserveReport' | 'reserveSummary'
+  | 'screenServiceBilling' | 'serviceBilling' | 'serviceBillingSummary' | 'serviceBillingMember' | 'serviceBillingReward';
+
+export * from './serviceBilling';
 
 
 

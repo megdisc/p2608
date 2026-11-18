@@ -156,6 +156,14 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'reserveSummary', label: PAGE_NAMES.TAB_RESERVE_SUMMARY },
     ],
   },
+  SCREEN_SERVICE_BILLING: {
+    screenName: PAGE_NAMES.SCREEN_SERVICE_BILLING,
+    tabs: [
+      { id: 'serviceBillingSummary', label: PAGE_NAMES.TAB_SERVICE_BILLING_SUMMARY },
+      { id: 'serviceBillingMember', label: PAGE_NAMES.TAB_SERVICE_BILLING_MEMBER },
+      { id: 'serviceBillingReward', label: PAGE_NAMES.TAB_SERVICE_BILLING_REWARD },
+    ],
+  },
   SCREEN_TAB_COMPOSITION: {
     screenName: PAGE_NAMES.TAB_SCREEN_COMPOSITION,
     tabs: [
@@ -190,6 +198,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenProductionBusiness' || tabId === 'financialSummary' || tabId === 'projectFinancialSummary' || tabId === 'financialRecord' || tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_PRODUCTION_BUSINESS;
   if (tabId === 'screenWelfareBusiness' || tabId === 'welfareFinancialSummary') return SCREEN_CONFIGS.SCREEN_WELFARE_BUSINESS;
   if (tabId === 'screenReserveReport' || tabId === 'reserveSummary') return SCREEN_CONFIGS.SCREEN_RESERVE_REPORT;
+  if (tabId === 'screenServiceBilling' || tabId === 'serviceBilling' || tabId === 'serviceBillingSummary' || tabId === 'serviceBillingMember' || tabId === 'serviceBillingReward') return SCREEN_CONFIGS.SCREEN_SERVICE_BILLING;
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
   if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;

@@ -7,6 +7,8 @@ export type QualificationItem = {
   name: string;
   category: string;
   description: string;
+  valid_from?: string;
+  valid_to?: string | null;
 };
 
 export function useQualifications() {
@@ -28,7 +30,9 @@ export function useQualifications() {
         code: q.code || '',
         name: q.name || '',
         category: q.category || '',
-        description: q.description || ''
+        description: q.description || '',
+        valid_from: q.valid_from || '2006-10-01',
+        valid_to: q.valid_to || null
       }));
 
       setItems(formatted);

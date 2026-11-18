@@ -143,6 +143,8 @@ export type QualificationTableItem = {
   name: string;
   category?: string;
   description?: string;
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -179,6 +181,8 @@ export type StaffRoleTableItem = {
   is_direct_care?: boolean;
   description?: string;
   sort_order?: number;
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -188,6 +192,7 @@ export type StaffRoleSettingDetailTableItem = {
   summary_id: string; // UUID
   staff_role: string;
   staff_role_id?: string; // UUID (FK -> staff_roles.id)
+  allocated_hours?: number | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -231,6 +236,38 @@ export type ServiceTypeTableItem = {
   name: string;
   description?: string;
   personnel_cost_ratio?: number;
+  valid_from?: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type BaseRewardItemTableItem = {
+  id: string; // UUID
+  service_type_id: string; // UUID
+  capacity_tier: string;
+  staffing_ratio: string;
+  wage_achievement_tier: string;
+  base_units: number;
+  valid_from: string;
+  valid_to?: string | null;
+  created_at?: string;
+  updated_at?: string;
+};
+
+export type RewardItemTableItem = {
+  id: string; // UUID
+  service_type_id: string; // UUID
+  code: string;
+  name: string;
+  item_category?: string;
+  calc_type?: string;
+  unit_value?: number;
+  calc_rate?: number;
+  occurrence_type?: string;
+  monthly_limit_count?: number;
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -240,6 +277,8 @@ export type RegionalGradeRateTableItem = {
   grade: string;
   premium_rate: number;
   display_order: number;
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -249,6 +288,8 @@ export type RegionalGradeLocationTableItem = {
   prefecture: string;
   city: string;
   grade: string;
+  valid_from?: string;
+  valid_to?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -260,6 +301,8 @@ export type RegionalGradeTableItem = {
   grade: string;
   premium_rate: number;
   display_order?: number;
+  valid_from?: string;
+  valid_to?: string | null;
   deleted_at?: string | null;
   is_deleted?: boolean;
   created_at?: string;
@@ -283,6 +326,8 @@ export type OfficeServiceTypeSettingDetailTableItem = {
   office_number?: string | null;
   staffing_ratio?: string | null;
   wage_achievement_tier?: string | null;
+  standard_weekly_hours?: number;
+  prior_year_average_users?: number;
   is_deleted?: boolean;
   deleted_at?: string | null;
   created_at?: string;
@@ -297,6 +342,8 @@ export type OfficeServiceTypeSettingTableItem = {
   office_number?: string | null;
   staffing_ratio?: string | null;
   wage_achievement_tier?: string | null;
+  standard_weekly_hours?: number;
+  prior_year_average_users?: number;
   valid_from?: string;
   valid_to?: string | null;
   deleted_at?: string | null;

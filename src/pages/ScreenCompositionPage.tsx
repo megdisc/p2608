@@ -14,7 +14,7 @@ const getTabCategory = (tabId: string): string => {
   // 1. 設定（制度、施設、取引先、スキル体系、工賃・控除体系、給与体系、積立金体系）
   const settingsTabIds = [
     // 制度
-    'serviceType', 'qualification', 'staffRole', 'regionalGrade', 'rewardItem',
+    'serviceType', 'baseReward', 'rewardItem', 'qualification', 'staffRole', 'regionalGrade',
     // 施設
     'organization', 'office', 'officeServiceType', 'officeReward',
     // 取引先
@@ -135,12 +135,15 @@ export function ScreenCompositionPage() {
       tableType: '独立マスタ',
       logicalName: '支援種別',
       description: '法令に基づく障害福祉サービス等の支援種別の定義マスターデータ',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '支援種別ID' },
         { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
         { name: 'name', desc: 'サービス種類名称' },
         { name: 'description', desc: '説明・概要' },
         { name: 'personnel_cost_ratio', desc: '支援種別人件費割合（公定価格基準。例: 就労B型は0.5700、生活介護は0.6100。地域区分単価算出用）' },
+        { name: 'valid_from', desc: '適用開始年月日（制度施行・新設年月日）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（制度廃止年月日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -172,18 +175,21 @@ export function ScreenCompositionPage() {
       physicalName: 'reward_items',
       tableType: '従属マスタ',
       logicalName: '加算・減算',
-      description: '法令・報酬告示に基づく公定価格基準の基本報酬・体制加減算マスタ（給付費算定用）',
+      description: '法令・報酬告示に基づく公定価格基準の各種加算・体制減算マスタ（給付費算定用）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '項目ID' },
         { name: 'service_type_id', desc: '所属支援種別ID' },
         { name: 'code', desc: 'サービス詳細コード（国保連給付費算定6桁コード。例: 521111: 送迎加算, 521121: 欠席時対応加算 など）' },
         { name: 'name', desc: 'サービス詳細名称' },
-        { name: 'item_category', desc: '項目区分（base_reward: 基本報酬 / addition: 体制加算 / subtraction: 体制減算）' },
+        { name: 'item_category', desc: '項目区分（addition: 体制加算 / subtraction: 体制減算）' },
         { name: 'calc_type', desc: '算定方式（fixed_units: 固定単位数 / rate_percent: 所定単位数×率 / conditional: 条件分岐算定）' },
         { name: 'unit_value', desc: '加減算単位数' },
         { name: 'calc_rate', desc: '定率算定率[%]' },
         { name: 'occurrence_type', desc: '発生単位（daily: 日次発生 / monthly: 月次発生）' },
         { name: 'monthly_limit_count', desc: '月間算定上限回数' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による廃止日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -195,12 +201,15 @@ export function ScreenCompositionPage() {
       tableType: '独立マスタ',
       logicalName: '資格',
       description: '給付費・加算算定や配置基準に関わる資格・研修の定義マスターデータ',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '資格ID' },
         { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
         { name: 'name', desc: '資格・職種名称' },
         { name: 'category', desc: '資格区分' },
         { name: 'description', desc: '資格概要' },
+        { name: 'valid_from', desc: '適用開始年月日（資格・研修新設施行日）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（資格・研修廃止日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -212,6 +221,7 @@ export function ScreenCompositionPage() {
       tableType: '独立マスタ',
       logicalName: '職種',
       description: '法令に基づく障害福祉サービス等の人員配置基準および加算対象となる職種の定義マスターデータ',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '職種ID' },
         { name: 'code', desc: '職種コード（公定2桁コード。01: 管理者, 02: サービス管理責任者, 03: 職業指導員, 04: 生活支援員, 05: 目標工賃達成指導員 等）' },
@@ -220,6 +230,8 @@ export function ScreenCompositionPage() {
         { name: 'is_direct_care', desc: '直接処遇職員フラグ（常勤換算比率の対象となる職種か否か）' },
         { name: 'description', desc: '職種概要・役割説明' },
         { name: 'sort_order', desc: '表示並び順' },
+        { name: 'valid_from', desc: '適用開始年月日（公定職種新設施行日）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（職種廃止日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]
@@ -250,11 +262,14 @@ export function ScreenCompositionPage() {
       tableType: '独立マスタ',
       logicalName: '所在地級数所在地',
       description: '市区町村ごとの障害福祉サービス所在地級数（級地）対応マスタ',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '所在地ID' },
         { name: 'prefecture', desc: '都道府県名（例: 広島県）' },
         { name: 'city', desc: '市区町村名（例: 広島市、安芸郡府中町）' },
         { name: 'grade', desc: '級地名称（FK: regional_grade_rates.grade）' },
+        { name: 'valid_from', desc: '適用開始年月日（自治体指定・合併施行日）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（自治体合併等による終了日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

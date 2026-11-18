@@ -46,6 +46,20 @@ export function RegionalGradePage() {
         return (rate * 100).toFixed(1);
       },
     },
+    {
+      key: 'valid_from',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM || '適用開始日',
+      sortable: true,
+      style: { width: '130px', textAlign: 'center' },
+      render: (item: RegionalGradeTableItem) => item.valid_from || '-',
+    },
+    {
+      key: 'valid_to',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO || '適用終了日',
+      sortable: true,
+      style: { width: '130px', textAlign: 'center' },
+      render: (item: RegionalGradeTableItem) => item.valid_to || '-',
+    },
   ];
 
   if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;

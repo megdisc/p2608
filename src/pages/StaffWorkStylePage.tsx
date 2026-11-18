@@ -24,6 +24,7 @@ export type StaffWorkStyleSettingRow = {
   duty_type: string;
   weekly_working_hours: number | string;
   staff_roles: string[];
+  role_allocated_hours?: Record<string, number | string>;
   valid_from: string;
   valid_to: string | null;
 };
@@ -133,13 +134,18 @@ export function StaffWorkStylePage() {
       // 選択中事業所に割り当てられている職員のみを抽出
       const targetStaffs = activeStaffs.filter(staff => staffSettingMap.has(staff.id));
 
-      // summary_id ごとに staff_roles を集約
+      // summary_id ごとに staff_roles と 割当時間を集約
       const rolesMap = new Map<string, string[]>();
+      const roleHoursMap = new Map<string, Record<string, number | string>>();
       details.forEach(d => {
         if (!rolesMap.has(d.summary_id)) {
           rolesMap.set(d.summary_id, []);
+          roleHoursMap.set(d.summary_id, {});
         }
         rolesMap.get(d.summary_id)!.push(d.staff_role);
+        if (d.allocated_hours !== undefined && d.allocated_hours !== null) {
+          roleHoursMap.get(d.summary_id)![d.staff_role] = Number(d.allocated_hours);
+        }
       });
 
       // 職員ごとに親割当IDに紐づく職種履歴（子）を集約
@@ -154,6 +160,7 @@ export function StaffWorkStylePage() {
           duty_type: s.duty_type || 'dedicated',
           weekly_working_hours: s.weekly_working_hours ?? '',
           staff_roles: (s.id ? rolesMap.get(s.id) : []) || [],
+          role_allocated_hours: (s.id ? roleHoursMap.get(s.id) : {}) || {},
           valid_from: s.valid_from,
           valid_to: s.valid_to ?? null,
         }));
@@ -205,6 +212,7 @@ export function StaffWorkStylePage() {
       duty_type: 'dedicated',
       weekly_working_hours: 40,
       staff_roles: ['04'],
+      role_allocated_hours: { '04': 40 },
       valid_from: defaultStart,
       valid_to: null,
     };
@@ -350,6 +358,95 @@ export function StaffWorkStylePage() {
         },
       },
       {
+        key: 'role_allocated_hours',
+        header: TABLE_COLUMNS.ALLOCATED_HOURS || '職種別割当時間(h)',
+        sortable: false,
+        rowType: 'sub',
+        editable: true,
+        style: { minWidth: '220px' },
+        customEditRender: (
+          value: Record<string, number | string> | undefined,
+          subItem: StaffWorkStyleSettingRow,
+          onChange: (newVal: Record<string, number | string>) => void
+        ) => {
+          const selectedRoles = subItem.staff_roles || [];
+          if (selectedRoles.length === 0) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          const currentHours = value || subItem.role_allocated_hours || {};
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {selectedRoles.map(roleCode => {
+                const roleName = roleOptions.find(opt => opt.value === roleCode)?.label || roleCode;
+                const hVal = currentHours[roleCode] !== undefined
+                  ? currentHours[roleCode]
+                  : (selectedRoles.length === 1 && subItem.weekly_working_hours ? subItem.weekly_working_hours : '');
+
+                return (
+                  <div key={roleCode} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '11px', minWidth: '80px', color: 'var(--color-text-muted)' }}>
+                      {roleName}:
+                    </span>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="168"
+                      value={hVal}
+                      onChange={(e) => {
+                        const newMap = { ...currentHours, [roleCode]: e.target.value === '' ? '' : Number(e.target.value) };
+                        onChange(newMap);
+                      }}
+                      style={{
+                        width: '65px',
+                        padding: '2px 6px',
+                        fontSize: '12px',
+                        textAlign: 'right',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: '4px',
+                      }}
+                    />
+                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>h</span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        },
+        render: (subItem: StaffWorkStyleSettingRow) => {
+          const selectedRoles = subItem.staff_roles || [];
+          if (selectedRoles.length === 0) {
+            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          }
+          const currentHours = subItem.role_allocated_hours || {};
+          return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {selectedRoles.map(roleCode => {
+                const roleName = roleOptions.find(opt => opt.value === roleCode)?.label || roleCode;
+                const hVal = currentHours[roleCode] !== undefined
+                  ? currentHours[roleCode]
+                  : (selectedRoles.length === 1 && subItem.weekly_working_hours ? subItem.weekly_working_hours : '-');
+                return (
+                  <span
+                    key={roleCode}
+                    style={{
+                      fontSize: '11px',
+                      background: 'var(--color-bg-subtle)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      border: '1px solid var(--color-border-subtle)',
+                    }}
+                  >
+                    {roleName}: <strong>{hVal}</strong>h
+                  </span>
+                );
+              })}
+            </div>
+          );
+        },
+      },
+      {
         key: 'valid_from',
         header: TABLE_COLUMNS.VALID_PERIOD_FROM,
         sortable: false,
@@ -444,19 +541,27 @@ export function StaffWorkStylePage() {
             .eq('summary_id', summaryId);
 
           if (setting.staff_roles && setting.staff_roles.length > 0) {
-            const detailRows = setting.staff_roles.map(role => ({
-              id: generateId(),
-              summary_id: summaryId,
-              staff_role: role,
-              staff_role_id: roleCodeToIdMap.get(role) || null,
-            }));
+            const detailRows = setting.staff_roles.map(role => {
+              const customHours = setting.role_allocated_hours?.[role];
+              const allocatedHoursVal = (customHours !== undefined && customHours !== '' && customHours !== null)
+                ? Number(customHours)
+                : (setting.staff_roles.length === 1 && weeklyHours ? weeklyHours : null);
+
+              return {
+                id: generateId(),
+                summary_id: summaryId,
+                staff_role: role,
+                staff_role_id: roleCodeToIdMap.get(role) || null,
+                allocated_hours: allocatedHoursVal,
+              };
+            });
 
             const { error: insDetailsErr } = await supabase
               .from(detailTable)
               .insert(detailRows);
 
             if (insDetailsErr) {
-              // staff_role_id カラム未適用の環境用フォールバック
+              // staff_role_id / allocated_hours カラム未適用の環境用フォールバック
               const fallbackRows = setting.staff_roles.map(role => ({
                 id: generateId(),
                 summary_id: summaryId,

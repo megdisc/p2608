@@ -24,6 +24,8 @@ export type OfficeServiceTypeRow = {
   capacity: number;
   staffing_ratio: string;
   wage_achievement_tier: string;
+  standard_weekly_hours?: number;
+  prior_year_average_users?: number;
   valid_from?: string;
   valid_to?: string | null;
   unit_price: number;
@@ -116,6 +118,8 @@ export function OfficeServiceTypePage() {
             capacity: s.capacity ?? 20,
             staffing_ratio: s.staffing_ratio || '7.5:1',
             wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
+            standard_weekly_hours: (s as any).standard_weekly_hours !== undefined && (s as any).standard_weekly_hours !== null ? Number((s as any).standard_weekly_hours) : 40.0,
+            prior_year_average_users: (s as any).prior_year_average_users !== undefined && (s as any).prior_year_average_users !== null ? Number((s as any).prior_year_average_users) : 20.0,
             valid_from: (s as any).valid_from || '2024-04-01',
             valid_to: (s as any).valid_to || '',
             unit_price: derived.unit_price,
@@ -175,6 +179,8 @@ export function OfficeServiceTypePage() {
       capacity: latestRow.capacity ?? 20,
       staffing_ratio: latestRow.staffing_ratio || '7.5:1',
       wage_achievement_tier: latestRow.wage_achievement_tier || '4万5千円以上',
+      standard_weekly_hours: latestRow.standard_weekly_hours ?? 40.0,
+      prior_year_average_users: latestRow.prior_year_average_users ?? 20.0,
       valid_from: defaultStart,
       valid_to: null,
       unit_price: derived.unit_price,
@@ -284,6 +290,24 @@ export function OfficeServiceTypePage() {
         style: { minWidth: '190px' },
       },
       {
+        key: 'standard_weekly_hours',
+        header: TABLE_COLUMNS.STANDARD_WEEKLY_HOURS || '常勤週労働時間(h)',
+        sortable: false,
+        rowType: 'sub',
+        inputType: 'number',
+        className: 'quantity',
+        style: { width: '130px', textAlign: 'right' },
+      },
+      {
+        key: 'prior_year_average_users',
+        header: TABLE_COLUMNS.PRIOR_YEAR_AVERAGE_USERS || '前年度平均利用者(人)',
+        sortable: false,
+        rowType: 'sub',
+        inputType: 'number',
+        className: 'quantity',
+        style: { width: '130px', textAlign: 'right' },
+      },
+      {
         key: 'unit_price',
         header: TABLE_COLUMNS.REGIONAL_UNIT_PRICE,
         sortable: false,
@@ -322,6 +346,8 @@ export function OfficeServiceTypePage() {
         capacity: number;
         staffing_ratio: string | null;
         wage_achievement_tier: string | null;
+        standard_weekly_hours?: number;
+        prior_year_average_users?: number;
         valid_from: string | null;
         valid_to: string | null;
         deleted_at: null;
@@ -339,6 +365,8 @@ export function OfficeServiceTypePage() {
               capacity: Number(st.capacity) || 0,
               staffing_ratio: st.staffing_ratio || null,
               wage_achievement_tier: st.wage_achievement_tier || null,
+              standard_weekly_hours: st.standard_weekly_hours !== undefined && st.standard_weekly_hours !== null && (st.standard_weekly_hours as any) !== '' ? Number(st.standard_weekly_hours) : 40.0,
+              prior_year_average_users: st.prior_year_average_users !== undefined && st.prior_year_average_users !== null && (st.prior_year_average_users as any) !== '' ? Number(st.prior_year_average_users) : 20.0,
               valid_from: st.valid_from || '2024-04-01',
               valid_to: st.valid_to || null,
               deleted_at: null,

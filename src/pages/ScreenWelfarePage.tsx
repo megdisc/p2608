@@ -4,6 +4,7 @@ import { useNavigation } from '../contexts';
 import { Tabs } from '../components/ui';
 
 import { ServiceTypePage } from './ServiceTypePage';
+import { BaseRewardItemPage } from './BaseRewardItemPage';
 import { QualificationPage } from './QualificationPage';
 import { StaffRoleMasterPage } from './StaffRoleMasterPage';
 import { RewardItemPage } from './RewardItemPage';
@@ -18,6 +19,8 @@ export function ScreenWelfarePage() {
     switch (navContext.activeTab) {
       case 'serviceType':
         return <ServiceTypePage />;
+      case 'baseReward':
+        return <BaseRewardItemPage />;
       case 'rewardItem':
         return <RewardItemPage />;
       case 'qualification':

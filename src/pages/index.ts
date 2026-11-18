@@ -16,6 +16,7 @@ export * from './ScreenFacilityPage';
 export * from './ServiceTypePage';
 export * from './QualificationPage';
 export * from './StaffRoleMasterPage';
+export * from './BaseRewardItemPage';
 export * from './RewardItemPage';
 export * from './RegionalGradePage';
 export * from './ScreenWelfarePage';

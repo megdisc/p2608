@@ -8,6 +8,8 @@ export type ServiceTypeItem = {
   name: string;
   description: string;
   personnel_cost_ratio?: number | null;
+  valid_from?: string;
+  valid_to?: string | null;
 };
 
 export function useServiceTypes() {
@@ -30,6 +32,8 @@ export function useServiceTypes() {
         name: st.name || '',
         description: st.description || '',
         personnel_cost_ratio: st.personnel_cost_ratio !== undefined && st.personnel_cost_ratio !== null ? Number(st.personnel_cost_ratio) : null,
+        valid_from: st.valid_from || '2006-10-01',
+        valid_to: st.valid_to || null,
       }));
 
       setItems(formatted);

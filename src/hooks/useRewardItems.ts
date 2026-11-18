@@ -12,6 +12,8 @@ export type RewardItem = {
   unit_value: number;
   calc_rate: number;
   monthly_limit_count: number | null;
+  valid_from?: string;
+  valid_to?: string | null;
 };
 
 export function useRewardItems() {
@@ -38,7 +40,9 @@ export function useRewardItems() {
         occurrence_type: ri.occurrence_type || 'daily',
         unit_value: ri.unit_value ?? 0,
         calc_rate: ri.calc_rate ?? 0,
-        monthly_limit_count: ri.monthly_limit_count ?? null
+        monthly_limit_count: ri.monthly_limit_count ?? null,
+        valid_from: ri.valid_from || '2024-04-01',
+        valid_to: ri.valid_to || null
       }));
 
       setItems(formatted);

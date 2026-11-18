@@ -48,13 +48,6 @@ const STATUS_TEXT: Record<string, string> = {
   absent: '欠席',
 };
 
-const getPickupText = (pickup: boolean, dropoff: boolean): string => {
-  if (pickup && dropoff) return '往復';
-  if (pickup) return '迎えのみ';
-  if (dropoff) return '送りのみ';
-  return '-';
-};
-
 const getYesterdayString = (dateStr: string): string => {
   const parts = dateStr.split('-');
   const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
@@ -398,83 +391,66 @@ export function DashboardPage() {
           </span>
         </div>
 
-        {/* サマリーパネル */}
-        <div
-          key={`summary-${targetOfficeId}`}
-          className="dashboard-panel"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 'var(--space-4)'
-          }}
-        >
-          {/* 職員 勤怠状況 */}
-          <div>
-            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
-              職員 勤怠状況
+        {/* 左右の小セクション（左: 利用者データ / 右: 職員データ） */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+          gap: 'var(--space-6)',
+          alignItems: 'start'
+        }}>
+          {/* 左側小セクション: 利用者データ */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            {/* 上側: 出欠の状況概要 */}
+            <div
+              key={`member-summary-${targetOfficeId}`}
+              className="dashboard-panel"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-1)',
+                minHeight: '104px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+                利用者 出欠状況
+              </div>
+              <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+                {memberSummary.totalScheduled} / {memberSummary.total} 名
+              </div>
+              <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
+                内訳: 通所 {memberSummary.present}名 / 施設外 {memberSummary.offsite}名 / 在宅 {memberSummary.remote}名 / 欠席 {memberSummary.absent}名
+              </div>
             </div>
-            <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
-              {staffSummary.working} / {staffSummary.total} 名
-            </div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
-              内訳: 勤務 {staffSummary.working}名 / 休み {staffSummary.off}名
-            </div>
-          </div>
 
-          {/* 利用者 出欠状況 */}
-          <div>
-            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
-              利用者 出欠状況
-            </div>
-            <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginBottom: 'var(--space-1)' }}>
-              {memberSummary.totalScheduled} / {memberSummary.total} 名
-            </div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
-              内訳: 通所 {memberSummary.present}名 / 施設外 {memberSummary.offsite}名 / 在宅 {memberSummary.remote}名 / 欠席 {memberSummary.absent}名
-            </div>
-          </div>
-        </div>
-
-        {/* 当日状況の詳細テーブル（上下スクロール可能） */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          {/* 利用者 当日状況詳細 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
-              利用者 当日状況 ({memberSchedules.length}名)
-            </div>
-            <div className="table-container" style={{ maxHeight: '260px' }}>
+            {/* 下側: 利用時間の予定 */}
+            <div className="table-container" style={{ maxHeight: '360px' }}>
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th>コード</th>
-                    <th>氏名</th>
-                    <th>状況</th>
-                    <th>予定時間</th>
-                    <th>昼食</th>
-                    <th>送迎</th>
+                    <th style={{ width: '140px' }}>氏名</th>
+                    <th style={{ width: '100px' }}>状況</th>
+                    <th style={{ width: '150px' }}>利用時間</th>
                     <th>備考</th>
                   </tr>
                 </thead>
                 <tbody key={`members-${targetOfficeId}`}>
                   {loading ? (
                     <tr>
-                      <td colSpan={7} style={{ textAlign: 'center', padding: '24px' }}>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: '24px' }}>
                         {MESSAGES.LOADING}
                       </td>
                     </tr>
                   ) : memberSchedules.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="empty-message">表示するデータがありません</td>
+                      <td colSpan={4} className="empty-message">表示するデータがありません</td>
                     </tr>
                   ) : (
                     memberSchedules.map(m => (
                       <tr key={m.id}>
-                        <td>{m.code}</td>
                         <td>{m.name}</td>
                         <td>{STATUS_TEXT[m.status] || '通所'}</td>
                         <td>{m.isScheduled && m.startTime ? `${m.startTime} 〜 ${m.endTime}` : '-'}</td>
-                        <td>{m.hasMeal ? 'あり' : '-'}</td>
-                        <td>{getPickupText(m.hasPickup, m.hasDropoff)}</td>
                         <td>{m.remarks || '-'}</td>
                       </tr>
                     ))
@@ -484,42 +460,59 @@ export function DashboardPage() {
             </div>
           </div>
 
-          {/* 職員 当日状況詳細 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-            <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
-              職員 当日状況 ({staffSchedules.length}名)
+          {/* 右側小セクション: 職員データ */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+            {/* 上側: 勤怠の状況概要 */}
+            <div
+              key={`staff-summary-${targetOfficeId}`}
+              className="dashboard-panel"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 'var(--space-1)',
+                minHeight: '104px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+                職員 勤怠状況
+              </div>
+              <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+                {staffSummary.working} / {staffSummary.total} 名
+              </div>
+              <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
+                内訳: 勤務 {staffSummary.working}名 / 休み {staffSummary.off}名
+              </div>
             </div>
-            <div className="table-container" style={{ maxHeight: '260px' }}>
+
+            {/* 下側: 勤務時間の予定 */}
+            <div className="table-container" style={{ maxHeight: '360px' }}>
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th>コード</th>
-                    <th>氏名</th>
-                    <th>勤怠</th>
-                    <th>勤務時間</th>
-                    <th>休憩</th>
+                    <th style={{ width: '140px' }}>氏名</th>
+                    <th style={{ width: '100px' }}>勤怠</th>
+                    <th style={{ width: '150px' }}>勤務時間</th>
                     <th>備考</th>
                   </tr>
                 </thead>
                 <tbody key={`staff-${targetOfficeId}`}>
                   {loading ? (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: 'center', padding: '24px' }}>
+                      <td colSpan={4} style={{ textAlign: 'center', padding: '24px' }}>
                         {MESSAGES.LOADING}
                       </td>
                     </tr>
                   ) : staffSchedules.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="empty-message">表示するデータがありません</td>
+                      <td colSpan={4} className="empty-message">表示するデータがありません</td>
                     </tr>
                   ) : (
                     staffSchedules.map(s => (
                       <tr key={s.id}>
-                        <td>{s.code}</td>
                         <td>{s.name}</td>
                         <td>{s.isWorkDay ? '出勤' : '休み'}</td>
                         <td>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
-                        <td>{s.isWorkDay && s.breakMinutes > 0 ? `${s.breakMinutes}分` : '-'}</td>
                         <td>{s.remarks || '-'}</td>
                       </tr>
                     ))

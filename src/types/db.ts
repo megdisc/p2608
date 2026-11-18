@@ -96,6 +96,7 @@ export type OfficeTableItem = {
   code?: string;
   name: string;
   short_name?: string;
+  standard_weekly_hours?: number;
   valid_from?: string;
   valid_to?: string | null;
   is_deleted?: boolean;
@@ -325,9 +326,6 @@ export type OfficeServiceTypeSettingDetailTableItem = {
   capacity?: number;
   office_number?: string | null;
   staffing_ratio?: string | null;
-  wage_achievement_tier?: string | null;
-  standard_weekly_hours?: number;
-  prior_year_average_users?: number;
   is_deleted?: boolean;
   deleted_at?: string | null;
   created_at?: string;
@@ -341,9 +339,6 @@ export type OfficeServiceTypeSettingTableItem = {
   capacity?: number;
   office_number?: string | null;
   staffing_ratio?: string | null;
-  wage_achievement_tier?: string | null;
-  standard_weekly_hours?: number;
-  prior_year_average_users?: number;
   valid_from?: string;
   valid_to?: string | null;
   deleted_at?: string | null;

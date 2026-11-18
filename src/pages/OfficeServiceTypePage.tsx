@@ -2,18 +2,15 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, Button, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { calculateRegionalUnitPrice, getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
+import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
 import {
   MESSAGES,
   TABLE_COLUMNS,
   STAFFING_RATIO_OPTIONS,
-  WAGE_ACHIEVEMENT_TIER_OPTIONS,
 } from '../constants';
 import type {
   OfficeTableItem,
   ServiceTypeTableItem,
-  OfficeServiceTypeSettingTableItem,
-  RegionalGradeTableItem,
 } from '../types/db';
 
 export type OfficeServiceTypeRow = {
@@ -23,12 +20,8 @@ export type OfficeServiceTypeRow = {
   office_number: string;
   capacity: number;
   staffing_ratio: string;
-  wage_achievement_tier: string;
-  standard_weekly_hours?: number;
-  prior_year_average_users?: number;
   valid_from?: string;
   valid_to?: string | null;
-  unit_price: number;
 };
 
 export type OfficeWithServiceTypes = {
@@ -55,8 +48,6 @@ const generateId = () => {
 
 export function OfficeServiceTypePage() {
   const [serviceTypes, setServiceTypes] = useState<ServiceTypeTableItem[]>([]);
-  const [regionalGrades, setRegionalGrades] = useState<RegionalGradeTableItem[]>([]);
-  const [officeAddressMap, setOfficeAddressMap] = useState<Record<string, { prefecture?: string; city?: string }>>({});
   const [data, setData] = useState<OfficeWithServiceTypes[]>([]);
   const [loading, setLoading] = useState(true);
   const { showAlert } = useAlert();
@@ -64,52 +55,25 @@ export function OfficeServiceTypePage() {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [officeRes, serviceTypeRes, settingsRes, regionalRes, addressRes] = await Promise.all([
+      const [officeRes, serviceTypeRes, settingsRes] = await Promise.all([
         supabase.from('offices').select('*').eq('is_deleted', false).order('code', { ascending: true }),
         supabase.from('service_types').select('*').order('code', { ascending: true }),
         supabase.from('office_service_type_settings').select('*').eq('is_deleted', false),
-        supabase.from('regional_grades').select('*').eq('is_deleted', false),
-        supabase.from('entity_address_settings').select('owner_id, addresses(prefecture, city)').eq('owner_type', 'office'),
       ]);
 
       if (officeRes.error) throw officeRes.error;
       if (serviceTypeRes.error) throw serviceTypeRes.error;
       if (settingsRes.error) throw settingsRes.error;
-      if (regionalRes.error) throw regionalRes.error;
-      if (addressRes.error) throw addressRes.error;
 
       const activeOffices: OfficeTableItem[] = officeRes.data || [];
       const activeSTs: ServiceTypeTableItem[] = serviceTypeRes.data || [];
-      const settings: OfficeServiceTypeSettingTableItem[] = settingsRes.data || [];
-      const regionalList: RegionalGradeTableItem[] = regionalRes.data || [];
-
-      const addrMap: Record<string, { prefecture?: string; city?: string }> = {};
-      type AddressSettingItem = {
-        owner_id: string;
-        addresses?: { prefecture?: string; city?: string } | { prefecture?: string; city?: string }[];
-      };
-      ((addressRes.data || []) as unknown as AddressSettingItem[]).forEach(item => {
-        if (item.owner_id && item.addresses) {
-          const addr = Array.isArray(item.addresses) ? item.addresses[0] : item.addresses;
-          if (addr) {
-            addrMap[item.owner_id] = {
-              prefecture: addr.prefecture || '',
-              city: addr.city || '',
-            };
-          }
-        }
-      });
+      const settings: any[] = settingsRes.data || [];
 
       setServiceTypes(activeSTs);
-      setRegionalGrades(regionalList);
-      setOfficeAddressMap(addrMap);
 
       const rows: OfficeWithServiceTypes[] = activeOffices.map(office => {
         const officeSettings = settings.filter(s => s.office_id === office.id);
-        const officeAddr = addrMap[office.id];
         const formattedSettings: OfficeServiceTypeRow[] = officeSettings.map(s => {
-          const st = activeSTs.find(t => t.id === s.service_type_id);
-          const derived = calculateRegionalUnitPrice(officeAddr, st, regionalList);
           return {
             id: s.id || generateId(),
             office_id: office.id,
@@ -117,12 +81,8 @@ export function OfficeServiceTypePage() {
             office_number: s.office_number || '',
             capacity: s.capacity ?? 20,
             staffing_ratio: s.staffing_ratio || '7.5:1',
-            wage_achievement_tier: s.wage_achievement_tier || '4万5千円以上',
-            standard_weekly_hours: (s as any).standard_weekly_hours !== undefined && (s as any).standard_weekly_hours !== null ? Number((s as any).standard_weekly_hours) : 40.0,
-            prior_year_average_users: (s as any).prior_year_average_users !== undefined && (s as any).prior_year_average_users !== null ? Number((s as any).prior_year_average_users) : 20.0,
             valid_from: (s as any).valid_from || '2024-04-01',
             valid_to: (s as any).valid_to || '',
-            unit_price: derived.unit_price,
           };
         });
         formattedSettings.sort((a, b) => (b.valid_from || '').localeCompare(a.valid_from || ''));
@@ -168,8 +128,6 @@ export function OfficeServiceTypePage() {
     }
 
     const bType = serviceTypes.find(isBTypeServiceType);
-    const officeAddr = officeAddressMap[parentId];
-    const derived = calculateRegionalUnitPrice(officeAddr, bType, regionalGrades);
 
     return {
       id: generateId(),
@@ -178,12 +136,8 @@ export function OfficeServiceTypePage() {
       office_number: latestRow.office_number || '',
       capacity: latestRow.capacity ?? 20,
       staffing_ratio: latestRow.staffing_ratio || '7.5:1',
-      wage_achievement_tier: latestRow.wage_achievement_tier || '4万5千円以上',
-      standard_weekly_hours: latestRow.standard_weekly_hours ?? 40.0,
-      prior_year_average_users: latestRow.prior_year_average_users ?? 20.0,
       valid_from: defaultStart,
       valid_to: null,
-      unit_price: derived.unit_price,
     };
   };
 
@@ -280,50 +234,8 @@ export function OfficeServiceTypePage() {
         options: STAFFING_RATIO_OPTIONS,
         style: { minWidth: '110px' },
       },
-      {
-        key: 'wage_achievement_tier',
-        header: TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER,
-        sortable: false,
-        rowType: 'sub',
-        inputType: 'select',
-        options: WAGE_ACHIEVEMENT_TIER_OPTIONS,
-        style: { minWidth: '190px' },
-      },
-      {
-        key: 'standard_weekly_hours',
-        header: TABLE_COLUMNS.STANDARD_WEEKLY_HOURS || '常勤週労働時間(h)',
-        sortable: false,
-        rowType: 'sub',
-        inputType: 'number',
-        className: 'quantity',
-        style: { width: '130px', textAlign: 'right' },
-      },
-      {
-        key: 'prior_year_average_users',
-        header: TABLE_COLUMNS.PRIOR_YEAR_AVERAGE_USERS || '前年度平均利用者(人)',
-        sortable: false,
-        rowType: 'sub',
-        inputType: 'number',
-        className: 'quantity',
-        style: { width: '130px', textAlign: 'right' },
-      },
-      {
-        key: 'unit_price',
-        header: TABLE_COLUMNS.REGIONAL_UNIT_PRICE,
-        sortable: false,
-        rowType: 'sub',
-        editable: false,
-        className: 'quantity',
-        style: { width: '130px', textAlign: 'right' },
-        render: (subItem: unknown) => {
-          const row = subItem as OfficeServiceTypeRow;
-          return row.unit_price !== undefined && row.unit_price !== null
-            ? `${Number(row.unit_price).toFixed(2)}円`
-            : '';
-        },
-      },
     ];
-  }, [serviceTypes, regionalGrades, officeAddressMap]);
+  }, [serviceTypes]);
 
   const handleBatchSave = async (drafts: OfficeWithServiceTypes[], deletedIds: string[]) => {
     try {
@@ -345,9 +257,6 @@ export function OfficeServiceTypePage() {
         office_number: string | null;
         capacity: number;
         staffing_ratio: string | null;
-        wage_achievement_tier: string | null;
-        standard_weekly_hours?: number;
-        prior_year_average_users?: number;
         valid_from: string | null;
         valid_to: string | null;
         deleted_at: null;
@@ -364,9 +273,6 @@ export function OfficeServiceTypePage() {
               office_number: st.office_number ? String(st.office_number).trim() : null,
               capacity: Number(st.capacity) || 0,
               staffing_ratio: st.staffing_ratio || null,
-              wage_achievement_tier: st.wage_achievement_tier || null,
-              standard_weekly_hours: st.standard_weekly_hours !== undefined && st.standard_weekly_hours !== null && (st.standard_weekly_hours as any) !== '' ? Number(st.standard_weekly_hours) : 40.0,
-              prior_year_average_users: st.prior_year_average_users !== undefined && st.prior_year_average_users !== null && (st.prior_year_average_users as any) !== '' ? Number(st.prior_year_average_users) : 20.0,
               valid_from: st.valid_from || '2024-04-01',
               valid_to: st.valid_to || null,
               deleted_at: null,

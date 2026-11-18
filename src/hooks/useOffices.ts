@@ -12,6 +12,7 @@ export type OfficeItem = {
   code: string;
   name: string;
   short_name: string;
+  standard_weekly_hours?: number;
   valid_from: string;
   valid_to: string | null;
   postal_code_prefix: string;
@@ -93,6 +94,7 @@ export function useOffices() {
           code: o.code || '',
           name: o.name,
           short_name: o.short_name || '',
+          standard_weekly_hours: o.standard_weekly_hours !== undefined && o.standard_weekly_hours !== null ? Number(o.standard_weekly_hours) : 40.0,
           valid_from: o.valid_from || '2024-04-01',
           valid_to: o.valid_to || '',
           postal_code_prefix: addr.postal_code_prefix || '',
@@ -134,6 +136,7 @@ export function useOffices() {
           code: item.code?.trim() || null,
           name: item.name,
           short_name: item.short_name?.trim() || null,
+          standard_weekly_hours: item.standard_weekly_hours !== undefined && item.standard_weekly_hours !== null && (item.standard_weekly_hours as any) !== '' ? Number(item.standard_weekly_hours) : 40.0,
           valid_from: item.valid_from || '2024-04-01',
           valid_to: item.valid_to || null,
         };

@@ -301,11 +301,13 @@ export function ScreenCompositionPage() {
       tableType: '独立マスタ',
       logicalName: '事業所',
       description: '法人が運営する各事業所の基本情報（多機能型事業所対応・集計有効期間管理）',
+      status: 'modified',
       columns: [
         { name: 'id', desc: '事業所ID' },
         { name: 'code', desc: '事業所コード' },
         { name: 'name', desc: '事業所名（正式名称）' },
         { name: 'short_name', desc: '通称（サイドバー等表示用略称）' },
+        { name: 'standard_weekly_hours', desc: '常勤週所定労働時間（就業規則上の基準週労働時間。常勤換算数の分母。デフォルト40.00時間）', status: 'added' },
         { name: 'valid_from', desc: '開設日（開設・指定年月日）' },
         { name: 'valid_to', desc: '廃止日（廃止年月日。NULL: 運営中・継続中）' },
         { name: 'deleted_at', desc: '削除日時（NULL: 有効）' },
@@ -336,8 +338,7 @@ export function ScreenCompositionPage() {
       physicalName: 'office_service_type_setting_details',
       tableType: '従属マスタ',
       logicalName: '事業所支援種別割当詳細',
-      description: '事業所支援種別割当概要に紐づく個別の指定支援種別設定（定員・人員配置・報酬区分等。「支援種別」タブで管理）',
-      status: 'modified',
+      description: '事業所支援種別割当概要に紐づく個別の指定支援種別設定（定員・人員配置等、認可スペック。「支援種別」タブで管理）',
       columns: [
         { name: 'id', desc: '詳細ID' },
         { name: 'summary_id', desc: '概要ID（FK -> office_service_type_setting_summaries.id）' },
@@ -345,9 +346,6 @@ export function ScreenCompositionPage() {
         { name: 'capacity', desc: '利用定員（人）' },
         { name: 'office_number', desc: '指定事業所番号（都道府県等から付与された10桁コード。国保連請求・代理受領通知書用）' },
         { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1 / 10:1。基本報酬の単位数決定用）' },
-        { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（前年度平均工賃実績区分。基本報酬単位数決定用）' },
-        { name: 'standard_weekly_hours', desc: '常勤週所定労働時間（時間数。デフォルト40.00。常勤換算数の分母となる事業所の基準週労働時間）', status: 'added' },
-        { name: 'prior_year_average_users', desc: '前年度平均利用者数（人数。例: 18.50。直接処遇職員配置基準・定員超過減算判定の基礎値）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
       ]

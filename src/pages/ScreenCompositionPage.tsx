@@ -846,7 +846,7 @@ export function ScreenCompositionPage() {
         { name: 'office_staff_setting_id', desc: '事業所職員割当詳細ID（FK -> office_staff_setting_details.id）' },
         { name: 'employment_type', desc: '雇用形態（full_time: 常勤 / part_time: 非常勤。常勤換算算定用）' },
         { name: 'duty_type', desc: '勤務区分（dedicated: 専従 / concurrent: 兼務）' },
-        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。例: 40.0時間）' },
+        { name: 'weekly_working_hours', desc: '週所定労働時間（常勤換算数[FTE]計算用。職種別割当時間の合計より自動算出・登録。例: 40.0時間）' },
         { name: 'valid_from', desc: '有効期間（開始）' },
         { name: 'valid_to', desc: '有効期間（終了。NULL: 継続中）' },
         { name: 'created_at', desc: '作成日時' },

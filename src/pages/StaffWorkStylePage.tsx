@@ -52,6 +52,27 @@ const formatEmploymentType = (hours: number | string | null | undefined): string
   return '-';
 };
 
+const calculateTotalAllocatedHours = (
+  roles: string[] | undefined,
+  roleHours: Record<string, number | string> | undefined,
+  fallbackWeeklyHours?: number | string
+): number => {
+  if (!roles || roles.length === 0) return 0;
+  if (!roleHours || Object.keys(roleHours).length === 0) {
+    return fallbackWeeklyHours ? Number(fallbackWeeklyHours) || 0 : 0;
+  }
+  let sum = 0;
+  roles.forEach(role => {
+    const val = roleHours[role];
+    if (val !== undefined && val !== null && val !== '') {
+      sum += Number(val) || 0;
+    } else if (roles.length === 1 && fallbackWeeklyHours) {
+      sum += Number(fallbackWeeklyHours) || 0;
+    }
+  });
+  return sum;
+};
+
 const generateId = () => {
   return typeof crypto !== 'undefined' && crypto.randomUUID
     ? crypto.randomUUID()
@@ -280,7 +301,12 @@ export function StaffWorkStylePage() {
           </Button>
         ),
         render: (subItem: StaffWorkStyleSettingRow) => {
-          return formatEmploymentType(subItem.weekly_working_hours);
+          const total = calculateTotalAllocatedHours(
+            subItem.staff_roles,
+            subItem.role_allocated_hours,
+            subItem.weekly_working_hours
+          );
+          return formatEmploymentType(total > 0 ? total : subItem.weekly_working_hours);
         },
       },
       {
@@ -298,15 +324,17 @@ export function StaffWorkStylePage() {
         header: TABLE_COLUMNS.WEEKLY_WORKING_HOURS,
         sortable: false,
         rowType: 'sub',
-        editable: true,
-        inputType: 'number',
+        editable: false, // 職種別割当時間から自動算出のため入力不可
         className: 'quantity',
         style: { width: '130px', textAlign: 'right' },
-        onCellChange: (newVal: unknown) => {
-          const hours = Number(newVal);
-          return {
-            employment_type: deriveEmploymentType(hours),
-          } as Partial<StaffWorkStyleSettingRow>;
+        render: (subItem: StaffWorkStyleSettingRow) => {
+          const total = calculateTotalAllocatedHours(
+            subItem.staff_roles,
+            subItem.role_allocated_hours,
+            subItem.weekly_working_hours
+          );
+          if (total <= 0) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          return <span style={{ fontWeight: 'bold' }}>{total}h</span>;
         },
       },
       {
@@ -316,6 +344,34 @@ export function StaffWorkStylePage() {
         rowType: 'sub',
         editable: true,
         style: { minWidth: '260px' },
+        onCellChange: (newRoles: string[], item: StaffWorkStyleSettingRow) => {
+          const roles = newRoles || [];
+          const currentHours = { ...(item.role_allocated_hours || {}) };
+
+          if (roles.length === 1) {
+            const baseHours = item.weekly_working_hours ? Number(item.weekly_working_hours) : 40;
+            currentHours[roles[0]] = currentHours[roles[0]] || baseHours;
+          } else {
+            roles.forEach(r => {
+              if (currentHours[r] === undefined) {
+                currentHours[r] = 0;
+              }
+            });
+          }
+
+          Object.keys(currentHours).forEach(k => {
+            if (!roles.includes(k)) {
+              delete currentHours[k];
+            }
+          });
+
+          const total = calculateTotalAllocatedHours(roles, currentHours, item.weekly_working_hours);
+          return {
+            role_allocated_hours: currentHours,
+            weekly_working_hours: total,
+            employment_type: deriveEmploymentType(total),
+          } as Partial<StaffWorkStyleSettingRow>;
+        },
         customEditRender: (value: string[], _subItem: StaffWorkStyleSettingRow, onChange: (newVal: string[]) => void) => {
           return (
             <MultiSelectDropdown
@@ -364,6 +420,13 @@ export function StaffWorkStylePage() {
         rowType: 'sub',
         editable: true,
         style: { minWidth: '220px' },
+        onCellChange: (newMap: Record<string, number | string>, item: StaffWorkStyleSettingRow) => {
+          const total = calculateTotalAllocatedHours(item.staff_roles, newMap, item.weekly_working_hours);
+          return {
+            weekly_working_hours: total,
+            employment_type: deriveEmploymentType(total),
+          } as Partial<StaffWorkStyleSettingRow>;
+        },
         customEditRender: (
           value: Record<string, number | string> | undefined,
           subItem: StaffWorkStyleSettingRow,
@@ -516,7 +579,14 @@ export function StaffWorkStylePage() {
 
           const summaryId = setting.id.startsWith('NEW-') ? generateId() : setting.id;
           const validToVal = setting.valid_to ? setting.valid_to : null;
-          const weeklyHours = setting.weekly_working_hours !== '' ? Number(setting.weekly_working_hours) : null;
+
+          // 職種別割当時間から週所定労働時間を自動算出
+          const autoWeeklyHours = calculateTotalAllocatedHours(
+            setting.staff_roles,
+            setting.role_allocated_hours,
+            setting.weekly_working_hours
+          );
+          const weeklyHours = autoWeeklyHours > 0 ? autoWeeklyHours : (setting.weekly_working_hours !== '' ? Number(setting.weekly_working_hours) : null);
           const employmentTypeVal = deriveEmploymentType(weeklyHours);
 
           // 2a. 概要テーブル (子) のUpsert (親の office_staff_setting_id を参照)

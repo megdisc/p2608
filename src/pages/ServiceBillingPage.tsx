@@ -94,39 +94,18 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
   if (loading) return <div>{MESSAGES.LOADING}</div>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div className="report-container">
       {/* 画面共通上部：対象年月・確定ステータス・操作ボタン */}
-      <div 
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          padding: '16px 20px', 
-          background: 'var(--color-bg-subtle)', 
-          borderRadius: '8px',
-          border: '1px solid var(--color-border)',
-          flexWrap: 'wrap',
-          gap: '12px'
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="report-header-panel">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
             <span style={{ fontWeight: 'var(--weight-heading)', fontSize: 'var(--text-body)' }}>対象月:</span>
             <MonthInput value={currentMonth} onChange={setCurrentMonth} />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
             <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>確定状態:</span>
-            <span 
-              style={{ 
-                padding: '4px 10px', 
-                borderRadius: '12px', 
-                fontSize: 'var(--text-caption)', 
-                fontWeight: 'var(--weight-heading)',
-                backgroundColor: isConfirmed ? 'var(--palette-bluegreen-100)' : 'var(--palette-gray-200)',
-                color: isConfirmed ? 'var(--palette-bluegreen-800)' : 'var(--color-text-muted)'
-              }}
-            >
+            <span className={isConfirmed ? 'status-badge-confirmed' : 'status-badge-draft'}>
               {isConfirmed ? '● 月次確定済' : '○ 未確定 (試算中)'}
             </span>
             {isConfirmed && confirmedAt && (
@@ -137,7 +116,30 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          {/* 実績データが存在する主要年月へのクイック切り替え */}
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>切替:</span>
+            {['2026-11', '2026-10', '2026-06', '2026-01'].map(ym => (
+              <button
+                key={ym}
+                type="button"
+                onClick={() => setCurrentMonth(ym)}
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: currentMonth === ym ? '1px solid var(--color-text-main)' : '1px solid var(--color-border)',
+                  background: currentMonth === ym ? 'var(--color-bg-inverse)' : 'var(--color-bg-main)',
+                  color: currentMonth === ym ? 'var(--color-text-inverse)' : 'var(--color-text-main)',
+                  fontSize: 'var(--text-caption)',
+                  cursor: 'pointer'
+                }}
+              >
+                {ym}
+              </button>
+            ))}
+          </div>
+
           {isConfirmed ? (
             <Button 
               variant="secondary" 
@@ -158,7 +160,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
         </div>
       </div>
 
-      {/* サブタブUI (渡されていない場合用フォールバック切り替え) */}
+      {/* サブタブUI (親からタブ変更関数が渡されていない場合のフォールバック) */}
       {!onTabChange && (
         <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid var(--color-border)', paddingBottom: '8px' }}>
           <button 
@@ -186,18 +188,12 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
       {/* タブ1: 請求総括 (事業所サマリ) */}
       {/* ========================================================================= */}
       {currentSubTab === 'serviceBillingSummary' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
           {/* KPI カードグリッド */}
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
-              gap: '16px' 
-            }}
-          >
-            <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-bg-surface)' }}>
+          <div className="report-kpi-grid">
+            <div className="report-card">
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>サービス費用総額 (10割)</div>
-              <div style={{ fontSize: '24px', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-primary)', marginTop: '6px' }}>
+              <div style={{ fontSize: '24px', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginTop: '6px' }}>
                 ¥{summary.totalCostAmount.toLocaleString()}
               </div>
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginTop: '4px' }}>
@@ -205,7 +201,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               </div>
             </div>
 
-            <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--palette-bluegreen-200)', background: 'var(--palette-bluegreen-50)' }}>
+            <div className="report-card report-card-bluegreen">
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--palette-bluegreen-800)' }}>訓練等給付費 (国保連請求 9割)</div>
               <div style={{ fontSize: '24px', fontWeight: 'var(--weight-heading)', color: 'var(--palette-bluegreen-900)', marginTop: '6px' }}>
                 ¥{summary.totalBenefitAmount.toLocaleString()}
@@ -215,7 +211,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               </div>
             </div>
 
-            <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--palette-yellow-200)', background: 'var(--palette-yellow-50)' }}>
+            <div className="report-card report-card-yellow">
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--palette-yellow-800)' }}>サービス利用料 (利用者自己負担)</div>
               <div style={{ fontSize: '24px', fontWeight: 'var(--weight-heading)', color: 'var(--palette-yellow-900)', marginTop: '6px' }}>
                 ¥{summary.totalCopaymentAmount.toLocaleString()}
@@ -225,20 +221,22 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               </div>
             </div>
 
-            <div style={{ padding: '16px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-bg-surface)' }}>
+            <div className="report-card">
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>利用実績指標</div>
-              <div style={{ fontSize: '20px', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-primary)', marginTop: '8px' }}>
+              <div style={{ fontSize: '20px', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)', marginTop: '8px' }}>
                 {summary.activeMembersCount} 名 / 延べ {summary.totalAttendanceDays} 日
               </div>
               <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                1人平均: {summary.averageAttendanceDays} 日
+                1人平均: {summary.averageAttendanceDays} 日 (所属: {summary.totalMembersCount}名)
               </div>
             </div>
           </div>
 
           {/* 単位数の構成内訳バー */}
-          <div style={{ padding: '20px', borderRadius: '8px', border: '1px solid var(--color-border)', background: 'var(--color-bg-surface)' }}>
-            <h4 style={{ margin: '0 0 16px 0' }}>単位数構成内訳</h4>
+          <div className="report-card">
+            <h4 style={{ margin: '0 0 var(--space-4) 0', fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)' }}>
+              単位数構成内訳
+            </h4>
             <div style={{ display: 'flex', height: '14px', borderRadius: '7px', overflow: 'hidden', background: 'var(--color-bg-subtle)' }}>
               <div 
                 style={{ 
@@ -257,7 +255,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
                 title={`加算合計: ${summary.totalAdditionUnits.toLocaleString()} 単位`}
               />
             </div>
-            <div style={{ display: 'flex', gap: '24px', marginTop: '12px', fontSize: 'var(--text-caption)' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-6)', marginTop: 'var(--space-3)', fontSize: 'var(--text-caption)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span style={{ width: '12px', height: '12px', borderRadius: '2px', background: 'var(--palette-bluegreen-400)' }} />
                 <span>基本報酬単位: <strong>{summary.totalBaseRewardUnits.toLocaleString()}</strong> 単位 ({summary.totalUnits > 0 ? ((summary.totalBaseRewardUnits / summary.totalUnits) * 100).toFixed(1) : 0}%)</span>
@@ -276,8 +274,8 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
           </div>
 
           {/* 当月算定加算サマリ */}
-          <div style={{ borderRadius: '8px', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
-            <div style={{ padding: '12px 16px', background: 'var(--color-bg-subtle)', fontWeight: 'var(--weight-heading)' }}>
+          <div className="report-section-box">
+            <div className="report-section-header">
               当月算定された加算・減算一覧
             </div>
             <table className="inventory-table" style={{ margin: 0 }}>
@@ -343,7 +341,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
       {/* タブ2: 利用者別サービス費 (明細一覧) */}
       {/* ========================================================================= */}
       {currentSubTab === 'serviceBillingMember' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           {/* 検索・絞り込み */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <input 
@@ -353,10 +351,12 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               onChange={e => setSearchTerm(e.target.value)}
               style={{
                 padding: '8px 12px',
-                borderRadius: '6px',
+                borderRadius: 'var(--radius-sm)',
                 border: '1px solid var(--color-border)',
                 width: '300px',
-                fontSize: 'var(--text-body)'
+                fontSize: 'var(--text-body)',
+                backgroundColor: 'var(--color-bg-main)',
+                color: 'var(--color-text-main)'
               }}
             />
             <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
@@ -386,7 +386,10 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               <tbody>
                 {filteredData.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="empty-message">表示するデータがありません</td>
+                    <td colSpan={12} className="empty-message">
+                      表示するデータがありません（対象月: {currentMonth}）。
+                      上部の年月切り替えボタンで 2026-11 または 2026-10 / 2026-06 / 2026-01 をお試しください。
+                    </td>
                   </tr>
                 ) : (
                   filteredData.map(row => {
@@ -460,8 +463,8 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
                           <tr style={{ backgroundColor: 'var(--color-bg-subtle)' }}>
                             <td></td>
                             <td colSpan={11} style={{ padding: '12px 16px' }}>
-                              <div style={{ background: 'var(--color-bg-surface)', padding: '12px', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                                <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', marginBottom: '8px', color: 'var(--color-text-primary)' }}>
+                              <div style={{ background: 'var(--color-bg-main)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
+                                <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', marginBottom: '8px', color: 'var(--color-text-main)' }}>
                                   【{row.memberName} 様の算定内訳明細】 (地域単価: ¥{row.unitPrice.toFixed(2)})
                                 </div>
                                 {row.details.length === 0 ? (
@@ -566,7 +569,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
       {/* タブ3: 加算・減算集計 (項目別実績) */}
       {/* ========================================================================= */}
       {currentSubTab === 'serviceBillingReward' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
             ※ 項目をクリックすると、算定対象となった利用者一覧が展開されます
           </div>
@@ -589,7 +592,10 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
               <tbody>
                 {rewardBreakdown.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="empty-message">加算・減算の算定データがありません</td>
+                    <td colSpan={9} className="empty-message">
+                      加算・減算の算定データがありません（対象月: {currentMonth}）。
+                      上部の年月切り替えボタンで 2026-11 または 2026-10 / 2026-06 / 2026-01 をお試しください。
+                    </td>
                   </tr>
                 ) : (
                   rewardBreakdown.map(item => {
@@ -644,7 +650,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
                           <tr style={{ backgroundColor: 'var(--color-bg-subtle)' }}>
                             <td></td>
                             <td colSpan={8} style={{ padding: '12px 16px' }}>
-                              <div style={{ background: 'var(--color-bg-surface)', padding: '12px', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
+                              <div style={{ background: 'var(--color-bg-main)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
                                 <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', marginBottom: '8px' }}>
                                   【算定対象の利用者一覧 ({item.memberNames.length}名)】
                                 </div>
@@ -654,7 +660,7 @@ export function ServiceBillingPage({ activeTab = 'serviceBillingSummary', onTabC
                                       key={name} 
                                       style={{ 
                                         padding: '4px 10px', 
-                                        borderRadius: '12px', 
+                                        borderRadius: 'var(--radius-full)', 
                                         background: 'var(--color-bg-subtle)', 
                                         border: '1px solid var(--color-border)',
                                         fontSize: 'var(--text-caption)'

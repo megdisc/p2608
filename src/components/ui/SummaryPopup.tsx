@@ -36,7 +36,6 @@ export const SummaryPopup: React.FC<SummaryPopupProps> = ({
         backgroundColor: 'var(--color-bg-card, #ffffff)',
         border: '1px solid var(--color-border, #e2e8f0)',
         borderRadius: 'var(--radius-lg, 8px)',
-        boxShadow: 'var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05))',
         fontSize: 'var(--text-body, 13px)',
         color: 'var(--color-text-main, #1e293b)',
         minWidth: '240px',

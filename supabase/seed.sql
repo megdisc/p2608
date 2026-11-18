@@ -1076,7 +1076,16 @@ INSERT INTO public.service_billing_snapshot (id, office_id, member_id, target_pe
 ('b0000001-4444-4444-800b-5e476066c582', '44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666', '2026-01', 15, 8760, 540, 0, 9300, 10.00, 93000, 9300, 12400, 12400, 80600, 200, 12600, 'confirmed'),
 -- 未来オアシス 2026年6月
 ('b0000006-4444-42ea-800b-5e476066c581', '44444444-4444-4444-4444-444444444444', 'c5555555-5555-5555-5555-555555555555', '2026-06', 16, 9344, 256, 0, 9600, 10.00, 96000, 9600, 0, 0, 96000, 200, 200, 'confirmed'),
-('b0000006-4444-4444-800b-5e476066c582', '44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666', '2026-06', 16, 9344, 576, 0, 9920, 10.00, 99200, 9920, 12400, 12400, 86800, 200, 12600, 'confirmed')
+('b0000006-4444-4444-800b-5e476066c582', '44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666', '2026-06', 16, 9344, 576, 0, 9920, 10.00, 99200, 9920, 12400, 12400, 86800, 200, 12600, 'confirmed'),
+-- WS未来 2026年11月
+('b0000011-2222-42ea-800b-5e476066c581', '22222222-2222-2222-2222-222222222222', 'b362ad61-3ab9-42b3-a53c-1b77f985b85a', '2026-11', 15, 8760, 240, 0, 9000, 10.00, 90000, 9000, 0, 0, 90000, 200, 200, 'draft'),
+('b0000011-2222-42ea-800b-5e476066c582', '22222222-2222-2222-2222-222222222222', 'e98c7634-1eb3-4e42-b062-841f39c043e0', '2026-11', 15, 8760, 540, 0, 9300, 10.00, 93000, 9300, 9300, 9300, 83700, 200, 9500, 'draft'),
+-- 未来ワークス 2026年11月
+('b0000011-3333-42ea-800b-5e476066c581', '33333333-3333-3333-3333-333333333333', 'a1b2c3d4-e5f6-7890-1234-56789abcdef0', '2026-11', 15, 8760, 240, 0, 9000, 10.00, 90000, 9000, 0, 0, 90000, 200, 200, 'draft'),
+('b0000011-3333-42ea-800b-5e476066c582', '33333333-3333-3333-3333-333333333333', 'f0e9d8c7-b6a5-4321-0987-6543210fedc2', '2026-11', 12, 7008, 432, 0, 7440, 10.00, 74400, 7440, 6200, 6200, 68200, 200, 6400, 'draft'),
+-- 未来オアシス 2026年11月
+('b0000011-4444-42ea-800b-5e476066c581', '44444444-4444-4444-4444-444444444444', 'c5555555-5555-5555-5555-555555555555', '2026-11', 15, 8760, 240, 0, 9000, 10.00, 90000, 9000, 0, 0, 90000, 200, 200, 'draft'),
+('b0000011-4444-4444-800b-5e476066c582', '44444444-4444-4444-4444-444444444444', 'c6666666-6666-6666-6666-666666666666', '2026-11', 15, 8760, 540, 0, 9300, 10.00, 93000, 9300, 12400, 12400, 80600, 200, 12600, 'draft')
 ON CONFLICT (office_id, target_period, member_id) DO UPDATE SET
   attendance_days = EXCLUDED.attendance_days,
   total_units = EXCLUDED.total_units,
@@ -1219,7 +1228,8 @@ FROM (
 CROSS JOIN (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 ON CONFLICT DO NOTHING;
@@ -1239,7 +1249,8 @@ SELECT
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 
@@ -1258,7 +1269,8 @@ SELECT
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 
@@ -1277,7 +1289,8 @@ SELECT
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) BETWEEN 1 AND 5
 
@@ -1296,7 +1309,8 @@ SELECT
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) = 4
 
@@ -1315,7 +1329,8 @@ SELECT
 FROM (
   SELECT generate_series('2026-01-01'::date, '2026-01-22'::date, '1 day'::interval) AS d UNION ALL
   SELECT generate_series('2026-06-01'::date, '2026-06-22'::date, '1 day'::interval) AS d UNION ALL
-  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d
+  SELECT generate_series('2026-10-01'::date, '2026-10-23'::date, '1 day'::interval) AS d UNION ALL
+  SELECT generate_series('2026-11-01'::date, '2026-11-20'::date, '1 day'::interval) AS d
 ) days
 WHERE EXTRACT(DOW FROM d) = 5;
 
@@ -1444,6 +1459,48 @@ ON CONFLICT (office_id, member_id, day_of_week) DO UPDATE SET
   has_dropoff = EXCLUDED.has_dropoff,
   remarks = EXCLUDED.remarks;
 
+-- 27. サービス費用明細スナップショット (service_billing_snapshot_details)
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  NULL AS reward_item_id,
+  '111111' AS service_code,
+  '就労継続支援Ｂ型サービス費(7.5:1)' AS item_name,
+  'base_reward' AS item_category,
+  584.00 AS unit_value,
+  s.attendance_days AS count,
+  s.base_reward_units AS total_item_units
+FROM public.service_billing_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  '66666666-0000-0000-0000-000000000005'::uuid AS reward_item_id,
+  '521131' AS service_code,
+  '目標工賃達成指導員配置加算' AS item_name,
+  'addition' AS item_category,
+  16.00 AS unit_value,
+  s.attendance_days AS count,
+  s.attendance_days * 16 AS total_item_units
+FROM public.service_billing_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  '66666666-0000-0000-0000-000000000006'::uuid AS reward_item_id,
+  '521141' AS service_code,
+  '食事提供体制加算' AS item_name,
+  'addition' AS item_category,
+  30.00 AS unit_value,
+  10 AS count,
+  300 AS total_item_units
+FROM public.service_billing_snapshot s
+WHERE s.addition_units > 250
+ON CONFLICT DO NOTHING;
+
+
 -- 26. 利用者例外利用予定 (member_exception_schedules)
 INSERT INTO public.member_exception_schedules (office_id, member_id, target_date, is_scheduled, status, start_time, end_time, break_minutes, has_meal, has_pickup, has_dropoff, remarks) VALUES
 -- 江口春奈: 10/15 定期通院のため遅刻通所（11:00〜15:30）
@@ -1464,4 +1521,46 @@ ON CONFLICT (office_id, member_id, target_date) DO UPDATE SET
   has_pickup = EXCLUDED.has_pickup,
   has_dropoff = EXCLUDED.has_dropoff,
   remarks = EXCLUDED.remarks;
+
+-- 27. サービス費用明細スナップショット (service_billing_snapshot_details)
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  NULL AS reward_item_id,
+  '111111' AS service_code,
+  '就労継続支援Ｂ型サービス費(7.5:1)' AS item_name,
+  'base_reward' AS item_category,
+  584.00 AS unit_value,
+  s.attendance_days AS count,
+  s.base_reward_units AS total_item_units
+FROM public.service_billing_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  '66666666-0000-0000-0000-000000000005'::uuid AS reward_item_id,
+  '521131' AS service_code,
+  '目標工賃達成指導員配置加算' AS item_name,
+  'addition' AS item_category,
+  16.00 AS unit_value,
+  s.attendance_days AS count,
+  s.attendance_days * 16 AS total_item_units
+FROM public.service_billing_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_billing_snapshot_details (summary_id, reward_item_id, service_code, item_name, item_category, unit_value, count, total_item_units)
+SELECT 
+  s.id AS summary_id,
+  '66666666-0000-0000-0000-000000000006'::uuid AS reward_item_id,
+  '521141' AS service_code,
+  '食事提供体制加算' AS item_name,
+  'addition' AS item_category,
+  30.00 AS unit_value,
+  10 AS count,
+  300 AS total_item_units
+FROM public.service_billing_snapshot s
+WHERE s.addition_units > 250
+ON CONFLICT DO NOTHING;
+
 

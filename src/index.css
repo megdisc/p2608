@@ -65,10 +65,10 @@
   --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* --- 影 (シャドウ) --- */
-  --shadow-sm: 0 1px 3px var(--palette-black-alpha-10);
-  --shadow-md: 0 4px 6px var(--palette-black-alpha-10);
-  --shadow-lg: 0 10px 25px var(--palette-black-alpha-10);
+  /* --- 影 (シャドウ: フラットUI設計のため不使用) --- */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
 
 
   /* ==========================================================================
@@ -275,7 +275,6 @@ button {
 .nav-button.active {
   color: var(--color-text-inverse);
   background-color: var(--color-bg-inverse-hover);
-  box-shadow: var(--shadow-sm);
 }
 
 .main-content {
@@ -905,7 +904,7 @@ input[type="number"] {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
   animation: scaleIn 0.2s ease-out;
 }
 
@@ -1036,4 +1035,171 @@ input[type="number"] {
   text-align: center;
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   レポート・ダッシュボード共通コンポーネントスタイル（フラットUI・シャドウ無）
+   ========================================================================== */
+
+.report-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.report-header-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  box-shadow: none;
+}
+
+.report-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.report-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-main);
+  box-shadow: none;
+}
+
+.report-card-bluegreen {
+  border-color: var(--palette-bluegreen-200);
+  background-color: var(--palette-bluegreen-50);
+}
+
+.report-card-yellow {
+  border-color: var(--palette-yellow-200);
+  background-color: var(--palette-yellow-50);
+}
+
+.report-section-box {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-main);
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.report-section-header {
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-subtle);
+  font-weight: var(--weight-heading);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-body);
+}
+
+.status-badge-confirmed {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: var(--palette-bluegreen-100);
+  color: var(--palette-bluegreen-800);
+  border: 1px solid var(--palette-bluegreen-300);
+}
+
+.status-badge-draft {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: var(--palette-gray-200);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+
+/* ==========================================================================
+   レポート・ダッシュボード共通コンポーネントスタイル（フラットUI・シャドウ無）
+   ========================================================================== */
+
+.report-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.report-header-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  box-shadow: none;
+}
+
+.report-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.report-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-main);
+  box-shadow: none;
+}
+
+.report-card-bluegreen {
+  border-color: var(--palette-bluegreen-200);
+  background-color: var(--palette-bluegreen-50);
+}
+
+.report-card-yellow {
+  border-color: var(--palette-yellow-200);
+  background-color: var(--palette-yellow-50);
+}
+
+.report-section-box {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-main);
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.report-section-header {
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-subtle);
+  font-weight: var(--weight-heading);
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-body);
+}
+
+.status-badge-confirmed {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: var(--palette-bluegreen-100);
+  color: var(--palette-bluegreen-800);
+  border: 1px solid var(--palette-bluegreen-300);
+}
+
+.status-badge-draft {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: var(--palette-gray-200);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
 }

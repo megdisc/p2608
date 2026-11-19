@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
-import type { ServiceTypeTableItem } from '../types/db';
+import type { ServiceTypeTableItem } from '../types';
 
 export type ServiceTypeItem = {
   id: string;

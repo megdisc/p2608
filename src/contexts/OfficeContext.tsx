@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
-import { useOffices, type OfficeItem } from '../hooks/useOffices';
+import { useOffices, type OfficeItem } from '../hooks';
 
 type OfficeContextType = {
   offices: OfficeItem[];

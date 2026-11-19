@@ -3,7 +3,7 @@ import { DataPage, type Column } from '../components';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
 import { useStaffRoles } from '../hooks';
-import type { StaffRoleTableItem } from '../types/db';
+import type { StaffRoleTableItem } from '../types';
 
 export function StaffRoleMasterPage() {
   const { items, loading, fetchStaffRoles } = useStaffRoles();

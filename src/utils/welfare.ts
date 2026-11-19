@@ -1,4 +1,4 @@
-import type { RegionalGradeTableItem, ServiceTypeTableItem } from '../types/db';
+import type { RegionalGradeTableItem, ServiceTypeTableItem } from '../types';
 
 /**
  * 事業所の所在地（都道府県・市区町村）と支援種別（人件費割合）に基づき、

@@ -9,7 +9,7 @@ import {
   WORDS_TIME,
   WORDS_WELFARE_SERVICE,
 } from '../constants';
-import type { OfficeMemberSettingTableItem } from '../types/db';
+import type { OfficeMemberSettingTableItem } from '../types';
 
 export type MemberScheduleRow = {
   id: string; // UUID or temp-memberId-day

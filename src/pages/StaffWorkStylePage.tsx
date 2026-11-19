@@ -17,7 +17,7 @@ import type {
   StaffRoleTableItem,
   StaffWorkStyleSummaryTableItem,
   StaffWorkStyleDetailTableItem,
-} from '../types/db';
+} from '../types';
 
 export type StaffWorkStyleSettingRow = {
   id: string; // summary_id (UUID or NEW-xxx)

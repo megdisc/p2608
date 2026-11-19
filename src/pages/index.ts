@@ -75,3 +75,5 @@ export * from './ScreenWelfareBusinessPage';
 export * from './ScreenReserveSummaryPage';
 export * from './ServiceBillingPage';
 export * from './ScreenServiceBillingPage';
+export * from './ServiceSchemePage';
+

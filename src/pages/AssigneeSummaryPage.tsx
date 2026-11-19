@@ -1,7 +1,7 @@
 import { DataPage, type Column } from '../components';
 import { useEffect, useMemo } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
-import { useAlert } from '../contexts/AlertContext';
+import { useAlert } from '../contexts';
 import { formatJST } from '../utils';
 import { useAssigneeSummary, type SummaryRow } from '../hooks';
 

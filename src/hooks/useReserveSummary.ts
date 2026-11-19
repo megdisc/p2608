@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
 import { WORDS_PROJECT } from '../constants';
-import { getSubjectTransactionType } from '../utils/financial';
+import { getSubjectTransactionType } from '../utils';
 
 export type ReserveSummaryRow = {
   id: string;

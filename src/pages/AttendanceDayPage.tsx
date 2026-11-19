@@ -10,7 +10,7 @@ import {
   WORDS_TIME,
   WORDS_WELFARE_SERVICE,
 } from '../constants';
-import type { StaffExceptionScheduleTableItem, MemberExceptionScheduleTableItem } from '../types/db';
+import type { StaffExceptionScheduleTableItem, MemberExceptionScheduleTableItem } from '../types';
 
 export type AttendanceDayRow = {
   id: string; // `staff-${staff_id}` or `member-${member_id}`

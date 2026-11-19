@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
-import type { StaffRoleTableItem } from '../types/db';
+import type { StaffRoleTableItem } from '../types';
 
 export function useStaffRoles() {
   const [items, setItems] = useState<StaffRoleTableItem[]>([]);

@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 import { getCurrentJSTMonth } from '../utils';
 import type { 
   ServiceBillingRow, 
   ServiceBillingSummary, 
-  RewardBreakdownItem,
+  RewardBreakdownItem, 
   ServiceBillingDetailItem 
-} from '../types/serviceBilling';
+} from '../types';
 
 export function useServiceBilling(selectedOfficeId: string | null, initialMonth?: string) {
   const [currentMonth, setCurrentMonth] = useState<string>(initialMonth || getCurrentJSTMonth());

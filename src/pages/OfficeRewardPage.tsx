@@ -4,7 +4,7 @@ import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, MESSAGES } from '../constants';
 import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
-import type { OfficeTableItem, ServiceTypeTableItem, OfficeServiceTypeSettingTableItem } from '../types/db';
+import type { OfficeTableItem, ServiceTypeTableItem, OfficeServiceTypeSettingTableItem } from '../types';
 
 export type OfficeRewardHistoryItem = {
   id: string; // summary_id (UUID or NEW-xxx)

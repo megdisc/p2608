@@ -4,7 +4,7 @@ import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
-import type { OfficeTableItem, StaffTableItem } from '../types/db';
+import type { OfficeTableItem, StaffTableItem } from '../types';
 
 export type StaffOfficeHistoryRow = {
   id: string; // 一時IDまたは設定ID

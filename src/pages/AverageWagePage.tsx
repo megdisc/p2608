@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from 'react';
-import { useAverageWageSummary } from '../hooks/useAverageWageSummary';
+import { useAverageWageSummary } from '../hooks';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOffice } from '../contexts';
 

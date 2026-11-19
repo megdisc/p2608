@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import type { SkillItem, SkillLevelItem, MemberItem, MemberWithSkillSettings, MemberSkillSettingRow } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 
 const generateId = () => {
   return typeof crypto !== 'undefined' && crypto.randomUUID

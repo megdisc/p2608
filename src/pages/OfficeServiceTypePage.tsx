@@ -11,7 +11,7 @@ import {
 import type {
   OfficeTableItem,
   ServiceTypeTableItem,
-} from '../types/db';
+} from '../types';
 
 export type OfficeServiceTypeRow = {
   id: string; // UUID of office_service_type_settings

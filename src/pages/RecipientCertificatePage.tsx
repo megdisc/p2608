@@ -11,10 +11,9 @@ import {
   COPAYMENT_MGMT_OPTIONS,
   WORDS_COMMON,
 } from '../constants';
-import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks/useRecipientCertificates';
+import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks';
 import { recomputeHistoryPeriods } from '../utils';
-import type { MemberRecipientCertificateItem } from '../types';
-import type { OfficeTableItem } from '../types/db';
+import type { MemberRecipientCertificateItem, OfficeTableItem } from '../types';
 
 export function RecipientCertificatePage() {
   const { items, loading, fetchCertificates, batchSaveCertificates } = useRecipientCertificates();

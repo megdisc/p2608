@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '../lib';
-import type { RegionalGradeTableItem } from '../types/db';
+import type { RegionalGradeTableItem } from '../types';
 
 export function useRegionalGrades() {
   const [items, setItems] = useState<RegionalGradeTableItem[]>([]);

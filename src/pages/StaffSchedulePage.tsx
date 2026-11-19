@@ -3,7 +3,7 @@ import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, MESSAGES, WEEKDAY_NAMES } from '../constants';
-import type { StaffTableItem, OfficeStaffSettingTableItem } from '../types/db';
+import type { StaffTableItem, OfficeStaffSettingTableItem } from '../types';
 
 export type StaffScheduleRow = {
   id: string; // UUID or temp-staffId-day

@@ -2,7 +2,7 @@ import { useState, Fragment } from 'react';
 import { MonthInput, Button } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useOffice } from '../contexts';
-import { useServiceBilling } from '../hooks/useServiceBilling';
+import { useServiceBilling } from '../hooks';
 import { getCurrentJSTMonth } from '../utils';
 
 export function ServiceBillingPage() {

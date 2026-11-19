@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
-import type { RegionalGradeTableItem } from '../types/db';
+import type { RegionalGradeTableItem } from '../types';
 import { useRegionalGrades } from '../hooks';
 
 export function RegionalGradePage() {

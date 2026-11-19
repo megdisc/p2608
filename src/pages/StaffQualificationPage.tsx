@@ -3,7 +3,7 @@ import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
-import type { QualificationTableItem, StaffQualificationSettingTableItem, StaffTableItem } from '../types/db';
+import type { QualificationTableItem, StaffQualificationSettingTableItem, StaffTableItem } from '../types';
 
 type StaffQualificationGridRow = {
   id: string; // staff_id

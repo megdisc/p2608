@@ -26,10 +26,13 @@ import {
   LoginPage,
   DashboardPage
 } from './pages';
-import { AlertProvider } from './contexts/AlertContext';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { NavigationProvider } from './contexts/NavigationContext';
-import { OfficeProvider } from './contexts/OfficeContext';
+import {
+  AlertProvider,
+  AuthProvider,
+  useAuth,
+  NavigationProvider,
+  OfficeProvider
+} from './contexts';
 import { MESSAGES } from './constants';
 
 function AppContent() {

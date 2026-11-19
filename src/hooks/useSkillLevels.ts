@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { SkillLevelItem } from '../types';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib';
 
 export function useSkillLevels() {
   const [items, setItems] = useState<SkillLevelItem[]>([]);

@@ -10,23 +10,51 @@
 
   /* --- 色 (パレット) --- */
   --palette-white: #fdfdfd;
+  --palette-gray-50: #f9fafb;
   --palette-gray-100: #efefef;
+  --palette-gray-200: #e5e7eb;
+  --palette-gray-250: #cccccc;
   --palette-gray-300: #cfcfcf;
+  --palette-gray-400: #aaaaaa;
   --palette-gray-500: #9f9f9f;
+  --palette-gray-600: #4b5563;
   --palette-gray-700: #3f3f3f;
   --palette-gray-900: #1f1f1f;
+
+  --palette-slate-400: #8a94a6;
+  --palette-slate-600: #475569;
+  --palette-slate-700: #334155;
+  --palette-slate-800: #1e293b;
 
   --palette-black-alpha-10: rgba(0, 0, 0, 0.1);
   --palette-black-alpha-50: rgba(0, 0, 0, 0.5);
 
   --palette-blue-300: #dfdfff;
   --palette-blue-700: #3f3fdf;
+
+  --palette-bluegreen-50: #f0fdfa;
+  --palette-bluegreen-100: #ccfbf1;
+  --palette-bluegreen-200: #99f6e4;
   --palette-bluegreen-300: #bfffff;
   --palette-bluegreen-700: #1f8f8f;
+  --palette-bluegreen-800: #115e59;
+
   --palette-red-300: #ffdfdf;
   --palette-red-700: #df3f3f;
+
+  --palette-yellow-50: #fefce8;
+  --palette-yellow-150: #fff6a8;
+  --palette-yellow-200: #fef08a;
   --palette-yellow-300: #ffffbf;
   --palette-yellow-700: #8f8f1f;
+
+  --palette-indigo-100: #e0e7ff;
+  --palette-indigo-200: #c7d2fe;
+  --palette-indigo-800: #3730a3;
+
+  --palette-amber-100: #fef3c7;
+  --palette-amber-200: #fde68a;
+  --palette-amber-800: #92400e;
 
   /* --- フォント --- */
   --font-family-sans: "Inter", "Helvetica Neue", Arial, "BIZ UDPGothic", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic Medium", "Yu Gothic", "Meiryo", sans-serif;
@@ -81,6 +109,8 @@
   --color-bg-inverse: var(--palette-gray-900);
   --color-bg-inverse-hover: var(--palette-gray-700);
   --color-bg-input-highlight: var(--palette-yellow-300);
+  --color-bg-today-row: var(--palette-yellow-300);
+  --color-bg-today-hover: var(--palette-yellow-150);
   --color-bg-error-highlight: var(--palette-red-300);
   --color-bg-checked: var(--palette-gray-700);
 
@@ -96,6 +126,35 @@
   /* --- ステータス --- */
   --color-success: var(--palette-bluegreen-700);
   --color-error: var(--palette-red-700);
+
+  /* --- ステータスバッジ用途 --- */
+  --color-badge-confirmed-bg: var(--palette-indigo-100);
+  --color-badge-confirmed-text: var(--palette-indigo-800);
+  --color-badge-confirmed-border: var(--palette-indigo-200);
+
+  --color-badge-warning-bg: var(--palette-amber-100);
+  --color-badge-warning-text: var(--palette-amber-800);
+  --color-badge-warning-border: var(--palette-amber-200);
+
+  --color-badge-neutral-bg: var(--palette-gray-100);
+  --color-badge-neutral-text: var(--palette-gray-600);
+  --color-badge-neutral-border: var(--palette-gray-200);
+
+  /* --- サイドバー用途 --- */
+  --color-sidebar-input-bg: var(--palette-slate-800);
+  --color-sidebar-input-border: var(--palette-slate-700);
+  --color-sidebar-text: var(--palette-gray-250);
+  --color-sidebar-text-muted: var(--palette-gray-400);
+  --color-sidebar-btn-bg: var(--palette-slate-700);
+  --color-sidebar-btn-hover: var(--palette-slate-600);
+  --color-sidebar-divider: var(--palette-slate-400);
+
+  /* --- レポートカード用途 --- */
+  --color-report-bluegreen-bg: var(--palette-bluegreen-50);
+  --color-report-bluegreen-border: var(--palette-bluegreen-200);
+  --color-report-yellow-bg: var(--palette-yellow-50);
+  --color-report-yellow-border: var(--palette-yellow-200);
+
 
   /* --- オーバーレイ --- */
   --color-overlay: var(--palette-black-alpha-50);
@@ -219,7 +278,7 @@ button {
   gap: var(--space-2);
   font-size: var(--text-micro);
   font-weight: var(--weight-heading);
-  color: #8a94a6;
+  color: var(--color-sidebar-divider);
   text-align: center;
   margin-bottom: var(--space-1);
   letter-spacing: 0.08em;
@@ -487,15 +546,15 @@ th.sticky-right {
 }
 
 .inventory-table tbody tr.today-row td.sticky-right {
-  background-color: var(--palette-yellow-300);
+  background-color: var(--color-bg-today-row);
 }
 
 .inventory-table tbody tr.today-row.clickable-row:hover td {
-  background-color: #fff6a8;
+  background-color: var(--color-bg-today-hover);
 }
 
 .inventory-table tbody tr.today-row.clickable-row:hover td.sticky-right {
-  background-color: #fff6a8;
+  background-color: var(--color-bg-today-hover);
 }
 
 .item-id {
@@ -1033,7 +1092,7 @@ input[type="number"] {
 .login-footer {
   margin-top: var(--space-6);
   text-align: center;
-  font-size: 12px;
+  font-size: var(--text-caption);
   color: var(--color-text-muted);
 }
 
@@ -1077,13 +1136,13 @@ input[type="number"] {
 }
 
 .report-card-bluegreen {
-  border-color: var(--palette-bluegreen-200);
-  background-color: var(--palette-bluegreen-50);
+  border-color: var(--color-report-bluegreen-border);
+  background-color: var(--color-report-bluegreen-bg);
 }
 
 .report-card-yellow {
-  border-color: var(--palette-yellow-200);
-  background-color: var(--palette-yellow-50);
+  border-color: var(--color-report-yellow-border);
+  background-color: var(--color-report-yellow-bg);
 }
 
 .report-section-box {
@@ -1103,43 +1162,43 @@ input[type="number"] {
 }
 
 .status-badge-confirmed {
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: #e0e7ff;
-  color: #3730a3;
-  border: 1px solid #c7d2fe;
+  background-color: var(--color-badge-confirmed-bg);
+  color: var(--color-badge-confirmed-text);
+  border: 1px solid var(--color-badge-confirmed-border);
 }
 
 .status-badge-draft {
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: var(--palette-gray-100);
+  background-color: var(--color-bg-subtle);
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
 
 .status-badge-warning {
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fde68a;
+  background-color: var(--color-badge-warning-bg);
+  color: var(--color-badge-warning-text);
+  border: 1px solid var(--color-badge-warning-border);
 }
 
 .status-badge-neutral {
-  padding: 4px 10px;
+  padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
+  background-color: var(--color-badge-neutral-bg);
+  color: var(--color-badge-neutral-text);
+  border: 1px solid var(--color-badge-neutral-border);
 }
 
 /* ==========================================================================
@@ -1217,38 +1276,38 @@ input[type="number"] {
 
 /* --- サイドバー専用スタイル --- */
 .sidebar-office-wrapper {
-  margin-top: 12px;
+  margin-top: var(--space-3);
   width: 100%;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
 }
 
 .sidebar-office-select {
   width: 100%;
-  padding: 6px 8px;
+  padding: 6px var(--space-2);
   font-size: var(--text-caption);
-  background-color: #1e293b;
-  color: #ffffff;
-  border: 1px solid #334155;
+  background-color: var(--color-sidebar-input-bg);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-sidebar-input-border);
   border-radius: var(--radius-sm);
   outline: none;
 }
 
 .sidebar-office-option {
-  background-color: #1e293b;
-  color: #ffffff;
+  background-color: var(--color-sidebar-input-bg);
+  color: var(--color-text-inverse);
 }
 
 .sidebar-user {
   margin-top: auto;
-  padding: 40px 16px 24px 16px;
+  padding: var(--space-10) var(--space-4) var(--space-6) var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
   align-items: center;
 }
 
 .sidebar-user-info {
-  color: #cccccc;
+  color: var(--color-sidebar-text);
   text-align: center;
   line-height: 1.5;
 }
@@ -1260,15 +1319,15 @@ input[type="number"] {
 
 .sidebar-user-role {
   font-size: var(--text-nano);
-  color: #aaaaaa;
+  color: var(--color-sidebar-text-muted);
 }
 
 .sidebar-logout-btn {
   width: 100%;
-  background-color: #334155;
-  color: #ffffff;
+  background-color: var(--color-sidebar-btn-bg);
+  color: var(--color-text-inverse);
   border: none;
-  padding: 8px 12px;
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: var(--text-caption);
@@ -1279,7 +1338,7 @@ input[type="number"] {
 }
 
 .sidebar-logout-btn:hover {
-  background-color: #475569;
+  background-color: var(--color-sidebar-btn-hover);
 }
 
 /* --- 汎用ユーティリティ（テキスト配置・数値・Flex） --- */
@@ -1350,7 +1409,7 @@ input[type="number"] {
   border: none;
   cursor: pointer;
   padding: 2px 6px;
-  font-size: 12px;
+  font-size: var(--text-caption);
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
@@ -1454,15 +1513,15 @@ input[type="number"] {
   display: block;
 }
 
-.mr-1 { margin-right: 4px; }
+.mr-1 { margin-right: var(--space-1); }
 .mr-2 { margin-right: 6px; }
-.mr-3 { margin-right: 8px; }
+.mr-3 { margin-right: var(--space-2); }
 
 .expand-icon {
   display: inline-block;
   transition: transform 0.2s ease;
   transform: rotate(0deg);
-  font-size: 10px;
+  font-size: var(--text-micro);
 }
 
 .expand-icon.expanded {
@@ -1470,7 +1529,7 @@ input[type="number"] {
 }
 
 .input-calendar-icon {
-  margin-left: 12px;
+  margin-left: var(--space-3);
   stroke: var(--palette-gray-300);
 }
 

@@ -94,7 +94,7 @@ function AppContent() {
               <ScreenWageSummaryPage />
             ) : ['screenAverageWage', 'averageWage'].includes(activeTab) ? (
               <ScreenAverageWagePage />
-            ) : ['screenServiceBilling', 'serviceBilling', 'serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward'].includes(activeTab) ? (
+            ) : ['screenServiceBilling', 'serviceBilling'].includes(activeTab) ? (
               <ScreenServiceBillingPage />
             ) : ['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? (
               <ScreenProductionBusinessPage />

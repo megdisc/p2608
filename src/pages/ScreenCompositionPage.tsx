@@ -54,7 +54,7 @@ const getTabCategory = (tabId: string): string => {
   // 4. レポート（平均工賃、サービス費用、就労支援事業、福祉事業、積立金）
   const reportsTabIds = [
     // サービス費用
-    'serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward',
+    'serviceBilling',
     // 平均工賃
     'averageWage',
     // 就労支援事業

@@ -91,8 +91,8 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
           <button 
-            className={`nav-button ${['screenServiceBilling', 'serviceBilling', 'serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('serviceBillingSummary')}
+            className={`nav-button ${['screenServiceBilling', 'serviceBilling'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('serviceBilling')}
           >
             {PAGE_NAMES.SCREEN_SERVICE_BILLING}
           </button>

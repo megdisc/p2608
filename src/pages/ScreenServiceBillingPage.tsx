@@ -7,12 +7,7 @@ import { ServiceBillingPage } from './ServiceBillingPage';
 export function ScreenServiceBillingPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_SERVICE_BILLING;
-  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_SERVICE_BILLING;
-
-  // デフォルトタブ
-  const activeSubTab = ['serviceBillingSummary', 'serviceBillingMember', 'serviceBillingReward'].includes(navContext.activeTab)
-    ? navContext.activeTab
-    : 'serviceBillingSummary';
+  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_SERVICE_BILLING || 'サービス費用';
 
   return (
     <>
@@ -22,16 +17,13 @@ export function ScreenServiceBillingPage() {
           {screenConfig && (
             <Tabs
               tabs={screenConfig.tabs}
-              activeTab={activeSubTab}
+              activeTab="serviceBilling"
               onChange={navContext.setActiveTab}
             />
           )}
         </div>
       </div>
-      <ServiceBillingPage 
-        activeTab={activeSubTab} 
-        onTabChange={navContext.setActiveTab} 
-      />
+      <ServiceBillingPage />
     </>
   );
 }

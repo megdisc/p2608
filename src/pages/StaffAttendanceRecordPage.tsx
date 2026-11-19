@@ -59,7 +59,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
   const columns: Column<StaffAttendanceRecordRow>[] = [
     {
       key: 'staff_code',
-      header: TABLE_COLUMNS.STAFF_CODE || '職員ID',
+      header: TABLE_COLUMNS.STAFF_CODE,
       sortKey: 'staff_code',
       sortable: true,
       editable: false,
@@ -77,7 +77,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'start_time',
-      header: TABLE_COLUMNS.START_TIME || '出勤時刻',
+      header: TABLE_COLUMNS.START_TIME,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',
@@ -103,7 +103,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'end_time',
-      header: TABLE_COLUMNS.END_TIME || '退勤時刻',
+      header: TABLE_COLUMNS.END_TIME,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',
@@ -129,7 +129,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'break_minutes',
-      header: TABLE_COLUMNS.BREAK_MINUTES || '休憩時間(分)',
+      header: TABLE_COLUMNS.BREAK_MINUTES,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'number',
@@ -157,7 +157,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'actual_work_hours',
-      header: TABLE_COLUMNS.STAFF_WORK_HOURS || TABLE_COLUMNS.ACTUAL_WORK_HOURS || '勤務時間 (h)',
+      header: TABLE_COLUMNS.STAFF_WORK_HOURS,
       sortable: true,
       editable: false,
       render: (item) => {

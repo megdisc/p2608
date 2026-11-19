@@ -40,18 +40,18 @@ export function WageSummaryPage() {
     }
     try {
       await confirmWageSummary(currentMonth, selectedOfficeId);
-      showAlert(MESSAGES.SAVE_SUCCESS || '確定・保存が完了しました。', 'success');
+      showAlert(MESSAGES.CONFIRM_SUCCESS, 'success');
     } catch {
-      showAlert(MESSAGES.SAVE_ERROR || '確定処理に失敗しました。', 'error');
+      showAlert(MESSAGES.CONFIRM_ERROR, 'error');
     }
   };
 
   const handleUnconfirm = async () => {
     try {
       await cancelWageSummary(currentMonth, selectedOfficeId);
-      showAlert('確定を解除しました。', 'success');
+      showAlert(MESSAGES.UNCONFIRM_SUCCESS, 'success');
     } catch {
-      showAlert('解除処理に失敗しました。', 'error');
+      showAlert(MESSAGES.UNCONFIRM_ERROR, 'error');
     }
   };
 

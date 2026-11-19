@@ -1,6 +1,6 @@
 import { DataPage, Input, Select, DateInput, type Column } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, PLACEHOLDERS, WORDS_WELFARE_SERVICE } from '../constants';
 import { useAlert } from '../contexts';
 import { useDailyWorkRecords, type DailyFlatRecord, computeActualWorkHours } from '../hooks';
 
@@ -86,7 +86,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
   const columns: Column<any>[] = [
     { 
       key: 'userCode', 
-      header: TABLE_COLUMNS.MEMBER_CODE || '利用者ID', 
+      header: TABLE_COLUMNS.MEMBER_CODE, 
       sortKey: 'userCode',
       sortable: true,
       editable: false, 
@@ -103,7 +103,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
       sortKey: 'userYomigana',
       editable: false, 
       inputType: 'select',
-      options: [{ label: '選択してください', value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
+      options: [{ label: PLACEHOLDERS.SELECT, value: '' }, ...dbMembers.map(u => ({ label: u.name, value: u.id }))],
       render: (item: any) => item.isFirstInUser ? (dbMembers.find(u => u.id === item.userId)?.name || '') : '',
       style: (item: any) => ({
         borderBottom: item.isLastInUser ? undefined : 'none'
@@ -111,7 +111,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'status',
-      header: TABLE_COLUMNS.ATTENDANCE_STATUS || '出欠区分',
+      header: TABLE_COLUMNS.ATTENDANCE_STATUS,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'select',
@@ -121,12 +121,12 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
             <Select
               disabled={isConfirmed}
-              value={item.status === 'absent' ? 'absent' : 'present'}
+              value={item.status === WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE ? WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE : WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT_VALUE}
               onChange={(e) => {
                 const nextVal = e.target.value;
                 const newDrafts = draftData.map(d => {
                   if (d.userId !== item.userId) return d;
-                  if (nextVal === 'present' && !d.startTime && !d.endTime) {
+                  if (nextVal === WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT_VALUE && !d.startTime && !d.endTime) {
                     return {
                       ...d,
                       status: nextVal,
@@ -135,7 +135,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
                       breakMinutes: 60,
                       serviceHours: 5.0,
                     };
-                  } else if (nextVal === 'absent') {
+                  } else if (nextVal === WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE) {
                     return {
                       ...d,
                       status: nextVal,
@@ -150,8 +150,8 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
                 updateData(newDrafts);
               }}
               options={[
-                { label: '出席', value: 'present' },
-                { label: '欠席', value: 'absent' }
+                { label: WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT, value: WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT_VALUE },
+                { label: WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT, value: WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE }
               ]}
               style={{ width: '85px' }}
             />
@@ -166,7 +166,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'startTime',
-      header: TABLE_COLUMNS.START_TIME || '開始時刻',
+      header: TABLE_COLUMNS.START_TIME,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',
@@ -199,7 +199,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'endTime',
-      header: TABLE_COLUMNS.END_TIME || '終了時刻',
+      header: TABLE_COLUMNS.END_TIME,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',
@@ -232,7 +232,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'breakMinutes',
-      header: TABLE_COLUMNS.BREAK_MINUTES || '休憩(分)',
+      header: TABLE_COLUMNS.BREAK_MINUTES,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'number',
@@ -267,7 +267,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'serviceHours',
-      header: TABLE_COLUMNS.SERVICE_HOURS || '利用時間 (h)',
+      header: TABLE_COLUMNS.SERVICE_HOURS,
       sortable: true,
       editable: false,
       render: (item: any) => {
@@ -283,7 +283,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'contactDate',
-      header: TABLE_COLUMNS.CONTACT_DATE || '欠席連絡日',
+      header: TABLE_COLUMNS.CONTACT_DATE,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'date',
@@ -311,7 +311,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'isAbsenteeSupported',
-      header: TABLE_COLUMNS.IS_ABSENTEE_SUPPORTED || '欠席時対応',
+      header: TABLE_COLUMNS.IS_ABSENTEE_SUPPORTED,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -342,7 +342,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'hasMeal',
-      header: TABLE_COLUMNS.MEAL || '食事',
+      header: TABLE_COLUMNS.MEAL,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -373,7 +373,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'hasPickup',
-      header: TABLE_COLUMNS.PICKUP_OUTBOUND || '送迎(往)',
+      header: TABLE_COLUMNS.PICKUP_OUTBOUND,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -404,7 +404,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'hasDropoff',
-      header: TABLE_COLUMNS.DROPOFF_INBOUND || '送迎(復)',
+      header: TABLE_COLUMNS.DROPOFF_INBOUND,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -624,11 +624,11 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'workLocationId',
-      header: TABLE_COLUMNS.WORK_LOCATION || '作業場所',
+      header: TABLE_COLUMNS.WORK_LOCATION,
       sortable: false,
       editable: (item: any) => !isConfirmed && !item.isEmptyRow,
       inputType: 'select',
-      options: [{ label: '選択してください', value: '' }, ...dbPartners.map(p => ({ label: p.is_deleted ? `${p.name} (削除済)` : p.name, value: p.id }))],
+      options: [{ label: PLACEHOLDERS.SELECT, value: '' }, ...dbPartners.map(p => ({ label: p.is_deleted ? `${p.name} (削除済)` : p.name, value: p.id }))],
       render: (item: any, draftData: any[], updateData: (newData: any[]) => void) => {
         if (item.isEmptyRow) return '-';
         return (

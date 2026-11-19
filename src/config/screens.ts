@@ -159,7 +159,7 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
   SCREEN_SERVICE_BILLING: {
     screenName: PAGE_NAMES.SCREEN_SERVICE_BILLING,
     tabs: [
-      { id: 'serviceBilling', label: PAGE_NAMES.SERVICE_BILLING || 'サービス費用' },
+      { id: 'serviceBilling', label: PAGE_NAMES.SERVICE_BILLING },
     ],
   },
   SCREEN_TAB_COMPOSITION: {

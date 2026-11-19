@@ -9,7 +9,7 @@ import { AttendanceMonthPage } from './AttendanceMonthPage';
 export function ScreenCalendarPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_CALENDAR;
-  const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_CALENDAR || 'カレンダー';
+  const displayTitle = screenConfig.screenName || PAGE_NAMES.SCREEN_CALENDAR;
 
   // 画面表示時のデフォルト表示タブはカレンダータブとする
   useEffect(() => {

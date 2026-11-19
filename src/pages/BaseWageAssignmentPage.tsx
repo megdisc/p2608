@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { DataPage, Button, MonthDisplay, type Column } from '../components';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_COMMON } from '../constants';
 import { useAlert, useOffice } from '../contexts';
 import { useBaseWageAssignments } from '../hooks';
 import type { MemberWageAssignmentGridRow, MemberWageSettingItem } from '../types';
@@ -13,12 +13,12 @@ export function BaseWageAssignmentPage() {
 
   useEffect(() => {
     fetchAssignments(selectedOfficeId).catch(() => {
-      showAlert('データ取得に失敗しました', 'error');
+      showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
   }, [fetchAssignments, selectedOfficeId, showAlert]);
 
   const wageOptions = [
-    { label: '（未選択）', value: '' },
+    { label: WORDS_COMMON.UNSELECTED, value: WORDS_COMMON.EMPTY_VALUE },
     ...baseWages.map(w => ({
       label: `¥${w.wage.toLocaleString()}${w.description ? ` (${w.description})` : ''}`,
       value: w.id,

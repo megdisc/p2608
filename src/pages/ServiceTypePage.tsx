@@ -50,14 +50,14 @@ export function ServiceTypePage() {
     },
     {
       key: 'valid_from',
-      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM || '適用開始日',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
       render: (item: ServiceTypeItem) => item.valid_from || '-',
     },
     {
       key: 'valid_to',
-      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO || '適用終了日',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
       render: (item: ServiceTypeItem) => item.valid_to || '-',

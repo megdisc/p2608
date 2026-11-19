@@ -386,10 +386,10 @@ export function BudgetPlanningPage() {
         <div className="filter-controls"></div>
         <div className="action-buttons">
           <Button variant="secondary" onClick={() => setDrafts(JSON.parse(JSON.stringify(originalDrafts)))} disabled={!isModified}>
-            {BUTTON_LABELS.CANCEL || '取消'}
+            {BUTTON_LABELS.CANCEL}
           </Button>
           <Button variant="primary" onClick={handleBatchSave} disabled={!isModified}>
-            {BUTTON_LABELS.SAVE || '確定'}
+            {BUTTON_LABELS.SAVE}
           </Button>
         </div>
         <Pagination

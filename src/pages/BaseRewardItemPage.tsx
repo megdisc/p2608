@@ -24,7 +24,7 @@ export function BaseRewardItemPage() {
     },
     {
       key: 'capacity_tier',
-      header: TABLE_COLUMNS.CAPACITY_TIER || '定員規模区分',
+      header: TABLE_COLUMNS.CAPACITY_TIER,
       sortable: true,
       style: { width: '130px' },
     },
@@ -42,7 +42,7 @@ export function BaseRewardItemPage() {
     },
     {
       key: 'base_units',
-      header: TABLE_COLUMNS.BASE_UNITS || '基本単位数',
+      header: TABLE_COLUMNS.BASE_UNITS,
       sortable: true,
       className: 'quantity',
       style: { width: '130px', textAlign: 'right', fontWeight: 'bold' },
@@ -50,13 +50,13 @@ export function BaseRewardItemPage() {
     },
     {
       key: 'valid_from',
-      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM || '適用開始日',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
     },
     {
       key: 'valid_to',
-      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO || '適用終了日',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
       render: (item: BaseRewardItem) => item.valid_to || '-',

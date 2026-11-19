@@ -7,7 +7,7 @@ import { RewardAllocationPage } from './RewardAllocationPage';
 export function ScreenRewardAllocationPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_REWARD_ALLOCATION;
-  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_REWARD_ALLOCATION || '収益分配';
+  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_REWARD_ALLOCATION;
 
   return (
     <>

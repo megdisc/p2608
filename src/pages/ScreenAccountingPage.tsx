@@ -19,7 +19,7 @@ export function ScreenAccountingPage() {
       : navContext.activeTab;
 
   const screenConfig = getScreenConfigForTab(currentTab as any);
-  const displayTitle = screenConfig ? screenConfig.screenName : (PAGE_NAMES.SCREEN_ACCOUNTING || '会計');
+  const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_ACCOUNTING;
 
   const renderContent = () => {
     switch (currentTab) {

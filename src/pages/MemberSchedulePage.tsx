@@ -2,7 +2,13 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert, useOffice } from '../contexts';
-import { TABLE_COLUMNS, MESSAGES } from '../constants';
+import {
+  TABLE_COLUMNS,
+  MESSAGES,
+  WEEKDAY_NAMES,
+  WORDS_TIME,
+  WORDS_WELFARE_SERVICE,
+} from '../constants';
 import type { OfficeMemberSettingTableItem } from '../types/db';
 
 export type MemberScheduleRow = {
@@ -29,20 +35,20 @@ export type MemberWithSchedule = {
 };
 
 const DAY_CONFIGS: { day: number; label: string; color?: string }[] = [
-  { day: 0, label: '日', color: '#ef4444' },
-  { day: 1, label: '月' },
-  { day: 2, label: '火' },
-  { day: 3, label: '水' },
-  { day: 4, label: '木' },
-  { day: 5, label: '金' },
-  { day: 6, label: '土', color: '#3b82f6' },
+  { day: 0, label: WEEKDAY_NAMES[0], color: '#ef4444' },
+  { day: 1, label: WEEKDAY_NAMES[1] },
+  { day: 2, label: WEEKDAY_NAMES[2] },
+  { day: 3, label: WEEKDAY_NAMES[3] },
+  { day: 4, label: WEEKDAY_NAMES[4] },
+  { day: 5, label: WEEKDAY_NAMES[5] },
+  { day: 6, label: WEEKDAY_NAMES[6], color: '#3b82f6' },
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'present', label: '通所' },
-  { value: 'offsite', label: '施設外就労' },
-  { value: 'remote', label: '在宅利用' },
-  { value: 'absent', label: '休み' },
+  { value: WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT_VALUE, label: WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT },
+  { value: WORDS_WELFARE_SERVICE.ATTENDANCE_OFFSITE_VALUE, label: WORDS_WELFARE_SERVICE.ATTENDANCE_OFFSITE },
+  { value: WORDS_WELFARE_SERVICE.ATTENDANCE_REMOTE_VALUE, label: WORDS_WELFARE_SERVICE.ATTENDANCE_REMOTE },
+  { value: WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE, label: WORDS_TIME.DUTY_OFF },
 ];
 
 const formatTimeForInput = (timeStr?: string | null): string => {
@@ -409,7 +415,7 @@ export function MemberSchedulePage() {
       columns={columns}
       emptyMessage={
         !targetOfficeId
-          ? 'サイドバー上部で事業所を選択してください。'
+          ? MESSAGES.SELECT_OFFICE
           : `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）に通所する利用者が登録されていません。「事業所」タブで利用者の割当を行ってください。`
       }
       subItemsKey="schedules"

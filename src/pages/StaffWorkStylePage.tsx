@@ -7,6 +7,8 @@ import {
   TABLE_COLUMNS,
   DUTY_TYPE_OPTIONS,
   OFFICE_STAFF_ROLE_OPTIONS,
+  WORDS_COMMON,
+  WORDS_PERSON,
 } from '../constants';
 import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
 import type {
@@ -39,17 +41,19 @@ export type StaffWithWorkStyleSettings = {
 };
 
 const deriveEmploymentType = (hours: number | string | null | undefined): string => {
-  if (hours === null || hours === undefined || hours === '') return '';
+  if (hours === null || hours === undefined || hours === WORDS_COMMON.EMPTY_VALUE) return WORDS_COMMON.EMPTY_VALUE;
   const num = Number(hours);
-  if (isNaN(num)) return '';
-  return num >= 40 ? 'full_time' : 'part_time';
+  if (isNaN(num)) return WORDS_COMMON.EMPTY_VALUE;
+  return num >= WORDS_PERSON.STANDARD_FULL_TIME_WEEKLY_HOURS
+    ? WORDS_PERSON.EMPLOYMENT_TYPE_FULL_TIME_VALUE
+    : WORDS_PERSON.EMPLOYMENT_TYPE_PART_TIME_VALUE;
 };
 
 const formatEmploymentType = (hours: number | string | null | undefined): string => {
   const type = deriveEmploymentType(hours);
-  if (type === 'full_time') return '常勤';
-  if (type === 'part_time') return '非常勤';
-  return '-';
+  if (type === WORDS_PERSON.EMPLOYMENT_TYPE_FULL_TIME_VALUE) return WORDS_PERSON.EMPLOYMENT_TYPE_FULL_TIME;
+  if (type === WORDS_PERSON.EMPLOYMENT_TYPE_PART_TIME_VALUE) return WORDS_PERSON.EMPLOYMENT_TYPE_PART_TIME;
+  return WORDS_COMMON.DASH;
 };
 
 const calculateTotalAllocatedHours = (
@@ -415,7 +419,7 @@ export function StaffWorkStylePage() {
       },
       {
         key: 'role_allocated_hours',
-        header: TABLE_COLUMNS.ALLOCATED_HOURS || '職種別割当時間(h)',
+        header: TABLE_COLUMNS.ALLOCATED_HOURS,
         sortable: false,
         rowType: 'sub',
         editable: true,

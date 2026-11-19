@@ -4,7 +4,7 @@ import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
 import { useDailyConfirmation } from '../hooks';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { MESSAGES, TABLE_COLUMNS, WEEKDAY_NAMES } from '../constants';
 
 export type AttendanceMonthSummaryRow = {
   id: string; // date string: 'YYYY-MM-DD'
@@ -29,7 +29,7 @@ export interface AttendanceMonthPageProps {
   onSelectDate: (date: string) => void;
 }
 
-const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'];
+const DAY_LABELS = WEEKDAY_NAMES;
 
 export function AttendanceMonthPage({
   currentMonth: externalMonth,
@@ -395,7 +395,7 @@ export function AttendanceMonthPage({
       columns={columns}
       emptyMessage={
         !targetOfficeId
-          ? 'サイドバー上部で事業所を選択してください。'
+          ? MESSAGES.SELECT_OFFICE
           : `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）の所属者がいません。`
       }
       showMonthFilter={true}

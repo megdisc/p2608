@@ -1386,10 +1386,10 @@ export function RewardAllocationPage() {
         </div>
         <div className="action-buttons">
           <Button variant="secondary" onClick={handleCancel} disabled={isConfirmed || !isModified}>
-            {BUTTON_LABELS.CANCEL || '取消'}
+            {BUTTON_LABELS.CANCEL}
           </Button>
           <Button variant="primary" onClick={handleBatchSave} disabled={isConfirmed || !isModified}>
-            {BUTTON_LABELS.SAVE || '保存'}
+            {BUTTON_LABELS.SAVE}
           </Button>
           {!isConfirmed ? (
             <Button variant="primary" onClick={handleConfirm}>

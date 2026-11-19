@@ -7,7 +7,7 @@ import { ServiceBillingPage } from './ServiceBillingPage';
 export function ScreenServiceBillingPage() {
   const navContext = useNavigation();
   const screenConfig = getScreenConfigForTab(navContext.activeTab) || SCREEN_CONFIGS.SCREEN_SERVICE_BILLING;
-  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_SERVICE_BILLING || 'サービス費用';
+  const displayTitle = screenConfig?.screenName || PAGE_NAMES.SCREEN_SERVICE_BILLING;
 
   return (
     <>

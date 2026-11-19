@@ -6,6 +6,7 @@ import {
   TABLE_COLUMNS,
   CLOSING_DAY_STRING_OPTIONS,
   CLOSING_MONTH_TYPE_OPTIONS,
+  WAGE_BASE_DATE_TYPE_OPTIONS,
   formatClosingDay,
   formatClosingMonthType,
 } from '../constants';
@@ -18,14 +19,9 @@ export function WageClosingSettingPage() {
 
   useEffect(() => {
     fetchWageClosingSettings(selectedOfficeId).catch(() => {
-      showAlert('基準日設定の取得に失敗しました', 'error');
+      showAlert(MESSAGES.FETCH_FAILED_BASE_DATE, 'error');
     });
   }, [fetchWageClosingSettings, selectedOfficeId, showAlert]);
-
-  const basisOptions = [
-    { value: 'payment_date', label: '工賃支給日' },
-    { value: 'closing_date', label: '工賃締め日' },
-  ];
 
   const columns: Column<WageClosingSettingItem>[] = [
     {
@@ -61,9 +57,9 @@ export function WageClosingSettingPage() {
       sortable: false,
       editable: true,
       inputType: 'select',
-      options: basisOptions,
+      options: WAGE_BASE_DATE_TYPE_OPTIONS,
       render: (item) => {
-        const opt = basisOptions.find(o => o.value === item.average_wage_calc_basis);
+        const opt = WAGE_BASE_DATE_TYPE_OPTIONS.find(o => o.value === item.average_wage_calc_basis);
         return opt ? opt.label : item.average_wage_calc_basis;
       },
     },

@@ -72,13 +72,13 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             className={`nav-button ${['screenSchedule', 'attendanceMonth', 'scheduleStaff', 'scheduleMember', 'scheduleDay', 'attendanceDay', 'screenCalendar', 'calendarMonth', 'screenAttendance', 'screenCalendarDailyReport', 'calendarDailyReportCalendar', 'calendarDailyReportDay'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('attendanceMonth')}
           >
-            {PAGE_NAMES.SCREEN_SCHEDULE || '予定'}
+            {PAGE_NAMES.SCREEN_SCHEDULE}
           </button>
           <button 
             className={`nav-button ${['screenDailyReport', 'staffAttendanceRecord', 'dailyWorkRecord', 'screenStaffDailyReport', 'screenDailyWork'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('dailyWorkRecord')}
           >
-            {PAGE_NAMES.SCREEN_DAILY_REPORT || '日報'}
+            {PAGE_NAMES.SCREEN_DAILY_REPORT}
           </button>
           <button 
             className={`nav-button ${['screenWageSummary', 'wageSummary'].includes(activeTab) ? 'active' : ''}`}

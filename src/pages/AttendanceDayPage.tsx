@@ -3,7 +3,13 @@ import { DataPage, Input, Select, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice, useAlert } from '../contexts';
 import { getCurrentJSTDateOnly } from '../utils';
-import { TABLE_COLUMNS } from '../constants';
+import {
+  MESSAGES,
+  TABLE_COLUMNS,
+  ATTENDANCE_STATUS_OPTIONS,
+  WORDS_TIME,
+  WORDS_WELFARE_SERVICE,
+} from '../constants';
 import type { StaffExceptionScheduleTableItem, MemberExceptionScheduleTableItem } from '../types/db';
 
 export type AttendanceDayRow = {
@@ -45,13 +51,6 @@ export interface AttendanceDayPageProps {
   onDateChange?: (date: string) => void;
   targetType?: 'staff' | 'member';
 }
-
-const STATUS_OPTIONS = [
-  { value: 'present', label: '通所' },
-  { value: 'offsite', label: '施設外就労' },
-  { value: 'remote', label: '在宅利用' },
-  { value: 'absent', label: '欠席' },
-];
 
 const formatTimeForInput = (timeStr?: string | null): string => {
   if (!timeStr) return '';
@@ -528,7 +527,9 @@ export function AttendanceDayPage({
               }}
             />
             <span style={{ fontWeight: item.is_active ? 'var(--weight-heading)' : 'normal', color: item.is_active ? 'inherit' : 'var(--color-text-muted)' }}>
-              {item.user_type === 'staff' ? (item.is_active ? '出勤' : '休み') : (item.is_active ? '利用' : '休み')}
+              {item.user_type === 'staff'
+                ? (item.is_active ? WORDS_TIME.DUTY_WORK : WORDS_TIME.DUTY_OFF)
+                : (item.is_active ? WORDS_WELFARE_SERVICE.SERVICE_USE : WORDS_TIME.DUTY_OFF)}
             </span>
           </label>
         ),
@@ -549,12 +550,12 @@ export function AttendanceDayPage({
             return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
           }
           if (!item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>欠席</span>;
+            return <span style={{ color: 'var(--color-text-muted)' }}>{WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT}</span>;
           }
           return (
             <Select
-              value={item.status || 'present'}
-              options={STATUS_OPTIONS}
+              value={item.status || WORDS_WELFARE_SERVICE.ATTENDANCE_PRESENT_VALUE}
+              options={ATTENDANCE_STATUS_OPTIONS}
               onChange={e => {
                 const val = e.target.value;
                 const isAbsent = val === 'absent';
@@ -913,7 +914,7 @@ export function AttendanceDayPage({
       columns={columns}
       emptyMessage={
         !targetOfficeId
-          ? 'サイドバー上部で事業所を選択してください。'
+          ? MESSAGES.SELECT_OFFICE
           : targetType === 'staff'
           ? `選択された事業所（${currentOffice?.short_name || currentOffice?.name || ''}）の所属職員がいません。`
           : targetType === 'member'

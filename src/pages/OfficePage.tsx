@@ -24,7 +24,7 @@ export function OfficePage() {
     { key: 'valid_to', header: TABLE_COLUMNS.OFFICE_CLOSING_DATE, sortable: false, editable: true, inputType: 'date' },
     {
       key: 'standard_weekly_hours',
-      header: TABLE_COLUMNS.STANDARD_WEEKLY_HOURS || '常勤週労働時間(h)',
+      header: TABLE_COLUMNS.STANDARD_WEEKLY_HOURS,
       sortable: false,
       editable: true,
       inputType: 'number',

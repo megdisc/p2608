@@ -2,7 +2,14 @@ import { useEffect } from 'react';
 import { DataPage, type Column } from '../components';
 import type { OrganizationItem } from '../hooks';
 import { useAlert } from '../contexts';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import {
+  MESSAGES,
+  TABLE_COLUMNS,
+  CLOSING_DAY_STRING_OPTIONS,
+  FISCAL_MONTH_OPTIONS,
+  WORDS_COMMON,
+  formatClosingDay,
+} from '../constants';
 import { useOrganizations } from '../hooks';
 
 export function OrganizationPage() {
@@ -11,22 +18,9 @@ export function OrganizationPage() {
 
   useEffect(() => {
     fetchOrganizations().catch(() => {
-      showAlert('法人データの取得に失敗しました', 'error');
+      showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
   }, [fetchOrganizations, showAlert]);
-
-  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-    value: String(i + 1),
-    label: `${i + 1}月`,
-  }));
-
-  const dayOptions = [
-    { value: '99', label: '末日' },
-    ...Array.from({ length: 31 }, (_, i) => ({
-      value: String(i + 1),
-      label: `${i + 1}日`,
-    })),
-  ];
 
   const columns: Column<OrganizationItem>[] = [
     { key: 'name', header: TABLE_COLUMNS.ORGANIZATION_NAME, sortable: false, editable: true, inputType: 'text' },
@@ -38,8 +32,8 @@ export function OrganizationPage() {
       sortable: false, 
       editable: true, 
       inputType: 'select', 
-      options: monthOptions,
-      render: (item) => `${item.fiscal_year_closing_month || 3}月` 
+      options: FISCAL_MONTH_OPTIONS,
+      render: (item) => `${item.fiscal_year_closing_month || 3}${WORDS_COMMON.MONTH_SUFFIX}` 
     },
     { 
       key: 'fiscal_year_closing_day', 
@@ -47,8 +41,8 @@ export function OrganizationPage() {
       sortable: false, 
       editable: true, 
       inputType: 'select', 
-      options: dayOptions,
-      render: (item) => Number(item.fiscal_year_closing_day) === 99 ? '末日' : `${item.fiscal_year_closing_day || 31}日`
+      options: CLOSING_DAY_STRING_OPTIONS,
+      render: (item) => formatClosingDay(item.fiscal_year_closing_day)
     },
     { key: 'valid_from', header: TABLE_COLUMNS.ORGANIZATION_ESTABLISHED_DATE, sortable: false, editable: true, inputType: 'date' },
     { key: 'valid_to', header: TABLE_COLUMNS.ORGANIZATION_DISSOLVED_DATE, sortable: false, editable: true, inputType: 'date' },

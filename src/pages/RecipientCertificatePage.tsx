@@ -2,34 +2,19 @@ import { useState, useEffect } from 'react';
 import { DataPage, Button, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
+import {
+  MESSAGES,
+  TABLE_COLUMNS,
+  BUTTON_LABELS,
+  INCOME_CATEGORY_OPTIONS,
+  DISABILITY_CLASS_OPTIONS,
+  COPAYMENT_MGMT_OPTIONS,
+  WORDS_COMMON,
+} from '../constants';
 import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks/useRecipientCertificates';
 import { recomputeHistoryPeriods } from '../utils';
 import type { MemberRecipientCertificateItem } from '../types';
 import type { OfficeTableItem } from '../types/db';
-
-const INCOME_CATEGORY_OPTIONS = [
-  { label: '生活保護', value: 'welfare' },
-  { label: '低所得', value: 'low_income' },
-  { label: '一般1', value: 'general_1' },
-  { label: '一般2', value: 'general_2' },
-];
-
-const DISABILITY_CLASS_OPTIONS = [
-  { label: '区分なし', value: 'none' },
-  { label: '区分1', value: 'class_1' },
-  { label: '区分2', value: 'class_2' },
-  { label: '区分3', value: 'class_3' },
-  { label: '区分4', value: 'class_4' },
-  { label: '区分5', value: 'class_5' },
-  { label: '区分6', value: 'class_6' },
-];
-
-const COPAYMENT_MGMT_OPTIONS = [
-  { label: '自法人内管理', value: 'self_internal' },
-  { label: '他法人管理', value: 'other' },
-  { label: '管理なし', value: 'none' },
-];
 
 export function RecipientCertificatePage() {
   const { items, loading, fetchCertificates, batchSaveCertificates } = useRecipientCertificates();
@@ -38,7 +23,7 @@ export function RecipientCertificatePage() {
 
   useEffect(() => {
     fetchCertificates().catch(() => {
-      showAlert('受給者証データの取得に失敗しました', 'error');
+      showAlert(MESSAGES.FETCH_ERROR, 'error');
     });
 
     supabase
@@ -52,7 +37,7 @@ export function RecipientCertificatePage() {
   }, [fetchCertificates, showAlert]);
 
   const officeOptions = [
-    { label: '（未選択）', value: '' },
+    { label: WORDS_COMMON.UNSELECTED, value: WORDS_COMMON.EMPTY_VALUE },
     ...offices.map(o => ({ label: o.short_name || o.name, value: o.id }))
   ];
 

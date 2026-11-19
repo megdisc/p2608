@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { PAGE_NAMES, MESSAGES, TABLE_COLUMNS } from '../constants';
+import {
+  PAGE_NAMES,
+  MESSAGES,
+  TABLE_COLUMNS,
+  WEEKDAY_NAMES,
+  ATTENDANCE_STATUS_TEXT,
+  WORDS_TIME,
+} from '../constants';
 import { useNavigation, useOffice } from '../contexts';
 import { Button } from '../components/ui';
 import { supabase } from '../lib';
@@ -39,14 +46,7 @@ type StaffTodaySchedule = {
   remarks: string;
 };
 
-const WEEKDAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
-
-const STATUS_TEXT: Record<string, string> = {
-  present: '通所',
-  offsite: '施設外就労',
-  remote: '在宅利用',
-  absent: '欠席',
-};
+const STATUS_TEXT = ATTENDANCE_STATUS_TEXT;
 
 const getYesterdayString = (dateStr: string): string => {
   const parts = dateStr.split('-');
@@ -511,7 +511,7 @@ export function DashboardPage() {
                     staffSchedules.map(s => (
                       <tr key={s.id}>
                         <td>{s.name}</td>
-                        <td>{s.isWorkDay ? '出勤' : '休み'}</td>
+                        <td>{s.isWorkDay ? WORDS_TIME.DUTY_WORK : WORDS_TIME.DUTY_OFF}</td>
                         <td>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
                         <td>{s.remarks || '-'}</td>
                       </tr>

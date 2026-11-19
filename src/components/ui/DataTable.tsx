@@ -1233,7 +1233,7 @@ export function DataTable<T extends { id: string }>({
                 onClick={() => setSingleDate(getCurrentJSTDateOnly())}
                 disabled={singleDate === getCurrentJSTDateOnly()}
               >
-                今日
+                {BUTTON_LABELS.TODAY}
               </Button>
               {statusBadge}
             </div>
@@ -1291,7 +1291,7 @@ export function DataTable<T extends { id: string }>({
                 }}
                 disabled={singleMonth === getCurrentJSTMonth()}
               >
-                今月
+                {BUTTON_LABELS.THIS_MONTH}
               </Button>
               {statusBadge}
             </div>
@@ -1337,7 +1337,7 @@ export function DataTable<T extends { id: string }>({
                 }}
                 disabled={singleYear === new Date().getFullYear().toString()}
               >
-                今年
+                {BUTTON_LABELS.THIS_YEAR}
               </Button>
               {statusBadge}
             </div>
@@ -1359,18 +1359,18 @@ export function DataTable<T extends { id: string }>({
               </Button>
             )}
             <Button variant="primary" onClick={handleSaveClick} disabled={isConfirmed || !canSave || isSaving}>
-              {isSaving ? '保存中...' : BUTTON_LABELS.SAVE}
+              {isSaving ? BUTTON_LABELS.SAVING : BUTTON_LABELS.SAVE}
             </Button>
             {!isConfirmed ? (
               onConfirm ? (
                 <Button variant="primary" onClick={onConfirm} disabled={confirmDisabled}>
-                  確定
+                  {BUTTON_LABELS.CONFIRM}
                 </Button>
               ) : null
             ) : (
               onUnconfirm ? (
                 <Button variant="secondary" onClick={onUnconfirm}>
-                  解除
+                  {BUTTON_LABELS.UNCONFIRM}
                 </Button>
               ) : null
             )}

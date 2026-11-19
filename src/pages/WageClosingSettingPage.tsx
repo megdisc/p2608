@@ -3,6 +3,7 @@ import { DataPage, type Column } from '../components';
 import { useAlert, useOffice } from '../contexts';
 import {
   MESSAGES,
+  TABLE_COLUMNS,
   CLOSING_DAY_STRING_OPTIONS,
   CLOSING_MONTH_TYPE_OPTIONS,
   formatClosingDay,
@@ -29,7 +30,7 @@ export function WageClosingSettingPage() {
   const columns: Column<WageClosingSettingItem>[] = [
     {
       key: 'closing_day',
-      header: '工賃締め日',
+      header: TABLE_COLUMNS.WAGE_CLOSING_DAY,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -38,7 +39,7 @@ export function WageClosingSettingPage() {
     },
     {
       key: 'payment_month_type',
-      header: '支給月',
+      header: TABLE_COLUMNS.PAYMENT_MONTH,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -47,7 +48,7 @@ export function WageClosingSettingPage() {
     },
     {
       key: 'payment_day',
-      header: '工賃支給日',
+      header: TABLE_COLUMNS.WAGE_PAYMENT_DAY,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -56,7 +57,7 @@ export function WageClosingSettingPage() {
     },
     {
       key: 'average_wage_calc_basis',
-      header: '平均工賃算出基準日',
+      header: TABLE_COLUMNS.AVERAGE_WAGE_BASE_DATE,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -68,14 +69,14 @@ export function WageClosingSettingPage() {
     },
     {
       key: 'valid_from',
-      header: '適用開始日',
+      header: TABLE_COLUMNS.APPLY_START_DATE,
       sortable: false,
       editable: true,
       inputType: 'date',
     },
     {
       key: 'valid_to',
-      header: '適用終了日',
+      header: TABLE_COLUMNS.APPLY_END_DATE,
       sortable: false,
       editable: true,
       inputType: 'date',

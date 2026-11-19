@@ -118,7 +118,7 @@ export function ProjectPage() {
     },
     { 
       key: 'levelId', 
-      header: 'スキルレベル', 
+      header: TABLE_COLUMNS.SKILL_LEVEL, 
       editable: (item: any) => !isProjectFinished(item), 
       inputType: 'select', 
       options: [{ label: 'レベルなし', value: '' }, ...dbSkillLevels.map(l => ({ label: String(l.level_value), value: l.id }))],

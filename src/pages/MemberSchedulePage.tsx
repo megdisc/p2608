@@ -258,7 +258,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'day_of_week',
-        header: '曜日',
+        header: TABLE_COLUMNS.DAY_OF_WEEK,
         sortable: false,
         rowType: 'sub',
         editable: false,
@@ -274,7 +274,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'is_scheduled',
-        header: '利用',
+        header: TABLE_COLUMNS.SERVICE_SCHEDULE_ATTENDANCE,
         sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
@@ -301,7 +301,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'status',
-        header: '区分',
+        header: TABLE_COLUMNS.TYPE,
         sortable: false,
         rowType: 'sub',
         inputType: 'select',
@@ -311,7 +311,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'start_time',
-        header: '開始時刻',
+        header: TABLE_COLUMNS.SCHEDULED_START_TIME,
         sortable: false,
         rowType: 'sub',
         inputType: 'time',
@@ -324,7 +324,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'end_time',
-        header: '終了時刻',
+        header: TABLE_COLUMNS.SCHEDULED_END_TIME,
         sortable: false,
         rowType: 'sub',
         inputType: 'time',
@@ -337,7 +337,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'break_minutes',
-        header: '休憩 (分)',
+        header: TABLE_COLUMNS.BREAK_MINUTES,
         sortable: false,
         rowType: 'sub',
         inputType: 'number',
@@ -351,7 +351,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'service_hours',
-        header: '提供時間 (h)',
+        header: TABLE_COLUMNS.SERVICE_HOURS,
         sortable: false,
         rowType: 'sub',
         editable: false,
@@ -363,7 +363,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'has_meal',
-        header: '昼食',
+        header: TABLE_COLUMNS.MEAL,
         sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
@@ -372,7 +372,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'has_pickup',
-        header: '送迎(往)',
+        header: TABLE_COLUMNS.PICKUP_OUTBOUND,
         sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
@@ -381,7 +381,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'has_dropoff',
-        header: '送迎(復)',
+        header: TABLE_COLUMNS.DROPOFF_INBOUND,
         sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
@@ -390,7 +390,7 @@ export function MemberSchedulePage() {
       },
       {
         key: 'remarks',
-        header: '備考',
+        header: TABLE_COLUMNS.REMARKS,
         sortable: false,
         rowType: 'sub',
         inputType: 'text',

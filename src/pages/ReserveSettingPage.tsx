@@ -35,7 +35,7 @@ export function ReserveSettingPage() {
     },
     {
       key: 'calcType',
-      header: '計算方式',
+      header: TABLE_COLUMNS.CALCULATION_METHOD,
       editable: true,
       inputType: 'select',
       sortable: false,
@@ -50,7 +50,7 @@ export function ReserveSettingPage() {
     },
     {
       key: 'fixedAmount',
-      header: '定額金額（円）',
+      header: TABLE_COLUMNS.FIXED_AMOUNT,
       editable: (item: ReserveSettingItem) => item.calcType === 'fixed_amount',
       inputType: 'currency',
       sortable: false,
@@ -66,7 +66,7 @@ export function ReserveSettingPage() {
     },
     {
       key: 'fixedRate',
-      header: '定率（%）',
+      header: TABLE_COLUMNS.FIXED_RATE,
       editable: (item: ReserveSettingItem) => item.calcType === 'fixed_rate',
       inputType: 'number',
       sortable: false,

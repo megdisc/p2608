@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useAlert, useOffice } from '../contexts';
 import { useReserveSummary } from '../hooks';
 
@@ -61,20 +61,20 @@ export function ReserveSummaryPage() {
   const headerRows: HeaderCell[][] = [
     [
       { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: '工賃変動積立金', colSpan: 3 },
-      { label: '設備等修繕維持積立金', colSpan: 3 },
-      { label: '積立金合計', colSpan: 3 },
+      { label: TABLE_COLUMNS.RESERVE_WAGE, colSpan: 3 },
+      { label: TABLE_COLUMNS.RESERVE_EQUIPMENT, colSpan: 3 },
+      { label: TABLE_COLUMNS.RESERVE_TOTAL, colSpan: 3 },
     ],
     [
-      { label: '繰入' },
-      { label: '取崩' },
-      { label: '差引増減' },
-      { label: '繰入' },
-      { label: '取崩' },
-      { label: '差引増減' },
-      { label: '繰入計' },
-      { label: '取崩計' },
-      { label: '差引増減計' },
+      { label: TABLE_COLUMNS.RESERVE_INFLOW },
+      { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL },
+      { label: TABLE_COLUMNS.RESERVE_NET },
+      { label: TABLE_COLUMNS.RESERVE_INFLOW },
+      { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL },
+      { label: TABLE_COLUMNS.RESERVE_NET },
+      { label: TABLE_COLUMNS.RESERVE_INFLOW_TOTAL },
+      { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL_TOTAL },
+      { label: TABLE_COLUMNS.RESERVE_NET_TOTAL },
     ]
   ];
 
@@ -163,7 +163,7 @@ export function ReserveSummaryPage() {
               onClick={() => setCurrentYear(new Date().getFullYear().toString())}
               disabled={currentYear === new Date().getFullYear().toString()}
             >
-              今年
+              {BUTTON_LABELS.THIS_YEAR}
             </Button>
           </div>
         </div>

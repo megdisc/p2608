@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { PAGE_NAMES, MESSAGES } from '../constants';
+import { PAGE_NAMES, MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useNavigation, useOffice } from '../contexts';
 import { Button } from '../components/ui';
 import { supabase } from '../lib';
@@ -428,10 +428,10 @@ export function DashboardPage() {
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '140px' }}>氏名</th>
-                    <th style={{ width: '100px' }}>状況</th>
-                    <th style={{ width: '150px' }}>利用時間</th>
-                    <th>備考</th>
+                    <th style={{ width: '140px' }}>{TABLE_COLUMNS.NAME}</th>
+                    <th style={{ width: '100px' }}>{TABLE_COLUMNS.STATUS}</th>
+                    <th style={{ width: '150px' }}>{TABLE_COLUMNS.SERVICE_HOURS_PLAIN}</th>
+                    <th>{TABLE_COLUMNS.REMARKS}</th>
                   </tr>
                 </thead>
                 <tbody key={`members-${targetOfficeId}`}>
@@ -490,10 +490,10 @@ export function DashboardPage() {
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '140px' }}>氏名</th>
-                    <th style={{ width: '100px' }}>勤怠</th>
-                    <th style={{ width: '150px' }}>勤務時間</th>
-                    <th>備考</th>
+                    <th style={{ width: '140px' }}>{TABLE_COLUMNS.NAME}</th>
+                    <th style={{ width: '100px' }}>{TABLE_COLUMNS.STATUS}</th>
+                    <th style={{ width: '150px' }}>{TABLE_COLUMNS.WORK_HOURS_PLAIN}</th>
+                    <th>{TABLE_COLUMNS.REMARKS}</th>
                   </tr>
                 </thead>
                 <tbody key={`staff-${targetOfficeId}`}>

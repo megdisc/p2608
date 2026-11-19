@@ -3,6 +3,7 @@ import { DataPage, type Column } from '../components';
 import { useAlert, useOffice } from '../contexts';
 import {
   MESSAGES,
+  TABLE_COLUMNS,
   CLOSING_DAY_STRING_OPTIONS,
   CLOSING_MONTH_TYPE_OPTIONS,
   formatClosingDay,
@@ -24,7 +25,7 @@ export function SalaryClosingSettingPage() {
   const columns: Column<SalaryClosingSettingItem>[] = [
     {
       key: 'closing_day',
-      header: '給与締め日',
+      header: TABLE_COLUMNS.SALARY_CLOSING_DAY,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -33,7 +34,7 @@ export function SalaryClosingSettingPage() {
     },
     {
       key: 'payment_month_type',
-      header: '支給月',
+      header: TABLE_COLUMNS.PAYMENT_MONTH,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -42,7 +43,7 @@ export function SalaryClosingSettingPage() {
     },
     {
       key: 'payment_day',
-      header: '給与支給日',
+      header: TABLE_COLUMNS.SALARY_PAYMENT_DAY,
       sortable: false,
       editable: true,
       inputType: 'select',
@@ -51,14 +52,14 @@ export function SalaryClosingSettingPage() {
     },
     {
       key: 'valid_from',
-      header: '適用開始日',
+      header: TABLE_COLUMNS.APPLY_START_DATE,
       sortable: false,
       editable: true,
       inputType: 'date',
     },
     {
       key: 'valid_to',
-      header: '適用終了日',
+      header: TABLE_COLUMNS.APPLY_END_DATE,
       sortable: false,
       editable: true,
       inputType: 'date',

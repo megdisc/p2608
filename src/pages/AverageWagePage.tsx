@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import { useAverageWageSummary } from '../hooks/useAverageWageSummary';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOffice } from '../contexts';
 
 export function AverageWagePage() {
@@ -38,12 +38,12 @@ export function AverageWagePage() {
       <table className="inventory-table">
         <thead>
           <tr>
-            <th style={{ width: '160px', textAlign: 'left' }}>時期</th>
-            <th style={{ textAlign: 'right' }}>平均工賃</th>
-            <th style={{ textAlign: 'right' }}>工賃支払総額</th>
-            <th style={{ textAlign: 'right' }}>開所日数</th>
-            <th style={{ textAlign: 'right' }}>延べ利用人数</th>
-            <th style={{ textAlign: 'right' }}>1日平均利用人数</th>
+            <th style={{ width: '160px', textAlign: 'left' }}>{TABLE_COLUMNS.PERIOD}</th>
+            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.AVG_WAGE}</th>
+            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_WAGE}</th>
+            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.OPERATING_DAYS}</th>
+            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_UTILIZATION}</th>
+            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.AVG_MEMBERS_PER_DAY}</th>
           </tr>
         </thead>
         <tbody>

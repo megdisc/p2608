@@ -435,7 +435,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'isVisitSupported',
-      header: '訪問支援',
+      header: TABLE_COLUMNS.ACTIVITY_ATTENDANCE,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -466,7 +466,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'isTrialUse',
-      header: '体験利用',
+      header: TABLE_COLUMNS.TRIAL_ATTENDANCE,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -497,7 +497,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'isOffsiteWork',
-      header: '施設外就労',
+      header: TABLE_COLUMNS.OFFSITE_WORK,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'checkbox',
@@ -528,7 +528,7 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     },
     {
       key: 'remarks',
-      header: '備考・対応内容',
+      header: TABLE_COLUMNS.SPECIAL_ACTIONS,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',

@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
 import { MonthInput, Button } from '../components/ui';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useOffice } from '../contexts';
 import { useServiceBilling } from '../hooks/useServiceBilling';
 import { getCurrentJSTMonth } from '../utils';
@@ -259,7 +259,7 @@ export function ServiceBillingPage() {
               onClick={() => setCurrentMonth(getCurrentJSTMonth())}
               disabled={currentMonth === getCurrentJSTMonth()}
             >
-              今月
+              {BUTTON_LABELS.THIS_MONTH}
             </Button>
           </div>
         </div>

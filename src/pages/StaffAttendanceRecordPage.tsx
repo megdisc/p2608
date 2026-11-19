@@ -170,7 +170,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     },
     {
       key: 'remarks',
-      header: '備考・特記事項',
+      header: TABLE_COLUMNS.SPECIAL_NOTES,
       sortable: false,
       editable: () => !isConfirmed,
       inputType: 'text',

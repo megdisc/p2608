@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { DataPage, Button, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert } from '../contexts';
-import { MESSAGES, TABLE_COLUMNS } from '../constants';
+import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useRecipientCertificates, type MemberRecipientCertificateGridRow } from '../hooks/useRecipientCertificates';
 import { recomputeHistoryPeriods } from '../utils';
 import type { MemberRecipientCertificateItem } from '../types';
@@ -80,7 +80,7 @@ export function RecipientCertificatePage() {
       sortable: false,
       mainRender: (_item, addSubRow) => (
         <Button onClick={addSubRow}>
-          ＋ 受給者証追加
+          {BUTTON_LABELS.ADD_CERTIFICATE}
         </Button>
       ),
     },
@@ -138,7 +138,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'copaymentOfficeId',
-      header: '管理自事業所',
+      header: TABLE_COLUMNS.SELF_COPAYMENT_OFFICE,
       editable: (cert: any) => cert.copaymentManagementType === 'self_internal',
       inputType: 'select',
       options: officeOptions,
@@ -147,7 +147,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'copaymentOfficeCode',
-      header: '他法人事業所番号',
+      header: TABLE_COLUMNS.OTHER_CORP_OFFICE_NUMBER,
       editable: (cert: any) => cert.copaymentManagementType === 'other',
       inputType: 'text',
       rowType: 'sub',
@@ -155,7 +155,7 @@ export function RecipientCertificatePage() {
     },
     {
       key: 'copaymentOfficeName',
-      header: '他法人事業所名',
+      header: TABLE_COLUMNS.OTHER_CORP_OFFICE_NAME,
       editable: (cert: any) => cert.copaymentManagementType === 'other',
       inputType: 'text',
       rowType: 'sub',

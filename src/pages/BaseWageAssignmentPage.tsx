@@ -56,7 +56,7 @@ export function BaseWageAssignmentPage() {
     },
     {
       key: 'startPeriod',
-      header: '適用開始年月',
+      header: TABLE_COLUMNS.APPLY_START_MONTH,
       editable: true,
       inputType: 'month',
       rowType: 'sub',
@@ -64,7 +64,7 @@ export function BaseWageAssignmentPage() {
     },
     {
       key: 'endPeriod',
-      header: '適用終了年月',
+      header: TABLE_COLUMNS.APPLY_END_MONTH,
       editable: false,
       style: { backgroundColor: '#ffffff' },
       rowType: 'sub',

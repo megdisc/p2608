@@ -135,13 +135,13 @@ export function RewardItemPage() {
     },
     { 
       key: 'calc_rate', 
-      header: '定率算定率[%]', 
+      header: TABLE_COLUMNS.CALC_RATE_PERCENT, 
       rowType: 'sub',
       sortable: false 
     },
     { 
       key: 'monthly_limit_count', 
-      header: '月間上限回数', 
+      header: TABLE_COLUMNS.MONTHLY_LIMIT_COUNT, 
       rowType: 'sub',
       sortable: false 
     },

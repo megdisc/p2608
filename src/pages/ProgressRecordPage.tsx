@@ -125,7 +125,7 @@ export function ProgressRecordPage() {
     },
     {
       key: 'taskCompleted',
-      header: 'タスク完了',
+      header: TABLE_COLUMNS.TASK_COMPLETE,
       sortable: false,
       editable: (item: any) => Boolean(item.isFirstInTask),
       inputType: 'checkbox',

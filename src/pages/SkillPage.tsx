@@ -67,7 +67,7 @@ export function SkillPage() {
   const columns: Column<CategoryWithSkills>[] = [
     {
       key: 'name',
-      header: 'カテゴリ',
+      header: TABLE_COLUMNS.CATEGORY_NAME,
       editable: false,
       inputType: 'text',
       rowType: 'main',

@@ -3,6 +3,7 @@ import { DataPage, Input, Select, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice, useAlert } from '../contexts';
 import { getCurrentJSTDateOnly } from '../utils';
+import { TABLE_COLUMNS } from '../constants';
 import type { StaffExceptionScheduleTableItem, MemberExceptionScheduleTableItem } from '../types/db';
 
 export type AttendanceDayRow = {
@@ -469,7 +470,7 @@ export function AttendanceDayPage({
     if (!targetType) {
       cols.push({
         key: 'user_type',
-        header: '識別',
+        header: TABLE_COLUMNS.TYPE,
         sortable: true,
         style: { width: '85px', textAlign: 'center' },
         render: item => (
@@ -481,14 +482,14 @@ export function AttendanceDayPage({
     cols.push(
       {
         key: 'code',
-        header: 'コード',
+        header: targetType === 'staff' ? TABLE_COLUMNS.STAFF_CODE : (targetType === 'member' ? TABLE_COLUMNS.MEMBER_CODE : 'ID'),
         sortable: true,
         style: { width: '90px', textAlign: 'center' },
         render: item => item.code || '-',
       },
       {
         key: 'name',
-        header: '氏名',
+        header: TABLE_COLUMNS.NAME,
         sortable: true,
         sortKey: 'yomigana',
         style: { width: '130px' },
@@ -538,7 +539,7 @@ export function AttendanceDayPage({
     if (targetType !== 'staff') {
       cols.push({
         key: 'status',
-        header: '区分',
+        header: TABLE_COLUMNS.TYPE,
         sortable: false,
         editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
         inputType: 'text',
@@ -582,7 +583,7 @@ export function AttendanceDayPage({
     cols.push(
       {
         key: 'start_time',
-        header: '開始時間',
+        header: TABLE_COLUMNS.START_TIME,
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
@@ -611,7 +612,7 @@ export function AttendanceDayPage({
       },
       {
         key: 'end_time',
-        header: '終了時間',
+        header: TABLE_COLUMNS.END_TIME,
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'text',
@@ -640,7 +641,7 @@ export function AttendanceDayPage({
       },
       {
         key: 'break_minutes',
-        header: '休憩(分)',
+        header: TABLE_COLUMNS.BREAK_MINUTES,
         sortable: false,
         editable: (item: AttendanceDayRow) => item.is_active,
         inputType: 'number',
@@ -672,7 +673,7 @@ export function AttendanceDayPage({
       },
       {
         key: 'calculated_hours',
-        header: '時間(h)',
+        header: TABLE_COLUMNS.WORK_TIME,
         sortable: false,
         editable: false,
         style: { width: '85px', textAlign: 'right' },
@@ -688,7 +689,7 @@ export function AttendanceDayPage({
       cols.push(
         {
           key: 'has_meal',
-          header: '昼食',
+          header: TABLE_COLUMNS.MEAL,
           sortable: false,
           editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
           inputType: 'text',
@@ -711,7 +712,7 @@ export function AttendanceDayPage({
         },
         {
           key: 'has_pickup',
-          header: '送迎(往)',
+          header: TABLE_COLUMNS.PICKUP_OUTBOUND,
           sortable: false,
           editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
           inputType: 'text',
@@ -734,7 +735,7 @@ export function AttendanceDayPage({
         },
         {
           key: 'has_dropoff',
-          header: '送迎(復)',
+          header: TABLE_COLUMNS.DROPOFF_INBOUND,
           sortable: false,
           editable: (item: AttendanceDayRow) => item.user_type === 'member' && item.is_active,
           inputType: 'text',
@@ -761,7 +762,7 @@ export function AttendanceDayPage({
     cols.push(
       {
         key: 'schedule_state',
-        header: '種別',
+        header: TABLE_COLUMNS.STATUS,
         sortable: false,
         style: { width: '100px', textAlign: 'center' },
         render: item => {
@@ -805,7 +806,7 @@ export function AttendanceDayPage({
       },
       {
         key: 'remarks',
-        header: '備考',
+        header: TABLE_COLUMNS.REMARKS,
         sortable: false,
         editable: true,
         inputType: 'text',

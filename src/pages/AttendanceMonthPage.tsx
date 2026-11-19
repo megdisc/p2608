@@ -4,7 +4,7 @@ import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
 import { useDailyConfirmation } from '../hooks';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 
 export type AttendanceMonthSummaryRow = {
   id: string; // date string: 'YYYY-MM-DD'
@@ -308,7 +308,7 @@ export function AttendanceMonthPage({
     () => [
       {
         key: 'date',
-        header: '日付',
+        header: TABLE_COLUMNS.DATE,
         sortable: false,
         style: { width: '130px', textAlign: 'center' },
         render: item => (
@@ -317,7 +317,7 @@ export function AttendanceMonthPage({
       },
       {
         key: 'day_name',
-        header: '曜日',
+        header: TABLE_COLUMNS.DAY_OF_WEEK,
         sortable: false,
         style: { width: '60px', textAlign: 'center' },
         render: item => (
@@ -328,7 +328,7 @@ export function AttendanceMonthPage({
       },
       {
         key: 'staff_working_count',
-        header: '職員出勤予定',
+        header: TABLE_COLUMNS.STAFF_SCHEDULE,
         sortable: false,
         style: { width: '130px', textAlign: 'center' },
         render: item => (
@@ -339,7 +339,7 @@ export function AttendanceMonthPage({
       },
       {
         key: 'member_attending_count',
-        header: '利用者通所予定',
+        header: TABLE_COLUMNS.MEMBER_SCHEDULE,
         sortable: false,
         style: { width: '140px', textAlign: 'center' },
         render: item => (
@@ -350,7 +350,7 @@ export function AttendanceMonthPage({
       },
       {
         key: 'meal_count',
-        header: '昼食予定',
+        header: TABLE_COLUMNS.MEAL_SCHEDULE,
         sortable: false,
         style: { width: '90px', textAlign: 'center' },
         render: item => (
@@ -361,7 +361,7 @@ export function AttendanceMonthPage({
       },
       {
         key: 'transport',
-        header: '送迎予定（往 / 復）',
+        header: TABLE_COLUMNS.TRANSPORT_SCHEDULE,
         sortable: false,
         style: { width: '160px', textAlign: 'center' },
         render: item => {

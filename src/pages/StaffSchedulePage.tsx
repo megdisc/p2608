@@ -230,7 +230,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'day_of_week',
-        header: '曜日',
+        header: TABLE_COLUMNS.DAY_OF_WEEK,
         sortable: false,
         rowType: 'sub',
         editable: false,
@@ -246,7 +246,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'is_work_day',
-        header: '勤務',
+        header: TABLE_COLUMNS.STAFF_SCHEDULE_DUTY,
         sortable: false,
         rowType: 'sub',
         inputType: 'checkbox',
@@ -269,7 +269,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'start_time',
-        header: '始業時刻',
+        header: TABLE_COLUMNS.SCHEDULED_START_TIME,
         sortable: false,
         rowType: 'sub',
         inputType: 'time',
@@ -282,7 +282,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'end_time',
-        header: '終業時刻',
+        header: TABLE_COLUMNS.SCHEDULED_END_TIME,
         sortable: false,
         rowType: 'sub',
         inputType: 'time',
@@ -295,7 +295,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'break_minutes',
-        header: '休憩 (分)',
+        header: TABLE_COLUMNS.BREAK_MINUTES,
         sortable: false,
         rowType: 'sub',
         inputType: 'number',
@@ -309,7 +309,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'scheduled_hours',
-        header: '勤務時間 (h)',
+        header: TABLE_COLUMNS.ACTUAL_WORK_HOURS,
         sortable: false,
         rowType: 'sub',
         editable: false,
@@ -321,7 +321,7 @@ export function StaffSchedulePage() {
       },
       {
         key: 'remarks',
-        header: '備考',
+        header: TABLE_COLUMNS.REMARKS,
         sortable: false,
         rowType: 'sub',
         inputType: 'text',

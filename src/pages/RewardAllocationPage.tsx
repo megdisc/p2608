@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Button, CurrencyInput, DateInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
-import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
+import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, BADGE_LABELS, WORDS_PROJECT } from '../constants';
 import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate, getDefaultTransactionDate } from '../utils';
 import { useAlert, useOffice } from '../contexts';
 import { useProgressRecords } from '../hooks/useProgressRecords';
@@ -1371,15 +1371,15 @@ export function RewardAllocationPage() {
               }}
               disabled={currentMonth === getCurrentJSTMonth()}
             >
-              今月
+              {BUTTON_LABELS.THIS_MONTH}
             </Button>
             {isConfirmed ? (
               <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
-                確定済
+                {BADGE_LABELS.CONFIRMED}
               </span>
             ) : (
               <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#fef3c7', color: '#92400e' }}>
-                暫定
+                {BADGE_LABELS.PROVISIONAL}
               </span>
             )}
           </div>
@@ -1393,11 +1393,11 @@ export function RewardAllocationPage() {
           </Button>
           {!isConfirmed ? (
             <Button variant="primary" onClick={handleConfirm}>
-              確定
+              {BUTTON_LABELS.CONFIRM}
             </Button>
           ) : (
             <Button variant="secondary" onClick={handleUnconfirm}>
-              解除
+              {BUTTON_LABELS.UNCONFIRM}
             </Button>
           )}
         </div>

@@ -333,7 +333,7 @@ export function AttendanceMonthPage({
         style: { width: '130px', textAlign: 'center' },
         render: item => (
           <span>
-            {item.staff_working_count} <span style={{ color: 'var(--color-text-muted)' }}>/ {item.total_staff}名</span>
+            {item.staff_working_count} <span className="text-muted">/ {item.total_staff}名</span>
           </span>
         ),
       },
@@ -344,7 +344,7 @@ export function AttendanceMonthPage({
         style: { width: '140px', textAlign: 'center' },
         render: item => (
           <span>
-            {item.member_attending_count} <span style={{ color: 'var(--color-text-muted)' }}>/ {item.total_member}名</span>
+            {item.member_attending_count} <span className="text-muted">/ {item.total_member}名</span>
           </span>
         ),
       },

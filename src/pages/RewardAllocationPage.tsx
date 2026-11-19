@@ -1257,7 +1257,7 @@ export function RewardAllocationPage() {
                       }}
                     >
                       {isSurplusRow || rowItem.isAutoCalculated ? (
-                        <span style={{ color: 'var(--color-text-muted)' }}>-</span>
+                        <span className="text-muted">-</span>
                       ) : rowItem.isLaborMember ? (
                         <Tooltip text="工賃支給日（基準日設定より自動算出・変更不可）">
                           <DateInput
@@ -1325,9 +1325,9 @@ export function RewardAllocationPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 if (currentMonth) {
                   const [y, m] = currentMonth.split('-');
@@ -1348,11 +1348,10 @@ export function RewardAllocationPage() {
                   setCurrentMonth(val);
                 }
               }}
-              className="date-filter-pill"
-              style={{ width: 'auto', minWidth: '140px' }}
+              className="date-filter-pill w-auto min-w-140"
             />
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 if (currentMonth) {
                   const [y, m] = currentMonth.split('-');
@@ -1379,11 +1378,11 @@ export function RewardAllocationPage() {
               {BUTTON_LABELS.THIS_MONTH}
             </Button>
             {isConfirmed ? (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+              <span className="status-badge-confirmed">
                 {BADGE_LABELS.CONFIRMED}
               </span>
             ) : (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#fef3c7', color: '#92400e' }}>
+              <span className="status-badge-warning">
                 {BADGE_LABELS.PROVISIONAL}
               </span>
             )}

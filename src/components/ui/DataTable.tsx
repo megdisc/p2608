@@ -561,7 +561,7 @@ export function DataTable<T extends { id: string }>({
       if (col.inputType === 'radio') {
         const currentOptions = typeof col.options === 'function' ? col.options(item) : col.options || [];
         return (
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div className="radio-group">
             {currentOptions.map(opt => (
               <RadioButton
                 key={opt.value}
@@ -661,7 +661,7 @@ export function DataTable<T extends { id: string }>({
       const opts = typeof col.options === 'function' ? col.options(item) : (col.options || []);
       const value = item[col.key] ?? '';
       return (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <div className="radio-group">
           {opts.map(opt => (
             <RadioButton
               key={opt.value}
@@ -709,7 +709,7 @@ export function DataTable<T extends { id: string }>({
     if (col.inputType === 'currency') {
       const val = item[col.key];
       if (val === null || val === undefined || val === '') return null;
-      return <span style={{ fontVariantNumeric: 'tabular-nums' }}>¥{Number(val).toLocaleString()}</span>;
+      return <span className="tabular-nums">¥{Number(val).toLocaleString()}</span>;
     }
 
     return item[col.key];
@@ -793,7 +793,7 @@ export function DataTable<T extends { id: string }>({
                           style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none', verticalAlign: 'middle', textAlign: 'left' }}
                           title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div className="flex-row">
                             {col.header}
                             {isSortable && (
                               <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
@@ -827,7 +827,7 @@ export function DataTable<T extends { id: string }>({
                         style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none', textAlign: 'left', verticalAlign: 'middle' }}
                         title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <div className="flex-row">
                           {col.header}
                           {isSortable && (
                             <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
@@ -849,7 +849,7 @@ export function DataTable<T extends { id: string }>({
                       style={{ cursor: isSortable ? 'pointer' : 'default', userSelect: 'none' }}
                       title={isSortable ? `${typeof col.header === 'string' ? col.header : ''}でソート` : undefined}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div className="flex-row">
                         {col.header}
                         {isSortable && (
                           <SortIcon active={sortConfig.key === col.key} direction={sortConfig.direction} />
@@ -1176,15 +1176,14 @@ export function DataTable<T extends { id: string }>({
       <div className="action-bar">
         <div className="filter-controls">
           {showDateFilter ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="flex-row">
               <MonthInput 
                 value={startDate.length >= 7 ? startDate.substring(0, 7) : startDate} 
                 onChange={(val) => {
                   setStartDate(val);
                   if (onDateFilterChange) onDateFilterChange(val, endDate);
                 }} 
-                className="date-filter-pill"
-                style={{ width: 'auto', minWidth: '140px' }}
+                className="date-filter-pill w-auto min-w-140"
               />
               <span>～</span>
               <MonthInput 
@@ -1193,14 +1192,13 @@ export function DataTable<T extends { id: string }>({
                   setEndDate(val);
                   if (onDateFilterChange) onDateFilterChange(startDate, val);
                 }} 
-                className="date-filter-pill"
-                style={{ width: 'auto', minWidth: '140px' }}
+                className="date-filter-pill w-auto min-w-140"
               />
             </div>
           ) : showSingleDateFilter ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="flex-row">
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   const d = new Date(singleDate);
                   d.setDate(d.getDate() - 1);
@@ -1216,7 +1214,7 @@ export function DataTable<T extends { id: string }>({
                 style={{ width: 'auto', minWidth: '160px' }}
               />
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   const d = new Date(singleDate);
                   d.setDate(d.getDate() + 1);
@@ -1238,9 +1236,9 @@ export function DataTable<T extends { id: string }>({
               {statusBadge}
             </div>
           ) : showMonthFilter ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="flex-row">
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   if (singleMonth && onSingleMonthChange) {
                     const [y, m] = singleMonth.split('-');
@@ -1261,11 +1259,10 @@ export function DataTable<T extends { id: string }>({
                     onSingleMonthChange(val);
                   }
                 }}
-                className="date-filter-pill"
-                style={{ width: 'auto', minWidth: '140px' }}
+                className="date-filter-pill w-auto min-w-140"
               />
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   if (singleMonth && onSingleMonthChange) {
                     const [y, m] = singleMonth.split('-');
@@ -1296,9 +1293,9 @@ export function DataTable<T extends { id: string }>({
               {statusBadge}
             </div>
           ) : showYearFilter ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="flex-row">
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   if (singleYear && onSingleYearChange) {
                     onSingleYearChange(String(parseInt(singleYear) - 1));
@@ -1318,7 +1315,7 @@ export function DataTable<T extends { id: string }>({
                 style={{ width: 'auto', minWidth: '100px' }}
               />
               <Button 
-                style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                className="btn-circle"
                 onClick={() => {
                   if (singleYear && onSingleYearChange) {
                     onSingleYearChange(String(parseInt(singleYear) + 1));
@@ -1329,7 +1326,7 @@ export function DataTable<T extends { id: string }>({
               </Button>
               <Button 
                 variant="secondary"
-                style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+                className="btn-compact"
                 onClick={() => {
                   if (onSingleYearChange) {
                     onSingleYearChange(new Date().getFullYear().toString());

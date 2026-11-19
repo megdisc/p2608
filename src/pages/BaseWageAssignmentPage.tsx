@@ -70,7 +70,7 @@ export function BaseWageAssignmentPage() {
       rowType: 'sub',
       sortable: false,
       render: (item: any) => {
-        return item.endPeriod ? <MonthDisplay value={item.endPeriod} /> : <span style={{ color: '#999' }}>-</span>;
+        return item.endPeriod ? <MonthDisplay value={item.endPeriod} /> : <span className="text-muted">-</span>;
       },
     },
     {
@@ -175,7 +175,7 @@ export function BaseWageAssignmentPage() {
     } as MemberWageSettingItem;
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>{MESSAGES.LOADING}</div>;
+  if (loading) return <div className="loading-container">{MESSAGES.LOADING}</div>;
 
   return (
     <DataPage

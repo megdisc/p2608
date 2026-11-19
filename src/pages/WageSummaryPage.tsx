@@ -347,9 +347,9 @@ export function WageSummaryPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 const [y, m] = currentMonth.split('-');
                 const date = new Date(parseInt(y), parseInt(m) - 1, 1);
@@ -364,11 +364,10 @@ export function WageSummaryPage() {
             <MonthInput 
               value={currentMonth}
               onChange={setCurrentMonth}
-              className="date-filter-pill"
-              style={{ width: 'auto', minWidth: '140px' }}
+              className="date-filter-pill w-auto min-w-140"
             />
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 const [y, m] = currentMonth.split('-');
                 const date = new Date(parseInt(y), parseInt(m) - 1, 1);
@@ -382,18 +381,18 @@ export function WageSummaryPage() {
             </Button>
             <Button 
               variant="secondary"
-              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              className="btn-compact"
               onClick={() => setCurrentMonth(getCurrentJSTMonth())}
               disabled={currentMonth === getCurrentJSTMonth()}
             >
               {BUTTON_LABELS.THIS_MONTH}
             </Button>
             {isWageSummaryConfirmed ? (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+              <span className="status-badge-confirmed">
                 {BADGE_LABELS.CONFIRMED}
               </span>
             ) : (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#fef3c7', color: '#92400e' }}>
+              <span className="status-badge-warning">
                 {BADGE_LABELS.PROVISIONAL}
               </span>
             )}

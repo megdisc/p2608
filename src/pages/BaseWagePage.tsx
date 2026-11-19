@@ -56,8 +56,8 @@ export function BaseWagePage() {
 
         return (
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-            <Button onClick={handleUp} disabled={index <= 0} style={{ padding: '4px 8px', minWidth: 'auto' }}>↑</Button>
-            <Button onClick={handleDown} disabled={index === -1 || index >= draftData.length - 1} style={{ padding: '4px 8px', minWidth: 'auto' }}>↓</Button>
+            <Button onClick={handleUp} disabled={index <= 0} className="btn-order">↑</Button>
+            <Button onClick={handleDown} disabled={index === -1 || index >= draftData.length - 1} className="btn-order">↓</Button>
           </div>
         );
       }

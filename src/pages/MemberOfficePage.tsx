@@ -485,7 +485,7 @@ export function MemberOfficePage() {
     }
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <div className="loading-container">Loading...</div>;
 
   return (
     <DataPage

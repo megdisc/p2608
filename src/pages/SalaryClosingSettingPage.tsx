@@ -95,7 +95,7 @@ export function SalaryClosingSettingPage() {
     }
   };
 
-  if (loading && items.length === 0) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading && items.length === 0) return <div className="loading-container">Loading...</div>;
 
   return (
     <DataPage

@@ -296,49 +296,25 @@ export function DashboardPage() {
   }, [staffSchedules]);
 
   return (
-    <div
-      className="dashboard-container"
-      style={{
-        flex: 1,
-        minHeight: 0,
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-6)',
-        paddingBottom: 'var(--space-10)',
-        paddingRight: 'var(--space-2)',
-        scrollbarWidth: 'none',
-        msOverflowStyle: 'none'
-      }}
-    >
+    <div className="dashboard-container">
       {/* ページヘッダー */}
       <div>
-        <h2 style={{ margin: 0, fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+        <h2 className="page-title">
           {PAGE_NAMES.SCREEN_DASHBOARD}
         </h2>
       </div>
 
       {/* 1. 通知セクション（1パネル構成） */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <h3 style={{
-          fontSize: 'var(--text-heading-3)',
-          fontWeight: 'var(--weight-heading)',
-          color: 'var(--color-text-main)',
-          margin: 0
-        }}>
+      <section className="section-gap-2">
+        <h3 className="section-title">
           通知
         </h3>
-        <div className="dashboard-panel" style={{
-          padding: 'var(--space-3) var(--space-4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
+        <div className="dashboard-panel flex-between">
           <span>{notificationMessage}</span>
           {hasPendingNotification && (
             <Button
               variant="edit"
-              style={{ height: '24px', fontSize: 'var(--text-caption)', padding: '0 var(--space-3)' }}
+              className="btn-compact"
               onClick={() => setActiveTab('dailyWorkRecord')}
             >
               日報画面を開く
@@ -348,20 +324,11 @@ export function DashboardPage() {
       </section>
 
       {/* 2. クイックアクセスセクション（6個） */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        <h3 style={{
-          fontSize: 'var(--text-heading-3)',
-          fontWeight: 'var(--weight-heading)',
-          color: 'var(--color-text-main)',
-          margin: 0
-        }}>
+      <section className="section-gap-2">
+        <h3 className="section-title">
           クイックアクセス
         </h3>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
-          gap: 'var(--space-2)'
-        }}>
+        <div className="dashboard-quick-access-grid">
           {quickAccessItems.map(item => (
             <button
               key={item.id}
@@ -376,68 +343,51 @@ export function DashboardPage() {
       </section>
 
       {/* 3. 今日の予定セクション */}
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--space-3)' }}>
-          <h3 style={{
-            fontSize: 'var(--text-heading-3)',
-            fontWeight: 'var(--weight-heading)',
-            color: 'var(--color-text-main)',
-            margin: 0
-          }}>
+      <section className="section-gap-4">
+        <div className="header-baseline">
+          <h3 className="section-title">
             今日の予定
           </h3>
-          <span style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)' }}>
+          <span>
             {formattedTodayJP}
           </span>
         </div>
 
         {/* 左右の小セクション（左: 利用者データ / 右: 職員データ） */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-          gap: 'var(--space-6)',
-          alignItems: 'start'
-        }}>
+        <div className="dashboard-columns-2">
           {/* 左側小セクション: 利用者データ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="dashboard-column">
             {/* 上側: 出欠の状況概要 */}
             <div
               key={`member-summary-${targetOfficeId}`}
-              className="dashboard-panel"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--space-1)',
-                minHeight: '104px',
-                boxSizing: 'border-box'
-              }}
+              className="dashboard-panel dashboard-summary-panel"
             >
-              <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-title">
                 利用者 出欠状況
               </div>
-              <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-value">
                 {memberSummary.totalScheduled} / {memberSummary.total} 名
               </div>
-              <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-sub">
                 内訳: 通所 {memberSummary.present}名 / 施設外 {memberSummary.offsite}名 / 在宅 {memberSummary.remote}名 / 欠席 {memberSummary.absent}名
               </div>
             </div>
 
             {/* 下側: 利用時間の予定 */}
-            <div className="table-container" style={{ maxHeight: '360px' }}>
+            <div className="table-container table-max-360">
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '140px' }}>{TABLE_COLUMNS.NAME}</th>
-                    <th style={{ width: '100px' }}>{TABLE_COLUMNS.STATUS}</th>
-                    <th style={{ width: '150px' }}>{TABLE_COLUMNS.SERVICE_HOURS_PLAIN}</th>
+                    <th className="w-140">{TABLE_COLUMNS.NAME}</th>
+                    <th className="w-100">{TABLE_COLUMNS.STATUS}</th>
+                    <th className="w-150">{TABLE_COLUMNS.SERVICE_HOURS_PLAIN}</th>
                     <th>{TABLE_COLUMNS.REMARKS}</th>
                   </tr>
                 </thead>
                 <tbody key={`members-${targetOfficeId}`}>
                   {loading ? (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: 'center', padding: '24px' }}>
+                      <td colSpan={4} className="text-center cell-padding-wide">
                         {MESSAGES.LOADING}
                       </td>
                     </tr>
@@ -461,45 +411,38 @@ export function DashboardPage() {
           </div>
 
           {/* 右側小セクション: 職員データ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          <div className="dashboard-column">
             {/* 上側: 勤怠の状況概要 */}
             <div
               key={`staff-summary-${targetOfficeId}`}
-              className="dashboard-panel"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--space-1)',
-                minHeight: '104px',
-                boxSizing: 'border-box'
-              }}
+              className="dashboard-panel dashboard-summary-panel"
             >
-              <div style={{ fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-title">
                 職員 勤怠状況
               </div>
-              <div style={{ fontSize: 'var(--text-heading-2)', fontWeight: 'var(--weight-heading)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-value">
                 {staffSummary.working} / {staffSummary.total} 名
               </div>
-              <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-main)' }}>
+              <div className="dashboard-kpi-sub">
                 内訳: 勤務 {staffSummary.working}名 / 休み {staffSummary.off}名
               </div>
             </div>
 
             {/* 下側: 勤務時間の予定 */}
-            <div className="table-container" style={{ maxHeight: '360px' }}>
+            <div className="table-container table-max-360">
               <table className="inventory-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '140px' }}>{TABLE_COLUMNS.NAME}</th>
-                    <th style={{ width: '100px' }}>{TABLE_COLUMNS.STATUS}</th>
-                    <th style={{ width: '150px' }}>{TABLE_COLUMNS.WORK_HOURS_PLAIN}</th>
+                    <th className="w-140">{TABLE_COLUMNS.NAME}</th>
+                    <th className="w-100">{TABLE_COLUMNS.STATUS}</th>
+                    <th className="w-150">{TABLE_COLUMNS.WORK_HOURS_PLAIN}</th>
                     <th>{TABLE_COLUMNS.REMARKS}</th>
                   </tr>
                 </thead>
                 <tbody key={`staff-${targetOfficeId}`}>
                   {loading ? (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: 'center', padding: '24px' }}>
+                      <td colSpan={4} className="text-center cell-padding-wide">
                         {MESSAGES.LOADING}
                       </td>
                     </tr>

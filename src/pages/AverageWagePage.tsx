@@ -39,11 +39,11 @@ export function AverageWagePage() {
         <thead>
           <tr>
             <th style={{ width: '160px', textAlign: 'left' }}>{TABLE_COLUMNS.PERIOD}</th>
-            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.AVG_WAGE}</th>
-            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_WAGE}</th>
-            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.OPERATING_DAYS}</th>
-            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_UTILIZATION}</th>
-            <th style={{ textAlign: 'right' }}>{TABLE_COLUMNS.AVG_MEMBERS_PER_DAY}</th>
+            <th className="text-right">{TABLE_COLUMNS.AVG_WAGE}</th>
+            <th className="text-right">{TABLE_COLUMNS.TOTAL_WAGE}</th>
+            <th className="text-right">{TABLE_COLUMNS.OPERATING_DAYS}</th>
+            <th className="text-right">{TABLE_COLUMNS.TOTAL_UTILIZATION}</th>
+            <th className="text-right">{TABLE_COLUMNS.AVG_MEMBERS_PER_DAY}</th>
           </tr>
         </thead>
         <tbody>
@@ -68,7 +68,7 @@ export function AverageWagePage() {
                     }}
                     className="hover-row"
                   >
-                    <td style={{ textAlign: 'left' }}>
+                    <td className="text-left">
                       <span style={{ 
                         fontSize: 'var(--text-caption)', 
                         marginRight: '8px',
@@ -83,16 +83,16 @@ export function AverageWagePage() {
                     <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', fontVariantNumeric: 'tabular-nums' }}>
                       ¥{Math.round(annualRow.avgMonthlyWage).toLocaleString()}
                     </td>
-                    <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="text-right tabular-nums">
                       ¥{annualRow.totalWage.toLocaleString()}
                     </td>
-                    <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="text-right tabular-nums">
                       {annualRow.operatingDays}
                     </td>
-                    <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="text-right tabular-nums">
                       {annualRow.totalUtilization.toLocaleString()}
                     </td>
-                    <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <td className="text-right tabular-nums">
                       {annualRow.avgMembersPerDay.toFixed(1)}
                     </td>
                   </tr>
@@ -104,19 +104,19 @@ export function AverageWagePage() {
                         <span style={{ color: 'var(--color-border)', marginRight: '6px' }}>└</span>
                         {monthDetail.monthLabel}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{Math.round(monthDetail.avgMonthlyWage).toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{monthDetail.totalWage.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {monthDetail.operatingDays}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {monthDetail.totalUtilization.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {monthDetail.avgMembersPerDay.toFixed(1)}
                       </td>
                     </tr>

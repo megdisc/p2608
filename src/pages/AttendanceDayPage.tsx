@@ -547,10 +547,10 @@ export function AttendanceDayPage({
         style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (item.user_type === 'staff') {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           if (!item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>{WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT}</span>;
+            return <span className="text-muted">{WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT}</span>;
           }
           return (
             <Select
@@ -591,7 +591,7 @@ export function AttendanceDayPage({
         style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           return (
             <Input
@@ -620,7 +620,7 @@ export function AttendanceDayPage({
         style: { width: '120px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           return (
             <Input
@@ -649,7 +649,7 @@ export function AttendanceDayPage({
         style: { width: '90px', textAlign: 'center' },
         render: (item, draftData, updateData) => {
           if (!item.is_active) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           return (
             <Input
@@ -679,7 +679,7 @@ export function AttendanceDayPage({
         editable: false,
         style: { width: '85px', textAlign: 'right' },
         render: item => {
-          if (!item.is_active) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          if (!item.is_active) return <span className="text-muted">-</span>;
           return Number(item.calculated_hours || 0).toFixed(2);
         },
       }
@@ -697,7 +697,7 @@ export function AttendanceDayPage({
           style: { width: '65px', textAlign: 'center' },
           render: (item, draftData, updateData) => {
             if (item.user_type === 'staff' || !item.is_active) {
-              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+              return <span className="text-muted">-</span>;
             }
             return (
               <Input
@@ -720,7 +720,7 @@ export function AttendanceDayPage({
           style: { width: '75px', textAlign: 'center' },
           render: (item, draftData, updateData) => {
             if (item.user_type === 'staff' || !item.is_active) {
-              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+              return <span className="text-muted">-</span>;
             }
             return (
               <Input
@@ -743,7 +743,7 @@ export function AttendanceDayPage({
           style: { width: '75px', textAlign: 'center' },
           render: (item, draftData, updateData) => {
             if (item.user_type === 'staff' || !item.is_active) {
-              return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+              return <span className="text-muted">-</span>;
             }
             return (
               <Input
@@ -799,7 +799,7 @@ export function AttendanceDayPage({
             );
           }
           return (
-            <span style={{ color: 'var(--color-text-muted)' }}>
+            <span className="text-muted">
               基本予定
             </span>
           );
@@ -889,16 +889,16 @@ export function AttendanceDayPage({
 
       {/* Summary indicators */}
       <div style={{ display: 'flex', gap: 'var(--space-4)', alignItems: 'center', fontSize: 'var(--text-body)' }}>
-        <span style={{ color: 'var(--color-text-muted)' }}>
+        <span className="text-muted">
           出勤職員: <strong style={{ color: 'var(--color-text-main)' }}>{stats.workingStaff}</strong> / {stats.totalStaff}名
         </span>
-        <span style={{ color: 'var(--color-text-muted)' }}>
+        <span className="text-muted">
           通所利用者: <strong style={{ color: 'var(--color-text-main)' }}>{stats.attendingMember}</strong> / {stats.totalMember}名
         </span>
-        <span style={{ color: 'var(--color-text-muted)' }}>
+        <span className="text-muted">
           昼食: <strong style={{ color: 'var(--color-text-main)' }}>{stats.mealCount}</strong>食
         </span>
-        <span style={{ color: 'var(--color-text-muted)' }}>
+        <span className="text-muted">
           送迎: 往<strong style={{ color: 'var(--color-text-main)' }}>{stats.pickupCount}</strong> / 復<strong style={{ color: 'var(--color-text-main)' }}>{stats.dropoffCount}</strong>名
         </span>
       </div>

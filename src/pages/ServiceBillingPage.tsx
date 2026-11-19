@@ -46,18 +46,18 @@ export function ServiceBillingPage() {
         <table className="inventory-table">
           <thead>
             <tr>
-              <th style={{ width: '40px', textAlign: 'center' }}></th>
-              <th style={{ width: '100px', textAlign: 'left' }}>{TABLE_COLUMNS.MEMBER_CODE}</th>
-              <th style={{ width: '150px', textAlign: 'left' }}>{TABLE_COLUMNS.NAME}</th>
-              <th style={{ width: '80px', textAlign: 'right' }}>{TABLE_COLUMNS.ATTENDANCE_DAYS}</th>
-              <th style={{ width: '100px', textAlign: 'right' }}>{TABLE_COLUMNS.BASE_REWARD}</th>
-              <th style={{ width: '90px', textAlign: 'right' }}>{TABLE_COLUMNS.ADDITION_TOTAL}</th>
-              <th style={{ width: '100px', textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_UNITS}</th>
-              <th style={{ width: '130px', textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_COST}</th>
-              <th style={{ width: '140px', textAlign: 'right' }}>{TABLE_COLUMNS.COPAYMENT_LIMIT}</th>
-              <th style={{ width: '110px', textAlign: 'right' }}>{TABLE_COLUMNS.SERVICE_FEE}</th>
-              <th style={{ width: '120px', textAlign: 'right' }}>{TABLE_COLUMNS.BENEFIT_BILLING}</th>
-              <th style={{ textAlign: 'left' }}>{TABLE_COLUMNS.REMARKS}</th>
+              <th className="w-40 text-center"></th>
+              <th className="w-100 text-left">{TABLE_COLUMNS.MEMBER_CODE}</th>
+              <th className="w-150 text-left">{TABLE_COLUMNS.NAME}</th>
+              <th className="w-80 text-right">{TABLE_COLUMNS.ATTENDANCE_DAYS}</th>
+              <th className="w-100 text-right">{TABLE_COLUMNS.BASE_REWARD}</th>
+              <th className="w-90 text-right">{TABLE_COLUMNS.ADDITION_TOTAL}</th>
+              <th className="w-100 text-right">{TABLE_COLUMNS.TOTAL_UNITS}</th>
+              <th className="w-130 text-right">{TABLE_COLUMNS.TOTAL_COST}</th>
+              <th className="w-140 text-right">{TABLE_COLUMNS.COPAYMENT_LIMIT}</th>
+              <th className="w-110 text-right">{TABLE_COLUMNS.SERVICE_FEE}</th>
+              <th className="w-120 text-right">{TABLE_COLUMNS.BENEFIT_BILLING}</th>
+              <th className="text-left">{TABLE_COLUMNS.REMARKS}</th>
             </tr>
           </thead>
           <tbody>
@@ -73,113 +73,98 @@ export function ServiceBillingPage() {
                   <Fragment key={row.memberId}>
                     <tr 
                       onClick={() => toggleMemberExpand(row.memberId)}
-                      style={{ 
-                        cursor: 'pointer',
-                        backgroundColor: isExpanded ? 'var(--color-bg-subtle)' : undefined,
-                      }}
-                      className="hover-row"
+                      className={`hover-row ${isExpanded ? 'row-bg-subtle' : ''}`}
                     >
-                      <td style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>
-                        <span style={{ 
-                          display: 'inline-block', 
-                          transition: 'transform 0.2s', 
-                          transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                          fontSize: '10px'
-                        }}>
+                      <td className="text-center text-muted">
+                        <span className={`expand-icon ${isExpanded ? 'expanded' : ''}`}>
                           ▶
                         </span>
                       </td>
-                      <td style={{ textAlign: 'left' }}>{row.memberCode}</td>
-                      <td style={{ textAlign: 'left' }}>
+                      <td className="text-left">{row.memberCode}</td>
+                      <td className="text-left">
                         {row.memberName}
                         {row.recipientNumber && (
-                          <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                          <span className="text-nano text-muted d-block">
                             受給者証: {row.recipientNumber}
                           </span>
                         )}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {row.attendanceDays}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {row.baseRewardUnits.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {row.additionUnits.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         {row.totalUnits.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{row.totalCostAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{row.copaymentLimitAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{row.finalCopaymentAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                      <td className="text-right tabular-nums">
                         ¥{row.benefitBillingAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'left', fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+                      <td className="text-left text-caption text-muted">
                         {row.remarks}
                       </td>
                     </tr>
 
                     {/* 行展開：加算・減算の内訳明細 */}
                     {isExpanded && (
-                      <tr style={{ backgroundColor: 'var(--color-bg-subtle)' }}>
+                      <tr className="row-bg-subtle">
                         <td></td>
-                        <td colSpan={11} style={{ padding: '12px 16px' }}>
-                          <div style={{ background: 'var(--color-bg-main)', padding: '12px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
-                            <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', marginBottom: '8px', color: 'var(--color-text-main)' }}>
+                        <td colSpan={11} className="cell-padding-wide">
+                          <div className="billing-detail-container">
+                            <div className="billing-detail-header">
                               【{row.memberName} 様の算定内訳明細】 (地域単価: ¥{row.unitPrice.toFixed(2)})
                             </div>
                             {row.details.length === 0 ? (
-                              <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
+                              <div className="billing-detail-empty">
                                 算定された明細項目はありません
                               </div>
                             ) : (
-                              <table style={{ width: '100%', fontSize: 'var(--text-caption)', borderCollapse: 'collapse' }}>
+                              <table className="billing-detail-table">
                                 <thead>
-                                  <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
-                                    <th style={{ textAlign: 'left', padding: '4px' }}>{TABLE_COLUMNS.ITEM_CATEGORY}</th>
-                                    <th style={{ textAlign: 'left', padding: '4px' }}>{TABLE_COLUMNS.SERVICE_CODE_OR_ITEM}</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.UNIT_VALUE}</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.COUNT_DAYS}</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.TOTAL_UNITS}</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.AMOUNT_CONVERTED}</th>
+                                  <tr>
+                                    <th className="text-left">{TABLE_COLUMNS.ITEM_CATEGORY}</th>
+                                    <th className="text-left">{TABLE_COLUMNS.SERVICE_CODE_OR_ITEM}</th>
+                                    <th className="text-right">{TABLE_COLUMNS.UNIT_VALUE}</th>
+                                    <th className="text-right">{TABLE_COLUMNS.COUNT_DAYS}</th>
+                                    <th className="text-right">{TABLE_COLUMNS.TOTAL_UNITS}</th>
+                                    <th className="text-right">{TABLE_COLUMNS.AMOUNT_CONVERTED}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {row.details.map((d, idx) => (
-                                    <tr key={idx} style={{ borderBottom: '1px dashed var(--color-border)' }}>
-                                      <td style={{ padding: '6px 4px' }}>
-                                        <span style={{ 
-                                          padding: '1px 6px', 
-                                          borderRadius: '3px', 
-                                          fontSize: '10px',
-                                          background: d.itemCategory === 'base_reward' ? 'var(--palette-bluegreen-100)' : 'var(--palette-yellow-100)',
-                                          color: d.itemCategory === 'base_reward' ? 'var(--palette-bluegreen-800)' : 'var(--palette-yellow-800)'
-                                        }}>
+                                    <tr key={idx}>
+                                      <td>
+                                        <span className={d.itemCategory === 'base_reward' ? 'status-badge-confirmed' : 'status-badge-warning'}>
                                           {d.itemCategory === 'base_reward' ? TABLE_COLUMNS.BASE_REWARD : '加算'}
                                         </span>
                                       </td>
-                                      <td style={{ padding: '6px 4px' }}>
-                                        {d.serviceCode && <span style={{ color: 'var(--color-text-muted)', marginRight: '6px' }}>[{d.serviceCode}]</span>}
+                                      <td>
+                                        {d.serviceCode && <span className="text-muted mr-2">[{d.serviceCode}]</span>}
                                         {d.itemName}
                                       </td>
-                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
+                                      <td className="text-right tabular-nums">
                                         {d.unitValue.toLocaleString()}
                                       </td>
-                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
+                                      <td className="text-right tabular-nums">
                                         {d.count}
                                       </td>
-                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
+                                      <td className="text-right tabular-nums">
                                         {d.totalItemUnits.toLocaleString()}
                                       </td>
-                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
+                                      <td className="text-right tabular-nums">
                                         ¥{Math.floor(d.totalItemUnits * row.unitPrice).toLocaleString()}
                                       </td>
                                     </tr>
@@ -199,30 +184,30 @@ export function ServiceBillingPage() {
           {/* 合計フッター */}
           {data.length > 0 && (
             <tfoot>
-              <tr style={{ background: 'var(--color-bg-subtle)', fontWeight: 'var(--weight-heading)' }}>
-                <td colSpan={3} style={{ textAlign: 'center' }}>
+              <tr className="billing-total-row">
+                <td colSpan={3} className="text-center">
                   合計 ({data.length}名)
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   {data.reduce((acc, r) => acc + r.attendanceDays, 0)}
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   {data.reduce((acc, r) => acc + r.baseRewardUnits, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   {data.reduce((acc, r) => acc + r.additionUnits, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   {data.reduce((acc, r) => acc + r.totalUnits, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   ¥{data.reduce((acc, r) => acc + r.totalCostAmount, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right' }}>-</td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right">-</td>
+                <td className="text-right tabular-nums">
                   ¥{data.reduce((acc, r) => acc + r.finalCopaymentAmount, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                <td className="text-right tabular-nums">
                   ¥{data.reduce((acc, r) => acc + r.benefitBillingAmount, 0).toLocaleString()}
                 </td>
                 <td></td>
@@ -234,9 +219,9 @@ export function ServiceBillingPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={handlePrevMonth}
             >
               ＜
@@ -244,18 +229,17 @@ export function ServiceBillingPage() {
             <MonthInput 
               value={currentMonth}
               onChange={setCurrentMonth}
-              className="date-filter-pill"
-              style={{ width: 'auto', minWidth: '140px' }}
+              className="date-filter-pill w-auto min-w-140"
             />
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={handleNextMonth}
             >
               ＞
             </Button>
             <Button 
               variant="secondary"
-              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              className="btn-compact"
               onClick={() => setCurrentMonth(getCurrentJSTMonth())}
               disabled={currentMonth === getCurrentJSTMonth()}
             >

@@ -82,7 +82,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       editable: () => !isConfirmed,
       inputType: 'text',
       render: (item, draftData, updateData) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="flex-center">
           <Input
             type="time"
             value={item.start_time || ''}
@@ -108,7 +108,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       editable: () => !isConfirmed,
       inputType: 'text',
       render: (item, draftData, updateData) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="flex-center">
           <Input
             type="time"
             value={item.end_time || ''}
@@ -134,7 +134,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       editable: () => !isConfirmed,
       inputType: 'number',
       render: (item, draftData, updateData) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="flex-center">
           <Input
             type="number"
             min={0}
@@ -175,7 +175,7 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
       editable: () => !isConfirmed,
       inputType: 'text',
       render: (item, draftData, updateData) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="flex-center">
           <Input
             type="text"
             disabled={isConfirmed}
@@ -209,20 +209,20 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
   const statusBadge = useMemo(() => {
     if (records.length === 0) {
       return (
-        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#f3f4f6', color: '#4b5563' }}>
+        <span className="status-badge-neutral">
           対象外
         </span>
       );
     }
     if (isConfirmed) {
       return (
-        <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+        <span className="status-badge-confirmed">
           確定済
         </span>
       );
     }
     return (
-      <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: '#fef3c7', color: '#92400e' }}>
+      <span className="status-badge-warning">
         暫定
       </span>
     );

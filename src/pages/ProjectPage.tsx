@@ -34,7 +34,7 @@ export function ProjectPage() {
       render: (item: ProjectItem) => {
         const finished = isProjectFinished(item);
         return (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             {finished ? (
               <Tooltip text={MESSAGES.PROJECT_FINISHED_CANNOT_EDIT} as="span">
                 <span>{item.name}</span>

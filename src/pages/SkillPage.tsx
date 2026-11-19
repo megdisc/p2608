@@ -73,7 +73,7 @@ export function SkillPage() {
       rowType: 'main',
       render: (item: CategoryWithSkills) => (
         item.isUncategorized ? (
-          <span style={{ color: '#64748b', fontStyle: 'italic', fontWeight: 600 }}>未分類</span>
+          <span className="text-unclassified">未分類</span>
         ) : (
           <span>{item.name}</span>
         )
@@ -149,8 +149,8 @@ export function SkillPage() {
 
         return (
           <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
-            <Button onClick={handleUp} disabled={skillIndex <= 0} style={{ padding: '4px 8px', minWidth: 'auto' }}>↑</Button>
-            <Button onClick={handleDown} disabled={skillIndex === -1 || skillIndex >= cat.skills.length - 1} style={{ padding: '4px 8px', minWidth: 'auto' }}>↓</Button>
+            <Button onClick={handleUp} disabled={skillIndex <= 0} className="btn-order">↑</Button>
+            <Button onClick={handleDown} disabled={skillIndex === -1 || skillIndex >= cat.skills.length - 1} className="btn-order">↓</Button>
           </div>
         );
       }

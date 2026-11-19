@@ -1444,9 +1444,9 @@ export function ScreenCompositionPage() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <div className="page-header">
+        <h2 className="page-title">{displayTitle}</h2>
+        <div className="page-header-actions">
           {screenConfig && (
             <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
           )}
@@ -1562,7 +1562,7 @@ export function ScreenCompositionPage() {
                           }}>
                             {idx === 0 ? (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                                <span style={{ color: isTableAdded ? '#1e40af' : undefined, fontWeight: 'bold' }}>
+                                <span style={{ color: isTableAdded ? 'var(--palette-blue-700)' : undefined, fontWeight: 'bold' }}>
                                   {table.physicalName}
                                 </span>
                                 {table.status === 'added' && (
@@ -1600,7 +1600,7 @@ export function ScreenCompositionPage() {
                             backgroundColor: isTableAdded ? '#f0f7ff' : undefined
                           }}>
                             {idx === 0 ? (
-                              <span style={{ color: isTableAdded ? '#1e40af' : undefined, fontWeight: 'bold' }}>
+                              <span style={{ color: isTableAdded ? 'var(--palette-blue-700)' : undefined, fontWeight: 'bold' }}>
                                 {table.logicalName}
                               </span>
                             ) : ''}
@@ -1688,16 +1688,16 @@ export function ScreenCompositionPage() {
 
                     if (isNewSubCategory && table.subCategory) {
                       headerRows.push(
-                        <tr key={`subcat-hdr-${i}`} style={{ backgroundColor: '#f8fafc' }}>
+                        <tr key={`subcat-hdr-${i}`} className="row-bg-subtle">
                           <td colSpan={5} style={{
                             padding: '6px 16px 6px 24px',
                             fontWeight: 'bold',
                             fontSize: '12px',
-                            color: '#334155',
-                            borderTop: '1px solid var(--color-border-subtle)',
-                            borderBottom: '1px solid var(--color-border-subtle)'
+                            color: 'var(--color-text-main)',
+                            borderTop: '1px solid var(--color-border)',
+                            borderBottom: '1px solid var(--color-border)'
                           }}>
-                            <span style={{ color: '#64748b', marginRight: '6px' }}>▼</span>
+                            <span className="text-muted mr-2">▼</span>
                             {table.subCategory}
                           </td>
                         </tr>

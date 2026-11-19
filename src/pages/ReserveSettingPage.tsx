@@ -58,9 +58,9 @@ export function ReserveSettingPage() {
       style: { width: '180px', textAlign: 'right' },
       render: (item: ReserveSettingItem) => (
         item.calcType === 'fixed_amount' ? (
-          <span style={{ fontVariantNumeric: 'tabular-nums' }}>¥{Number(item.fixedAmount || 0).toLocaleString()}</span>
+          <span className="tabular-nums">¥{Number(item.fixedAmount || 0).toLocaleString()}</span>
         ) : (
-          <span style={{ color: 'var(--color-text-muted, #a0aec0)' }}>-</span>
+          <span className="text-muted">-</span>
         )
       )
     },
@@ -74,9 +74,9 @@ export function ReserveSettingPage() {
       style: { width: '140px', textAlign: 'right' },
       render: (item: ReserveSettingItem) => (
         item.calcType === 'fixed_rate' ? (
-          <span style={{ fontVariantNumeric: 'tabular-nums' }}>{Number(item.fixedRate || 0)} %</span>
+          <span className="tabular-nums">{Number(item.fixedRate || 0)} %</span>
         ) : (
-          <span style={{ color: 'var(--color-text-muted, #a0aec0)' }}>-</span>
+          <span className="text-muted">-</span>
         )
       )
     },

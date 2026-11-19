@@ -1107,9 +1107,9 @@ input[type="number"] {
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: var(--palette-bluegreen-100);
-  color: var(--palette-bluegreen-800);
-  border: 1px solid var(--palette-bluegreen-300);
+  background-color: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
 }
 
 .status-badge-draft {
@@ -1117,7 +1117,460 @@ input[type="number"] {
   border-radius: var(--radius-full);
   font-size: var(--text-caption);
   font-weight: var(--weight-heading);
-  background-color: var(--palette-gray-200);
+  background-color: var(--palette-gray-100);
   color: var(--color-text-muted);
   border: 1px solid var(--color-border);
 }
+
+.status-badge-warning {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.status-badge-neutral {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   第四階層：共通画面・UIコンポーネント用スタイル
+   ========================================================================== */
+
+/* --- 画面ヘッダー・タイトル・アクション --- */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  margin: 0;
+  font-size: var(--text-heading-2);
+  font-weight: var(--weight-heading);
+}
+
+.page-header-actions {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+/* --- 共通ローディング・プレースホルダー --- */
+.loading-container {
+  padding: var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-body);
+}
+
+.under-construction {
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+}
+
+/* --- ボタンバリエーション --- */
+.btn-circle {
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: var(--radius-full) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 28px !important;
+}
+
+.btn-order {
+  padding: 4px 8px !important;
+  min-width: auto !important;
+}
+
+.btn-compact {
+  padding: 0 12px !important;
+  height: 28px !important;
+  font-size: var(--text-caption) !important;
+}
+
+/* --- テーブル列幅ユーティリティ --- */
+.w-40 { width: 40px; }
+.w-80 { width: 80px; }
+.w-90 { width: 90px; }
+.w-100 { width: 100px; }
+.w-110 { width: 110px; }
+.w-120 { width: 120px; }
+.w-130 { width: 130px; }
+.w-140 { width: 140px; }
+.w-150 { width: 150px; }
+.w-auto { width: auto; }
+.min-w-140 { min-width: 140px; }
+
+
+/* --- サイドバー専用スタイル --- */
+.sidebar-office-wrapper {
+  margin-top: 12px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.sidebar-office-select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: var(--text-caption);
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #334155;
+  border-radius: var(--radius-sm);
+  outline: none;
+}
+
+.sidebar-office-option {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+.sidebar-user {
+  margin-top: auto;
+  padding: 40px 16px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.sidebar-user-info {
+  color: #cccccc;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.sidebar-user-name {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+}
+
+.sidebar-user-role {
+  font-size: var(--text-nano);
+  color: #aaaaaa;
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  background-color: #334155;
+  color: #ffffff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: var(--text-caption);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sidebar-logout-btn:hover {
+  background-color: #475569;
+}
+
+/* --- 汎用ユーティリティ（テキスト配置・数値・Flex） --- */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.tabular-nums { font-variant-numeric: tabular-nums; }
+.font-heading { font-weight: var(--weight-heading); }
+
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- サマリーポップアップ --- */
+.summary-popup-fixed {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  background-color: var(--color-bg-main);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-body);
+  color: var(--color-text-main);
+  min-width: 240px;
+  max-width: 320px;
+  transition: all 0.2s ease-in-out;
+  user-select: none;
+}
+
+.summary-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: var(--color-bg-subtle);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.summary-popup-header.closed {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+}
+
+.summary-popup-header.open {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-popup-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.summary-popup-body {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-popup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.summary-popup-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed var(--color-border);
+  padding-top: 6px;
+  margin-top: 4px;
+  font-weight: var(--weight-heading);
+  font-size: var(--text-body);
+  color: var(--color-text-main);
+}
+
+/* --- 請求・明細テーブル用スタイル --- */
+.billing-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.billing-detail-container {
+  background: var(--color-bg-main);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.billing-detail-header {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-heading);
+  margin-bottom: 8px;
+}
+
+.billing-detail-empty {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.billing-detail-table {
+  width: 100%;
+  font-size: var(--text-caption);
+  border-collapse: collapse;
+}
+
+.billing-detail-table th {
+  padding: 4px;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.billing-detail-table td {
+  padding: 6px 4px;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.billing-total-row {
+  background: var(--color-bg-subtle);
+  font-weight: var(--weight-heading);
+}
+
+.row-bg-subtle {
+  background-color: var(--color-bg-subtle);
+}
+
+.cell-padding-wide {
+  padding: 12px 16px;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+}
+
+.text-nano {
+  font-size: var(--text-nano);
+}
+
+.d-block {
+  display: block;
+}
+
+.mr-1 { margin-right: 4px; }
+.mr-2 { margin-right: 6px; }
+.mr-3 { margin-right: 8px; }
+
+.expand-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+  font-size: 10px;
+}
+
+.expand-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.input-calendar-icon {
+  margin-left: 12px;
+  stroke: var(--palette-gray-300);
+}
+
+.text-unclassified {
+  color: var(--color-text-muted);
+  font-style: italic;
+  font-weight: var(--weight-heading);
+}
+
+/* --- ダッシュボード用スタイル --- */
+.section-title {
+  font-size: var(--text-heading-3);
+  font-weight: var(--weight-heading);
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.dashboard-quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.dashboard-columns-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.dashboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.dashboard-summary-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+}
+
+.dashboard-kpi-title {
+  font-size: var(--text-body);
+  font-weight: var(--weight-heading);
+  color: var(--color-text-main);
+}
+
+.dashboard-kpi-value {
+  font-size: var(--text-heading-2);
+  font-weight: var(--weight-heading);
+  color: var(--color-text-main);
+}
+
+.dashboard-kpi-sub {
+  font-size: var(--text-caption);
+  color: var(--color-text-main);
+}
+
+.table-max-360 {
+  max-height: 360px;
+}
+
+.section-gap-2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.section-gap-4 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.header-baseline {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.cell-center-full {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.radio-group {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+
+
+
+
+
+
+

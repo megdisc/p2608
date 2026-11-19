@@ -163,7 +163,7 @@ export function RewardItemPage() {
 
   const loading = loadingItems || loadingServiceTypes;
 
-  if (loading && groupedData.length === 0) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading && groupedData.length === 0) return <div className="loading-container">Loading...</div>;
 
   return (
     <DataPage 

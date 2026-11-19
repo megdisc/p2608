@@ -15,7 +15,7 @@ export function Pagination({
     <div className="pagination-controls" style={{ gap: '8px' }}>
       <div className="pagination-buttons" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <Button 
-          style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          className="btn-circle"
           disabled={currentPage === 1}
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
         >
@@ -36,7 +36,7 @@ export function Pagination({
         </select>
 
         <Button 
-          style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          className="btn-circle"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
         >

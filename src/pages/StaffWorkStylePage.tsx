@@ -337,7 +337,7 @@ export function StaffWorkStylePage() {
             subItem.role_allocated_hours,
             subItem.weekly_working_hours
           );
-          if (total <= 0) return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+          if (total <= 0) return <span className="text-muted">-</span>;
           return <span style={{ fontWeight: 'bold' }}>{total}h</span>;
         },
       },
@@ -392,7 +392,7 @@ export function StaffWorkStylePage() {
             .filter(Boolean);
 
           if (selected.length === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
 
           return (
@@ -438,7 +438,7 @@ export function StaffWorkStylePage() {
         ) => {
           const selectedRoles = subItem.staff_roles || [];
           if (selectedRoles.length === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           const currentHours = value || subItem.role_allocated_hours || {};
 
@@ -484,7 +484,7 @@ export function StaffWorkStylePage() {
         render: (subItem: StaffWorkStyleSettingRow) => {
           const selectedRoles = subItem.staff_roles || [];
           if (selectedRoles.length === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
           const currentHours = subItem.role_allocated_hours || {};
           return (
@@ -658,7 +658,7 @@ export function StaffWorkStylePage() {
     }
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <div className="loading-container">Loading...</div>;
 
   return (
     <DataPage

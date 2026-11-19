@@ -103,28 +103,28 @@ export function ReserveSummaryPage() {
                 {sortedData.map(row => (
                   <tr key={row.id}>
                     <td style={{ fontWeight: 'bold' }}>{row.period}</td>
-                    <td style={{ textAlign: 'right' }}>{row.wageInflow.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>{row.wageWithdrawal.toLocaleString()}</td>
+                    <td className="text-right">{row.wageInflow.toLocaleString()}</td>
+                    <td className="text-right">{row.wageWithdrawal.toLocaleString()}</td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.wageNet.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>{row.equipmentInflow.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>{row.equipmentWithdrawal.toLocaleString()}</td>
+                    <td className="text-right">{row.equipmentInflow.toLocaleString()}</td>
+                    <td className="text-right">{row.equipmentWithdrawal.toLocaleString()}</td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.equipmentNet.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>{row.totalInflow.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>{row.totalWithdrawal.toLocaleString()}</td>
+                    <td className="text-right">{row.totalInflow.toLocaleString()}</td>
+                    <td className="text-right">{row.totalWithdrawal.toLocaleString()}</td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.totalNet.toLocaleString()}</td>
                   </tr>
                 ))}
                 <tr className="total-row" style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle)' }}>
                   <td>{TABLE_COLUMNS.TOTAL}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.wageInflow.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.wageWithdrawal.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.wageNet.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.equipmentInflow.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.equipmentWithdrawal.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.equipmentNet.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.totalInflow.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.totalWithdrawal.toLocaleString()}</td>
-                  <td style={{ textAlign: 'right' }}>{totals.totalNet.toLocaleString()}</td>
+                  <td className="text-right">{totals.wageInflow.toLocaleString()}</td>
+                  <td className="text-right">{totals.wageWithdrawal.toLocaleString()}</td>
+                  <td className="text-right">{totals.wageNet.toLocaleString()}</td>
+                  <td className="text-right">{totals.equipmentInflow.toLocaleString()}</td>
+                  <td className="text-right">{totals.equipmentWithdrawal.toLocaleString()}</td>
+                  <td className="text-right">{totals.equipmentNet.toLocaleString()}</td>
+                  <td className="text-right">{totals.totalInflow.toLocaleString()}</td>
+                  <td className="text-right">{totals.totalWithdrawal.toLocaleString()}</td>
+                  <td className="text-right">{totals.totalNet.toLocaleString()}</td>
                 </tr>
               </>
             )}
@@ -134,9 +134,9 @@ export function ReserveSummaryPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 setCurrentYear(String(parseInt(currentYear) - 1));
               }}
@@ -150,7 +150,7 @@ export function ReserveSummaryPage() {
               style={{ width: 'auto', minWidth: '100px' }}
             />
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 setCurrentYear(String(parseInt(currentYear) + 1));
               }}
@@ -159,7 +159,7 @@ export function ReserveSummaryPage() {
             </Button>
             <Button 
               variant="secondary"
-              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              className="btn-compact"
               onClick={() => setCurrentYear(new Date().getFullYear().toString())}
               disabled={currentYear === new Date().getFullYear().toString()}
             >

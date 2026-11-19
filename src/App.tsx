@@ -108,8 +108,8 @@ function AppContent() {
             ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
               <ScreenCompositionPage />
             ) : (
-              <div style={{ padding: '32px' }}>
-                <p style={{ color: 'var(--color-text-muted)' }}>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
+              <div className="under-construction">
+                <p>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>
               </div>
             )}
           </ProjectAppLayout>

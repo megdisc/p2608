@@ -267,7 +267,7 @@ export function OfficeRewardPage() {
             .filter(Boolean);
 
           if (selected.length === 0) {
-            return <span style={{ color: 'var(--color-text-muted)' }}>-</span>;
+            return <span className="text-muted">-</span>;
           }
 
           return (
@@ -392,7 +392,7 @@ export function OfficeRewardPage() {
     }
   };
 
-  if (loading) return <div style={{ padding: '24px' }}>Loading...</div>;
+  if (loading) return <div className="loading-container">Loading...</div>;
 
   return (
     <DataPage

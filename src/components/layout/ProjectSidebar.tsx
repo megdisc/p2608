@@ -16,27 +16,14 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
       <header className="header">
         <span className="system-id">{SYSTEM_ID}</span>
         <h1>{SYSTEM_NAME}</h1>
-        <div style={{ marginTop: '12px', width: '100%', padding: '0 4px' }}>
+        <div className="sidebar-office-wrapper">
           <select
             value={selectedOfficeId}
             onChange={(e) => setSelectedOfficeId(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '6px 10px',
-              borderRadius: 'var(--radius-md)',
-              backgroundColor: '#2a2d34',
-              color: 'var(--color-text-inverse)',
-              border: '1px solid #444444',
-              fontSize: 'var(--text-caption)',
-              fontWeight: 'var(--weight-heading)',
-              fontFamily: 'inherit',
-              cursor: 'pointer',
-              outline: 'none',
-              boxSizing: 'border-box'
-            }}
+            className="sidebar-office-select"
           >
             {offices.map((office) => (
-              <option key={office.id} value={office.id} style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>
+              <option key={office.id} value={office.id} className="sidebar-office-option">
                 {office.short_name || office.name}
               </option>
             ))}
@@ -201,30 +188,16 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         </div>
       </nav>
 
-      <div style={{ marginTop: 'auto', padding: '40px 16px 24px 16px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+      <div className="sidebar-user">
         {user && (
-          <div style={{ color: '#cccccc', textAlign: 'center', lineHeight: '1.5' }}>
-            <div style={{ fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)' }}>{user.name}</div>
-            <div style={{ fontSize: 'var(--text-nano)', color: '#aaaaaa' }}>{user.role}</div>
+          <div className="sidebar-user-info">
+            <div className="sidebar-user-name">{user.name}</div>
+            <div className="sidebar-user-role">{user.role}</div>
           </div>
         )}
         <button 
-          className="action-btn"
+          className="sidebar-logout-btn"
           onClick={logout}
-          style={{ 
-            background: 'transparent', 
-            border: '1px solid #555555', 
-            color: '#aaaaaa', 
-            width: '100%'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#444444';
-            e.currentTarget.style.color = '#ffffff';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#aaaaaa';
-          }}
         >
           {BUTTON_LABELS.LOGOUT}
         </button>

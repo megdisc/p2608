@@ -115,74 +115,74 @@ export function ProjectFinancialSummaryPage() {
                   <tr key={row.id}>
                     <td>{row.projectCode}</td>
                     <td style={{ fontWeight: 'var(--weight-heading)' }}>{row.projectName}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.revSales.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    <td className="text-right">¥{row.revSales.toLocaleString()}</td>
+                    <td className="text-right font-heading">
                       ¥{row.revTotal.toLocaleString()}
                     </td>
                     
-                    <td style={{ textAlign: 'right' }}>¥{row.expMaterial.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.expLaborMember.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.expLaborOther.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.expOutsource.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.expOther.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    <td className="text-right">¥{row.expMaterial.toLocaleString()}</td>
+                    <td className="text-right">¥{row.expLaborMember.toLocaleString()}</td>
+                    <td className="text-right">¥{row.expLaborOther.toLocaleString()}</td>
+                    <td className="text-right">¥{row.expOutsource.toLocaleString()}</td>
+                    <td className="text-right">¥{row.expOther.toLocaleString()}</td>
+                    <td className="text-right font-heading">
                       ¥{row.expTotal.toLocaleString()}
                     </td>
                     
-                    <td style={{ textAlign: 'right' }}>¥{row.resWage.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right' }}>¥{row.resEquipment.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    <td className="text-right">¥{row.resWage.toLocaleString()}</td>
+                    <td className="text-right">¥{row.resEquipment.toLocaleString()}</td>
+                    <td className="text-right font-heading">
                       ¥{row.resTotal.toLocaleString()}
                     </td>
 
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                    <td className="text-right font-heading">
                       ¥{surplus.toLocaleString()}
                     </td>
                   </tr>
                 );
               })}
 
-              <tr style={{ fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--color-bg-subtle)' }}>
+              <tr className="font-heading row-bg-subtle">
                 <td colSpan={2} style={{ fontWeight: 'var(--weight-heading)' }}>
                   {currentYear}年累計
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.revSales.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.revTotal.toLocaleString()}
                 </td>
                 
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expMaterial.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expLaborMember.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expLaborOther.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expOutsource.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expOther.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.expTotal.toLocaleString()}
                 </td>
                 
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.resWage.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.resEquipment.toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{totals.resTotal.toLocaleString()}
                 </td>
 
-                <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                <td className="text-right font-heading">
                   ¥{(totals.revTotal - (totals.expTotal + totals.resTotal)).toLocaleString()}
                 </td>
               </tr>
@@ -193,9 +193,9 @@ export function ProjectFinancialSummaryPage() {
 
       <div className="action-bar">
         <div className="filter-controls">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="flex-row">
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 setCurrentYear(String(parseInt(currentYear) - 1));
               }}
@@ -209,7 +209,7 @@ export function ProjectFinancialSummaryPage() {
               style={{ width: 'auto', minWidth: '100px' }}
             />
             <Button 
-              style={{ width: '28px', height: '28px', padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              className="btn-circle"
               onClick={() => {
                 setCurrentYear(String(parseInt(currentYear) + 1));
               }}
@@ -218,7 +218,7 @@ export function ProjectFinancialSummaryPage() {
             </Button>
             <Button 
               variant="secondary"
-              style={{ padding: '0 12px', height: '28px', fontSize: 'var(--text-caption)' }}
+              className="btn-compact"
               onClick={() => setCurrentYear(new Date().getFullYear().toString())}
               disabled={currentYear === new Date().getFullYear().toString()}
             >

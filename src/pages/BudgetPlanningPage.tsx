@@ -282,7 +282,7 @@ export function BudgetPlanningPage() {
                       </td>
                       <td style={{ borderBottom: rowBorderBottom }}>
                         {isFirstRow ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className="flex-row">
                             {isFinished ? (
                               <Tooltip text={MESSAGES.PROJECT_FINISHED_CANNOT_EDIT} as="span">
                                 <span>{draft.project.name}</span>

@@ -22,9 +22,9 @@ export function ScreenSalaryPage() {
 
   return (
     <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>{displayTitle}</h2>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <div className="page-header">
+        <h2 className="page-title">{displayTitle}</h2>
+        <div className="page-header-actions">
           {screenConfig && (
             <Tabs tabs={screenConfig.tabs} activeTab={activeTabForDisplay} onChange={navContext.setActiveTab} />
           )}

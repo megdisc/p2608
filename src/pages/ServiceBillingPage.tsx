@@ -1,6 +1,6 @@
 import { useState, Fragment } from 'react';
 import { MonthInput, Button } from '../components/ui';
-import { MESSAGES } from '../constants';
+import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOffice } from '../contexts';
 import { useServiceBilling } from '../hooks/useServiceBilling';
 import { getCurrentJSTMonth } from '../utils';
@@ -12,7 +12,6 @@ export function ServiceBillingPage() {
     setCurrentMonth,
     loading,
     data,
-    isConfirmed,
   } = useServiceBilling(selectedOfficeId);
 
   const [expandedMemberIds, setExpandedMemberIds] = useState<Record<string, boolean>>({});
@@ -48,17 +47,17 @@ export function ServiceBillingPage() {
           <thead>
             <tr>
               <th style={{ width: '40px', textAlign: 'center' }}></th>
-              <th style={{ width: '100px', textAlign: 'left' }}>利用者番号</th>
-              <th style={{ width: '150px', textAlign: 'left' }}>氏名</th>
-              <th style={{ width: '80px', textAlign: 'right' }}>利用日数</th>
-              <th style={{ width: '100px', textAlign: 'right' }}>基本報酬</th>
-              <th style={{ width: '90px', textAlign: 'right' }}>加算合計</th>
-              <th style={{ width: '100px', textAlign: 'right' }}>総単位数</th>
-              <th style={{ width: '120px', textAlign: 'right' }}>費用総額(10割)</th>
-              <th style={{ width: '110px', textAlign: 'right' }}>負担上限月額</th>
-              <th style={{ width: '110px', textAlign: 'right' }}>サービス利用料</th>
-              <th style={{ width: '120px', textAlign: 'right' }}>訓練等給付費</th>
-              <th style={{ textAlign: 'left' }}>備考</th>
+              <th style={{ width: '100px', textAlign: 'left' }}>{TABLE_COLUMNS.MEMBER_CODE}</th>
+              <th style={{ width: '150px', textAlign: 'left' }}>{TABLE_COLUMNS.NAME}</th>
+              <th style={{ width: '80px', textAlign: 'right' }}>{TABLE_COLUMNS.ATTENDANCE_DAYS}</th>
+              <th style={{ width: '100px', textAlign: 'right' }}>{TABLE_COLUMNS.BASE_REWARD}</th>
+              <th style={{ width: '90px', textAlign: 'right' }}>{TABLE_COLUMNS.ADDITION_TOTAL}</th>
+              <th style={{ width: '100px', textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_UNITS}</th>
+              <th style={{ width: '130px', textAlign: 'right' }}>{TABLE_COLUMNS.TOTAL_COST}</th>
+              <th style={{ width: '140px', textAlign: 'right' }}>{TABLE_COLUMNS.COPAYMENT_LIMIT}</th>
+              <th style={{ width: '110px', textAlign: 'right' }}>{TABLE_COLUMNS.SERVICE_FEE}</th>
+              <th style={{ width: '120px', textAlign: 'right' }}>{TABLE_COLUMNS.BENEFIT_BILLING}</th>
+              <th style={{ textAlign: 'left' }}>{TABLE_COLUMNS.REMARKS}</th>
             </tr>
           </thead>
           <tbody>
@@ -91,16 +90,16 @@ export function ServiceBillingPage() {
                         </span>
                       </td>
                       <td style={{ textAlign: 'left' }}>{row.memberCode}</td>
-                      <td style={{ textAlign: 'left', fontWeight: 'var(--weight-heading)' }}>
+                      <td style={{ textAlign: 'left' }}>
                         {row.memberName}
                         {row.recipientNumber && (
-                          <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-muted)', fontWeight: 'normal' }}>
+                          <span style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-muted)' }}>
                             受給者証: {row.recipientNumber}
                           </span>
                         )}
                       </td>
                       <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                        {row.attendanceDays} 日
+                        {row.attendanceDays}
                       </td>
                       <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         {row.baseRewardUnits.toLocaleString()}
@@ -108,24 +107,19 @@ export function ServiceBillingPage() {
                       <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         {row.additionUnits.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', fontVariantNumeric: 'tabular-nums' }}>
+                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         {row.totalUnits.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', fontVariantNumeric: 'tabular-nums' }}>
+                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         ¥{row.totalCostAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums' }}>
+                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         ¥{row.copaymentLimitAmount.toLocaleString()}
                       </td>
-                      <td style={{ 
-                        textAlign: 'right', 
-                        fontWeight: 'var(--weight-heading)', 
-                        color: row.finalCopaymentAmount > 0 ? 'var(--palette-yellow-900)' : 'inherit',
-                        fontVariantNumeric: 'tabular-nums' 
-                      }}>
+                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         ¥{row.finalCopaymentAmount.toLocaleString()}
                       </td>
-                      <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', color: 'var(--palette-bluegreen-900)', fontVariantNumeric: 'tabular-nums' }}>
+                      <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                         ¥{row.benefitBillingAmount.toLocaleString()}
                       </td>
                       <td style={{ textAlign: 'left', fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)' }}>
@@ -150,12 +144,12 @@ export function ServiceBillingPage() {
                               <table style={{ width: '100%', fontSize: 'var(--text-caption)', borderCollapse: 'collapse' }}>
                                 <thead>
                                   <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}>
-                                    <th style={{ textAlign: 'left', padding: '4px' }}>項目区分</th>
-                                    <th style={{ textAlign: 'left', padding: '4px' }}>サービスコード / 項目名</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>単価単位数</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>算定回数・日数</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>合計単位数</th>
-                                    <th style={{ textAlign: 'right', padding: '4px' }}>金額換算(10割)</th>
+                                    <th style={{ textAlign: 'left', padding: '4px' }}>{TABLE_COLUMNS.ITEM_CATEGORY}</th>
+                                    <th style={{ textAlign: 'left', padding: '4px' }}>{TABLE_COLUMNS.SERVICE_CODE_OR_ITEM}</th>
+                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.UNIT_VALUE}</th>
+                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.COUNT_DAYS}</th>
+                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.TOTAL_UNITS}</th>
+                                    <th style={{ textAlign: 'right', padding: '4px' }}>{TABLE_COLUMNS.AMOUNT_CONVERTED}</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -169,7 +163,7 @@ export function ServiceBillingPage() {
                                           background: d.itemCategory === 'base_reward' ? 'var(--palette-bluegreen-100)' : 'var(--palette-yellow-100)',
                                           color: d.itemCategory === 'base_reward' ? 'var(--palette-bluegreen-800)' : 'var(--palette-yellow-800)'
                                         }}>
-                                          {d.itemCategory === 'base_reward' ? '基本報酬' : '加算'}
+                                          {d.itemCategory === 'base_reward' ? TABLE_COLUMNS.BASE_REWARD : '加算'}
                                         </span>
                                       </td>
                                       <td style={{ padding: '6px 4px' }}>
@@ -182,7 +176,7 @@ export function ServiceBillingPage() {
                                       <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
                                         {d.count}
                                       </td>
-                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontWeight: 'bold', fontVariantNumeric: 'tabular-nums' }}>
+                                      <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
                                         {d.totalItemUnits.toLocaleString()}
                                       </td>
                                       <td style={{ textAlign: 'right', padding: '6px 4px', fontVariantNumeric: 'tabular-nums' }}>
@@ -210,7 +204,7 @@ export function ServiceBillingPage() {
                   合計 ({data.length}名)
                 </td>
                 <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                  {data.reduce((acc, r) => acc + r.attendanceDays, 0)} 日
+                  {data.reduce((acc, r) => acc + r.attendanceDays, 0)}
                 </td>
                 <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                   {data.reduce((acc, r) => acc + r.baseRewardUnits, 0).toLocaleString()}
@@ -225,10 +219,10 @@ export function ServiceBillingPage() {
                   ¥{data.reduce((acc, r) => acc + r.totalCostAmount, 0).toLocaleString()}
                 </td>
                 <td style={{ textAlign: 'right' }}>-</td>
-                <td style={{ textAlign: 'right', color: 'var(--palette-yellow-900)', fontVariantNumeric: 'tabular-nums' }}>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                   ¥{data.reduce((acc, r) => acc + r.finalCopaymentAmount, 0).toLocaleString()}
                 </td>
-                <td style={{ textAlign: 'right', color: 'var(--palette-bluegreen-900)', fontVariantNumeric: 'tabular-nums' }}>
+                <td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                   ¥{data.reduce((acc, r) => acc + r.benefitBillingAmount, 0).toLocaleString()}
                 </td>
                 <td></td>
@@ -267,15 +261,6 @@ export function ServiceBillingPage() {
             >
               今月
             </Button>
-            {isConfirmed ? (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--palette-bluegreen-100)', color: 'var(--palette-bluegreen-800)' }}>
-                確定済
-              </span>
-            ) : (
-              <span style={{ padding: '4px 12px', borderRadius: '12px', fontSize: 'var(--text-caption)', fontWeight: 'var(--weight-heading)', backgroundColor: 'var(--palette-yellow-100)', color: 'var(--palette-yellow-800)' }}>
-                暫定
-              </span>
-            )}
           </div>
         </div>
       </div>

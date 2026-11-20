@@ -146,8 +146,8 @@
   --color-sidebar-input-border: var(--palette-slate-700);
   --color-sidebar-text: var(--palette-gray-250);
   --color-sidebar-text-muted: var(--palette-gray-400);
-  --color-sidebar-btn-bg: var(--palette-slate-700);
-  --color-sidebar-btn-hover: var(--palette-slate-600);
+  --color-sidebar-btn-bg: var(--color-bg-inverse-hover);
+  --color-sidebar-btn-hover: var(--palette-gray-600);
   --color-sidebar-divider: var(--palette-slate-400);
 
   /* --- レポートカード用途 --- */
@@ -1418,11 +1418,12 @@ input[type="number"] {
   border-radius: var(--radius-full);
   cursor: pointer;
   font-size: var(--text-caption);
+  font-weight: var(--weight-strong);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 

@@ -78,10 +78,10 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
         <div className="nav-section">
           <div className="nav-category">{MENU_CATEGORIES.REPORTS}</div>
           <button 
-            className={`nav-button ${['screenServiceBilling', 'serviceBilling'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('serviceBilling')}
+            className={`nav-button ${['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('financialSummary')}
           >
-            {PAGE_NAMES.SCREEN_SERVICE_BILLING}
+            {PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS}
           </button>
           <button 
             className={`nav-button ${['screenAverageWage', 'averageWage'].includes(activeTab) ? 'active' : ''}`}
@@ -90,16 +90,16 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             {PAGE_NAMES.SCREEN_AVERAGE_WAGE}
           </button>
           <button 
-            className={`nav-button ${['screenProductionBusiness', 'financialSummary', 'projectFinancialSummary', 'financialRecord', 'screenFinance'].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('financialSummary')}
-          >
-            {PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS}
-          </button>
-          <button 
             className={`nav-button ${['screenWelfareBusiness', 'welfareFinancialSummary'].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('welfareFinancialSummary')}
           >
             {PAGE_NAMES.SCREEN_WELFARE_BUSINESS}
+          </button>
+          <button 
+            className={`nav-button ${['screenServiceBilling', 'serviceBilling'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('serviceBilling')}
+          >
+            {PAGE_NAMES.SCREEN_SERVICE_BILLING}
           </button>
           <button 
             className={`nav-button ${['screenReserveReport', 'reserveSummary'].includes(activeTab) ? 'active' : ''}`}

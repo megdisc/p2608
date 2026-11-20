@@ -57,13 +57,12 @@ export function ServiceBillingPage() {
               <th className="w-140 text-right">{TABLE_COLUMNS.COPAYMENT_LIMIT}</th>
               <th className="w-110 text-right">{TABLE_COLUMNS.SERVICE_FEE}</th>
               <th className="w-120 text-right">{TABLE_COLUMNS.BENEFIT_BILLING}</th>
-              <th className="text-left">{TABLE_COLUMNS.REMARKS}</th>
             </tr>
           </thead>
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={12} className="empty-message">表示するデータがありません</td>
+                <td colSpan={11} className="empty-message">表示するデータがありません</td>
               </tr>
             ) : (
               data.map(row => {
@@ -113,16 +112,13 @@ export function ServiceBillingPage() {
                       <td className="text-right tabular-nums">
                         ¥{row.benefitBillingAmount.toLocaleString()}
                       </td>
-                      <td className="text-left text-caption text-muted">
-                        {row.remarks}
-                      </td>
                     </tr>
 
                     {/* 行展開：加算・減算の内訳明細 */}
                     {isExpanded && (
                       <tr className="row-bg-subtle">
                         <td></td>
-                        <td colSpan={11} className="cell-padding-wide">
+                        <td colSpan={10} className="cell-padding-wide">
                           <div className="billing-detail-container">
                             <div className="billing-detail-header">
                               【{row.memberName} 様の算定内訳明細】 (地域単価: ¥{row.unitPrice.toFixed(2)})
@@ -210,7 +206,6 @@ export function ServiceBillingPage() {
                 <td className="text-right tabular-nums">
                   ¥{data.reduce((acc, r) => acc + r.benefitBillingAmount, 0).toLocaleString()}
                 </td>
-                <td></td>
               </tr>
             </tfoot>
           )}

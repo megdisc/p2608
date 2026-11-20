@@ -198,11 +198,6 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
             totalMemberBilledAmount: Number(s.total_member_billed_amount) || 0,
             status: s.status || (isFinConfirmed ? 'confirmed' : 'draft'),
             details,
-            remarks: s.final_copayment_amount >= s.copayment_limit_amount && s.copayment_limit_amount > 0
-              ? `負担上限月額適用 (¥${Number(s.copayment_limit_amount).toLocaleString()})`
-              : s.copayment_limit_amount === 0 
-                ? '自己負担なし (上限¥0)' 
-                : '1割負担適用',
           };
         });
 
@@ -376,17 +371,6 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
           const actualExpenseAmount = mealDays * 200;
           const totalMemberBilledAmount = finalCopaymentAmount + actualExpenseAmount;
 
-          let remarks = '';
-          if (copaymentLimitAmount === 0) {
-            remarks = '自己負担なし (上限¥0)';
-          } else if (finalCopaymentAmount >= copaymentLimitAmount && copaymentLimitAmount > 0) {
-            remarks = `負担上限月額適用 (¥${copaymentLimitAmount.toLocaleString()})`;
-          } else if (attendanceDays > 0) {
-            remarks = `利用${attendanceDays}日・1割負担適用`;
-          } else {
-            remarks = '当月利用実績なし';
-          }
-
           return {
             id: member.id,
             memberId: member.id,
@@ -409,7 +393,6 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
             totalMemberBilledAmount,
             status: isFinConfirmed ? 'confirmed' : 'draft',
             details,
-            remarks,
           };
         });
 

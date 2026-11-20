@@ -37,7 +37,6 @@ export interface ServiceBillingRow {
 
   status: 'draft' | 'confirmed';
   details: ServiceBillingDetailItem[];
-  remarks?: string;
 }
 
 export interface ServiceBillingSummary {

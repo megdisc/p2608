@@ -67,26 +67,35 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         .gte('target_period', `${year}-01`)
         .lte('target_period', `${year}-12`);
 
+      // 5. サービス費用総額スナップショットクエリ（訓練等給付費の集計用）
+      let billingQuery = supabase
+        .from('service_billing_snapshot')
+        .select('target_period, benefit_billing_amount, final_copayment_amount, actual_expense_amount, office_id')
+        .gte('target_period', `${year}-01`)
+        .lte('target_period', `${year}-12`);
+
       if (officeId) {
         closingsQuery = closingsQuery.eq('office_id', officeId);
         snapQuery = snapQuery.eq('office_id', officeId);
         recQuery = recQuery.eq('office_id', officeId);
         wageQuery = wageQuery.eq('office_id', officeId);
+        billingQuery = billingQuery.eq('office_id', officeId);
       }
 
       if (activityCategory === 'welfare') {
-        snapQuery = snapQuery.or('activity_category.eq.welfare,subject.eq.サービス利用料,subject.ilike.%サービス利用料%,subject.eq.実費控除,subject.ilike.%実費控除%,subject.eq.控除');
-        recQuery = recQuery.or('activity_category.eq.welfare,subject.eq.サービス利用料,subject.ilike.%サービス利用料%,subject.eq.実費控除,subject.ilike.%実費控除%,subject.eq.控除');
+        snapQuery = snapQuery.or('activity_category.eq.welfare,subject.eq.サービス利用料,subject.ilike.%サービス利用料%,subject.eq.実費控除,subject.ilike.%実費控除%,subject.eq.控除,subject.eq.訓練等給付費,subject.ilike.%訓練等給付費%,subject.eq.福祉事業費用,subject.ilike.%福祉事業費用%');
+        recQuery = recQuery.or('activity_category.eq.welfare,subject.eq.サービス利用料,subject.ilike.%サービス利用料%,subject.eq.実費控除,subject.ilike.%実費控除%,subject.eq.控除,subject.eq.訓練等給付費,subject.ilike.%訓練等給付費%,subject.eq.福祉事業費用,subject.ilike.%福祉事業費用%');
       } else {
         snapQuery = snapQuery.or('activity_category.eq.production,activity_category.is.null');
         recQuery = recQuery.or('activity_category.eq.production,activity_category.is.null');
       }
 
-      const [closingsRes, snapRes, recRes, wageRes] = await Promise.all([
+      const [closingsRes, snapRes, recRes, wageRes, billingRes] = await Promise.all([
         closingsQuery,
         snapQuery,
         recQuery,
-        wageQuery
+        wageQuery,
+        billingQuery
       ]);
 
       const confirmedMonths = new Set(
@@ -96,6 +105,7 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
       const snapRecords = snapRes.data || [];
       const actRecords = recRes.data || [];
       const wageRecords = wageRes.data || [];
+      const billingRecords = billingRes.data || [];
 
       // 各月ごとに確定済み月はスナップショット、未確定月はレコード系を採用
       const snapMonthSet = new Set(snapRecords.map(r => r.target_period ? r.target_period.substring(0, 7) : ''));
@@ -260,7 +270,16 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
         };
 
         summaryMap.forEach((row, periodKey) => {
-          // wage_snapshot からの集計フォールバック
+          // 1. service_billing_snapshot からの訓練等給付費の集計
+          const monthBillings = billingRecords.filter((b: any) => b.target_period === periodKey);
+          if (row.revBenefit === 0 && monthBillings.length > 0) {
+            const benefitSum = monthBillings.reduce((sum: number, b: any) => sum + (Number(b.benefit_billing_amount) || 0), 0);
+            if (benefitSum > 0) {
+              row.revBenefit = benefitSum;
+            }
+          }
+
+          // 2. wage_snapshot からの集計フォールバック
           const monthWages = wageRecords.filter((w: any) => w.target_period === periodKey);
           if (row.revServiceFee === 0 && monthWages.length > 0) {
             const wageServiceFee = monthWages.reduce((sum: number, w: any) => sum + (Number(w.service_fee_deduction ?? w.service_fee_copayment) || 0), 0);
@@ -275,15 +294,17 @@ export function useFinancialSummary(year: string, activityCategory: 'production'
             }
           }
 
-          // シードデータからの初期値フォールバック
+          // 3. シードデータからの初期値フォールバック
           if (officeId && DEFAULT_WELFARE_FEES[officeId]?.[periodKey]) {
             const def = DEFAULT_WELFARE_FEES[officeId][periodKey];
             if (row.revServiceFee === 0) row.revServiceFee = def.serviceFee;
             if (row.revDeduction === 0) row.revDeduction = def.deduction;
           }
 
-          // 福祉事業活動の収益計はサービス利用料 + 実費控除
-          row.revTotal = row.revServiceFee + row.revDeduction;
+          // 福祉事業活動の収益計 = 訓練等給付費 + サービス利用料 + 実費控除 + その他福祉事業収益
+          row.revTotal = row.revBenefit + row.revServiceFee + row.revDeduction + row.revOther;
+          // 福祉事業活動の費用計
+          row.expTotal = row.expWelfareOther + row.expOther;
         });
       }
 

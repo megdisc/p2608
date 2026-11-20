@@ -77,11 +77,16 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
   const headerRows: HeaderCell[][] = isWelfare ? [
     [
       { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: TABLE_COLUMNS.REVENUE_SIMPLE, colSpan: 3 },
+      { label: TABLE_COLUMNS.REVENUE, colSpan: 4 },
+      { label: TABLE_COLUMNS.EXPENSE, colSpan: 2 },
+      { label: TABLE_COLUMNS.CATEGORY_DIFFERENCE_AB, rowSpan: 2 },
     ],
     [
+      { label: TABLE_COLUMNS.SUBJECT_WELFARE_BENEFIT },
       { label: TABLE_COLUMNS.SUBJECT_WELFARE_USAGE_FEE },
       { label: TABLE_COLUMNS.SUBJECT_WELFARE_EXPENSE_DEDUCTION },
+      { label: TABLE_COLUMNS.TOTAL },
+      { label: TABLE_COLUMNS.SUBJECT_WELFARE_EXPENSE_OTHER },
       { label: TABLE_COLUMNS.TOTAL },
     ]
   ] : [
@@ -117,20 +122,29 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
           {sortedData.length === 0 ? (
             <tbody>
               <tr>
-                <td colSpan={isWelfare ? 4 : 13} className="empty-message">表示するデータがありません</td>
+                <td colSpan={isWelfare ? 8 : 13} className="empty-message">表示するデータがありません</td>
               </tr>
             </tbody>
           ) : (
             <tbody>
               {sortedData.map((row) => {
                 if (isWelfare) {
+                  const surplus = row.revTotal - row.expTotal;
                   return (
                     <tr key={row.id}>
                       <td>{row.period}</td>
+                      <td className="text-right">¥{row.revBenefit.toLocaleString()}</td>
                       <td className="text-right">¥{row.revServiceFee.toLocaleString()}</td>
                       <td className="text-right">¥{row.revDeduction.toLocaleString()}</td>
                       <td className="text-right font-heading">
                         ¥{row.revTotal.toLocaleString()}
+                      </td>
+                      <td className="text-right">¥{row.expWelfareOther.toLocaleString()}</td>
+                      <td className="text-right font-heading">
+                        ¥{row.expTotal.toLocaleString()}
+                      </td>
+                      <td className="text-right font-heading">
+                        ¥{surplus.toLocaleString()}
                       </td>
                     </tr>
                   );
@@ -173,6 +187,9 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                     {currentYear}年累計
                   </td>
                   <td className="text-right font-heading">
+                    ¥{totals.revBenefit.toLocaleString()}
+                  </td>
+                  <td className="text-right font-heading">
                     ¥{totals.revServiceFee.toLocaleString()}
                   </td>
                   <td className="text-right font-heading">
@@ -180,6 +197,15 @@ export function FinancialSummaryPage({ activityCategory = 'production' }: { acti
                   </td>
                   <td className="text-right font-heading">
                     ¥{totals.revTotal.toLocaleString()}
+                  </td>
+                  <td className="text-right font-heading">
+                    ¥{totals.expWelfareOther.toLocaleString()}
+                  </td>
+                  <td className="text-right font-heading">
+                    ¥{totals.expTotal.toLocaleString()}
+                  </td>
+                  <td className="text-right font-heading">
+                    ¥{(totals.revTotal - totals.expTotal).toLocaleString()}
                   </td>
                 </tr>
               ) : (

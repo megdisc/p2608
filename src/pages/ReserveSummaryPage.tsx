@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
+import { MultiRowHeader, type HeaderCell, YearInput, Button, CurrencyDisplay, MonthDisplay } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useAlert, useOffice } from '../contexts';
 import { useReserveSummary } from '../hooks';
@@ -102,29 +102,29 @@ export function ReserveSummaryPage() {
               <>
                 {sortedData.map(row => (
                   <tr key={row.id}>
-                    <td style={{ fontWeight: 'bold' }}>{row.period}</td>
-                    <td className="text-right">{row.wageInflow.toLocaleString()}</td>
-                    <td className="text-right">{row.wageWithdrawal.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.wageNet.toLocaleString()}</td>
-                    <td className="text-right">{row.equipmentInflow.toLocaleString()}</td>
-                    <td className="text-right">{row.equipmentWithdrawal.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.equipmentNet.toLocaleString()}</td>
-                    <td className="text-right">{row.totalInflow.toLocaleString()}</td>
-                    <td className="text-right">{row.totalWithdrawal.toLocaleString()}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{row.totalNet.toLocaleString()}</td>
+                    <td style={{ fontWeight: 'bold' }}><MonthDisplay value={row.period} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.wageInflow} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.wageWithdrawal} /></td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.wageNet} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.equipmentInflow} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.equipmentWithdrawal} /></td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.equipmentNet} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.totalInflow} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.totalWithdrawal} /></td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.totalNet} /></td>
                   </tr>
                 ))}
                 <tr className="total-row" style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle)' }}>
                   <td>{TABLE_COLUMNS.TOTAL}</td>
-                  <td className="text-right">{totals.wageInflow.toLocaleString()}</td>
-                  <td className="text-right">{totals.wageWithdrawal.toLocaleString()}</td>
-                  <td className="text-right">{totals.wageNet.toLocaleString()}</td>
-                  <td className="text-right">{totals.equipmentInflow.toLocaleString()}</td>
-                  <td className="text-right">{totals.equipmentWithdrawal.toLocaleString()}</td>
-                  <td className="text-right">{totals.equipmentNet.toLocaleString()}</td>
-                  <td className="text-right">{totals.totalInflow.toLocaleString()}</td>
-                  <td className="text-right">{totals.totalWithdrawal.toLocaleString()}</td>
-                  <td className="text-right">{totals.totalNet.toLocaleString()}</td>
+                  <td className="text-right"><CurrencyDisplay value={totals.wageInflow} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.wageWithdrawal} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.wageNet} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.equipmentInflow} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.equipmentWithdrawal} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.equipmentNet} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.totalInflow} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.totalWithdrawal} /></td>
+                  <td className="text-right"><CurrencyDisplay value={totals.totalNet} /></td>
                 </tr>
               </>
             )}

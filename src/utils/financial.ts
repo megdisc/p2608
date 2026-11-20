@@ -154,3 +154,32 @@ export function getAccountSubjectOptions(
   return allSubjects.map(s => ({ label: s, value: s }));
 }
 
+export type CurrencyFormatOptions = {
+  showSymbol?: boolean; // デフォルト true ('¥')
+  unit?: string;        // 例: '円'
+  fallback?: string;    // デフォルト '-'
+};
+
+/**
+ * 数値または文字列から一貫した金額表示形式（例: "¥1,000", "1,000円"）にフォーマットする
+ */
+export function formatCurrency(
+  value: number | string | null | undefined,
+  options: CurrencyFormatOptions = {}
+): string {
+  const { showSymbol = true, unit = '', fallback = '-' } = options;
+
+  if (value === null || value === undefined || value === '') {
+    return fallback;
+  }
+
+  const num = typeof value === 'string' ? Number(value) : value;
+  if (isNaN(num)) {
+    return fallback;
+  }
+
+  const formattedNum = Math.round(num).toLocaleString('ja-JP');
+  const prefix = showSymbol ? '¥' : '';
+  return `${prefix}${formattedNum}${unit}`;
+}
+

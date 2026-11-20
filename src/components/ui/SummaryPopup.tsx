@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { formatCurrency } from '../../utils';
 
 export interface SummaryPopupItem {
   label: string;
@@ -22,7 +23,7 @@ export const SummaryPopup: React.FC<SummaryPopupProps> = ({
   const totalItem = items.find(item => item.isTotal);
   const displayTotal = totalItem
     ? typeof totalItem.value === 'number'
-      ? `¥${totalItem.value.toLocaleString()}`
+      ? formatCurrency(totalItem.value)
       : totalItem.value
     : '';
 
@@ -59,7 +60,7 @@ export const SummaryPopup: React.FC<SummaryPopupProps> = ({
         <div className="summary-popup-body">
           {items.map((item, idx) => {
             const formattedValue = typeof item.value === 'number'
-              ? `¥${item.value.toLocaleString()}`
+              ? formatCurrency(item.value)
               : item.value;
 
             if (item.isTotal) {

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert, useOffice } from '../contexts';
+import { formatTime as formatTimeForInput, formatTimeForDb } from '../utils';
 import {
   TABLE_COLUMNS,
   MESSAGES,
@@ -51,15 +52,7 @@ const STATUS_OPTIONS = [
   { value: WORDS_WELFARE_SERVICE.ATTENDANCE_ABSENT_VALUE, label: WORDS_TIME.DUTY_OFF },
 ];
 
-const formatTimeForInput = (timeStr?: string | null): string => {
-  if (!timeStr) return '';
-  return timeStr.substring(0, 5);
-};
 
-const formatTimeForDb = (timeStr?: string | null): string | null => {
-  if (!timeStr || timeStr.trim() === '') return null;
-  return timeStr.length === 5 ? `${timeStr}:00` : timeStr;
-};
 
 const computeServiceHours = (
   start?: string | null,

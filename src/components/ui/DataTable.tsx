@@ -17,6 +17,8 @@ import { Pagination } from './Pagination';
 import { NumberInput } from './NumberInput';
 import { NumberDisplay } from './NumberDisplay';
 import { CurrencyInput } from './CurrencyInput';
+import { CurrencyDisplay } from './CurrencyDisplay';
+import { TimeDisplay } from './TimeDisplay';
 import { SortIcon } from './SortIcon';
 
 export type Column<T> = {
@@ -706,10 +708,12 @@ export function DataTable<T extends { id: string }>({
       return <NumberDisplay value={item[col.key]} />;
     }
 
+    if (col.inputType === 'time' && item[col.key]) {
+      return <TimeDisplay value={item[col.key]} />;
+    }
+
     if (col.inputType === 'currency') {
-      const val = item[col.key];
-      if (val === null || val === undefined || val === '') return null;
-      return <span className="tabular-nums">¥{Number(val).toLocaleString()}</span>;
+      return <CurrencyDisplay value={item[col.key]} />;
     }
 
     return item[col.key];

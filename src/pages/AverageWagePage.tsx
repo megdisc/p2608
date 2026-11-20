@@ -1,4 +1,5 @@
 import { useState, useEffect, Fragment } from 'react';
+import { CurrencyDisplay, NumberDisplay } from '../components/ui';
 import { useAverageWageSummary } from '../hooks';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useOffice } from '../contexts';
@@ -80,20 +81,20 @@ export function AverageWagePage() {
                       </span>
                       {annualRow.yearLabel}
                     </td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)', fontVariantNumeric: 'tabular-nums' }}>
-                      ¥{Math.round(annualRow.avgMonthlyWage).toLocaleString()}
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>
+                      <CurrencyDisplay value={annualRow.avgMonthlyWage} />
                     </td>
-                    <td className="text-right tabular-nums">
-                      ¥{annualRow.totalWage.toLocaleString()}
+                    <td className="text-right">
+                      <CurrencyDisplay value={annualRow.totalWage} />
                     </td>
-                    <td className="text-right tabular-nums">
-                      {annualRow.operatingDays}
+                    <td className="text-right">
+                      <NumberDisplay value={annualRow.operatingDays} />
                     </td>
-                    <td className="text-right tabular-nums">
-                      {annualRow.totalUtilization.toLocaleString()}
+                    <td className="text-right">
+                      <NumberDisplay value={annualRow.totalUtilization} />
                     </td>
-                    <td className="text-right tabular-nums">
-                      {annualRow.avgMembersPerDay.toFixed(1)}
+                    <td className="text-right">
+                      <NumberDisplay value={annualRow.avgMembersPerDay.toFixed(1)} useGrouping={false} />
                     </td>
                   </tr>
 
@@ -104,20 +105,20 @@ export function AverageWagePage() {
                         <span style={{ color: 'var(--color-border)', marginRight: '6px' }}>└</span>
                         {monthDetail.monthLabel}
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{Math.round(monthDetail.avgMonthlyWage).toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={monthDetail.avgMonthlyWage} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{monthDetail.totalWage.toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={monthDetail.totalWage} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {monthDetail.operatingDays}
+                      <td className="text-right">
+                        <NumberDisplay value={monthDetail.operatingDays} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {monthDetail.totalUtilization.toLocaleString()}
+                      <td className="text-right">
+                        <NumberDisplay value={monthDetail.totalUtilization} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {monthDetail.avgMembersPerDay.toFixed(1)}
+                      <td className="text-right">
+                        <NumberDisplay value={monthDetail.avgMembersPerDay.toFixed(1)} useGrouping={false} />
                       </td>
                     </tr>
                   ))}

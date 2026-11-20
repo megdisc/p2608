@@ -1,4 +1,4 @@
-import { DataPage, type Column, SummaryPopup } from '../components';
+import { DataPage, type Column, SummaryPopup, DateDisplay } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, WORDS_PROJECT } from '../constants';
 import type { FinancialRecordItem } from '../types';
@@ -308,7 +308,9 @@ export function ProjectFinancialRecordPage() {
       key: 'recordedDate',
       header: TABLE_COLUMNS.RECORDED_DATE,
       editable: false,
-      render: (item: FinancialRecordItem) => item.recordedDate || item.period || item.targetPeriod || '-'
+      render: (item: FinancialRecordItem) => (
+        <DateDisplay value={item.recordedDate || item.period || item.targetPeriod} fallback="-" />
+      )
     },
     // 10. 記録者: 入力不可（疑似ロジックで自動判定）
     {

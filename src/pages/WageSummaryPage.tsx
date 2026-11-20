@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MonthInput, Pagination, MultiRowHeader, Button, type HeaderCell } from '../components/ui';
+import { MonthInput, Pagination, MultiRowHeader, Button, CurrencyDisplay, type HeaderCell } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS, WORDS_PROJECT, BUTTON_LABELS, BADGE_LABELS } from '../constants';
 
 import { getCurrentJSTMonth } from '../utils';
@@ -323,12 +323,11 @@ export function WageSummaryPage() {
                           <td
                             style={{
                               textAlign: 'right',
-                              fontVariantNumeric: 'tabular-nums',
                               fontWeight: item.isBold ? 'var(--weight-heading)' : 'normal',
                               color: item.isHighlight ? 'var(--color-primary)' : undefined
                             }}
                           >
-                            ¥{(item.amount ?? 0).toLocaleString()}
+                            <CurrencyDisplay value={item.amount ?? 0} />
                           </td>
                           <td>
                             {item.remarks || ''}

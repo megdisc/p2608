@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, CurrencyInput, Pagination, Tooltip, MultiRowHeader, RadioButton, type HeaderCell } from '../components/ui';
+import { Button, CurrencyInput, CurrencyDisplay, Pagination, Tooltip, MultiRowHeader, RadioButton, type HeaderCell } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, WORDS_PROJECT } from '../constants';
 import { isProjectFinished, formatSummaryDescription } from '../utils';
 
@@ -333,9 +333,13 @@ export function BudgetPlanningPage() {
                         }}
                       >
                         {isSurplusRow ? (
-                          <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontVariantNumeric: 'tabular-nums' }}>
-                            ¥{totalSurplus.toLocaleString()}
-                          </strong>
+                          <CurrencyDisplay
+                            value={totalSurplus}
+                            style={{
+                              color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit',
+                              fontWeight: 'var(--weight-heading)'
+                            }}
+                          />
                         ) : (
                           <CurrencyInput
                             value={rowItem.amount}

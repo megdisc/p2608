@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button, CurrencyInput, DateInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
+import { Button, CurrencyInput, CurrencyDisplay, DateInput, MultiRowHeader, type HeaderCell, Tooltip, MonthInput } from '../components/ui';
 import { TABLE_COLUMNS, MESSAGES, BUTTON_LABELS, BADGE_LABELS, WORDS_PROJECT } from '../constants';
 import { getCurrentJSTMonth, getProjectFinishedMonth, isProjectFinished as checkProjectFinished, formatSummaryDescription, calcWagePaymentDate, getDefaultTransactionDate } from '../utils';
 import { useAlert, useOffice } from '../contexts';
@@ -1222,9 +1222,9 @@ export function RewardAllocationPage() {
                             onChange={val => handleAllocationChange(rowItem.expenseId || '', val, proj.id, rowItem.subject, rowItem.dateKey)}
                           />
                         ) : rowItem.isAutoCalculated ? (
-                          <span style={{ fontVariantNumeric: 'tabular-nums', display: 'block', textAlign: 'right', paddingRight: '4px' }}>
-                            ¥{rowItem.amount.toLocaleString()}
-                          </span>
+                          <div style={{ display: 'block', textAlign: 'right', paddingRight: '4px' }}>
+                            <CurrencyDisplay value={rowItem.amount} />
+                          </div>
                         ) : (
                           <CurrencyInput
                             disabled={isConfirmed}
@@ -1239,9 +1239,13 @@ export function RewardAllocationPage() {
                           onChange={val => handleFinChange(proj.id, 'reserve', rowItem.subject, val)}
                         />
                       ) : (
-                        <strong style={{ color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit', fontVariantNumeric: 'tabular-nums' }}>
-                          ¥{totalSurplus.toLocaleString()}
-                        </strong>
+                        <CurrencyDisplay
+                          value={totalSurplus}
+                          style={{
+                            color: totalSurplus !== 0 ? 'var(--color-error)' : 'inherit',
+                            fontWeight: 'var(--weight-heading)'
+                          }}
+                        />
                       )}
                     </td>
                     {/* 取引時期カラム（金額の直後） */}

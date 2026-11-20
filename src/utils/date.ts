@@ -103,6 +103,54 @@ export function formatYearJP(input: string | Date | null | undefined): string {
 }
 
 /**
+ * 時刻文字列（例: "09:30:00", "09:30", "9:30", または ISO 文字列）を "HH:mm" 形式にフォーマットする
+ */
+export function formatTime(input?: string | null): string {
+  if (!input || typeof input !== 'string') return '';
+  const trimmed = input.trim();
+  if (!trimmed) return '';
+
+  // ISO文字列または "YYYY-MM-DDTHH:mm:ss" の場合
+  if (trimmed.includes('T')) {
+    const timePart = trimmed.split('T')[1];
+    return timePart ? timePart.substring(0, 5) : '';
+  }
+
+  // "HH:mm:ss" または "H:mm" の場合
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})/);
+  if (match) {
+    const hours = match[1].padStart(2, '0');
+    const minutes = match[2];
+    return `${hours}:${minutes}`;
+  }
+
+  return trimmed.substring(0, 5);
+}
+
+/**
+ * 開始時刻・終了時刻から "HH:mm 〜 HH:mm" の範囲文字列をフォーマットする
+ */
+export function formatTimeRange(start?: string | null, end?: string | null, fallback = '-'): string {
+  const fStart = formatTime(start);
+  const fEnd = formatTime(end);
+  if (fStart && fEnd) {
+    return `${fStart} 〜 ${fEnd}`;
+  }
+  if (fStart) return fStart;
+  if (fEnd) return fEnd;
+  return fallback;
+}
+
+/**
+ * UIの時刻文字列（"HH:mm"）をDB保存用（"HH:mm:00"）に整形する
+ */
+export function formatTimeForDb(timeStr?: string | null): string | null {
+  if (!timeStr || typeof timeStr !== 'string' || timeStr.trim() === '') return null;
+  const trimmed = timeStr.trim();
+  return trimmed.length === 5 ? `${trimmed}:00` : trimmed;
+}
+
+/**
  * Returns a JST string for filtering/comparison: "YYYY-MM-DD"
  */
 export function formatJSTDateOnly(input: string | Date | null | undefined): string {

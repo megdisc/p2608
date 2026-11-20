@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, type Column } from '../components';
 import { supabase } from '../lib';
 import { useAlert, useOffice } from '../contexts';
+import { formatTime as formatTimeForInput, formatTimeForDb } from '../utils';
 import { TABLE_COLUMNS, MESSAGES, WEEKDAY_NAMES } from '../constants';
 import type { StaffTableItem, OfficeStaffSettingTableItem } from '../types';
 
@@ -34,15 +35,7 @@ const DAY_CONFIGS: { day: number; label: string; color?: string }[] = [
   { day: 6, label: WEEKDAY_NAMES[6], color: '#3b82f6' },
 ];
 
-const formatTimeForInput = (timeStr?: string | null): string => {
-  if (!timeStr) return '';
-  return timeStr.substring(0, 5);
-};
 
-const formatTimeForDb = (timeStr?: string | null): string | null => {
-  if (!timeStr || timeStr.trim() === '') return null;
-  return timeStr.length === 5 ? `${timeStr}:00` : timeStr;
-};
 
 const computeScheduledHours = (
   start?: string | null,

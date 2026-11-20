@@ -1,5 +1,5 @@
 import { useState, Fragment } from 'react';
-import { MonthInput, Button } from '../components/ui';
+import { MonthInput, Button, CurrencyDisplay, NumberDisplay } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS, BUTTON_LABELS } from '../constants';
 import { useOffice } from '../contexts';
 import { useServiceBilling } from '../hooks';
@@ -88,29 +88,29 @@ export function ServiceBillingPage() {
                           </span>
                         )}
                       </td>
-                      <td className="text-right tabular-nums">
-                        {row.attendanceDays}
+                      <td className="text-right">
+                        <NumberDisplay value={row.attendanceDays} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {row.baseRewardUnits.toLocaleString()}
+                      <td className="text-right">
+                        <NumberDisplay value={row.baseRewardUnits} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {row.additionUnits.toLocaleString()}
+                      <td className="text-right">
+                        <NumberDisplay value={row.additionUnits} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        {row.totalUnits.toLocaleString()}
+                      <td className="text-right">
+                        <NumberDisplay value={row.totalUnits} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{row.totalCostAmount.toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={row.totalCostAmount} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{row.copaymentLimitAmount.toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={row.copaymentLimitAmount} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{row.finalCopaymentAmount.toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={row.finalCopaymentAmount} />
                       </td>
-                      <td className="text-right tabular-nums">
-                        ¥{row.benefitBillingAmount.toLocaleString()}
+                      <td className="text-right">
+                        <CurrencyDisplay value={row.benefitBillingAmount} />
                       </td>
                     </tr>
 
@@ -151,17 +151,17 @@ export function ServiceBillingPage() {
                                         {d.serviceCode && <span className="text-muted mr-2">[{d.serviceCode}]</span>}
                                         {d.itemName}
                                       </td>
-                                      <td className="text-right tabular-nums">
-                                        {d.unitValue.toLocaleString()}
+                                      <td className="text-right">
+                                        <NumberDisplay value={d.unitValue} />
                                       </td>
-                                      <td className="text-right tabular-nums">
-                                        {d.count}
+                                      <td className="text-right">
+                                        <NumberDisplay value={d.count} />
                                       </td>
-                                      <td className="text-right tabular-nums">
-                                        {d.totalItemUnits.toLocaleString()}
+                                      <td className="text-right">
+                                        <NumberDisplay value={d.totalItemUnits} />
                                       </td>
-                                      <td className="text-right tabular-nums">
-                                        ¥{Math.floor(d.totalItemUnits * row.unitPrice).toLocaleString()}
+                                      <td className="text-right">
+                                        <CurrencyDisplay value={Math.floor(d.totalItemUnits * row.unitPrice)} />
                                       </td>
                                     </tr>
                                   ))}
@@ -184,27 +184,27 @@ export function ServiceBillingPage() {
                 <td colSpan={3} className="text-center">
                   合計 ({data.length}名)
                 </td>
-                <td className="text-right tabular-nums">
-                  {data.reduce((acc, r) => acc + r.attendanceDays, 0)}
+                <td className="text-right">
+                  <NumberDisplay value={data.reduce((acc, r) => acc + r.attendanceDays, 0)} />
                 </td>
-                <td className="text-right tabular-nums">
-                  {data.reduce((acc, r) => acc + r.baseRewardUnits, 0).toLocaleString()}
+                <td className="text-right">
+                  <NumberDisplay value={data.reduce((acc, r) => acc + r.baseRewardUnits, 0)} />
                 </td>
-                <td className="text-right tabular-nums">
-                  {data.reduce((acc, r) => acc + r.additionUnits, 0).toLocaleString()}
+                <td className="text-right">
+                  <NumberDisplay value={data.reduce((acc, r) => acc + r.additionUnits, 0)} />
                 </td>
-                <td className="text-right tabular-nums">
-                  {data.reduce((acc, r) => acc + r.totalUnits, 0).toLocaleString()}
+                <td className="text-right">
+                  <NumberDisplay value={data.reduce((acc, r) => acc + r.totalUnits, 0)} />
                 </td>
-                <td className="text-right tabular-nums">
-                  ¥{data.reduce((acc, r) => acc + r.totalCostAmount, 0).toLocaleString()}
+                <td className="text-right">
+                  <CurrencyDisplay value={data.reduce((acc, r) => acc + r.totalCostAmount, 0)} />
                 </td>
                 <td className="text-right">-</td>
-                <td className="text-right tabular-nums">
-                  ¥{data.reduce((acc, r) => acc + r.finalCopaymentAmount, 0).toLocaleString()}
+                <td className="text-right">
+                  <CurrencyDisplay value={data.reduce((acc, r) => acc + r.finalCopaymentAmount, 0)} />
                 </td>
-                <td className="text-right tabular-nums">
-                  ¥{data.reduce((acc, r) => acc + r.benefitBillingAmount, 0).toLocaleString()}
+                <td className="text-right">
+                  <CurrencyDisplay value={data.reduce((acc, r) => acc + r.benefitBillingAmount, 0)} />
                 </td>
               </tr>
             </tfoot>

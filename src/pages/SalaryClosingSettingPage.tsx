@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import { useAlert, useOffice } from '../contexts';
 import {
   MESSAGES,
@@ -63,7 +63,7 @@ export function SalaryClosingSettingPage() {
       sortable: false,
       editable: true,
       inputType: 'date',
-      render: (item) => item.valid_to || '継続中',
+      render: (item) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '継続中',
     },
   ];
 

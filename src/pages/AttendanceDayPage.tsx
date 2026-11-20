@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { DataPage, Input, Select, type Column } from '../components';
 import { supabase } from '../lib';
 import { useOffice, useAlert } from '../contexts';
-import { getCurrentJSTDateOnly } from '../utils';
+import { getCurrentJSTDateOnly, formatTime as formatTimeForInput, formatTimeForDb } from '../utils';
 import {
   MESSAGES,
   TABLE_COLUMNS,
@@ -52,15 +52,7 @@ export interface AttendanceDayPageProps {
   targetType?: 'staff' | 'member';
 }
 
-const formatTimeForInput = (timeStr?: string | null): string => {
-  if (!timeStr) return '';
-  return timeStr.substring(0, 5);
-};
 
-const formatTimeForDb = (timeStr?: string | null): string | null => {
-  if (!timeStr || timeStr.trim() === '') return null;
-  return timeStr.length === 5 ? `${timeStr}:00` : timeStr;
-};
 
 const computeHours = (
   start?: string | null,

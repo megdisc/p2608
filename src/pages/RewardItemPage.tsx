@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import type { RewardItem, ServiceTypeItem } from '../hooks';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
@@ -150,14 +150,18 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       rowType: 'sub',
       sortable: false,
-      render: (item: ServiceTypeWithRewardItems | RewardItem) => (item as RewardItem).valid_from || '-'
+      render: (item: ServiceTypeWithRewardItems | RewardItem) => (
+        <DateDisplay value={(item as RewardItem).valid_from} fallback="-" />
+      )
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       rowType: 'sub',
       sortable: false,
-      render: (item: ServiceTypeWithRewardItems | RewardItem) => (item as RewardItem).valid_to || '-'
+      render: (item: ServiceTypeWithRewardItems | RewardItem) => (
+        <DateDisplay value={(item as RewardItem).valid_to} fallback="-" />
+      )
     },
   ];
 

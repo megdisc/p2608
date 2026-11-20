@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, NumberDisplay, DateDisplay } from '../components';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
 import { useBaseRewards, type BaseRewardItem } from '../hooks';
@@ -46,20 +46,22 @@ export function BaseRewardItemPage() {
       sortable: true,
       className: 'quantity',
       style: { width: '130px', textAlign: 'right', fontWeight: 'bold' },
-      render: (item: BaseRewardItem) => `${item.base_units.toLocaleString()} 単位`,
+      render: (item: BaseRewardItem) => <NumberDisplay value={item.base_units} unit=" 単位" />,
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
+      inputType: 'date',
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { width: '130px', textAlign: 'center' },
-      render: (item: BaseRewardItem) => item.valid_to || '-',
+      inputType: 'date',
+      render: (item: BaseRewardItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
     },
   ];
 

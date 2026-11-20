@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import { supabase } from '../lib';
 import { useOffice } from '../contexts';
 import { getCurrentJSTMonth, getCurrentJSTDateOnly } from '../utils';
@@ -310,10 +310,8 @@ export function AttendanceMonthPage({
         key: 'date',
         header: TABLE_COLUMNS.DATE,
         sortable: false,
-        style: { width: '130px', textAlign: 'center' },
-        render: item => (
-          <span>{item.date}</span>
-        ),
+        style: { width: '150px', textAlign: 'center' },
+        render: item => <DateDisplay value={item.date} />,
       },
       {
         key: 'day_name',

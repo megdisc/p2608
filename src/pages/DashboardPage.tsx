@@ -8,7 +8,7 @@ import {
   WORDS_TIME,
 } from '../constants';
 import { useNavigation, useOffice } from '../contexts';
-import { Button } from '../components/ui';
+import { Button, TimeDisplay } from '../components/ui';
 import { supabase } from '../lib';
 import { getCurrentJSTDateOnly } from '../utils';
 import type { Tab } from '../types';
@@ -400,7 +400,7 @@ export function DashboardPage() {
                       <tr key={m.id}>
                         <td>{m.name}</td>
                         <td>{STATUS_TEXT[m.status] || '通所'}</td>
-                        <td>{m.isScheduled && m.startTime ? `${m.startTime} 〜 ${m.endTime}` : '-'}</td>
+                        <td>{m.isScheduled && m.startTime ? <TimeDisplay value={m.startTime} endTime={m.endTime} fallback="-" /> : '-'}</td>
                         <td>{m.remarks || '-'}</td>
                       </tr>
                     ))
@@ -455,7 +455,7 @@ export function DashboardPage() {
                       <tr key={s.id}>
                         <td>{s.name}</td>
                         <td>{s.isWorkDay ? WORDS_TIME.DUTY_WORK : WORDS_TIME.DUTY_OFF}</td>
-                        <td>{s.isWorkDay && s.startTime ? `${s.startTime} 〜 ${s.endTime}` : '-'}</td>
+                        <td>{s.isWorkDay && s.startTime ? <TimeDisplay value={s.startTime} endTime={s.endTime} fallback="-" /> : '-'}</td>
                         <td>{s.remarks || '-'}</td>
                       </tr>
                     ))

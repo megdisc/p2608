@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, CurrencyDisplay } from '../components';
 import type { ReserveSettingItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
 import {
@@ -58,7 +58,7 @@ export function ReserveSettingPage() {
       style: { width: '180px', textAlign: 'right' },
       render: (item: ReserveSettingItem) => (
         item.calcType === 'fixed_amount' ? (
-          <span className="tabular-nums">¥{Number(item.fixedAmount || 0).toLocaleString()}</span>
+          <CurrencyDisplay value={item.fixedAmount || 0} />
         ) : (
           <span className="text-muted">-</span>
         )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MultiRowHeader, type HeaderCell, YearInput, Button } from '../components/ui';
+import { MultiRowHeader, type HeaderCell, YearInput, Button, CurrencyDisplay } from '../components/ui';
 import { MESSAGES, TABLE_COLUMNS } from '../constants';
 import { useAlert, useOffice } from '../contexts';
 import { useProjectFinancialSummary } from '../hooks';
@@ -115,28 +115,28 @@ export function ProjectFinancialSummaryPage() {
                   <tr key={row.id}>
                     <td>{row.projectCode}</td>
                     <td style={{ fontWeight: 'var(--weight-heading)' }}>{row.projectName}</td>
-                    <td className="text-right">¥{row.revSales.toLocaleString()}</td>
+                    <td className="text-right"><CurrencyDisplay value={row.revSales} /></td>
                     <td className="text-right font-heading">
-                      ¥{row.revTotal.toLocaleString()}
+                      <CurrencyDisplay value={row.revTotal} />
                     </td>
                     
-                    <td className="text-right">¥{row.expMaterial.toLocaleString()}</td>
-                    <td className="text-right">¥{row.expLaborMember.toLocaleString()}</td>
-                    <td className="text-right">¥{row.expLaborOther.toLocaleString()}</td>
-                    <td className="text-right">¥{row.expOutsource.toLocaleString()}</td>
-                    <td className="text-right">¥{row.expOther.toLocaleString()}</td>
+                    <td className="text-right"><CurrencyDisplay value={row.expMaterial} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.expLaborMember} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.expLaborOther} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.expOutsource} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.expOther} /></td>
                     <td className="text-right font-heading">
-                      ¥{row.expTotal.toLocaleString()}
+                      <CurrencyDisplay value={row.expTotal} />
                     </td>
                     
-                    <td className="text-right">¥{row.resWage.toLocaleString()}</td>
-                    <td className="text-right">¥{row.resEquipment.toLocaleString()}</td>
+                    <td className="text-right"><CurrencyDisplay value={row.resWage} /></td>
+                    <td className="text-right"><CurrencyDisplay value={row.resEquipment} /></td>
                     <td className="text-right font-heading">
-                      ¥{row.resTotal.toLocaleString()}
+                      <CurrencyDisplay value={row.resTotal} />
                     </td>
 
                     <td className="text-right font-heading">
-                      ¥{surplus.toLocaleString()}
+                      <CurrencyDisplay value={surplus} />
                     </td>
                   </tr>
                 );
@@ -147,43 +147,43 @@ export function ProjectFinancialSummaryPage() {
                   {currentYear}年累計
                 </td>
                 <td className="text-right font-heading">
-                  ¥{totals.revSales.toLocaleString()}
+                  <CurrencyDisplay value={totals.revSales} />
                 </td>
                 <td className="text-right font-heading">
-                  ¥{totals.revTotal.toLocaleString()}
-                </td>
-                
-                <td className="text-right font-heading">
-                  ¥{totals.expMaterial.toLocaleString()}
-                </td>
-                <td className="text-right font-heading">
-                  ¥{totals.expLaborMember.toLocaleString()}
-                </td>
-                <td className="text-right font-heading">
-                  ¥{totals.expLaborOther.toLocaleString()}
-                </td>
-                <td className="text-right font-heading">
-                  ¥{totals.expOutsource.toLocaleString()}
-                </td>
-                <td className="text-right font-heading">
-                  ¥{totals.expOther.toLocaleString()}
-                </td>
-                <td className="text-right font-heading">
-                  ¥{totals.expTotal.toLocaleString()}
+                  <CurrencyDisplay value={totals.revTotal} />
                 </td>
                 
                 <td className="text-right font-heading">
-                  ¥{totals.resWage.toLocaleString()}
+                  <CurrencyDisplay value={totals.expMaterial} />
                 </td>
                 <td className="text-right font-heading">
-                  ¥{totals.resEquipment.toLocaleString()}
+                  <CurrencyDisplay value={totals.expLaborMember} />
                 </td>
                 <td className="text-right font-heading">
-                  ¥{totals.resTotal.toLocaleString()}
+                  <CurrencyDisplay value={totals.expLaborOther} />
+                </td>
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.expOutsource} />
+                </td>
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.expOther} />
+                </td>
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.expTotal} />
+                </td>
+                
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.resWage} />
+                </td>
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.resEquipment} />
+                </td>
+                <td className="text-right font-heading">
+                  <CurrencyDisplay value={totals.resTotal} />
                 </td>
 
                 <td className="text-right font-heading">
-                  ¥{(totals.revTotal - (totals.expTotal + totals.resTotal)).toLocaleString()}
+                  <CurrencyDisplay value={totals.revTotal - (totals.expTotal + totals.resTotal)} />
                 </td>
               </tr>
             </tbody>

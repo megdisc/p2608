@@ -4,6 +4,7 @@ import './index.css';
 import type { Tab } from './types';
 import {
   ScreenCompositionPage,
+  ScreenCalculationFormulaPage,
   ScreenAverageWagePage,
   ScreenProductionBusinessPage,
   ScreenWelfareBusinessPage,
@@ -107,6 +108,8 @@ function AppContent() {
               <ScreenReserveSummaryPage />
             ) : ['screenComposition', 'tableComposition'].includes(activeTab) ? (
               <ScreenCompositionPage />
+            ) : ['screenCalculationFormula', 'calculationFormula'].includes(activeTab) ? (
+              <ScreenCalculationFormulaPage />
             ) : (
               <div className="under-construction">
                 <p>{MESSAGES.PAGE_UNDER_CONSTRUCTION}</p>

@@ -65,10 +65,12 @@ const getTabCategory = (tabId: string): string => {
     'reserveSummary',
   ];
 
-  // 5. 開発用（システム構成）
+  // 5. 開発用（システム構成・計算式）
   const developmentTabIds = [
     // システム構成
     'screenComposition', 'tableComposition',
+    // 計算式
+    'screenCalculationFormula', 'calculationFormula',
   ];
 
   if (settingsTabIds.includes(tabId)) return CATEGORY_SETTINGS;

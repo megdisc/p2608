@@ -70,4 +70,6 @@ export * from './ScreenReserveSummaryPage';
 export * from './ServiceBillingPage';
 export * from './ScreenServiceBillingPage';
 export * from './ServiceSchemePage';
+export * from './CalculationFormulaPage';
+export * from './ScreenCalculationFormulaPage';
 

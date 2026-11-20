@@ -173,6 +173,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     tabs: [
       { id: 'tableComposition', label: PAGE_NAMES.TAB_TABLE_COMPOSITION },
     ],
+  },
+  SCREEN_CALCULATION_FORMULA: {
+    screenName: PAGE_NAMES.CALCULATION_FORMULA,
+    tabs: [
+      { id: 'calculationFormula', label: PAGE_NAMES.CALCULATION_FORMULA },
+    ],
   }
 };
 
@@ -208,6 +214,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenReserve') return SCREEN_CONFIGS.SCREEN_RESERVE;
   if (tabId === 'screenComposition') return SCREEN_CONFIGS.SCREEN_TAB_COMPOSITION;
   if (tabId === 'tableComposition') return SCREEN_CONFIGS.SCREEN_TABLE_COMPOSITION;
+  if (tabId === 'screenCalculationFormula' || tabId === 'calculationFormula') return SCREEN_CONFIGS.SCREEN_CALCULATION_FORMULA;
 
   for (const config of Object.values(SCREEN_CONFIGS)) {
     if (config.tabs.some(t => t.id === tabId)) {

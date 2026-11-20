@@ -485,7 +485,8 @@ export type Tab =
   | 'screenFacility' | 'organization' | 'office' | 'officeServiceType' | 'officeReward' | 'serviceScheme'
   | 'screenWelfare' | 'serviceType' | 'baseReward' | 'rewardItem' | 'qualification' | 'staffRole' | 'regionalGrade'
   | 'screenAverageWage' | 'screenProductionBusiness' | 'screenWelfareBusiness' | 'screenReserveReport' | 'reserveSummary'
-  | 'screenServiceBilling' | 'serviceBilling';
+  | 'screenServiceBilling' | 'serviceBilling'
+  | 'screenCalculationFormula' | 'calculationFormula';
 
 export * from './serviceBilling';
 

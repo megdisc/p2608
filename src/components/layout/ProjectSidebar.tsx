@@ -185,6 +185,12 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
           >
             {PAGE_NAMES.TAB_TABLE_COMPOSITION}
           </button>
+          <button 
+            className={`nav-button ${['screenCalculationFormula', 'calculationFormula'].includes(activeTab) ? 'active' : ''}`}
+            onClick={() => setActiveTab('calculationFormula')}
+          >
+            {PAGE_NAMES.CALCULATION_FORMULA}
+          </button>
         </div>
       </nav>
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useCallback } from 'react';
-import { DataPage, Button, type Column } from '../components';
+import { DataPage, Button, Select, type Column } from '../components';
 import type { SkillItem, SkillCategoryItem } from '../types';
 import { useAlert, useOffice } from '../contexts';
 import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
@@ -204,27 +204,17 @@ export function SkillPage() {
         };
 
         const currentCatId = subItem.category_id || '';
+        const categoryOptions = [
+          ...categories.map(cat => ({ value: cat.id, label: cat.name })),
+          { value: '', label: '未分類' }
+        ];
 
         return (
-          <select
+          <Select
             value={currentCatId}
             onChange={handleCategorySelect}
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              border: '1px solid #cbd5e1',
-              backgroundColor: '#ffffff',
-              fontSize: '14px',
-              width: '100%'
-            }}
-          >
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-            <option value="">未分類</option>
-          </select>
+            options={categoryOptions}
+          />
         );
       }
     }

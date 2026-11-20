@@ -117,6 +117,7 @@
   /* --- テキスト --- */
   --color-text-main: var(--palette-gray-700);
   --color-text-muted: var(--palette-gray-500);
+  --color-text-disabled: var(--palette-gray-300);
   --color-text-inverse: var(--palette-white);
 
   /* --- ボーダー --- */
@@ -749,6 +750,11 @@ select.inline-input {
   background-position: right center;
   background-size: 16px;
   padding-right: 20px;
+}
+
+select.inline-input option:disabled,
+select option:disabled {
+  color: var(--color-text-disabled);
 }
 
 /* Lighten the calendar/clock icon in native date/time pickers */
@@ -1499,6 +1505,10 @@ input[type="number"] {
 
 .text-muted {
   color: var(--color-text-muted);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
 }
 
 .text-caption {

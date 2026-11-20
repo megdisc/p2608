@@ -47,6 +47,8 @@ export function getSubjectTransactionType(
     subject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT ||
     subject.includes('積立金')
   ) {
+    if (subject.includes('取崩') || rawType === 'reserve_withdrawal') return 'reserve_withdrawal';
+    if (subject.includes('繰入') || rawType === 'reserve_inflow') return 'reserve_inflow';
     // 案件IDが存在する、または明示的な積立金繰入の場合は繰入、それ以外（手動出金等）は取崩
     return (projectId || rawType === 'reserve_inflow') ? 'reserve_inflow' : 'reserve_withdrawal';
   }

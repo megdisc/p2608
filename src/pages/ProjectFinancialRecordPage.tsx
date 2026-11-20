@@ -76,6 +76,10 @@ export function ProjectFinancialRecordPage() {
         normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE;
       } else if (normalizedSubject === '労務費（その他）' || normalizedSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER) {
         normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER;
+      } else if (normalizedSubject === '労務費（利用者工賃）' || normalizedSubject === WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER || normalizedSubject.includes('利用者工賃')) {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER;
+      } else if (normalizedSubject.includes('給付費') || normalizedSubject.includes('訓練等給付費')) {
+        normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT;
       } else if (normalizedSubject === '事業収益') {
         const desc = item.remarks || '';
         if (desc.includes('給付費') || desc.includes('訓練') || !desc) {
@@ -94,13 +98,23 @@ export function ProjectFinancialRecordPage() {
         normalizedSubject = WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER;
       }
 
-      // 勘定科目から事業区分を自動判定・補完
+      // 勘定科目から事業区分・取引区分を自動判定・補完
       const determinedCategory = item.activity_category || getSubjectActivityCategory(normalizedSubject);
-      const isManualReserveWithdrawal = (item.type === 'reserve' || normalizedSubject === WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT) && !item.projectId;
+      const isReserve = normalizedSubject.includes('積立金');
+      const isRevenue = [
+        WORDS_PROJECT.SUBJECT_REVENUE_SALES,
+        WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT,
+        WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+        WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION
+      ].includes(normalizedSubject as any) || normalizedSubject.includes('売上');
+
+      let resolvedType: 'revenue' | 'expense' | 'reserve' = 'expense';
+      if (isRevenue) resolvedType = 'revenue';
+      else if (isReserve) resolvedType = 'reserve';
 
       return {
         ...item,
-        type: (isManualReserveWithdrawal ? 'reserve' : item.type) as 'revenue' | 'expense' | 'reserve',
+        type: resolvedType,
         subject: normalizedSubject,
         activity_category: determinedCategory,
         targetPeriod: item.targetPeriod || item.period || ''
@@ -126,19 +140,22 @@ export function ProjectFinancialRecordPage() {
     });
   }, [normalizedItems, projects, sortConfig]);
 
-  // 手動入力用の勘定科目プルダウン
+  // 手動入力用の勘定科目プルダウン（全14科目中、手動入力可能な4科目のみ選択可能、他は薄文字表示）
   const subjectOptions = useMemo(() => [
-    { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL },
-    { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER },
-    { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE },
-    { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER },
-    { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER },
-    { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES },
-    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}取崩`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}取崩` },
-    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}繰入`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}繰入` },
-    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}取崩`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}取崩` },
-    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}繰入`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}繰入` },
-    { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER },
+    { label: WORDS_PROJECT.SUBJECT_REVENUE_SALES, value: WORDS_PROJECT.SUBJECT_REVENUE_SALES, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, value: WORDS_PROJECT.SUBJECT_EXPENSE_MATERIAL, disabled: false },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_OTHER, disabled: false },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, value: WORDS_PROJECT.SUBJECT_EXPENSE_OUTSOURCE, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_OTHER, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, value: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER, disabled: true },
+    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}繰入`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}繰入`, disabled: true },
+    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}取崩`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_WAGE}取崩`, disabled: true },
+    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}繰入`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}繰入`, disabled: true },
+    { label: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}取崩`, value: `${WORDS_PROJECT.SUBJECT_RESERVE_EQUIPMENT}取崩`, disabled: false },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT, value: WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE, value: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION, disabled: true },
+    { label: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, value: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_OTHER, disabled: false },
   ], []);
 
   const columns: Column<FinancialRecordItem>[] = [

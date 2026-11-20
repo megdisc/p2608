@@ -151,6 +151,18 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         .eq('office_id', options.officeId)
         .order('code', { ascending: true });
 
+      // 4. 工賃スナップショットクエリ（労務費（利用者工賃）・実費控除の明細連携）
+      let wageQuery = supabase
+        .from('wage_snapshot')
+        .select('id, target_period, payment_date, wage_total, service_fee_deduction, actual_expense_deduction, deduction_total, office_id, member_id')
+        .eq('office_id', options.officeId);
+
+      // 5. サービス費用スナップショットクエリ（訓練等給付費・サービス利用料の明細連携）
+      let billingQuery = supabase
+        .from('service_billing_snapshot')
+        .select('id, target_period, benefit_billing_amount, final_copayment_amount, actual_expense_amount, office_id, member_id, status')
+        .eq('office_id', options.officeId);
+
       const [
         { data: closingsData },
         { data: recData, error: recError },
@@ -158,13 +170,19 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
         { data: projData, error: projError },
         { data: staffData, error: staffError },
         { data: clientData, error: clientError },
+        { data: wageData },
+        { data: billingData },
+        { data: memberData }
       ] = await Promise.all([
         closingsQuery,
         recQuery,
         snapQuery,
         projQuery,
         supabase.from('staffs').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true }),
-        supabase.from('partners').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true })
+        supabase.from('partners').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true }),
+        wageQuery,
+        billingQuery,
+        supabase.from('members').select('id, name, yomigana, is_deleted').order('yomigana', { ascending: true })
       ]);
 
       if (recError && snapError) throw recError || snapError;
@@ -219,6 +237,116 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
               seenIds.add(item.id);
               mergedList.push(item);
             }
+          });
+        }
+      });
+
+      const membersMap = new Map<string, string>((memberData || []).map((m: any) => [m.id, m.name]));
+
+      // 4. wage_snapshot から「労務費（利用者工賃）」および「実費控除」の確定明細を生成・合流
+      (wageData || []).forEach((w: any) => {
+        const memberName = membersMap.get(w.member_id) || '利用者';
+        const dateStr = w.payment_date || (w.target_period ? `${w.target_period}-15` : '');
+
+        // 4.1 労務費（利用者工賃）
+        const wageAmt = Number(w.wage_total) || 0;
+        if (wageAmt > 0) {
+          mergedList.push({
+            id: `wage-${w.id}`,
+            target_period: dateStr,
+            type: 'expense',
+            subject: WORDS_PROJECT.SUBJECT_EXPENSE_LABOR_MEMBER,
+            amount: wageAmt,
+            remarks: `工賃確定支給（${memberName} 様）`,
+            activity_category: 'production',
+            cost_category: 'manufacturing',
+            office_id: w.office_id,
+            project_id: null,
+            client_id: null,
+            recorded_by: null,
+          });
+        }
+
+        // 4.2 実費控除（食事代・送迎代等）
+        const deductAmt = Number(w.actual_expense_deduction) || 0;
+        if (deductAmt > 0) {
+          mergedList.push({
+            id: `wage-deduct-${w.id}`,
+            target_period: dateStr,
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_EXPENSE_DEDUCTION,
+            amount: deductAmt,
+            remarks: `実費控除（${memberName} 様）`,
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+            office_id: w.office_id,
+            project_id: null,
+            client_id: null,
+            recorded_by: null,
+          });
+        }
+      });
+
+      // 5. service_billing_snapshot から「訓練等給付費」および「サービス利用料」の確定明細を生成・合流
+      (billingData || []).forEach((b: any) => {
+        const memberName = membersMap.get(b.member_id) || '利用者';
+        const periodStr = b.target_period || '';
+
+        // 5.1 訓練等給付費（翌月10日請求日）
+        const benefitAmt = Number(b.benefit_billing_amount) || 0;
+        if (benefitAmt > 0) {
+          let claimDate = '';
+          if (periodStr && periodStr.includes('-')) {
+            const [y, m] = periodStr.split('-');
+            const d = new Date(parseInt(y, 10), parseInt(m, 10), 10);
+            const claimY = d.getFullYear();
+            const claimM = (d.getMonth() + 1).toString().padStart(2, '0');
+            claimDate = `${claimY}-${claimM}-10`;
+          } else {
+            claimDate = `${periodStr}-10`;
+          }
+
+          mergedList.push({
+            id: `billing-benefit-${b.id}`,
+            target_period: claimDate,
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_BENEFIT,
+            amount: benefitAmt,
+            remarks: `訓練等給付費請求（${memberName} 様）`,
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+            office_id: b.office_id,
+            project_id: null,
+            client_id: null,
+            recorded_by: null,
+          });
+        }
+
+        // 5.2 サービス利用料（当月末自己負担請求）
+        const copayAmt = Number(b.final_copayment_amount) || 0;
+        if (copayAmt > 0) {
+          let copayDate = '';
+          if (periodStr && periodStr.includes('-')) {
+            const [y, m] = periodStr.split('-');
+            const lastDay = new Date(parseInt(y, 10), parseInt(m, 10), 0).getDate();
+            copayDate = `${periodStr}-${lastDay.toString().padStart(2, '0')}`;
+          } else {
+            copayDate = `${periodStr}-28`;
+          }
+
+          mergedList.push({
+            id: `billing-copay-${b.id}`,
+            target_period: copayDate,
+            type: 'revenue',
+            subject: WORDS_PROJECT.SUBJECT_WELFARE_USAGE_FEE,
+            amount: copayAmt,
+            remarks: `サービス利用料（${memberName} 様）`,
+            activity_category: 'welfare',
+            cost_category: 'manufacturing',
+            office_id: b.office_id,
+            project_id: null,
+            client_id: null,
+            recorded_by: null,
           });
         }
       });
@@ -296,7 +424,7 @@ export function useFinancialRecords(options: UseFinancialRecordsOptions = {}) {
       const pagedRecords = filteredList.slice(startIdx, startIdx + pageSize);
 
       const mapped: FinancialRecordItem[] = pagedRecords.map(r => {
-        const isConfirmed = confirmedMonths.has((r.target_period || '').substring(0, 7));
+        const isConfirmed = confirmedMonths.has((r.target_period || '').substring(0, 7)) || r.id.startsWith('wage-') || r.id.startsWith('billing-');
         return {
           id: r.id,
           targetPeriod: r.target_period || '',

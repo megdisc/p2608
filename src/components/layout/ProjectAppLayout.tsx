@@ -13,7 +13,7 @@ export function ProjectAppLayout({ activeTab, setActiveTab, children }: ProjectA
     <div className="app-layout">
       <ProjectSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="main-content">
-        <div className="page-transition">
+        <div className="page-transition" key={activeTab}>
           {children}
         </div>
       </main>

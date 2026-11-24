@@ -419,6 +419,7 @@ export type ReserveSettingItem = {
   transferOutMonthType?: 'current' | 'next' | 'next_next'; // 取崩月区分
   transferOutDay?: number;                      // 取崩基準日 (1〜28, 99)
   description?: string;                         // 目的・用途
+  initialBalance?: number;                      // 初期残高（期首繰越額）
   is_deleted?: boolean;
   office_id?: string;
 };

@@ -33,7 +33,7 @@ export function ReserveSummaryPage() {
     return 0;
   });
 
-  const totals = data.reduce(
+  const monthlyTotals = data.reduce(
     (acc, row) => ({
       wageInflow: acc.wageInflow + row.wageInflow,
       wageWithdrawal: acc.wageWithdrawal + row.wageWithdrawal,
@@ -41,9 +41,6 @@ export function ReserveSummaryPage() {
       equipmentInflow: acc.equipmentInflow + row.equipmentInflow,
       equipmentWithdrawal: acc.equipmentWithdrawal + row.equipmentWithdrawal,
       equipmentNet: acc.equipmentNet + row.equipmentNet,
-      totalInflow: acc.totalInflow + row.totalInflow,
-      totalWithdrawal: acc.totalWithdrawal + row.totalWithdrawal,
-      totalNet: acc.totalNet + row.totalNet,
     }),
     {
       wageInflow: 0,
@@ -52,29 +49,31 @@ export function ReserveSummaryPage() {
       equipmentInflow: 0,
       equipmentWithdrawal: 0,
       equipmentNet: 0,
-      totalInflow: 0,
-      totalWithdrawal: 0,
-      totalNet: 0,
     }
   );
+
+  const lastRow = [...data].sort((a, b) => a.period.localeCompare(b.period))[data.length - 1];
+  const totals = {
+    ...monthlyTotals,
+    wageCumulative: lastRow?.wageCumulative ?? 0,
+    equipmentCumulative: lastRow?.equipmentCumulative ?? 0,
+  };
 
   const headerRows: HeaderCell[][] = [
     [
       { label: TABLE_COLUMNS.PERIOD, rowSpan: 2, width: '120px', sortKey: 'period' },
-      { label: TABLE_COLUMNS.RESERVE_WAGE, colSpan: 3 },
-      { label: TABLE_COLUMNS.RESERVE_EQUIPMENT, colSpan: 3 },
-      { label: TABLE_COLUMNS.RESERVE_TOTAL, colSpan: 3 },
+      { label: TABLE_COLUMNS.RESERVE_WAGE, colSpan: 4 },
+      { label: TABLE_COLUMNS.RESERVE_EQUIPMENT, colSpan: 4 },
     ],
     [
       { label: TABLE_COLUMNS.RESERVE_INFLOW },
       { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL },
       { label: TABLE_COLUMNS.RESERVE_NET },
+      { label: TABLE_COLUMNS.RESERVE_CUMULATIVE },
       { label: TABLE_COLUMNS.RESERVE_INFLOW },
       { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL },
       { label: TABLE_COLUMNS.RESERVE_NET },
-      { label: TABLE_COLUMNS.RESERVE_INFLOW_TOTAL },
-      { label: TABLE_COLUMNS.RESERVE_WITHDRAWAL_TOTAL },
-      { label: TABLE_COLUMNS.RESERVE_NET_TOTAL },
+      { label: TABLE_COLUMNS.RESERVE_CUMULATIVE },
     ]
   ];
 
@@ -90,13 +89,13 @@ export function ReserveSummaryPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={10} style={{ textAlign: 'center', padding: '24px' }}>
+                <td colSpan={9} style={{ textAlign: 'center', padding: '24px' }}>
                   {MESSAGES.LOADING}
                 </td>
               </tr>
             ) : sortedData.length === 0 ? (
               <tr>
-                <td colSpan={10} className="empty-message">表示するデータがありません</td>
+                <td colSpan={9} className="empty-message">表示するデータがありません</td>
               </tr>
             ) : (
               <>
@@ -106,12 +105,11 @@ export function ReserveSummaryPage() {
                     <td className="text-right"><CurrencyDisplay value={row.wageInflow} /></td>
                     <td className="text-right"><CurrencyDisplay value={row.wageWithdrawal} /></td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.wageNet} /></td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.wageCumulative} /></td>
                     <td className="text-right"><CurrencyDisplay value={row.equipmentInflow} /></td>
                     <td className="text-right"><CurrencyDisplay value={row.equipmentWithdrawal} /></td>
                     <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.equipmentNet} /></td>
-                    <td className="text-right"><CurrencyDisplay value={row.totalInflow} /></td>
-                    <td className="text-right"><CurrencyDisplay value={row.totalWithdrawal} /></td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.totalNet} /></td>
+                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={row.equipmentCumulative} /></td>
                   </tr>
                 ))}
                 <tr className="total-row" style={{ fontWeight: 'bold', backgroundColor: 'var(--color-bg-subtle)' }}>
@@ -119,12 +117,11 @@ export function ReserveSummaryPage() {
                   <td className="text-right"><CurrencyDisplay value={totals.wageInflow} /></td>
                   <td className="text-right"><CurrencyDisplay value={totals.wageWithdrawal} /></td>
                   <td className="text-right"><CurrencyDisplay value={totals.wageNet} /></td>
+                  <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={totals.wageCumulative} /></td>
                   <td className="text-right"><CurrencyDisplay value={totals.equipmentInflow} /></td>
                   <td className="text-right"><CurrencyDisplay value={totals.equipmentWithdrawal} /></td>
                   <td className="text-right"><CurrencyDisplay value={totals.equipmentNet} /></td>
-                  <td className="text-right"><CurrencyDisplay value={totals.totalInflow} /></td>
-                  <td className="text-right"><CurrencyDisplay value={totals.totalWithdrawal} /></td>
-                  <td className="text-right"><CurrencyDisplay value={totals.totalNet} /></td>
+                  <td style={{ textAlign: 'right', fontWeight: 'bold' }}><CurrencyDisplay value={totals.equipmentCumulative} /></td>
                 </tr>
               </>
             )}

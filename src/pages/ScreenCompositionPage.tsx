@@ -585,6 +585,7 @@ export function ScreenCompositionPage() {
         { name: 'calc_type', desc: '計算方式区分（fixed_amount: 定額 / fixed_rate: 定率）' },
         { name: 'fixed_amount', desc: '定額金額（円）' },
         { name: 'fixed_rate', desc: '定率（%）' },
+        { name: 'initial_balance', desc: '期首初期残高（円）' },
         { name: 'transfer_in_month_type', desc: '積立金繰入月区分（current: 当月 / next: 翌月 / next_next: 翌々月）' },
         { name: 'transfer_in_day', desc: '積立金繰入日（1〜28日、または99: 末日）' },
         { name: 'transfer_out_month_type', desc: '積立金取崩月区分（current: 当月 / next: 翌月 / next_next: 翌々月）' },

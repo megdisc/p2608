@@ -81,6 +81,18 @@ export function ReserveSettingPage() {
       )
     },
     {
+      key: 'initialBalance',
+      header: TABLE_COLUMNS.INITIAL_BALANCE,
+      editable: true,
+      inputType: 'currency',
+      sortable: false,
+      className: 'number-column',
+      style: { width: '160px', textAlign: 'right' },
+      render: (item: ReserveSettingItem) => (
+        <CurrencyDisplay value={item.initialBalance || 0} />
+      )
+    },
+    {
       key: 'transferInMonthType',
       header: TABLE_COLUMNS.RESERVE_INFLOW_MONTH,
       editable: true,

@@ -40,6 +40,7 @@ export function useReserveSettings() {
             transferInDay: existing.transfer_in_day != null ? Number(existing.transfer_in_day) : 99,
             transferOutMonthType: existing.transfer_out_month_type || 'next',
             transferOutDay: existing.transfer_out_day != null ? Number(existing.transfer_out_day) : 99,
+            initialBalance: Number(existing.initial_balance || 0),
             description: reserveTypeName,
             office_id: existing.office_id,
           };
@@ -54,6 +55,7 @@ export function useReserveSettings() {
           transferInDay: 99,
           transferOutMonthType: 'next',
           transferOutDay: 99,
+          initialBalance: 0,
           description: reserveTypeName,
           office_id: officeId,
         };
@@ -91,6 +93,7 @@ export function useReserveSettings() {
         transfer_in_day: item.transferInDay != null ? Number(item.transferInDay) : 99,
         transfer_out_month_type: item.transferOutMonthType || 'next',
         transfer_out_day: item.transferOutDay != null ? Number(item.transferOutDay) : 99,
+        initial_balance: Number(item.initialBalance || 0),
       }));
 
       if (upserts.length > 0) {

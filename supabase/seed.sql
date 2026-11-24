@@ -429,13 +429,13 @@ ON CONFLICT (office_id, valid_from) DO UPDATE SET
   payment_day = EXCLUDED.payment_day;
 
 -- 4.1 積立金項目マスタ (reserve_items)
-INSERT INTO public.reserve_items (id, office_id, name, calc_type, fixed_amount, fixed_rate, transfer_in_month_type, transfer_in_day, transfer_out_month_type, transfer_out_day) VALUES
-('77777777-7777-7777-7777-777777777777', '22222222-2222-2222-2222-222222222222', '工賃変動積立金', 'fixed_amount', 1000.00, 0.00, 'next', 99, 'next', 99),
-('77777777-7777-7777-7777-777777777778', '22222222-2222-2222-2222-222222222222', '設備等修繕維持積立金', 'fixed_amount', 500.00, 0.00, 'next', 99, 'next', 99),
-('77777777-3333-7777-7777-777777777777', '33333333-3333-3333-3333-333333333333', '工賃変動積立金', 'fixed_amount', 2000.00, 0.00, 'next', 99, 'next', 99),
-('77777777-3333-7777-7777-777777777778', '33333333-3333-3333-3333-333333333333', '設備等修繕維持積立金', 'fixed_amount', 500.00, 0.00, 'next', 99, 'next', 99),
-('77777777-4444-7777-7777-777777777777', '44444444-4444-4444-4444-444444444444', '工賃変動積立金', 'fixed_amount', 3000.00, 0.00, 'next', 99, 'next', 99),
-('77777777-4444-7777-7777-777777777778', '44444444-4444-4444-4444-444444444444', '設備等修繕維持積立金', 'fixed_amount', 2500.00, 0.00, 'next', 99, 'next', 99)
+INSERT INTO public.reserve_items (id, office_id, name, calc_type, fixed_amount, fixed_rate, transfer_in_month_type, transfer_in_day, transfer_out_month_type, transfer_out_day, initial_balance) VALUES
+('77777777-7777-7777-7777-777777777777', '22222222-2222-2222-2222-222222222222', '工賃変動積立金', 'fixed_amount', 1000.00, 0.00, 'next', 99, 'next', 99, 0.00),
+('77777777-7777-7777-7777-777777777778', '22222222-2222-2222-2222-222222222222', '設備等修繕維持積立金', 'fixed_amount', 500.00, 0.00, 'next', 99, 'next', 99, 0.00),
+('77777777-3333-7777-7777-777777777777', '33333333-3333-3333-3333-333333333333', '工賃変動積立金', 'fixed_amount', 2000.00, 0.00, 'next', 99, 'next', 99, 0.00),
+('77777777-3333-7777-7777-777777777778', '33333333-3333-3333-3333-333333333333', '設備等修繕維持積立金', 'fixed_amount', 500.00, 0.00, 'next', 99, 'next', 99, 0.00),
+('77777777-4444-7777-7777-777777777777', '44444444-4444-4444-4444-444444444444', '工賃変動積立金', 'fixed_amount', 3000.00, 0.00, 'next', 99, 'next', 99, 0.00),
+('77777777-4444-7777-7777-777777777778', '44444444-4444-4444-4444-444444444444', '設備等修繕維持積立金', 'fixed_amount', 2500.00, 0.00, 'next', 99, 'next', 99, 0.00)
 ON CONFLICT (id) DO UPDATE SET
   calc_type = EXCLUDED.calc_type,
   fixed_amount = EXCLUDED.fixed_amount,
@@ -443,7 +443,8 @@ ON CONFLICT (id) DO UPDATE SET
   transfer_in_month_type = EXCLUDED.transfer_in_month_type,
   transfer_in_day = EXCLUDED.transfer_in_day,
   transfer_out_month_type = EXCLUDED.transfer_out_month_type,
-  transfer_out_day = EXCLUDED.transfer_out_day;
+  transfer_out_day = EXCLUDED.transfer_out_day,
+  initial_balance = EXCLUDED.initial_balance;
 
 -- 5. 職員マスタ (staffs)
 INSERT INTO public.staffs (id, user_id, code, name, yomigana) VALUES

@@ -28,6 +28,9 @@ export function CalculationFormulaPage() {
           gap: 'var(--space-2)'
         }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)' }}>
+            {TABLE_COLUMNS.TOTAL_UNITS} ＝ {TABLE_COLUMNS.BASE_REWARD} ＋ {TABLE_COLUMNS.ADDITION_TOTAL}
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)' }}>
             {TABLE_COLUMNS.TOTAL_COST} ＝ ⌊ {TABLE_COLUMNS.TOTAL_UNITS} × {TABLE_COLUMNS.REGIONAL_UNIT_PRICE} ⌋（円未満切捨て）
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-body)', fontWeight: 'var(--weight-heading)' }}>
@@ -51,6 +54,99 @@ export function CalculationFormulaPage() {
           color: 'var(--color-text-main)',
           fontSize: 'var(--text-body)'
         }}>
+          <li>
+            <strong>{TABLE_COLUMNS.TOTAL_UNITS}</strong>:
+            <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
+              {TABLE_COLUMNS.TOTAL_UNITS} ＝ {TABLE_COLUMNS.BASE_REWARD} ＋ {TABLE_COLUMNS.ADDITION_TOTAL}
+            </div>
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
+              利用日数に応じた基本報酬単位数と各種加算・減算単位数の合計。
+            </div>
+            <div style={{ marginTop: 'var(--space-2)' }}>
+              <table className="inventory-table auto-height-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '15%' }}>区分</th>
+                    <th style={{ width: '25%' }}>項目名</th>
+                    <th style={{ width: '12%' }}>{TABLE_COLUMNS.OCCURRENCE_TYPE}</th>
+                    <th style={{ width: '25%' }}>算定基準・単位数</th>
+                    <th style={{ width: '23%' }}>{TABLE_COLUMNS.CALCULATION_METHOD}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>{TABLE_COLUMNS.BASE_REWARD}</strong></td>
+                    <td>就労継続支援B型サービス費等</td>
+                    <td>日次</td>
+                    <td>定員規模・人員配置（7.5:1 / 10:1等）・平均工賃実績区分（例: 329〜584単位）</td>
+                    <td>1日あたり公定基本単位数 × {TABLE_COLUMNS.ATTENDANCE_DAYS}</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={6}><strong>{TABLE_COLUMNS.ADDITION}</strong></td>
+                    <td>食事提供体制加算</td>
+                    <td>日次</td>
+                    <td>30単位 / 回</td>
+                    <td>設定単価 × 昼食等提供実績回数</td>
+                  </tr>
+                  <tr>
+                    <td>送迎加算</td>
+                    <td>日次</td>
+                    <td>片道 10単位 / 回（同一敷地内 7単位）</td>
+                    <td>設定単価 × 送迎実績回数</td>
+                  </tr>
+                  <tr>
+                    <td>目標工賃達成指導員配置加算</td>
+                    <td>日次</td>
+                    <td>16〜45単位 / 日</td>
+                    <td>設定単価 × {TABLE_COLUMNS.ATTENDANCE_DAYS}</td>
+                  </tr>
+                  <tr>
+                    <td>欠席時対応加算</td>
+                    <td>日次</td>
+                    <td>94単位 / 回（月4回上限）</td>
+                    <td>設定単価 × 相談援助等実績日数</td>
+                  </tr>
+                  <tr>
+                    <td>福祉専門職員配置等加算</td>
+                    <td>日次</td>
+                    <td>6〜15単位 / 日（I: 15単位、II: 10単位、III: 6単位）</td>
+                    <td>設定単価 × {TABLE_COLUMNS.ATTENDANCE_DAYS}</td>
+                  </tr>
+                  <tr>
+                    <td>福祉・介護職員等処遇改善加算</td>
+                    <td>月次</td>
+                    <td>所定率（加算I: 9.3%、加算II: 7.0%等）</td>
+                    <td>月間総報酬単位数 × 加算率</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={4}><strong>{TABLE_COLUMNS.SUBTRACTION}</strong></td>
+                    <td>定員超過減算</td>
+                    <td>月次</td>
+                    <td>所定単位数 × 30%減算</td>
+                    <td>利用定員超過基準に該当する場合に減算</td>
+                  </tr>
+                  <tr>
+                    <td>人員基準欠如減算</td>
+                    <td>月次</td>
+                    <td>所定単位数 × 30%減算（3月以上欠如は50%）</td>
+                    <td>従業者の員数不足基準に該当する場合に減算</td>
+                  </tr>
+                  <tr>
+                    <td>サービス管理責任者欠如減算</td>
+                    <td>月次</td>
+                    <td>所定単位数 × 30%減算（3月以上欠如は50%）</td>
+                    <td>サビ管欠如基準に該当する場合に減算</td>
+                  </tr>
+                  <tr>
+                    <td>個別支援計画未作成減算</td>
+                    <td>月次</td>
+                    <td>所定単位数 × 30%減算（3月以上未作成は50%）</td>
+                    <td>計画未作成・見直し未実施の場合に減算</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
           <li>
             <strong>{TABLE_COLUMNS.REGIONAL_UNIT_PRICE}</strong>:
             <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
@@ -78,15 +174,6 @@ export function CalculationFormulaPage() {
                   </tr>
                 </tbody>
               </table>
-            </div>
-          </li>
-          <li>
-            <strong>{TABLE_COLUMNS.TOTAL_UNITS}</strong>:
-            <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
-              {TABLE_COLUMNS.TOTAL_UNITS} ＝ {TABLE_COLUMNS.BASE_REWARD} ＋ {TABLE_COLUMNS.ADDITION_TOTAL}
-            </div>
-            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
-              利用日数に応じた基本報酬単位数と各種加算・減算単位数の合計。
             </div>
           </li>
           <li>

@@ -110,7 +110,7 @@ export function CalculationFormulaPage() {
         </ul>
       </section>
 
-      {/* 2. 工賃　A（基本工賃、インセンティブ、加算手当） */}
+      {/* 2. 工賃（基本工賃、インセンティブ、加算手当） */}
       <section className="dashboard-panel">
         <h3 style={{
           fontSize: 'var(--text-heading-3)',
@@ -208,7 +208,7 @@ export function CalculationFormulaPage() {
         </ul>
       </section>
 
-      {/* 3. 控除　B（サービス利用料、実費控除）および 差額　A-B */}
+      {/* 3. 控除（サービス利用料、実費控除）および 差額 */}
       <section className="dashboard-panel">
         <h3 style={{
           fontSize: 'var(--text-heading-3)',

@@ -60,7 +60,85 @@ export function CalculationFormulaPage() {
               {TABLE_COLUMNS.TOTAL_UNITS} ＝ {TABLE_COLUMNS.BASE_REWARD} ＋ {TABLE_COLUMNS.ADDITION_TOTAL}
             </div>
             <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
-              利用日数に応じた基本報酬単位数と各種加算・減算単位数の合計。
+              {TABLE_COLUMNS.ATTENDANCE_DAYS}に応じた基本報酬単位数と各種加算・減算単位数の合計。
+            </div>
+          </li>
+          <li>
+            <strong>{TABLE_COLUMNS.BASE_REWARD}（基本報酬の判定）</strong>:
+            <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
+              {TABLE_COLUMNS.BASE_REWARD} ＝ 判定基本単位数（日額） × {TABLE_COLUMNS.ATTENDANCE_DAYS}
+            </div>
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
+              事業所の<strong>{TABLE_COLUMNS.CAPACITY_TIER}</strong>、<strong>{TABLE_COLUMNS.STAFFING_RATIO}</strong>、および前年度実績に基づく<strong>{TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER}</strong>の3要素から公定日額単位数を判定。
+            </div>
+            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
+              ※ 前年度平均工賃月額 ＝ 前年度の工賃支払総額 ÷ 前年度の各月の延べ利用者の合計（年間開所実績による算定）
+            </div>
+            <div style={{ marginTop: 'var(--space-2)' }}>
+              <table className="inventory-table auto-height-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '15%' }}>{TABLE_COLUMNS.CAPACITY_TIER}</th>
+                    <th style={{ width: '37%' }}>{TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER}（前年度平均工賃月額実績）</th>
+                    <th style={{ width: '24%', textAlign: 'right' }}>人員配置 7.5:1</th>
+                    <th style={{ width: '24%', textAlign: 'right' }}>人員配置 10:1</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowSpan={9}><strong>20人以下</strong></td>
+                    <td>4万5千円以上</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>584 単位 / 日</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>520 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>4万円以上4万5千円未満</td>
+                    <td style={{ textAlign: 'right' }}>554 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>490 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>3万5千円以上4万円未満</td>
+                    <td style={{ textAlign: 'right' }}>531 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>467 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>3万円以上3万5千円未満</td>
+                    <td style={{ textAlign: 'right' }}>508 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>444 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>2万5千円以上3万円未満</td>
+                    <td style={{ textAlign: 'right' }}>485 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>421 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>2万円以上2万5千円未満</td>
+                    <td style={{ textAlign: 'right' }}>462 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>398 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>1万5千円以上2万円未満</td>
+                    <td style={{ textAlign: 'right' }}>439 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>375 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>1万円以上1万5千円未満</td>
+                    <td style={{ textAlign: 'right' }}>416 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>352 単位 / 日</td>
+                  </tr>
+                  <tr>
+                    <td>1万円未満</td>
+                    <td style={{ textAlign: 'right' }}>393 単位 / 日</td>
+                    <td style={{ textAlign: 'right' }}>329 単位 / 日</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </li>
+          <li>
+            <strong>加算・減算項目（{TABLE_COLUMNS.ADDITION}・{TABLE_COLUMNS.SUBTRACTION}）</strong>:
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
+              事業所の届出体制および日々の利用・支援実績に応じて算定される加算、および基準未達時に適用される減算の一覧。
             </div>
             <div style={{ marginTop: 'var(--space-2)' }}>
               <table className="inventory-table auto-height-table">
@@ -74,13 +152,6 @@ export function CalculationFormulaPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td><strong>{TABLE_COLUMNS.BASE_REWARD}</strong></td>
-                    <td>就労継続支援B型サービス費等</td>
-                    <td>日次</td>
-                    <td>定員規模・人員配置（7.5:1 / 10:1等）・平均工賃実績区分（例: 329〜584単位）</td>
-                    <td>1日あたり公定基本単位数 × {TABLE_COLUMNS.ATTENDANCE_DAYS}</td>
-                  </tr>
                   <tr>
                     <td rowSpan={6}><strong>{TABLE_COLUMNS.ADDITION}</strong></td>
                     <td>食事提供体制加算</td>

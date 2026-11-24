@@ -71,65 +71,175 @@ export function CalculationFormulaPage() {
             <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
               事業所の<strong>{TABLE_COLUMNS.CAPACITY_TIER}</strong>、<strong>{TABLE_COLUMNS.STAFFING_RATIO}</strong>、および前年度実績に基づく<strong>{TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER}</strong>の3要素から公定日額単位数を判定。
             </div>
-            <div style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', marginTop: 'var(--space-1)' }}>
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)', fontWeight: 'var(--weight-heading)' }}>
               ※ 前年度平均工賃月額 ＝ 前年度の工賃支払総額 ÷ 前年度の各月の延べ利用者の合計（年間開所実績による算定）
             </div>
             <div style={{ marginTop: 'var(--space-2)' }}>
               <table className="inventory-table auto-height-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '15%' }}>{TABLE_COLUMNS.CAPACITY_TIER}</th>
-                    <th style={{ width: '37%' }}>{TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER}（前年度平均工賃月額実績）</th>
-                    <th style={{ width: '24%', textAlign: 'right' }}>人員配置 7.5:1</th>
-                    <th style={{ width: '24%', textAlign: 'right' }}>人員配置 10:1</th>
+                    <th style={{ width: '26%' }}>{TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER}（前年度工賃実績）</th>
+                    <th style={{ width: '12%' }}>{TABLE_COLUMNS.STAFFING_RATIO}</th>
+                    <th style={{ width: '12%', textAlign: 'right' }}>20人以下</th>
+                    <th style={{ width: '12%', textAlign: 'right' }}>21〜40人</th>
+                    <th style={{ width: '13%', textAlign: 'right' }}>41〜60人</th>
+                    <th style={{ width: '12%', textAlign: 'right' }}>61〜80人</th>
+                    <th style={{ width: '13%', textAlign: 'right' }}>81人以上</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td rowSpan={9}><strong>20人以下</strong></td>
-                    <td>4万5千円以上</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>584 単位 / 日</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>520 単位 / 日</td>
+                    <td rowSpan={2}><strong>4万5千円以上</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>584 単位</td>
+                    <td style={{ textAlign: 'right' }}>540 単位</td>
+                    <td style={{ textAlign: 'right' }}>504 単位</td>
+                    <td style={{ textAlign: 'right' }}>486 単位</td>
+                    <td style={{ textAlign: 'right' }}>472 単位</td>
                   </tr>
                   <tr>
-                    <td>4万円以上4万5千円未満</td>
-                    <td style={{ textAlign: 'right' }}>554 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>490 単位 / 日</td>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right', fontWeight: 'var(--weight-heading)' }}>520 単位</td>
+                    <td style={{ textAlign: 'right' }}>476 単位</td>
+                    <td style={{ textAlign: 'right' }}>440 単位</td>
+                    <td style={{ textAlign: 'right' }}>422 単位</td>
+                    <td style={{ textAlign: 'right' }}>408 単位</td>
                   </tr>
                   <tr>
-                    <td>3万5千円以上4万円未満</td>
-                    <td style={{ textAlign: 'right' }}>531 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>467 単位 / 日</td>
+                    <td rowSpan={2}><strong>4万円以上4万5千円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>554 単位</td>
+                    <td style={{ textAlign: 'right' }}>510 単位</td>
+                    <td style={{ textAlign: 'right' }}>474 単位</td>
+                    <td style={{ textAlign: 'right' }}>456 単位</td>
+                    <td style={{ textAlign: 'right' }}>442 単位</td>
                   </tr>
                   <tr>
-                    <td>3万円以上3万5千円未満</td>
-                    <td style={{ textAlign: 'right' }}>508 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>444 単位 / 日</td>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>490 単位</td>
+                    <td style={{ textAlign: 'right' }}>446 単位</td>
+                    <td style={{ textAlign: 'right' }}>410 単位</td>
+                    <td style={{ textAlign: 'right' }}>392 単位</td>
+                    <td style={{ textAlign: 'right' }}>378 単位</td>
                   </tr>
                   <tr>
-                    <td>2万5千円以上3万円未満</td>
-                    <td style={{ textAlign: 'right' }}>485 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>421 単位 / 日</td>
+                    <td rowSpan={2}><strong>3万5千円以上4万円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>531 単位</td>
+                    <td style={{ textAlign: 'right' }}>487 単位</td>
+                    <td style={{ textAlign: 'right' }}>451 単位</td>
+                    <td style={{ textAlign: 'right' }}>433 単位</td>
+                    <td style={{ textAlign: 'right' }}>419 単位</td>
                   </tr>
                   <tr>
-                    <td>2万円以上2万5千円未満</td>
-                    <td style={{ textAlign: 'right' }}>462 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>398 単位 / 日</td>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>467 単位</td>
+                    <td style={{ textAlign: 'right' }}>423 単位</td>
+                    <td style={{ textAlign: 'right' }}>387 単位</td>
+                    <td style={{ textAlign: 'right' }}>369 単位</td>
+                    <td style={{ textAlign: 'right' }}>355 単位</td>
                   </tr>
                   <tr>
-                    <td>1万5千円以上2万円未満</td>
-                    <td style={{ textAlign: 'right' }}>439 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>375 単位 / 日</td>
+                    <td rowSpan={2}><strong>3万円以上3万5千円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>508 単位</td>
+                    <td style={{ textAlign: 'right' }}>464 単位</td>
+                    <td style={{ textAlign: 'right' }}>428 単位</td>
+                    <td style={{ textAlign: 'right' }}>410 単位</td>
+                    <td style={{ textAlign: 'right' }}>396 単位</td>
                   </tr>
                   <tr>
-                    <td>1万円以上1万5千円未満</td>
-                    <td style={{ textAlign: 'right' }}>416 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>352 単位 / 日</td>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>444 単位</td>
+                    <td style={{ textAlign: 'right' }}>400 単位</td>
+                    <td style={{ textAlign: 'right' }}>364 単位</td>
+                    <td style={{ textAlign: 'right' }}>346 単位</td>
+                    <td style={{ textAlign: 'right' }}>332 単位</td>
                   </tr>
                   <tr>
-                    <td>1万円未満</td>
-                    <td style={{ textAlign: 'right' }}>393 単位 / 日</td>
-                    <td style={{ textAlign: 'right' }}>329 単位 / 日</td>
+                    <td rowSpan={2}><strong>2万5千円以上3万円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>485 単位</td>
+                    <td style={{ textAlign: 'right' }}>441 単位</td>
+                    <td style={{ textAlign: 'right' }}>405 単位</td>
+                    <td style={{ textAlign: 'right' }}>387 単位</td>
+                    <td style={{ textAlign: 'right' }}>373 単位</td>
+                  </tr>
+                  <tr>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>421 単位</td>
+                    <td style={{ textAlign: 'right' }}>377 単位</td>
+                    <td style={{ textAlign: 'right' }}>341 単位</td>
+                    <td style={{ textAlign: 'right' }}>323 単位</td>
+                    <td style={{ textAlign: 'right' }}>309 単位</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={2}><strong>2万円以上2万5千円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>462 単位</td>
+                    <td style={{ textAlign: 'right' }}>418 単位</td>
+                    <td style={{ textAlign: 'right' }}>382 単位</td>
+                    <td style={{ textAlign: 'right' }}>364 単位</td>
+                    <td style={{ textAlign: 'right' }}>350 単位</td>
+                  </tr>
+                  <tr>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>398 単位</td>
+                    <td style={{ textAlign: 'right' }}>354 単位</td>
+                    <td style={{ textAlign: 'right' }}>318 単位</td>
+                    <td style={{ textAlign: 'right' }}>300 単位</td>
+                    <td style={{ textAlign: 'right' }}>286 単位</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={2}><strong>1万5千円以上2万円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>439 単位</td>
+                    <td style={{ textAlign: 'right' }}>395 単位</td>
+                    <td style={{ textAlign: 'right' }}>359 単位</td>
+                    <td style={{ textAlign: 'right' }}>341 単位</td>
+                    <td style={{ textAlign: 'right' }}>327 単位</td>
+                  </tr>
+                  <tr>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>375 単位</td>
+                    <td style={{ textAlign: 'right' }}>331 単位</td>
+                    <td style={{ textAlign: 'right' }}>295 単位</td>
+                    <td style={{ textAlign: 'right' }}>277 単位</td>
+                    <td style={{ textAlign: 'right' }}>263 単位</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={2}><strong>1万円以上1万5千円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>416 単位</td>
+                    <td style={{ textAlign: 'right' }}>372 単位</td>
+                    <td style={{ textAlign: 'right' }}>336 単位</td>
+                    <td style={{ textAlign: 'right' }}>318 単位</td>
+                    <td style={{ textAlign: 'right' }}>304 単位</td>
+                  </tr>
+                  <tr>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>352 単位</td>
+                    <td style={{ textAlign: 'right' }}>308 単位</td>
+                    <td style={{ textAlign: 'right' }}>272 単位</td>
+                    <td style={{ textAlign: 'right' }}>254 単位</td>
+                    <td style={{ textAlign: 'right' }}>240 単位</td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={2}><strong>1万円未満</strong></td>
+                    <td>7.5:1</td>
+                    <td style={{ textAlign: 'right' }}>393 単位</td>
+                    <td style={{ textAlign: 'right' }}>349 単位</td>
+                    <td style={{ textAlign: 'right' }}>313 単位</td>
+                    <td style={{ textAlign: 'right' }}>295 単位</td>
+                    <td style={{ textAlign: 'right' }}>281 単位</td>
+                  </tr>
+                  <tr>
+                    <td>10:1</td>
+                    <td style={{ textAlign: 'right' }}>329 単位</td>
+                    <td style={{ textAlign: 'right' }}>285 単位</td>
+                    <td style={{ textAlign: 'right' }}>249 単位</td>
+                    <td style={{ textAlign: 'right' }}>231 単位</td>
+                    <td style={{ textAlign: 'right' }}>217 単位</td>
                   </tr>
                 </tbody>
               </table>

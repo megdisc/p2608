@@ -59,6 +59,26 @@ export function CalculationFormulaPage() {
             <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
               事業所の所在地級数および支援種別に基づき決定。
             </div>
+            <div style={{ marginTop: 'var(--space-2)' }}>
+              <table className="inventory-table auto-height-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '40%' }}>地域区分（級地）</th>
+                    <th style={{ width: '60%' }}>{TABLE_COLUMNS.CALCULATION_METHOD}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>1級地 〜 7級地</strong></td>
+                    <td>10円 ＋ 10円 × 所在地級地の上乗せ割合 × 支援種別人件費割合</td>
+                  </tr>
+                  <tr>
+                    <td><strong>その他地域</strong></td>
+                    <td>10円（基準単価・上乗せなし）</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </li>
           <li>
             <strong>{TABLE_COLUMNS.TOTAL_UNITS}</strong>:
@@ -72,12 +92,18 @@ export function CalculationFormulaPage() {
           <li>
             <strong>{TABLE_COLUMNS.SERVICE_FEE}</strong>:
             <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
+              {TABLE_COLUMNS.SERVICE_FEE} ＝ min( ⌊ {TABLE_COLUMNS.TOTAL_COST} × 10% ⌋, {TABLE_COLUMNS.COPAYMENT_LIMIT} )
+            </div>
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
               法定1割負担額と受給者証記載の{TABLE_COLUMNS.COPAYMENT_LIMIT}のうち、いずれか低い額。
             </div>
           </li>
           <li>
             <strong>{TABLE_COLUMNS.BENEFIT_BILLING}</strong>:
             <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
+              {TABLE_COLUMNS.BENEFIT_BILLING} ＝ {TABLE_COLUMNS.TOTAL_COST} － {TABLE_COLUMNS.SERVICE_FEE}
+            </div>
+            <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
               {TABLE_COLUMNS.TOTAL_COST}から{TABLE_COLUMNS.SERVICE_FEE}を控除した額（公費請求額）。
             </div>
           </li>
@@ -135,7 +161,7 @@ export function CalculationFormulaPage() {
           <li>
             <strong>{TABLE_COLUMNS.SUBJECT_INCENTIVE_ITEM}</strong>:
             <div style={{ marginTop: 'var(--space-1)', color: 'var(--color-text-main)' }}>
-              {TABLE_COLUMNS.SUBJECT_INCENTIVE_ITEM} ＝ ∑ {WORDS_PROJECT.REWARD_ALLOCATION_AMOUNT}
+              {TABLE_COLUMNS.SUBJECT_INCENTIVE_ITEM} ＝ ∑ 報酬配分
             </div>
             <div style={{ fontSize: 'var(--text-body)', color: 'var(--color-text-main)', marginTop: 'var(--space-1)' }}>
               案件完了時の収益分配による各タスク配分額を集計。
@@ -150,29 +176,29 @@ export function CalculationFormulaPage() {
               <table className="inventory-table auto-height-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '25%' }}>{TABLE_COLUMNS.ALLOWANCE_NAME}</th>
+                    <th style={{ width: '25%' }}>手当区分</th>
                     <th style={{ width: '15%' }}>{TABLE_COLUMNS.OCCURRENCE_TYPE}</th>
-                    <th style={{ width: '35%' }}>{TABLE_COLUMNS.CALC_TRIGGER_BASIS}・判定条件</th>
-                    <th style={{ width: '25%' }}>{TABLE_COLUMNS.DEFAULT_UNIT_PRICE}</th>
+                    <th style={{ width: '30%' }}>判定基準</th>
+                    <th style={{ width: '30%' }}>算出方法</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>精勤手当</strong></td>
-                    <td>月次</td>
-                    <td>{WORDS_WELFARE_SERVICE.ATTENDANCE_DAYS} ≧ 15日</td>
-                    <td>3,000円 / 月</td>
+                    <td><strong>日次手当</strong></td>
+                    <td>日次</td>
+                    <td>日々の利用実績（{WORDS_TIME.WORK_TIME}・従事実績等）</td>
+                    <td>設定単価 × 実績数（時間・日数）</td>
                   </tr>
                   <tr>
-                    <td><strong>皆勤手当</strong></td>
+                    <td><strong>月次手当</strong></td>
                     <td>月次</td>
-                    <td>{WORDS_WELFARE_SERVICE.ATTENDANCE_DAYS} ≧ 20日</td>
-                    <td>2,000円 / 月</td>
+                    <td>月間実績（{WORDS_WELFARE_SERVICE.ATTENDANCE_DAYS}・月間作業時間等の閾値判定）</td>
+                    <td>月額固定額</td>
                   </tr>
                   <tr>
                     <td><strong>その他手当</strong></td>
                     <td>日次 / 月次</td>
-                    <td>条件合致判定</td>
+                    <td>個別設定条件への合致判定</td>
                     <td>設定単価または固定額</td>
                   </tr>
                 </tbody>
@@ -239,29 +265,35 @@ export function CalculationFormulaPage() {
               <table className="inventory-table auto-height-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '25%' }}>{TABLE_COLUMNS.DEDUCTION_NAME}</th>
+                    <th style={{ width: '25%' }}>控除区分</th>
                     <th style={{ width: '15%' }}>{TABLE_COLUMNS.OCCURRENCE_TYPE}</th>
-                    <th style={{ width: '35%' }}>{TABLE_COLUMNS.CALC_TRIGGER_BASIS}・実績基準</th>
-                    <th style={{ width: '25%' }}>{TABLE_COLUMNS.DEFAULT_UNIT_PRICE}</th>
+                    <th style={{ width: '30%' }}>実績基準</th>
+                    <th style={{ width: '30%' }}>算出方法</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>昼食代</strong></td>
+                    <td><strong>食事提供費（昼食代等）</strong></td>
                     <td>日次</td>
-                    <td>{WORDS_WELFARE_SERVICE.MEAL_COUNT}</td>
-                    <td>1食 200円 × 提供回数</td>
+                    <td>{WORDS_WELFARE_SERVICE.MEAL_COUNT}（提供実績）</td>
+                    <td>設定単価 × 提供回数</td>
                   </tr>
                   <tr>
-                    <td><strong>飲料設備代</strong></td>
+                    <td><strong>通所連動実費（飲料設備代等）</strong></td>
                     <td>日次</td>
                     <td>{WORDS_WELFARE_SERVICE.ATTENDANCE_DAYS}</td>
-                    <td>1日 30円 × 通所日数</td>
+                    <td>設定単価 × 通所日数</td>
+                  </tr>
+                  <tr>
+                    <td><strong>月次固定実費</strong></td>
+                    <td>月次</td>
+                    <td>月次利用実績</td>
+                    <td>月額固定額</td>
                   </tr>
                   <tr>
                     <td><strong>その他実費</strong></td>
                     <td>日次 / 月次</td>
-                    <td>利用実績</td>
+                    <td>個別利用実績</td>
                     <td>設定単価または固定額</td>
                   </tr>
                 </tbody>
@@ -319,20 +351,17 @@ export function CalculationFormulaPage() {
               <table className="inventory-table auto-height-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '25%' }}>科目名</th>
-                    <th style={{ width: '45%' }}>目的</th>
-                    <th style={{ width: '30%' }}>{TABLE_COLUMNS.CALCULATION_METHOD}</th>
+                    <th style={{ width: '40%' }}>科目名</th>
+                    <th style={{ width: '60%' }}>{TABLE_COLUMNS.CALCULATION_METHOD}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td><strong>{TABLE_COLUMNS.SUBJECT_RESERVE_WAGE}</strong></td>
-                    <td>将来の収益変動による工賃低下を防ぎ、安定的な工賃支給を確保。</td>
                     <td>{TABLE_COLUMNS.FIXED_AMOUNT} または {TABLE_COLUMNS.FIXED_RATE}</td>
                   </tr>
                   <tr>
                     <td><strong>{TABLE_COLUMNS.SUBJECT_RESERVE_EQUIPMENT}</strong></td>
-                    <td>生産活動設備・備品の修繕、更新、維持管理に備える。</td>
                     <td>{TABLE_COLUMNS.FIXED_AMOUNT} または {TABLE_COLUMNS.FIXED_RATE}</td>
                   </tr>
                 </tbody>

@@ -298,7 +298,7 @@ export function DashboardPage() {
   return (
     <div className="dashboard-container">
       {/* ページヘッダー */}
-      <div>
+      <div className="page-header">
         <h2 className="page-title">
           {PAGE_NAMES.SCREEN_DASHBOARD}
         </h2>

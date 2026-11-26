@@ -36,6 +36,10 @@ export function BaseRewardItemPage() {
       key: 'staffing_ratio',
       header: TABLE_COLUMNS.STAFFING_RATIO,
       sortable: true,
+      render: (item: BaseRewardItem) => {
+        if (!item.staffing_ratio) return '-';
+        return item.staffing_ratio.endsWith('配置') ? item.staffing_ratio : `${item.staffing_ratio}配置`;
+      },
     },
     {
       key: 'wage_achievement_tier',

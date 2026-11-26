@@ -31,13 +31,15 @@ export function StaffingRatioTierPage() {
       key: 'name',
       header: TABLE_COLUMNS.STAFFING_RATIO,
       sortable: true,
-      style: { minWidth: '160px', fontWeight: 'bold' },
+      className: 'bg-base-data',
+      style: { minWidth: '160px', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'ratio_value',
       header: '配置比率',
       sortable: true,
-      style: { width: '130px', textAlign: 'right' },
+      className: 'bg-base-data',
+      style: { width: '130px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: StaffingRatioTierItem) => `${item.ratio_value.toFixed(1)} : 1`,
     },
     {

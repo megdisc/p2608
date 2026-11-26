@@ -30,7 +30,8 @@ export function RegionalGradeLocationPage() {
       key: 'grade',
       header: TABLE_COLUMNS.REGIONAL_GRADE,
       sortable: true,
-      style: { width: '140px', textAlign: 'center' },
+      className: 'bg-base-data',
+      style: { width: '140px', textAlign: 'center', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'valid_from',

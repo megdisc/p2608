@@ -13,7 +13,6 @@ import { RegionalGradeLocationPage } from './RegionalGradeLocationPage';
 import { CapacityTierPage } from './CapacityTierPage';
 import { StaffingRatioTierPage } from './StaffingRatioTierPage';
 import { WageAchievementTierPage } from './WageAchievementTierPage';
-import { BaseRewardAllocationPage } from './BaseRewardAllocationPage';
 
 export function ScreenWelfarePage() {
   const navContext = useNavigation();
@@ -43,8 +42,6 @@ export function ScreenWelfarePage() {
         return <StaffingRatioTierPage />;
       case 'wageAchievementTier':
         return <WageAchievementTierPage />;
-      case 'baseRewardAllocation':
-        return <BaseRewardAllocationPage />;
       default:
         return <ServiceTypePage />;
     }

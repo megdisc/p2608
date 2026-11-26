@@ -44,8 +44,8 @@ export function BaseRewardItemPage() {
       key: 'base_units',
       header: TABLE_COLUMNS.BASE_UNITS,
       sortable: true,
-      className: 'quantity',
-      style: { width: '130px', textAlign: 'right', fontWeight: 'bold' },
+      className: 'quantity bg-base-data',
+      style: { width: '130px', textAlign: 'right', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: BaseRewardItem) => <NumberDisplay value={item.base_units} unit=" 単位" />,
     },
     {

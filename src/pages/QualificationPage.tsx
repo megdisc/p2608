@@ -17,7 +17,7 @@ export function QualificationPage() {
 
   const columns: Column<QualificationItem>[] = [
     { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true },
-    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true },
+    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true, className: 'bg-base-data', style: { backgroundColor: 'var(--palette-yellow-300)' } },
     { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true },
     { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true },
     {

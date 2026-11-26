@@ -24,7 +24,6 @@ export * from './RegionalGradeLocationPage';
 export * from './CapacityTierPage';
 export * from './StaffingRatioTierPage';
 export * from './WageAchievementTierPage';
-export * from './BaseRewardAllocationPage';
 export * from './ScreenWelfarePage';
 export * from './DailyWorkRecordPage';
 export * from './ProgressRecordPage';

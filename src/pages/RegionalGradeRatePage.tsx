@@ -19,14 +19,15 @@ export function RegionalGradeRatePage() {
       key: 'grade',
       header: TABLE_COLUMNS.REGIONAL_GRADE,
       sortable: true,
-      style: { width: '140px', textAlign: 'center' },
+      className: 'bg-base-data',
+      style: { width: '140px', textAlign: 'center', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'premium_rate',
       header: TABLE_COLUMNS.PREMIUM_RATE,
       sortable: true,
-      className: 'quantity',
-      style: { width: '160px', textAlign: 'right', fontWeight: 'bold' },
+      className: 'quantity bg-base-data',
+      style: { width: '160px', textAlign: 'right', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: RegionalGradeRateItem) => {
         const rate = Number(item.premium_rate) || 0;
         return `${(rate * 100).toFixed(1)}%`;

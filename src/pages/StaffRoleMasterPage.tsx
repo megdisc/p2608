@@ -26,7 +26,8 @@ export function StaffRoleMasterPage() {
       key: 'name',
       header: TABLE_COLUMNS.STAFF_ROLE_NAME,
       sortable: true,
-      style: { minWidth: '160px' },
+      className: 'bg-base-data',
+      style: { minWidth: '160px', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'category',
@@ -38,7 +39,8 @@ export function StaffRoleMasterPage() {
       key: 'is_direct_care',
       header: TABLE_COLUMNS.IS_DIRECT_CARE,
       sortable: true,
-      style: { width: '100px', textAlign: 'center' },
+      className: 'bg-base-data',
+      style: { width: '100px', textAlign: 'center', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: StaffRoleTableItem) => (item.is_direct_care ? '○' : '-'),
     },
     {

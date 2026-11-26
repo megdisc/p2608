@@ -467,6 +467,10 @@ button {
   background-color: var(--color-bg-input-highlight);
 }
 
+.bg-base-data {
+  background-color: var(--palette-yellow-300) !important;
+}
+
 .bg-error-highlight {
   background-color: var(--color-bg-error-highlight);
 }

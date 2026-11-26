@@ -131,7 +131,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
             className={`nav-button ${[
               'screenWelfare', 'serviceType', 'baseReward', 'qualification', 'staffRole', 'rewardItem',
               'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
-              'capacityTier', 'staffingRatioTier', 'wageAchievementTier', 'baseRewardAllocation'
+              'capacityTier', 'staffingRatioTier', 'wageAchievementTier'
             ].includes(activeTab) ? 'active' : ''}`}
             onClick={() => setActiveTab('serviceType')}
           >

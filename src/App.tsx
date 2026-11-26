@@ -81,7 +81,7 @@ function AppContent() {
             ) : [
               'screenWelfare', 'serviceType', 'baseReward', 'qualification', 'staffRole', 'rewardItem',
               'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
-              'capacityTier', 'staffingRatioTier', 'wageAchievementTier', 'baseRewardAllocation'
+              'capacityTier', 'staffingRatioTier', 'wageAchievementTier'
             ].includes(activeTab) ? (
               <ScreenWelfarePage />
             ) : ['screenFacility', 'organization', 'office', 'serviceScheme', 'officeServiceType', 'officeReward'].includes(activeTab) ? (

@@ -31,7 +31,6 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'capacityTier', label: PAGE_NAMES.CAPACITY_TIER },
       { id: 'staffingRatioTier', label: PAGE_NAMES.STAFFING_RATIO_TIER },
       { id: 'wageAchievementTier', label: PAGE_NAMES.WAGE_ACHIEVEMENT_TIER },
-      { id: 'baseRewardAllocation', label: PAGE_NAMES.BASE_REWARD_ALLOCATION },
     ],
   },
   SCREEN_FACILITY: {
@@ -223,8 +222,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
     tabId === 'regionalGradeLocation' ||
     tabId === 'capacityTier' ||
     tabId === 'staffingRatioTier' ||
-    tabId === 'wageAchievementTier' ||
-    tabId === 'baseRewardAllocation'
+    tabId === 'wageAchievementTier'
   ) return SCREEN_CONFIGS.SCREEN_WELFARE;
   if (tabId === 'screenFacility') return SCREEN_CONFIGS.SCREEN_FACILITY;
   if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;

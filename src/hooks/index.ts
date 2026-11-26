@@ -16,7 +16,6 @@ export * from './useRegionalGradeLocations';
 export * from './useCapacityTiers';
 export * from './useStaffingRatioTiers';
 export * from './useWageAchievementTiers';
-export * from './useBaseRewardAllocations';
 
 export * from './useProjects';
 export * from './useAssigneeSummary';

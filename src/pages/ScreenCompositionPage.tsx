@@ -16,7 +16,7 @@ const getTabCategory = (tabId: string): string => {
     // 制度
     'serviceType', 'baseReward', 'rewardItem', 'qualification', 'staffRole',
     'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
-    'capacityTier', 'staffingRatioTier', 'wageAchievementTier', 'baseRewardAllocation',
+    'capacityTier', 'staffingRatioTier', 'wageAchievementTier',
     // 施設
     'organization', 'office', 'officeServiceType', 'officeReward',
     // 取引先
@@ -342,27 +342,6 @@ export function ScreenCompositionPage() {
         { name: 'display_order', desc: '表示並び順', status: 'added' },
         { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
         { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '1. 制度',
-      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      physicalName: 'base_reward_allocations',
-      tableType: '従属マスタ',
-      logicalName: '基本報酬割当',
-      description: '法令・報酬告示に基づく利用定員規模区分、人員配置基準区分、平均工賃月額達成区分を複合結合し、報酬告示で定められた1日あたりの算定基本単位数を紐付ける割当マスターデータ。',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '基本報酬割当ID（PK）', status: 'added' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
-        { name: 'capacity_tier_id', desc: '利用定員規模区分ID（FK -> capacity_tiers.id）', status: 'added' },
-        { name: 'staffing_ratio_tier_id', desc: '人員配置基準区分ID（FK -> staffing_ratio_tiers.id）', status: 'added' },
-        { name: 'wage_achievement_tier_id', desc: '平均工賃月額達成区分ID（FK -> wage_achievement_tiers.id）', status: 'added' },
-        { name: 'base_units', desc: '基本単位数（1日あたりの公定算定単位数。例: 584）', status: 'added' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による終了日。NULL: 適用中）', status: 'added' },
         { name: 'created_at', desc: '作成日時', status: 'added' },
         { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]

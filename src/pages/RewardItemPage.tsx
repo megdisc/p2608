@@ -92,7 +92,9 @@ export function RewardItemPage() {
       key: 'name', 
       header: TABLE_COLUMNS.SERVICE_TYPE_NAME, 
       rowType: 'sub',
-      sortable: false 
+      sortable: false,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     { 
       key: 'item_category', 
@@ -131,13 +133,17 @@ export function RewardItemPage() {
       key: 'unit_value', 
       header: TABLE_COLUMNS.UNIT, 
       rowType: 'sub',
-      sortable: false 
+      sortable: false,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     { 
       key: 'calc_rate', 
       header: TABLE_COLUMNS.CALC_RATE_PERCENT, 
       rowType: 'sub',
-      sortable: false 
+      sortable: false,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     { 
       key: 'monthly_limit_count', 

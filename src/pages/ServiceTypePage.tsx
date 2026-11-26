@@ -26,14 +26,15 @@ export function ServiceTypePage() {
       key: 'name',
       header: TABLE_COLUMNS.SERVICE_TYPE_NAME,
       sortable: true,
-      style: { minWidth: '180px' },
+      className: 'bg-base-data',
+      style: { minWidth: '180px', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'personnel_cost_ratio',
       header: TABLE_COLUMNS.PERSONNEL_COST_RATIO,
       sortable: true,
-      className: 'quantity',
-      style: { width: '160px', textAlign: 'right' },
+      className: 'quantity bg-base-data',
+      style: { width: '160px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: ServiceTypeItem) => {
         if (item.personnel_cost_ratio === null || item.personnel_cost_ratio === undefined) {
           return '-';

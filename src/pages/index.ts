@@ -69,6 +69,8 @@ export * from './ScreenSchedulePage';
 export * from './ScreenWageSummaryPage';
 export * from './ReserveSummaryPage';
 export * from './ScreenAverageWagePage';
+export * from './ServiceProvisionSystemPage';
+export * from './ScreenServiceProvisionSystemPage';
 export * from './ScreenProductionBusinessPage';
 export * from './ScreenWelfareBusinessPage';
 export * from './ScreenReserveSummaryPage';

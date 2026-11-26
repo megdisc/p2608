@@ -45,4 +45,5 @@ export * from './useReserveSummary';
 export * from './useBaseRewards';
 export * from './useServiceBilling';
 export * from './useAverageWageSummary';
+export * from './useServiceProvisionSystem';
 

@@ -141,6 +141,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'averageWage', label: PAGE_NAMES.AVERAGE_WAGE_SUMMARY },
     ],
   },
+  SCREEN_SERVICE_PROVISION_SYSTEM: {
+    screenName: PAGE_NAMES.SCREEN_SERVICE_PROVISION_SYSTEM,
+    tabs: [
+      { id: 'serviceProvisionSystem', label: PAGE_NAMES.TAB_SERVICE_PROVISION_SYSTEM },
+    ],
+  },
   SCREEN_PRODUCTION_BUSINESS: {
     screenName: PAGE_NAMES.SCREEN_PRODUCTION_BUSINESS,
     tabs: [
@@ -203,6 +209,7 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenDailyReport' || tabId === 'staffAttendanceRecord' || tabId === 'dailyWorkRecord' || tabId === 'screenStaffDailyReport' || tabId === 'screenDailyWork') return SCREEN_CONFIGS.SCREEN_DAILY_REPORT;
   if (tabId === 'screenWageSummary' || tabId === 'wageSummary') return SCREEN_CONFIGS.SCREEN_WAGE_SUMMARY;
   if (tabId === 'screenAverageWage' || tabId === 'averageWage') return SCREEN_CONFIGS.SCREEN_AVERAGE_WAGE;
+  if (tabId === 'screenServiceProvisionSystem' || tabId === 'serviceProvisionSystem') return SCREEN_CONFIGS.SCREEN_SERVICE_PROVISION_SYSTEM;
   if (tabId === 'screenProductionBusiness' || tabId === 'financialSummary' || tabId === 'projectFinancialSummary' || tabId === 'financialRecord' || tabId === 'screenFinance') return SCREEN_CONFIGS.SCREEN_PRODUCTION_BUSINESS;
   if (tabId === 'screenWelfareBusiness' || tabId === 'welfareFinancialSummary') return SCREEN_CONFIGS.SCREEN_WELFARE_BUSINESS;
   if (tabId === 'screenReserveReport' || tabId === 'reserveSummary') return SCREEN_CONFIGS.SCREEN_RESERVE_REPORT;

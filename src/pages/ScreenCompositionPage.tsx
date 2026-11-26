@@ -59,6 +59,8 @@ const getTabCategory = (tabId: string): string => {
     'serviceBilling',
     // 平均工賃
     'averageWage',
+    // サービス提供体制
+    'serviceProvisionSystem', 'screenServiceProvisionSystem',
     // 就労支援事業
     'financialSummary', 'projectFinancialSummary',
     // 福祉事業

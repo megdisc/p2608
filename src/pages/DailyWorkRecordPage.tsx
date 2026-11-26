@@ -1,6 +1,6 @@
 import { DataPage, Input, Select, DateInput, type Column } from '../components';
 import { useEffect, useMemo, useCallback } from 'react';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, PLACEHOLDERS, WORDS_WELFARE_SERVICE } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, PLACEHOLDERS, WORDS_WELFARE_SERVICE, BADGE_LABELS } from '../constants';
 import { useAlert } from '../contexts';
 import { useDailyWorkRecords, type DailyFlatRecord, computeActualWorkHours } from '../hooks';
 
@@ -668,20 +668,20 @@ export function DailyWorkRecordPage(props: DailyWorkRecordPageProps = {}) {
     if (displayData.length === 0) {
       return (
         <span className="status-badge-neutral">
-          対象外
+          {BADGE_LABELS.EXEMPT}
         </span>
       );
     }
     if (isConfirmed) {
       return (
         <span className="status-badge-confirmed">
-          確定済
+          {BADGE_LABELS.CONFIRMED}
         </span>
       );
     }
     return (
-      <span className="status-badge-warning">
-        暫定
+      <span className="status-badge-unconfirmed">
+        {BADGE_LABELS.UNCONFIRMED}
       </span>
     );
   }, [displayData.length, isConfirmed]);

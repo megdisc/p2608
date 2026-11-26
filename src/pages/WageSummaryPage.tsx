@@ -391,8 +391,8 @@ export function WageSummaryPage() {
                 {BADGE_LABELS.CONFIRMED}
               </span>
             ) : (
-              <span className="status-badge-warning">
-                {BADGE_LABELS.PROVISIONAL}
+              <span className="status-badge-unconfirmed">
+                {BADGE_LABELS.UNCONFIRMED}
               </span>
             )}
           </div>

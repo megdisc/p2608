@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { DataPage, Input, type Column } from '../components';
-import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES } from '../constants';
+import { TABLE_COLUMNS, PAGE_NAMES, MESSAGES, BADGE_LABELS } from '../constants';
 import { useAlert } from '../contexts';
 import { useStaffAttendanceRecords, useDailyConfirmation, computeActualWorkHours } from '../hooks';
 import type { StaffAttendanceRecordRow } from '../types';
@@ -210,20 +210,20 @@ export function StaffAttendanceRecordPage(props: StaffAttendanceRecordPageProps 
     if (records.length === 0) {
       return (
         <span className="status-badge-neutral">
-          対象外
+          {BADGE_LABELS.EXEMPT}
         </span>
       );
     }
     if (isConfirmed) {
       return (
         <span className="status-badge-confirmed">
-          確定済
+          {BADGE_LABELS.CONFIRMED}
         </span>
       );
     }
     return (
-      <span className="status-badge-warning">
-        暫定
+      <span className="status-badge-unconfirmed">
+        {BADGE_LABELS.UNCONFIRMED}
       </span>
     );
   }, [records.length, isConfirmed]);

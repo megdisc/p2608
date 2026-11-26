@@ -15,6 +15,8 @@ export function ServiceTypePage() {
     });
   }, [fetchServiceTypes, showAlert]);
 
+  const isBType = (item: ServiceTypeItem) => item.name === '就労継続支援B型' || item.code === '21';
+
   const columns: Column<ServiceTypeItem>[] = [
     {
       key: 'code',
@@ -26,14 +28,19 @@ export function ServiceTypePage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_NAME,
       sortable: true,
       className: 'bg-base-data',
-      style: { backgroundColor: 'var(--palette-yellow-300)' },
+      style: (item: ServiceTypeItem) => ({
+        backgroundColor: isBType(item) ? 'var(--palette-yellow-300)' : 'transparent',
+      }),
     },
     {
       key: 'personnel_cost_ratio',
       header: TABLE_COLUMNS.PERSONNEL_COST_RATIO,
       sortable: true,
       className: 'quantity bg-base-data',
-      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
+      style: (item: ServiceTypeItem) => ({
+        textAlign: 'right',
+        backgroundColor: isBType(item) ? 'var(--palette-yellow-300)' : 'transparent',
+      }),
       render: (item: ServiceTypeItem) => {
         if (item.personnel_cost_ratio === null || item.personnel_cost_ratio === undefined) {
           return '-';
@@ -65,6 +72,7 @@ export function ServiceTypePage() {
       title="支援種別"
       data={items} 
       columns={columns} 
+      rowClassName={(item: ServiceTypeItem) => !isBType(item) ? 'row-muted' : undefined}
       initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている支援種別がありません" 
       hideHeader={true}

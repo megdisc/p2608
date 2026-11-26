@@ -471,6 +471,18 @@ button {
   background-color: var(--palette-yellow-300) !important;
 }
 
+/* 支援種別・加算減算でのB型以外の行（非アクティブ行）のスタイル */
+.row-muted,
+.row-muted td,
+.row-muted td * {
+  color: var(--color-text-muted) !important;
+}
+
+.row-muted td.bg-base-data,
+.row-muted .bg-base-data {
+  background-color: var(--color-bg-main) !important;
+}
+
 .bg-error-highlight {
   background-color: var(--color-bg-error-highlight);
 }

@@ -15,6 +15,7 @@ export type MonthlyServiceProvisionSystemDetail = {
   hasFullTimeDirectCare: boolean; // 常勤直接処遇職員が1名以上配置されているか
   capacity: number;           // 利用定員
   capacityExcessStatus: 'normal' | 'excess'; // 定員超過判定 ('normal': 正常, 'excess': 減算対象)
+  isConfirmed: boolean;       // 確定スナップショット済みか否か
 };
 
 export type AnnualServiceProvisionSystemRow = {
@@ -27,6 +28,7 @@ export type AnnualServiceProvisionSystemRow = {
   annualActualRatio: number;      // 年間実績人員配置比率
   annualCompliantTierName: string; // 年間適合人員配置基準区分
   capacity: number;
+  isConfirmed: boolean;
   monthlyDetails: MonthlyServiceProvisionSystemDetail[];
 };
 
@@ -62,13 +64,15 @@ export function useServiceProvisionSystem(officeId?: string) {
       let staffQuery = supabase.from('staff').select('id, employment_type, weekly_working_hours');
       let rolesQuery = supabase.from('staff_roles').select('code, name, is_direct_care');
       let officesQuery = supabase.from('offices').select('id, standard_weekly_hours');
-      let detailsQuery = supabase.from('office_service_type_setting_details').select('office_id, capacity, staffing_ratio');
+      let detailsQuery = supabase.from('office_service_type_setting_details').select('office_id, capacity');
+      let snapshotQuery = supabase.from('service_provision_system_snapshot').select('*');
 
       if (officeId && officeId !== 'all') {
         workQuery = workQuery.eq('office_id', officeId);
         attQuery = attQuery.eq('office_id', officeId);
         officesQuery = officesQuery.eq('id', officeId);
         detailsQuery = detailsQuery.eq('office_id', officeId);
+        snapshotQuery = snapshotQuery.eq('office_id', officeId);
       }
 
       const [
@@ -78,6 +82,7 @@ export function useServiceProvisionSystem(officeId?: string) {
         { data: roleList, error: rolesError },
         { data: officeList, error: officeError },
         { data: settingDetails, error: detailsError },
+        { data: snapshots, error: snapshotError },
       ] = await Promise.all([
         workQuery,
         attQuery,
@@ -85,6 +90,7 @@ export function useServiceProvisionSystem(officeId?: string) {
         rolesQuery,
         officesQuery,
         detailsQuery,
+        snapshotQuery,
       ]);
 
       if (workError) console.warn('member_work_records error:', workError);
@@ -93,30 +99,28 @@ export function useServiceProvisionSystem(officeId?: string) {
       if (rolesError) console.warn('staff_roles error:', rolesError);
       if (officeError) console.warn('offices error:', officeError);
       if (detailsError) console.warn('office_service_type_setting_details error:', detailsError);
+      if (snapshotError) console.warn('service_provision_system_snapshot error:', snapshotError);
 
-      // マップ作成
       const staffMap = new Map((staffList || []).map((s: { id: string; employment_type?: string; weekly_working_hours?: number }) => [s.id, s]));
       
-      // 直接処遇職員の職種コードセット（職業指導員・生活支援員）
       const directCareRoles = new Set(
         (roleList || [])
           .filter((r: { code: string; is_direct_care?: boolean }) => r.is_direct_care || r.code === '03' || r.code === '04')
           .map((r: { code: string }) => r.code)
       );
-      // デフォルトで '03', '04', 'vocational_instructor', 'life_supporter' を含める
       directCareRoles.add('03');
       directCareRoles.add('04');
       directCareRoles.add('vocational_instructor');
       directCareRoles.add('life_supporter');
 
-      const officeSetting = (settingDetails || [])[0] as { capacity?: number; staffing_ratio?: string } | undefined;
+      const officeSetting = (settingDetails || [])[0] as { capacity?: number } | undefined;
       const capacity = Number(officeSetting?.capacity) || 20;
-      const reportedStaffingRatio = officeSetting?.staffing_ratio
-        ? (officeSetting.staffing_ratio.endsWith('配置') ? officeSetting.staffing_ratio : `${officeSetting.staffing_ratio}配置`)
-        : '7.5:1配置';
 
       const currentOffice = (officeList || [])[0] as { standard_weekly_hours?: number } | undefined;
       const standardWeeklyHours = Number(currentOffice?.standard_weekly_hours) || 40.0;
+
+      // 確定スナップショットのマップ (key: target_period 'YYYY-MM')
+      const snapshotMap = new Map((snapshots || []).map((s: any) => [s.target_period, s]));
 
       // 対象年度の抽出
       const yearsSet = new Set<string>();
@@ -125,6 +129,9 @@ export function useServiceProvisionSystem(officeId?: string) {
       });
       (attRecords || []).forEach(r => {
         if (r.work_date) yearsSet.add(r.work_date.slice(0, 4));
+      });
+      (snapshots || []).forEach((s: any) => {
+        if (s.target_period) yearsSet.add(s.target_period.slice(0, 4));
       });
 
       if (yearsSet.size === 0) {
@@ -144,7 +151,29 @@ export function useServiceProvisionSystem(officeId?: string) {
           const monthStr = `${actualYear}-${m.toString().padStart(2, '0')}`;
           const monthLabel = `${actualYear}年${m.toString().padStart(2, '0')}月`;
 
-          // 利用者集計
+          // 1. 確定スナップショットが存在する場合はそれを正本として採用
+          const snap = snapshotMap.get(monthStr);
+          if (snap && snap.status === 'confirmed') {
+            monthlyDetails.push({
+              month: monthStr,
+              monthLabel,
+              operatingDays: Number(snap.operating_days) || 0,
+              totalUtilization: Number(snap.total_utilization) || 0,
+              avgMembersPerDay: Number(snap.avg_members_per_day) || 0,
+              directCareStaffHours: Number(snap.direct_care_work_hours) || 0,
+              standardMonthlyHours: Number(snap.standard_monthly_hours) || 160,
+              directCareFte: Number(snap.direct_care_fte) || 0,
+              actualRatio: Number(snap.actual_staffing_ratio) || 0,
+              compliantTierName: snap.determined_staffing_ratio || '7.5:1配置',
+              hasFullTimeDirectCare: snap.has_full_time_direct_care ?? true,
+              capacity: Number(snap.capacity) || capacity,
+              capacityExcessStatus: snap.is_capacity_excess ? 'excess' : 'normal',
+              isConfirmed: true,
+            });
+            continue;
+          }
+
+          // 2. 未確定の場合は日報・出勤簿からリアルタイム算出
           const monthWork = (workRecords || []).filter(
             r => r.target_period && r.target_period.startsWith(monthStr) && Number(r.work_time) > 0
           );
@@ -156,23 +185,19 @@ export function useServiceProvisionSystem(officeId?: string) {
 
           const avgMembersPerDay = operatingDays > 0 ? totalUtilization / operatingDays : 0;
 
-          // 職員勤務集計
           const monthAtt = (attRecords || []).filter(
             r => r.work_date && r.work_date.startsWith(monthStr)
           );
 
-          // 直接処遇職員レコード
           const directMonthAtt = monthAtt.filter(r => directCareRoles.has(r.assigned_role));
           const directCareStaffHours = directMonthAtt.reduce(
             (sum, r) => sum + (Number(r.actual_work_hours) || 0),
             0
           );
 
-          // 月の日数と常勤月間所定労働時間
           const daysInMonth = new Date(actualYear, m, 0).getDate();
           const standardMonthlyHours = Math.round((standardWeeklyHours / 7) * daysInMonth * 10) / 10;
 
-          // 各職員のFTE計算
           const staffHoursMap = new Map<string, number>();
           directMonthAtt.forEach(r => {
             const current = staffHoursMap.get(r.staff_id) || 0;
@@ -199,7 +224,7 @@ export function useServiceProvisionSystem(officeId?: string) {
             }
           });
 
-          // データがまだ入っていない場合のシミュレーション（開所実績があるのに勤務データ未登録の場合は標準配置を補完）
+          // データ未登録時の補完
           if (operatingDays > 0 && totalFte === 0) {
             totalFte = Math.round((avgMembersPerDay / 7.5) * 10) / 10 || 2.7;
             hasFullTimeDirectCare = true;
@@ -210,7 +235,6 @@ export function useServiceProvisionSystem(officeId?: string) {
             ? Math.round((avgMembersPerDay / roundedFte) * 10) / 10
             : 0;
 
-          // 適合判定
           let compliantTierName = '基準未満';
           if (actualRatio > 0 && actualRatio <= 6.0) {
             compliantTierName = '6:1配置';
@@ -220,7 +244,6 @@ export function useServiceProvisionSystem(officeId?: string) {
             compliantTierName = '10:1配置';
           }
 
-          // 定員超過判定 (115%超過で減算)
           const capacityExcessStatus: 'normal' | 'excess' = (avgMembersPerDay > capacity * 1.15) ? 'excess' : 'normal';
 
           monthlyDetails.push({
@@ -237,10 +260,10 @@ export function useServiceProvisionSystem(officeId?: string) {
             hasFullTimeDirectCare,
             capacity,
             capacityExcessStatus,
+            isConfirmed: false,
           });
         }
 
-        // 年間集計
         const activeMonths = monthlyDetails.filter(d => d.operatingDays > 0);
         const annualOperatingDays = monthlyDetails.reduce((sum, d) => sum + d.operatingDays, 0);
         const annualTotalUtilization = monthlyDetails.reduce((sum, d) => sum + d.totalUtilization, 0);
@@ -262,6 +285,8 @@ export function useServiceProvisionSystem(officeId?: string) {
           annualCompliantTierName = '10:1配置';
         }
 
+        const isAllConfirmed = activeMonths.length > 0 && activeMonths.every(d => d.isConfirmed);
+
         return {
           year,
           yearLabel: `${year}年度`,
@@ -272,13 +297,14 @@ export function useServiceProvisionSystem(officeId?: string) {
           annualActualRatio,
           annualCompliantTierName,
           capacity,
+          isConfirmed: isAllConfirmed,
           monthlyDetails,
         };
       });
 
       setData(annualRows);
 
-      // KPIの算出
+      // KPI算出
       const latestRow = annualRows[0];
       const activeMonthly = latestRow?.monthlyDetails.filter(d => d.operatingDays > 0) || [];
       const latestMonth = activeMonthly.length > 0 ? activeMonthly[activeMonthly.length - 1] : undefined;
@@ -288,12 +314,14 @@ export function useServiceProvisionSystem(officeId?: string) {
         ? Math.round(prevRow.annualAvgMembersPerDay * 10) / 10
         : (latestRow ? Math.round(latestRow.annualAvgMembersPerDay * 10) / 10 : 19.5);
 
+      const latestTier = latestMonth ? latestMonth.compliantTierName : '7.5:1配置';
+
       setKpi({
-        reportedStaffingRatio,
+        reportedStaffingRatio: latestTier,
         previousYearAvgMembers,
         latestMonthFte: latestMonth ? latestMonth.directCareFte : 2.8,
         latestMonthRatio: latestMonth ? latestMonth.actualRatio : 7.1,
-        latestCompliantTier: latestMonth ? latestMonth.compliantTierName : reportedStaffingRatio,
+        latestCompliantTier: latestTier,
         capacity,
       });
     } catch (err) {
@@ -304,10 +332,53 @@ export function useServiceProvisionSystem(officeId?: string) {
     }
   }, [officeId]);
 
+  // 月次確定（スナップショット保存）処理
+  const confirmMonth = useCallback(async (monthDetail: MonthlyServiceProvisionSystemDetail, targetOfficeId?: string) => {
+    try {
+      const oid = targetOfficeId || officeId;
+      if (!oid || oid === 'all') throw new Error('確定対象の事業所を選択してください');
+
+      const serviceTypeId = '11111111-0000-0000-0000-000000000001'; // 就労継続支援B型
+      const year = monthDetail.month.slice(0, 4);
+
+      const payload = {
+        office_id: oid,
+        service_type_id: serviceTypeId,
+        target_period: monthDetail.month,
+        target_year: year,
+        operating_days: monthDetail.operatingDays,
+        total_utilization: monthDetail.totalUtilization,
+        avg_members_per_day: monthDetail.avgMembersPerDay,
+        previous_year_avg_members: kpi.previousYearAvgMembers,
+        capacity: monthDetail.capacity,
+        is_capacity_excess: monthDetail.capacityExcessStatus === 'excess',
+        direct_care_work_hours: monthDetail.directCareStaffHours,
+        standard_monthly_hours: monthDetail.standardMonthlyHours,
+        direct_care_fte: monthDetail.directCareFte,
+        has_full_time_direct_care: monthDetail.hasFullTimeDirectCare,
+        actual_staffing_ratio: monthDetail.actualRatio,
+        determined_staffing_ratio: monthDetail.compliantTierName,
+        status: 'confirmed',
+        confirmed_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('service_provision_system_snapshot')
+        .upsert(payload, { onConflict: 'office_id,service_type_id,target_period' });
+
+      if (error) throw error;
+      await fetchSummary();
+    } catch (err) {
+      console.error('Error confirming service provision system month:', err);
+      throw err;
+    }
+  }, [officeId, kpi.previousYearAvgMembers, fetchSummary]);
+
   return {
     data,
     kpi,
     loading,
     fetchSummary,
+    confirmMonth,
   };
 }

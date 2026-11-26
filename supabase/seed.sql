@@ -227,14 +227,13 @@ ON CONFLICT (id) DO UPDATE SET
   valid_to = EXCLUDED.valid_to;
 
 -- 3.1.2 事業所支援種別割当詳細 (office_service_type_setting_details)
-INSERT INTO public.office_service_type_setting_details (id, summary_id, service_type_id, capacity, office_number, staffing_ratio, wage_achievement_tier) VALUES
-('33333333-0000-0000-0000-000000000001', '33333333-1111-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001', 20, '3410100001', '7.5:1', '4万円以上4万5千円未満'),
-('33333333-0000-0000-0000-000000000002', '33333333-1111-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001', 20, '3410200002', '7.5:1', '3万円以上3万5千円未満'),
-('33333333-0000-0000-0000-000000000003', '33333333-1111-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', 20, '3410300003', '10:1', '2万円以上2万5千円未満')
+INSERT INTO public.office_service_type_setting_details (id, summary_id, service_type_id, capacity, office_number) VALUES
+('33333333-0000-0000-0000-000000000001', '33333333-1111-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001', 20, '3410100001'),
+('33333333-0000-0000-0000-000000000002', '33333333-1111-0000-0000-000000000002', '11111111-0000-0000-0000-000000000002', 20, '3410200002'),
+('33333333-0000-0000-0000-000000000003', '33333333-1111-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', 20, '3410300003')
 ON CONFLICT (id) DO UPDATE SET
-  office_number = EXCLUDED.office_number,
-  staffing_ratio = EXCLUDED.staffing_ratio,
-  wage_achievement_tier = EXCLUDED.wage_achievement_tier;
+  capacity = EXCLUDED.capacity,
+  office_number = EXCLUDED.office_number;
 
 -- 3.2 資格マスタ (qualifications) 全24件
 INSERT INTO public.qualifications (id, code, name, category, description) VALUES
@@ -1501,6 +1500,62 @@ FROM public.service_billing_snapshot s
 WHERE s.addition_units > 250
 ON CONFLICT DO NOTHING;
 
+-- 28. サービス提供体制スナップショット (service_provision_system_snapshot)
+-- 2026年4月〜10月 確定スナップショット
+INSERT INTO public.service_provision_system_snapshot (
+  id, office_id, service_type_id, target_period, target_year,
+  operating_days, total_utilization, avg_members_per_day, previous_year_avg_members,
+  capacity, is_capacity_excess, direct_care_work_hours, standard_monthly_hours,
+  direct_care_fte, has_full_time_direct_care, actual_staffing_ratio, determined_staffing_ratio,
+  is_staffing_shortage, annual_average_wage, determined_wage_tier, status
+) VALUES
+('77777777-0000-0000-0000-000000000004', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-04', '2026', 22, 420, 19.09, 19.50, 20, false, 440.00, 160.00, 2.75, true, 6.94, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000005', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-05', '2026', 20, 390, 19.50, 19.50, 20, false, 432.00, 160.00, 2.70, true, 7.22, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000006', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-06', '2026', 22, 430, 19.55, 19.50, 20, false, 448.00, 160.00, 2.80, true, 6.98, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000007', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-07', '2026', 22, 425, 19.32, 19.50, 20, false, 440.00, 160.00, 2.75, true, 7.03, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000008', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-08', '2026', 21, 410, 19.52, 19.50, 20, false, 435.00, 160.00, 2.72, true, 7.18, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000009', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-09', '2026', 20, 395, 19.75, 19.50, 20, false, 440.00, 160.00, 2.75, true, 7.18, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000010', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-10', '2026', 21, 415, 19.76, 19.50, 20, false, 448.00, 160.00, 2.80, true, 7.06, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed')
+ON CONFLICT (office_id, service_type_id, target_period) DO UPDATE SET
+  operating_days = EXCLUDED.operating_days,
+  total_utilization = EXCLUDED.total_utilization,
+  avg_members_per_day = EXCLUDED.avg_members_per_day,
+  direct_care_fte = EXCLUDED.direct_care_fte,
+  actual_staffing_ratio = EXCLUDED.actual_staffing_ratio,
+  determined_staffing_ratio = EXCLUDED.determined_staffing_ratio,
+  status = EXCLUDED.status;
+
+-- 29. サービス提供体制スナップショット明細 (service_provision_system_snapshot_details)
+INSERT INTO public.service_provision_system_snapshot_details (
+  summary_id, role_code, role_name, is_direct_care, total_actual_hours, fte_value, full_time_count, part_time_count
+)
+SELECT 
+  s.id AS summary_id,
+  '03' AS role_code,
+  '職業指導員' AS role_name,
+  true AS is_direct_care,
+  240.00 AS total_actual_hours,
+  1.50 AS fte_value,
+  1 AS full_time_count,
+  1 AS part_time_count
+FROM public.service_provision_system_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_provision_system_snapshot_details (
+  summary_id, role_code, role_name, is_direct_care, total_actual_hours, fte_value, full_time_count, part_time_count
+)
+SELECT 
+  s.id AS summary_id,
+  '04' AS role_code,
+  '生活支援員' AS role_name,
+  true AS is_direct_care,
+  200.00 AS total_actual_hours,
+  1.25 AS fte_value,
+  1 AS full_time_count,
+  1 AS part_time_count
+FROM public.service_provision_system_snapshot s
+ON CONFLICT DO NOTHING;
+
 
 -- 26. 利用者例外利用予定 (member_exception_schedules)
 INSERT INTO public.member_exception_schedules (office_id, member_id, target_date, is_scheduled, status, start_time, end_time, break_minutes, has_meal, has_pickup, has_dropoff, remarks) VALUES
@@ -1562,6 +1617,62 @@ SELECT
   300 AS total_item_units
 FROM public.service_billing_snapshot s
 WHERE s.addition_units > 250
+ON CONFLICT DO NOTHING;
+
+-- 28. サービス提供体制スナップショット (service_provision_system_snapshot)
+-- 2026年4月〜10月 確定スナップショット
+INSERT INTO public.service_provision_system_snapshot (
+  id, office_id, service_type_id, target_period, target_year,
+  operating_days, total_utilization, avg_members_per_day, previous_year_avg_members,
+  capacity, is_capacity_excess, direct_care_work_hours, standard_monthly_hours,
+  direct_care_fte, has_full_time_direct_care, actual_staffing_ratio, determined_staffing_ratio,
+  is_staffing_shortage, annual_average_wage, determined_wage_tier, status
+) VALUES
+('77777777-0000-0000-0000-000000000004', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-04', '2026', 22, 420, 19.09, 19.50, 20, false, 440.00, 160.00, 2.75, true, 6.94, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000005', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-05', '2026', 20, 390, 19.50, 19.50, 20, false, 432.00, 160.00, 2.70, true, 7.22, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000006', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-06', '2026', 22, 430, 19.55, 19.50, 20, false, 448.00, 160.00, 2.80, true, 6.98, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000007', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-07', '2026', 22, 425, 19.32, 19.50, 20, false, 440.00, 160.00, 2.75, true, 7.03, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000008', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-08', '2026', 21, 410, 19.52, 19.50, 20, false, 435.00, 160.00, 2.72, true, 7.18, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000009', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-09', '2026', 20, 395, 19.75, 19.50, 20, false, 440.00, 160.00, 2.75, true, 7.18, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed'),
+('77777777-0000-0000-0000-000000000010', '22222222-2222-2222-2222-222222222222', '11111111-0000-0000-0000-000000000001', '2026-10', '2026', 21, 415, 19.76, 19.50, 20, false, 448.00, 160.00, 2.80, true, 7.06, '7.5:1配置', false, 42000, '4万円以上4万5千円未満', 'confirmed')
+ON CONFLICT (office_id, service_type_id, target_period) DO UPDATE SET
+  operating_days = EXCLUDED.operating_days,
+  total_utilization = EXCLUDED.total_utilization,
+  avg_members_per_day = EXCLUDED.avg_members_per_day,
+  direct_care_fte = EXCLUDED.direct_care_fte,
+  actual_staffing_ratio = EXCLUDED.actual_staffing_ratio,
+  determined_staffing_ratio = EXCLUDED.determined_staffing_ratio,
+  status = EXCLUDED.status;
+
+-- 29. サービス提供体制スナップショット明細 (service_provision_system_snapshot_details)
+INSERT INTO public.service_provision_system_snapshot_details (
+  summary_id, role_code, role_name, is_direct_care, total_actual_hours, fte_value, full_time_count, part_time_count
+)
+SELECT 
+  s.id AS summary_id,
+  '03' AS role_code,
+  '職業指導員' AS role_name,
+  true AS is_direct_care,
+  240.00 AS total_actual_hours,
+  1.50 AS fte_value,
+  1 AS full_time_count,
+  1 AS part_time_count
+FROM public.service_provision_system_snapshot s
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.service_provision_system_snapshot_details (
+  summary_id, role_code, role_name, is_direct_care, total_actual_hours, fte_value, full_time_count, part_time_count
+)
+SELECT 
+  s.id AS summary_id,
+  '04' AS role_code,
+  '生活支援員' AS role_name,
+  true AS is_direct_care,
+  200.00 AS total_actual_hours,
+  1.25 AS fte_value,
+  1 AS full_time_count,
+  1 AS part_time_count
+FROM public.service_provision_system_snapshot s
 ON CONFLICT DO NOTHING;
 
 

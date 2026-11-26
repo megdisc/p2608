@@ -36,30 +36,37 @@ export function useAverageWageSummary(officeId?: string) {
       let wageQuery = supabase.from('wage_snapshot').select('target_period, payment, wage_total, member_id, office_id');
       let finSnapQuery = supabase.from('financial_snapshot').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
       let finRecQuery = supabase.from('financial_records').select('target_period, type, subject, amount, office_id').eq('type', 'expense');
+      let sysSnapQuery = supabase.from('service_provision_system_snapshot').select('target_period, operating_days, total_utilization, avg_members_per_day, status, office_id');
 
       if (officeId && officeId !== 'all') {
         workQuery = workQuery.eq('office_id', officeId);
         wageQuery = wageQuery.eq('office_id', officeId);
         finSnapQuery = finSnapQuery.eq('office_id', officeId);
         finRecQuery = finRecQuery.eq('office_id', officeId);
+        sysSnapQuery = sysSnapQuery.eq('office_id', officeId);
       }
 
       const [
         { data: workRecords, error: workError },
         { data: wageRecords, error: wageError },
         { data: finSnapRecords, error: finSnapError },
-        { data: finRecRecords, error: finRecError }
+        { data: finRecRecords, error: finRecError },
+        { data: sysSnapRecords, error: sysSnapError }
       ] = await Promise.all([
         workQuery,
         wageQuery,
         finSnapQuery,
-        finRecQuery
+        finRecQuery,
+        sysSnapQuery
       ]);
 
       if (workError) throw workError;
       if (wageError) throw wageError;
       if (finSnapError) throw finSnapError;
       if (finRecError) throw finRecError;
+      if (sysSnapError) console.warn('service_provision_system_snapshot fetch failed:', sysSnapError);
+
+      const sysSnapMap = new Map((sysSnapRecords || []).filter((s: any) => s.status === 'confirmed').map((s: any) => [s.target_period, s]));
 
       // 確定スナップショットと未確定レコードをマージ（確定月優先）
       const snapMonths = new Set((finSnapRecords || []).map(r => r.target_period ? r.target_period.slice(0, 7) : ''));
@@ -96,13 +103,27 @@ export function useAverageWageSummary(officeId?: string) {
           // Filter work records for this month where work_time > 0
           const monthWork = (workRecords || []).filter(r => r.target_period && r.target_period.startsWith(monthStr) && Number(r.work_time) > 0);
           
-          // 開所日数: 作業記録の作業時間が0でない日数 (unique dates)
-          const uniqueDates = new Set(monthWork.map(r => r.target_period));
-          const operatingDays = uniqueDates.size;
+          const confirmedSysSnap = sysSnapMap.get(monthStr);
 
-          // 延べ利用者数: 日付ごとの作業時間が0でない利用者の数 (unique date_member pairs)
-          const dateMemberPairs = new Set(monthWork.map(r => `${r.target_period}_${r.member_id}`));
-          const totalUtilization = dateMemberPairs.size;
+          // 開所日数 & 延べ人数 (確定スナップショット優先、未確定はリアルタイム集計)
+          let operatingDays = 0;
+          let totalUtilization = 0;
+          let avgMembersPerDay = 0;
+
+          if (confirmedSysSnap) {
+            operatingDays = Number(confirmedSysSnap.operating_days) || 0;
+            totalUtilization = Number(confirmedSysSnap.total_utilization) || 0;
+            avgMembersPerDay = Number(confirmedSysSnap.avg_members_per_day) || 0;
+          } else {
+            // 開所日数: 作業記録の作業時間が0でない日数 (unique dates)
+            const uniqueDates = new Set(monthWork.map(r => r.target_period));
+            operatingDays = uniqueDates.size;
+
+            // 延べ利用者数: 日付ごとの作業時間が0でない利用者の数 (unique date_member pairs)
+            const dateMemberPairs = new Set(monthWork.map(r => `${r.target_period}_${r.member_id}`));
+            totalUtilization = dateMemberPairs.size;
+            avgMembersPerDay = operatingDays > 0 ? totalUtilization / operatingDays : 0;
+          }
 
           // Total wage paid
           const monthWages = (wageRecords || []).filter(r => r.target_period === monthStr);
@@ -115,7 +136,6 @@ export function useAverageWageSummary(officeId?: string) {
           const totalWage = Math.max(wageSumFromRecord, wageSumFromFin);
 
           // Metrics per month
-          const avgMembersPerDay = operatingDays > 0 ? totalUtilization / operatingDays : 0;
           const avgDailyWage = totalUtilization > 0 ? totalWage / totalUtilization : 0;
           const avgMonthlyWage = avgMembersPerDay > 0 ? totalWage / avgMembersPerDay : 0;
 

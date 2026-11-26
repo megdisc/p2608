@@ -6,7 +6,6 @@ import { getCurrentJSTDateOnly, recomputeHistoryPeriods } from '../utils';
 import {
   MESSAGES,
   TABLE_COLUMNS,
-  STAFFING_RATIO_OPTIONS,
 } from '../constants';
 import type {
   OfficeTableItem,
@@ -19,7 +18,6 @@ export type OfficeServiceTypeRow = {
   service_type_id: string;
   office_number: string;
   capacity: number;
-  staffing_ratio: string;
   valid_from?: string;
   valid_to?: string | null;
 };
@@ -80,7 +78,6 @@ export function OfficeServiceTypePage() {
             service_type_id: s.service_type_id,
             office_number: s.office_number || '',
             capacity: s.capacity ?? 20,
-            staffing_ratio: s.staffing_ratio || '7.5:1',
             valid_from: (s as any).valid_from || '2024-04-01',
             valid_to: (s as any).valid_to || '',
           };
@@ -135,7 +132,6 @@ export function OfficeServiceTypePage() {
       service_type_id: bType ? bType.id : (latestRow.service_type_id || '11111111-0000-0000-0000-000000000001'),
       office_number: latestRow.office_number || '',
       capacity: latestRow.capacity ?? 20,
-      staffing_ratio: latestRow.staffing_ratio || '7.5:1',
       valid_from: defaultStart,
       valid_to: null,
     };
@@ -225,15 +221,6 @@ export function OfficeServiceTypePage() {
         className: 'quantity',
         style: { width: '80px', textAlign: 'right' },
       },
-      {
-        key: 'staffing_ratio',
-        header: TABLE_COLUMNS.STAFFING_RATIO,
-        sortable: false,
-        rowType: 'sub',
-        inputType: 'select',
-        options: STAFFING_RATIO_OPTIONS,
-        style: { minWidth: '110px' },
-      },
     ];
   }, [serviceTypes]);
 
@@ -256,7 +243,6 @@ export function OfficeServiceTypePage() {
         service_type_id: string;
         office_number: string | null;
         capacity: number;
-        staffing_ratio: string | null;
         valid_from: string | null;
         valid_to: string | null;
         deleted_at: null;
@@ -272,7 +258,6 @@ export function OfficeServiceTypePage() {
               service_type_id: st.service_type_id,
               office_number: st.office_number ? String(st.office_number).trim() : null,
               capacity: Number(st.capacity) || 0,
-              staffing_ratio: st.staffing_ratio || null,
               valid_from: st.valid_from || '2024-04-01',
               valid_to: st.valid_to || null,
               deleted_at: null,

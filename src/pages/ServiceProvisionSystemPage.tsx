@@ -142,6 +142,11 @@ export function ServiceProvisionSystemPage() {
                           ▶
                         </span>
                         {annualRow.yearLabel}
+                        {annualRow.isConfirmed && (
+                          <span className="status-badge-confirmed" style={{ fontSize: '10px', padding: '1px 6px', marginLeft: '8px' }}>
+                            確定
+                          </span>
+                        )}
                       </td>
                       <td className="text-right">
                         <NumberDisplay value={annualRow.annualOperatingDays} />
@@ -176,6 +181,15 @@ export function ServiceProvisionSystemPage() {
                         <tr key={monthRow.month} style={{ backgroundColor: 'var(--color-bg-main)' }}>
                           <td className="text-left" style={{ paddingLeft: '28px', color: 'var(--color-text-muted)' }}>
                             {monthRow.monthLabel}
+                            {monthRow.isConfirmed ? (
+                              <span className="status-badge-confirmed" style={{ fontSize: '10px', padding: '1px 6px', marginLeft: '6px' }}>
+                                確定
+                              </span>
+                            ) : monthRow.operatingDays > 0 ? (
+                              <span className="status-badge-draft" style={{ fontSize: '10px', padding: '1px 6px', marginLeft: '6px' }}>
+                                試算
+                              </span>
+                            ) : null}
                           </td>
                           <td className="text-right">
                             <NumberDisplay value={monthRow.operatingDays} />

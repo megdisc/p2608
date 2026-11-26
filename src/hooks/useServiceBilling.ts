@@ -218,11 +218,12 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
         const [
           attendancesRes,
           certsRes,
-          officeServiceTypeRes,
+          _officeServiceTypeRes,
           officeRewardRes,
           _memberRewardRes,
           rewardItemsRes,
-          baseRewardRes
+          baseRewardRes,
+          systemSnapshotRes
         ] = await Promise.all([
           attendanceQuery,
           supabase.from('member_recipient_certificates').select('*'),
@@ -231,18 +232,29 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
           supabase.from('member_reward_settings').select('*'),
           supabase.from('reward_items').select('*'),
           supabase.from('base_reward_items').select('*'),
+          supabase.from('service_provision_system_snapshot').select('*').eq('target_period', monthStr),
         ]);
 
         const certMap = new Map((certsRes.data || []).map(c => [c.member_id, c]));
         const rewardItemMap = new Map((rewardItemsRes.data || []).map(r => [r.id, r]));
 
-        // 事業所の人員配置基準区分（デフォルト7.5:1）
-        const officeSetting = (officeServiceTypeRes.data || []).find((s: any) => !officeId || s.office_id === officeId);
-        const staffingRatio = officeSetting?.staffing_ratio || '7.5:1';
+        // サービス提供体制スナップショット（自動算定値の正本記録）を参照
+        const targetSnapshot = (systemSnapshotRes.data || []).find((s: any) => !officeId || s.office_id === officeId);
 
-        // 基本報酬公定単位数 (7.5:1 で 584 単位、10:1 で 520 単位)
-        const matchedBaseReward = (baseRewardRes.data || []).find((b: any) => b.staffing_ratio === staffingRatio);
+        // 人員配置基準の判定: スナップショットの determined_staffing_ratio を優先参照
+        const rawRatio = targetSnapshot?.determined_staffing_ratio || '7.5:1';
+        const staffingRatio = rawRatio.replace('配置', '').trim() || '7.5:1';
+
+        // 工賃達成区分の判定
+        const wageTier = targetSnapshot?.determined_wage_tier;
+
+        // 基本報酬公定単位数
+        const matchedBaseReward = (baseRewardRes.data || []).find((b: any) => 
+          b.staffing_ratio === staffingRatio && (!wageTier || b.wage_achievement_tier === wageTier)
+        ) || (baseRewardRes.data || []).find((b: any) => b.staffing_ratio === staffingRatio);
+
         const baseDailyUnit = matchedBaseReward ? matchedBaseReward.base_units : (staffingRatio === '7.5:1' ? 584 : 520);
+        const serviceCode = matchedBaseReward?.service_code || (staffingRatio === '7.5:1' ? '111111' : '111211');
         const unitPrice = 10.0;
 
         // 事業所加算（体制加算）の特定
@@ -271,7 +283,7 @@ export function useServiceBilling(selectedOfficeId: string | null, initialMonth?
           const baseRewardUnits = attendanceDays * baseDailyUnit;
           if (attendanceDays > 0) {
             details.push({
-              serviceCode: '111111',
+              serviceCode,
               itemName: `就労継続支援Ｂ型サービス費 (${staffingRatio})`,
               itemCategory: 'base_reward',
               unitValue: baseDailyUnit,

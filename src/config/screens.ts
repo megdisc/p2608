@@ -26,7 +26,12 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
       { id: 'rewardItem', label: PAGE_NAMES.REWARD_ITEM },
       { id: 'qualification', label: PAGE_NAMES.QUALIFICATION },
       { id: 'staffRole', label: PAGE_NAMES.STAFF_ROLE },
-      { id: 'regionalGrade', label: PAGE_NAMES.REGIONAL_GRADE },
+      { id: 'regionalGradeRate', label: PAGE_NAMES.REGIONAL_GRADE_RATE },
+      { id: 'regionalGradeLocation', label: PAGE_NAMES.REGIONAL_GRADE_LOCATION },
+      { id: 'capacityTier', label: PAGE_NAMES.CAPACITY_TIER },
+      { id: 'staffingRatioTier', label: PAGE_NAMES.STAFFING_RATIO_TIER },
+      { id: 'wageAchievementTier', label: PAGE_NAMES.WAGE_ACHIEVEMENT_TIER },
+      { id: 'baseRewardAllocation', label: PAGE_NAMES.BASE_REWARD_ALLOCATION },
     ],
   },
   SCREEN_FACILITY: {
@@ -206,7 +211,21 @@ export function getScreenConfigForTab(tabId: Tab): ScreenConfig | null {
   if (tabId === 'screenUser') return SCREEN_CONFIGS.SCREEN_USER;
   if (tabId === 'screenStaff') return SCREEN_CONFIGS.SCREEN_STAFF;
   if (tabId === 'screenClient') return SCREEN_CONFIGS.SCREEN_CLIENT;
-  if (tabId === 'screenWelfare') return SCREEN_CONFIGS.SCREEN_WELFARE;
+  if (
+    tabId === 'screenWelfare' ||
+    tabId === 'serviceType' ||
+    tabId === 'baseReward' ||
+    tabId === 'rewardItem' ||
+    tabId === 'qualification' ||
+    tabId === 'staffRole' ||
+    tabId === 'regionalGrade' ||
+    tabId === 'regionalGradeRate' ||
+    tabId === 'regionalGradeLocation' ||
+    tabId === 'capacityTier' ||
+    tabId === 'staffingRatioTier' ||
+    tabId === 'wageAchievementTier' ||
+    tabId === 'baseRewardAllocation'
+  ) return SCREEN_CONFIGS.SCREEN_WELFARE;
   if (tabId === 'screenFacility') return SCREEN_CONFIGS.SCREEN_FACILITY;
   if (tabId === 'screenSkill') return SCREEN_CONFIGS.SCREEN_SKILL;
   if (tabId === 'screenWage' || tabId === 'baseWage' || tabId === 'allowance' || tabId === 'deduction' || tabId === 'closingDate') return SCREEN_CONFIGS.SCREEN_WAGE;

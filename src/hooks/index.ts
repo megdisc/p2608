@@ -11,6 +11,12 @@ export * from './useQualifications';
 export * from './useStaffRoles';
 export * from './useRewardItems';
 export * from './useRegionalGrades';
+export * from './useRegionalGradeRates';
+export * from './useRegionalGradeLocations';
+export * from './useCapacityTiers';
+export * from './useStaffingRatioTiers';
+export * from './useWageAchievementTiers';
+export * from './useBaseRewardAllocations';
 
 export * from './useProjects';
 export * from './useAssigneeSummary';

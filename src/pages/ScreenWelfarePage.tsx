@@ -8,7 +8,12 @@ import { BaseRewardItemPage } from './BaseRewardItemPage';
 import { QualificationPage } from './QualificationPage';
 import { StaffRoleMasterPage } from './StaffRoleMasterPage';
 import { RewardItemPage } from './RewardItemPage';
-import { RegionalGradePage } from './RegionalGradePage';
+import { RegionalGradeRatePage } from './RegionalGradeRatePage';
+import { RegionalGradeLocationPage } from './RegionalGradeLocationPage';
+import { CapacityTierPage } from './CapacityTierPage';
+import { StaffingRatioTierPage } from './StaffingRatioTierPage';
+import { WageAchievementTierPage } from './WageAchievementTierPage';
+import { BaseRewardAllocationPage } from './BaseRewardAllocationPage';
 
 export function ScreenWelfarePage() {
   const navContext = useNavigation();
@@ -27,8 +32,19 @@ export function ScreenWelfarePage() {
         return <QualificationPage />;
       case 'staffRole':
         return <StaffRoleMasterPage />;
-      case 'regionalGrade':
-        return <RegionalGradePage />;
+      case 'regionalGradeRate':
+        return <RegionalGradeRatePage />;
+      case 'regionalGradeLocation':
+      case 'regionalGrade': // 後方互換性
+        return <RegionalGradeLocationPage />;
+      case 'capacityTier':
+        return <CapacityTierPage />;
+      case 'staffingRatioTier':
+        return <StaffingRatioTierPage />;
+      case 'wageAchievementTier':
+        return <WageAchievementTierPage />;
+      case 'baseRewardAllocation':
+        return <BaseRewardAllocationPage />;
       default:
         return <ServiceTypePage />;
     }

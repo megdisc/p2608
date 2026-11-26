@@ -1,0 +1,84 @@
+import { useEffect } from 'react';
+import { DataPage, type Column, NumberDisplay, DateDisplay } from '../components';
+import { useAlert } from '../contexts';
+import { TABLE_COLUMNS, WORDS_SYSTEM } from '../constants';
+import { useWageAchievementTiers, type WageAchievementTierItem } from '../hooks';
+
+export function WageAchievementTierPage() {
+  const { items, loading, fetchWageAchievementTiers } = useWageAchievementTiers();
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    fetchWageAchievementTiers().catch(() => {
+      showAlert('平均工賃月額達成区分データの取得に失敗しました', 'error');
+    });
+  }, [fetchWageAchievementTiers, showAlert]);
+
+  const columns: Column<WageAchievementTierItem>[] = [
+    {
+      key: 'service_type_name',
+      header: TABLE_COLUMNS.SERVICE_TYPE,
+      sortable: true,
+      style: { width: '150px' },
+    },
+    {
+      key: 'tier_rank',
+      header: 'ランク',
+      sortable: true,
+      style: { width: '80px', textAlign: 'center', fontWeight: 'bold' },
+      render: (item: WageAchievementTierItem) => `第${item.tier_rank}区分`,
+    },
+    {
+      key: 'name',
+      header: TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER,
+      sortable: true,
+      style: { minWidth: '190px', fontWeight: 'bold' },
+    },
+    {
+      key: 'min_wage',
+      header: '下限工賃(円)',
+      sortable: true,
+      className: 'quantity',
+      style: { width: '130px', textAlign: 'right' },
+      render: (item: WageAchievementTierItem) => <NumberDisplay value={item.min_wage} unit=" 円" />,
+    },
+    {
+      key: 'max_wage',
+      header: '上限工賃(円)',
+      sortable: true,
+      className: 'quantity',
+      style: { width: '130px', textAlign: 'right' },
+      render: (item: WageAchievementTierItem) => item.max_wage !== null ? <NumberDisplay value={item.max_wage} unit=" 円" /> : '上限なし',
+    },
+    {
+      key: 'valid_from',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
+      sortable: true,
+      style: { width: '120px', textAlign: 'center' },
+      render: (item: WageAchievementTierItem) => item.valid_from || '-',
+    },
+    {
+      key: 'valid_to',
+      header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
+      sortable: true,
+      style: { width: '120px', textAlign: 'center' },
+      render: (item: WageAchievementTierItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
+    },
+  ];
+
+  if (loading) return <div className="loading-container">Loading...</div>;
+
+  return (
+    <DataPage
+      title={WORDS_SYSTEM.WAGE_ACHIEVEMENT_TIER}
+      data={items}
+      columns={columns}
+      initialSort={{ key: 'tier_rank', direction: 'asc' }}
+      emptyMessage="登録されている平均工賃月額達成区分データがありません"
+      hideHeader={true}
+      hideAddButton={true}
+      hideDeleteColumn={true}
+      canDeleteRow={() => false}
+    />
+  );
+}

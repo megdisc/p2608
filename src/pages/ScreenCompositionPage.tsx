@@ -14,7 +14,9 @@ const getTabCategory = (tabId: string): string => {
   // 1. 設定（制度、施設、取引先、スキル体系、工賃・控除体系、給与体系、積立金体系）
   const settingsTabIds = [
     // 制度
-    'serviceType', 'baseReward', 'rewardItem', 'qualification', 'staffRole', 'regionalGrade',
+    'serviceType', 'baseReward', 'rewardItem', 'qualification', 'staffRole',
+    'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
+    'capacityTier', 'staffingRatioTier', 'wageAchievementTier', 'baseRewardAllocation',
     // 施設
     'organization', 'office', 'officeServiceType', 'officeReward',
     // 取引先
@@ -94,7 +96,7 @@ const getCategoryColor = (category: string) => {
 interface DBColumn {
   name: string;
   desc: string;
-  status?: 'added' | 'modified' | 'proposed';
+  status?: 'added' | 'modified';
 }
 
 interface DBTable {
@@ -106,7 +108,7 @@ interface DBTable {
   logicalName: string;
   description: string;
   columns: DBColumn[];
-  status?: 'added' | 'modified' | 'proposed';
+  status?: 'added' | 'modified';
 }
 
 export function ScreenCompositionPage() {
@@ -135,7 +137,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'service_types',
       tableType: '独立マスタ',
       logicalName: '支援種別',
@@ -156,11 +157,10 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'base_reward_items',
       tableType: '独立マスタ',
       logicalName: '基本報酬',
-      description: '法令・報酬告示に基づくサービス種別・定員規模・人員配置区分・工賃/利用時間区分ごとの基本報酬単位数マスターデータ（給付費算定の基礎）。※現行テーブル（文字列区分カラム保持方式）。後述の「1.2. 制度基準値マスタ【新設案】」への外部キー正規化移行を提案中。',
+      description: '法令・報酬告示に基づくサービス種別・定員規模・人員配置区分・工賃/利用時間区分ごとの基本報酬単位数マスターデータ（給付費算定の基礎）。',
       status: 'added',
       columns: [
         { name: 'id', desc: '基本報酬ID', status: 'added' },
@@ -178,7 +178,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'reward_items',
       tableType: '従属マスタ',
       logicalName: '加算・減算',
@@ -204,7 +203,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'qualifications',
       tableType: '独立マスタ',
       logicalName: '資格',
@@ -225,7 +223,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'staff_roles',
       tableType: '独立マスタ',
       logicalName: '職種',
@@ -248,7 +245,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'regional_grade_rates',
       tableType: '独立マスタ',
       logicalName: '所在地級数上乗せ割合',
@@ -268,7 +264,6 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.1. 現行制度マスタ',
       physicalName: 'regional_grade_locations',
       tableType: '独立マスタ',
       logicalName: '所在地級数所在地',
@@ -288,92 +283,88 @@ export function ScreenCompositionPage() {
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.2. 制度基準値マスタ【新設案】',
       physicalName: 'capacity_tiers',
       tableType: '独立マスタ',
       logicalName: '利用定員規模区分',
-      description: '【新設案・単体マスタ】法令・報酬告示に基づく利用定員規模の基準区分マスタ。就労継続支援等の「20人以下」「21〜40人」「41〜60人」「61〜80人」「81人以上」の基準範囲と表示順を公定値として管理。事業所の指定定員数と照合して基本報酬区分を自動特定する基準値テーブル。',
-      status: 'proposed',
+      description: '法令・報酬告示に基づく利用定員規模の基準区分マスタ。就労継続支援等の「20人以下」「21〜40人」「41〜60人」「61〜80人」「81人以上」の基準範囲と表示順を公定値として管理。事業所の指定定員数と照合して基本報酬区分を特定する基準値テーブル。',
+      status: 'added',
       columns: [
-        { name: 'id', desc: '定員規模区分ID（PK）', status: 'proposed' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id。就労B型、生活介護等）', status: 'proposed' },
-        { name: 'code', desc: '定員規模コード（公定区分識別子。例: CAP_20, CAP_21_40, CAP_41_60, CAP_61_80, CAP_81_PLUS）', status: 'proposed' },
-        { name: 'name', desc: '定員規模名称（例: 20人以下, 21人以上40人以下, 41人以上60人以下, 61人以上80人以下, 81人以上）', status: 'proposed' },
-        { name: 'min_capacity', desc: '下限定員数（人。例: 1, 21, 41, 61, 81。範囲判定用下限値）', status: 'proposed' },
-        { name: 'max_capacity', desc: '上限定員数（人。例: 20, 40, 60, 80, NULL: 上限なし。範囲判定用上限値）', status: 'proposed' },
-        { name: 'display_order', desc: '表示並び順（昇順ソート用）', status: 'proposed' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'proposed' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'proposed' },
-        { name: 'created_at', desc: '作成日時', status: 'proposed' },
-        { name: 'updated_at', desc: '更新日時', status: 'proposed' }
+        { name: 'id', desc: '定員規模区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id。就労B型、生活介護等）', status: 'added' },
+        { name: 'code', desc: '定員規模コード（公定区分識別子。例: CAP_20, CAP_21_40, CAP_41_60, CAP_61_80, CAP_81_PLUS）', status: 'added' },
+        { name: 'name', desc: '定員規模名称（例: 20人以下, 21人以上40人以下, 41人以上60人以下, 61人以上80人以下, 81人以上）', status: 'added' },
+        { name: 'min_capacity', desc: '下限定員数（人。例: 1, 21, 41, 61, 81。範囲判定用下限値）', status: 'added' },
+        { name: 'max_capacity', desc: '上限定員数（人。例: 20, 40, 60, 80, NULL: 上限なし。範囲判定用上限値）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順（昇順ソート用）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.2. 制度基準値マスタ【新設案】',
       physicalName: 'staffing_ratio_tiers',
       tableType: '独立マスタ',
       logicalName: '人員配置基準区分',
-      description: '【新設案・単体マスタ】法令・報酬告示に基づく職員配置基準の公定区分マスタ。就労継続支援等の「7.5:1配置」「10:1配置」等の配置比率基準値を管理。事業所の常勤換算配置実績との照合・判定の基礎テーブル。',
-      status: 'proposed',
+      description: '法令・報酬告示に基づく職員配置基準の公定区分マスタ。就労継続支援等の「7.5:1配置」「10:1配置」等の配置比率基準値を管理。事業所の常勤換算配置実績との照合・判定の基礎テーブル。',
+      status: 'added',
       columns: [
-        { name: 'id', desc: '人員配置区分ID（PK）', status: 'proposed' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'proposed' },
-        { name: 'code', desc: '配置区分コード（例: RATIO_7_5_1, RATIO_10_1, RATIO_6_1）', status: 'proposed' },
-        { name: 'name', desc: '配置区分名称（例: 7.5:1配置, 10:1配置）', status: 'proposed' },
-        { name: 'ratio_value', desc: '職員1人あたり利用者数比率（数値。例: 7.50, 10.00。基準判定用）', status: 'proposed' },
-        { name: 'display_order', desc: '表示並び順', status: 'proposed' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'proposed' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'proposed' },
-        { name: 'created_at', desc: '作成日時', status: 'proposed' },
-        { name: 'updated_at', desc: '更新日時', status: 'proposed' }
+        { name: 'id', desc: '人員配置区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'code', desc: '配置区分コード（例: RATIO_7_5_1, RATIO_10_1, RATIO_6_1）', status: 'added' },
+        { name: 'name', desc: '配置区分名称（例: 7.5:1配置, 10:1配置）', status: 'added' },
+        { name: 'ratio_value', desc: '職員1人あたり利用者数比率（数値。例: 7.50, 10.00。基準判定用）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.2. 制度基準値マスタ【新設案】',
       physicalName: 'wage_achievement_tiers',
       tableType: '独立マスタ',
       logicalName: '平均工賃月額達成区分',
-      description: '【新設案・単体マスタ】就労継続支援B型等の前年度平均工賃月額に応じた報酬告示基準区分マスタ。「4万5千円以上（第1区分）」から「1万円未満（第9区分）」までの全9段階の金額範囲・ランク順位を管理。前年度実績から当年度基本報酬ランクを特定する判定基準値テーブル。',
-      status: 'proposed',
+      description: '就労継続支援B型等の前年度平均工賃月額に応じた報酬告示基準区分マスタ。「4万5千円以上（第1区分）」から「1万円未満（第9区分）」までの全9段階の金額範囲・ランク順位を管理。前年度実績から当年度基本報酬ランクを特定する判定基準値テーブル。',
+      status: 'added',
       columns: [
-        { name: 'id', desc: '工賃達成区分ID（PK）', status: 'proposed' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'proposed' },
-        { name: 'code', desc: '区分コード（公定コード。例: WAGE_TIER_1 〜 WAGE_TIER_9）', status: 'proposed' },
-        { name: 'name', desc: '工賃達成区分名称（例: 4万5千円以上, 4万円以上4万5千円未満, ..., 1万円未満）', status: 'proposed' },
-        { name: 'tier_rank', desc: '区分ランク（1〜9。基本報酬単位数の高低順位）', status: 'proposed' },
-        { name: 'min_wage', desc: '下限工賃月額（円。例: 45000, 40000, 35000, ..., 0。判定範囲下限）', status: 'proposed' },
-        { name: 'max_wage', desc: '上限工賃月額（円。例: NULL: 上限なし, 44999, 39999, ..., 9999。判定範囲上限）', status: 'proposed' },
-        { name: 'display_order', desc: '表示並び順', status: 'proposed' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'proposed' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'proposed' },
-        { name: 'created_at', desc: '作成日時', status: 'proposed' },
-        { name: 'updated_at', desc: '更新日時', status: 'proposed' }
+        { name: 'id', desc: '工賃達成区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'code', desc: '区分コード（公定コード。例: WAGE_TIER_1 〜 WAGE_TIER_9）', status: 'added' },
+        { name: 'name', desc: '工賃達成区分名称（例: 4万5千円以上, 4万円以上4万5千円未満, ..., 1万円未満）', status: 'added' },
+        { name: 'tier_rank', desc: '区分ランク（1〜9。基本報酬単位数の高低順位）', status: 'added' },
+        { name: 'min_wage', desc: '下限工賃月額（円。例: 45000, 40000, 35000, ..., 0。判定範囲下限）', status: 'added' },
+        { name: 'max_wage', desc: '上限工賃月額（円。例: NULL: 上限なし, 44999, 39999, ..., 9999。判定範囲上限）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
       category: '1. 制度',
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      subCategory: '1.2. 制度基準値マスタ【新設案】',
-      physicalName: 'base_reward_items（改修案）',
+      physicalName: 'base_reward_allocations',
       tableType: '従属マスタ',
-      logicalName: '基本報酬告示割当',
-      description: '【新設改修案・割当マスタ】新設した単体マスタ（利用定員規模区分、人員配置基準区分、平均工賃月額達成区分）を外部キー参照して複合結合し、報酬告示で定められた1日あたりの算定基本単位数を紐付ける正規化テーブル。文字列ハードコードを廃止し、3年ごとの法改正や区分追加に柔軟に対応可能。',
-      status: 'proposed',
+      logicalName: '基本報酬割当',
+      description: '法令・報酬告示に基づく利用定員規模区分、人員配置基準区分、平均工賃月額達成区分を複合結合し、報酬告示で定められた1日あたりの算定基本単位数を紐付ける割当マスターデータ。',
+      status: 'added',
       columns: [
-        { name: 'id', desc: '基本報酬割当ID（PK）', status: 'proposed' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'proposed' },
-        { name: 'capacity_tier_id', desc: '利用定員規模区分ID（FK -> capacity_tiers.id / 新設単体マスタ参照）', status: 'proposed' },
-        { name: 'staffing_ratio_tier_id', desc: '人員配置基準区分ID（FK -> staffing_ratio_tiers.id / 新設単体マスタ参照）', status: 'proposed' },
-        { name: 'wage_achievement_tier_id', desc: '平均工賃月額達成区分ID（FK -> wage_achievement_tiers.id / 新設単体マスタ参照）', status: 'proposed' },
-        { name: 'base_units', desc: '基本単位数（1日あたりの公定算定単位数。例: 584）', status: 'proposed' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'proposed' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による終了日。NULL: 適用中）', status: 'proposed' },
-        { name: 'created_at', desc: '作成日時', status: 'proposed' },
-        { name: 'updated_at', desc: '更新日時', status: 'proposed' }
+        { name: 'id', desc: '基本報酬割当ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'capacity_tier_id', desc: '利用定員規模区分ID（FK -> capacity_tiers.id）', status: 'added' },
+        { name: 'staffing_ratio_tier_id', desc: '人員配置基準区分ID（FK -> staffing_ratio_tiers.id）', status: 'added' },
+        { name: 'wage_achievement_tier_id', desc: '平均工賃月額達成区分ID（FK -> wage_achievement_tiers.id）', status: 'added' },
+        { name: 'base_units', desc: '基本単位数（1日あたりの公定算定単位数。例: 584）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による終了日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -1543,7 +1534,7 @@ export function ScreenCompositionPage() {
     }
   ], []);
 
-  const [filterStatus, setFilterStatus] = useState<'all' | 'current' | 'proposed'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'modified'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -1553,13 +1544,11 @@ export function ScreenCompositionPage() {
     return Array.from(cats);
   }, [dbTables]);
 
-  const proposedCount = useMemo(() => dbTables.filter(t => t.status === 'proposed').length, [dbTables]);
-  const currentCount = useMemo(() => dbTables.filter(t => t.status !== 'proposed').length, [dbTables]);
+  const modifiedCount = useMemo(() => dbTables.filter(t => t.status === 'added' || t.status === 'modified').length, [dbTables]);
 
   const filteredDbTables = useMemo(() => {
     return dbTables.filter(table => {
-      if (filterStatus === 'current' && table.status === 'proposed') return false;
-      if (filterStatus === 'proposed' && table.status !== 'proposed') return false;
+      if (filterStatus === 'modified' && !table.status) return false;
       if (selectedCategory !== 'all' && table.category !== selectedCategory) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.trim().toLowerCase();
@@ -1592,91 +1581,6 @@ export function ScreenCompositionPage() {
       <div className="table-container">
         {isTableComposition ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            {/* 制度系テーブル新設案サマリー・ガイダンスカード */}
-            <div style={{
-              padding: '16px 20px',
-              backgroundColor: '#f5f3ff',
-              border: '1px solid #ddd6fe',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-sm)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    backgroundColor: '#7c3aed',
-                    color: '#ffffff'
-                  }}>
-                    新設案
-                  </span>
-                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 'bold', color: '#5b21b6' }}>
-                    制度系基準値マスタ新設案（正規化アーキテクチャ）
-                  </h3>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFilterStatus('proposed');
-                      setSelectedCategory('1. 制度');
-                      setSearchQuery('');
-                    }}
-                    style={{
-                      padding: '4px 12px',
-                      fontSize: '12px',
-                      fontWeight: 'bold',
-                      borderRadius: '4px',
-                      border: '1px solid #7c3aed',
-                      backgroundColor: filterStatus === 'proposed' ? '#7c3aed' : '#ffffff',
-                      color: filterStatus === 'proposed' ? '#ffffff' : '#7c3aed',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    新設案テーブル（{proposedCount}件）を表示
-                  </button>
-                  {(filterStatus !== 'all' || selectedCategory !== 'all' || searchQuery) && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFilterStatus('all');
-                        setSelectedCategory('all');
-                        setSearchQuery('');
-                      }}
-                      style={{
-                        padding: '4px 10px',
-                        fontSize: '12px',
-                        borderRadius: '4px',
-                        border: '1px solid #cbd5e1',
-                        backgroundColor: '#ffffff',
-                        color: 'var(--color-text-muted)',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      条件リセット
-                    </button>
-                  )}
-                </div>
-              </div>
-              <p style={{ margin: '0 0 10px 0', fontSize: '13px', color: '#4c1d95', lineHeight: '1.6' }}>
-                定員規模区分（<code>capacity_tiers</code>）・人員配置基準区分（<code>staffing_ratio_tiers</code>）・平均工賃月額達成区分（<code>wage_achievement_tiers</code>）の3つの単体マスタを新設し、割当テーブル（<code>base_reward_items</code>）から外部キー結合する2層構造に正規化します。
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '10px', fontSize: '12px', color: '#581c87' }}>
-                <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '4px', border: '1px solid #e9d5ff' }}>
-                  <strong>① 単体マスタ群（独立マスタ）</strong>: 法令告示の判定閾値・区分名・並び順を公定マスタ化。法改正時の閾値変更に柔軟に対応。
-                </div>
-                <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '4px', border: '1px solid #e9d5ff' }}>
-                  <strong>② 告示割当マスタ（従属マスタ）</strong>: 文字列埋め込みを廃止し、3マスタのFK結合で算定基本単位数を一意に決定。
-                </div>
-                <div style={{ backgroundColor: '#ffffff', padding: '10px 12px', borderRadius: '4px', border: '1px solid #e9d5ff' }}>
-                  <strong>③ 自動判定ロジックとの完全連携</strong>: 事業所定員・職員数・前年度工賃実績から基本報酬単位数を即座に特定可能。
-                </div>
-              </div>
-            </div>
-
             {/* 操作・フィルター・検索バー */}
             <div style={{
               display: 'flex',
@@ -1709,35 +1613,19 @@ export function ScreenCompositionPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setFilterStatus('current')}
+                    onClick={() => setFilterStatus('modified')}
                     style={{
                       padding: '5px 12px',
                       fontSize: '12px',
-                      fontWeight: filterStatus === 'current' ? 'bold' : 'normal',
-                      backgroundColor: filterStatus === 'current' ? 'var(--palette-blue-600)' : '#ffffff',
-                      color: filterStatus === 'current' ? '#ffffff' : 'var(--color-text-main)',
+                      fontWeight: filterStatus === 'modified' ? 'bold' : 'normal',
+                      backgroundColor: filterStatus === 'modified' ? 'var(--palette-blue-600)' : '#ffffff',
+                      color: filterStatus === 'modified' ? '#ffffff' : 'var(--color-text-main)',
                       border: 'none',
                       borderLeft: '1px solid var(--color-border)',
                       cursor: 'pointer'
                     }}
                   >
-                    現行テーブル ({currentCount})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFilterStatus('proposed')}
-                    style={{
-                      padding: '5px 12px',
-                      fontSize: '12px',
-                      fontWeight: filterStatus === 'proposed' ? 'bold' : 'normal',
-                      backgroundColor: filterStatus === 'proposed' ? '#7c3aed' : '#ffffff',
-                      color: filterStatus === 'proposed' ? '#ffffff' : '#7c3aed',
-                      border: 'none',
-                      borderLeft: '1px solid var(--color-border)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    ★ 新設案のみ ({proposedCount})
+                    新規・変更テーブル ({modifiedCount})
                   </button>
                 </div>
 
@@ -1893,48 +1781,36 @@ export function ScreenCompositionPage() {
                       const isLastInTable = idx === table.columns.length - 1;
                       const borderBottomStyle = isLastInTable ? undefined : 'none';
                       const isTableAdded = table.status === 'added';
-                      const isTableProposed = table.status === 'proposed';
                       const isColAdded = col.status === 'added';
                       const isColModified = col.status === 'modified';
-                      const isColProposed = col.status === 'proposed';
 
-                      const rowBgColor = isTableProposed
-                        ? '#faf5ff'
-                        : isTableAdded
-                          ? '#f0f7ff'
-                          : (isColAdded || isColModified)
-                            ? '#f8fafc'
+                      const rowBgColor = isTableAdded
+                        ? '#f0f7ff'
+                        : (isColAdded || isColModified)
+                          ? '#f8fafc'
+                          : undefined;
+
+                      const colNameBg = isColAdded
+                        ? '#dbeafe'
+                        : isColModified
+                          ? '#e0f2fe'
+                          : isTableAdded
+                            ? '#e0f2fe'
                             : undefined;
 
-                      const colNameBg = isColProposed
-                        ? '#f3e8ff'
-                        : isColAdded
-                          ? '#dbeafe'
-                          : isColModified
-                            ? '#e0f2fe'
-                            : isTableProposed
-                              ? '#f3e8ff'
-                              : isTableAdded
-                                ? '#e0f2fe'
-                                : undefined;
-
-                      const colDescBg = isColProposed
-                        ? '#faf5ff'
-                        : isColAdded
-                          ? '#eff6ff'
-                          : isColModified
-                            ? '#f0f9ff'
-                            : isTableProposed
-                              ? '#faf5ff'
-                              : isTableAdded
-                                ? '#f0f7ff'
-                                : undefined;
+                      const colDescBg = isColAdded
+                        ? '#eff6ff'
+                        : isColModified
+                          ? '#f0f9ff'
+                          : isTableAdded
+                            ? '#f0f7ff'
+                            : undefined;
 
                       return (
                         <tr key={`${i}-${idx}`} style={{ backgroundColor: rowBgColor }}>
                           <td style={{
                             borderBottom: borderBottomStyle,
-                            backgroundColor: isTableProposed ? '#faf5ff' : isTableAdded ? '#f0f7ff' : undefined
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
                           }}>
                             {idx === 0 ? (
                               <span style={{
@@ -1966,12 +1842,12 @@ export function ScreenCompositionPage() {
                           <td style={{
                             borderBottom: borderBottomStyle,
                             fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined,
-                            backgroundColor: isTableProposed ? '#faf5ff' : isTableAdded ? '#f0f7ff' : undefined
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
                           }}>
                             {idx === 0 ? (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                                 <span style={{
-                                  color: isTableProposed ? '#6b21a8' : isTableAdded ? 'var(--palette-blue-700)' : undefined,
+                                  color: isTableAdded ? 'var(--palette-blue-700)' : undefined,
                                   fontWeight: 'bold'
                                 }}>
                                   {table.physicalName}
@@ -2002,30 +1878,17 @@ export function ScreenCompositionPage() {
                                     一部変更
                                   </span>
                                 )}
-                                {table.status === 'proposed' && (
-                                  <span style={{
-                                    display: 'inline-block',
-                                    padding: '2px 6px',
-                                    borderRadius: '4px',
-                                    fontSize: '10px',
-                                    fontWeight: 'bold',
-                                    backgroundColor: '#7c3aed',
-                                    color: '#ffffff'
-                                  }}>
-                                    新設案
-                                  </span>
-                                )}
                               </div>
                             ) : ''}
                           </td>
                           <td style={{
                             borderBottom: borderBottomStyle,
                             fontWeight: idx === 0 ? 'var(--weight-heading)' : undefined,
-                            backgroundColor: isTableProposed ? '#faf5ff' : isTableAdded ? '#f0f7ff' : undefined
+                            backgroundColor: isTableAdded ? '#f0f7ff' : undefined
                           }}>
                             {idx === 0 ? (
                               <span style={{
-                                color: isTableProposed ? '#6b21a8' : isTableAdded ? 'var(--palette-blue-700)' : undefined,
+                                color: isTableAdded ? 'var(--palette-blue-700)' : undefined,
                                 fontWeight: 'bold'
                               }}>
                                 {table.logicalName}
@@ -2034,24 +1897,16 @@ export function ScreenCompositionPage() {
                           </td>
                           <td style={{
                             backgroundColor: colNameBg,
-                            borderLeft: isColProposed
-                              ? '3px solid #7c3aed'
-                              : (isColAdded || isColModified)
-                                ? '3px solid #2563eb'
-                                : isTableProposed
-                                  ? '3px solid #a855f7'
-                                  : isTableAdded
-                                    ? '3px solid #60a5fa'
-                                    : undefined,
-                            color: isColProposed
-                              ? '#581c87'
-                              : (isColAdded || isTableAdded)
-                                ? '#1e3a8a'
-                                : isColModified
-                                  ? '#0369a1'
-                                  : isTableProposed
-                                    ? '#581c87'
-                                    : 'var(--color-text-main)'
+                            borderLeft: (isColAdded || isColModified)
+                              ? '3px solid #2563eb'
+                              : isTableAdded
+                                ? '3px solid #60a5fa'
+                                : undefined,
+                            color: (isColAdded || isTableAdded)
+                              ? '#1e3a8a'
+                              : isColModified
+                                ? '#0369a1'
+                                : 'var(--color-text-main)'
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                               {isColAdded && (
@@ -2080,35 +1935,18 @@ export function ScreenCompositionPage() {
                                   変更
                                 </span>
                               )}
-                              {isColProposed && (
-                                <span style={{
-                                  padding: '1px 5px',
-                                  borderRadius: '3px',
-                                  fontSize: '10px',
-                                  fontWeight: 'bold',
-                                  backgroundColor: '#7c3aed',
-                                  color: '#ffffff',
-                                  whiteSpace: 'nowrap'
-                                }}>
-                                  新設案
-                                </span>
-                              )}
-                              <span style={{ fontWeight: (isColAdded || isColModified || isColProposed || isTableAdded || isTableProposed) ? '600' : 'normal' }}>
+                              <span style={{ fontWeight: (isColAdded || isColModified || isTableAdded) ? '600' : 'normal' }}>
                                 {col.name}
                               </span>
                             </div>
                           </td>
                           <td style={{
                             backgroundColor: colDescBg,
-                            color: isColProposed
-                              ? '#4c1d95'
-                              : (isColAdded || isTableAdded)
-                                ? '#1e40af'
-                                : isColModified
-                                  ? '#075985'
-                                  : isTableProposed
-                                    ? '#4c1d95'
-                                    : 'var(--color-text-main)'
+                            color: (isColAdded || isTableAdded)
+                              ? '#1e40af'
+                              : isColModified
+                                ? '#075985'
+                                : 'var(--color-text-main)'
                           }}>
                             {col.desc}
                           </td>
@@ -2151,18 +1989,17 @@ export function ScreenCompositionPage() {
                     }
 
                     if (isNewSubCategory && table.subCategory) {
-                      const isProposedSubCat = table.subCategory.includes('新設案');
                       headerRows.push(
-                        <tr key={`subcat-hdr-${i}`} style={{ backgroundColor: isProposedSubCat ? '#f5f3ff' : undefined }} className={isProposedSubCat ? undefined : 'row-bg-subtle'}>
+                        <tr key={`subcat-hdr-${i}`} className="row-bg-subtle">
                           <td colSpan={5} style={{
                             padding: '6px 16px 6px 24px',
                             fontWeight: 'bold',
                             fontSize: '12px',
-                            color: isProposedSubCat ? '#5b21b6' : 'var(--color-text-main)',
-                            borderTop: isProposedSubCat ? '1px solid #ddd6fe' : '1px solid var(--color-border)',
-                            borderBottom: isProposedSubCat ? '1px solid #ddd6fe' : '1px solid var(--color-border)'
+                            color: 'var(--color-text-main)',
+                            borderTop: '1px solid var(--color-border)',
+                            borderBottom: '1px solid var(--color-border)'
                           }}>
-                            <span className="text-muted mr-2" style={{ color: isProposedSubCat ? '#7c3aed' : undefined }}>▼</span>
+                            <span className="text-muted mr-2">▼</span>
                             {table.subCategory}
                           </td>
                         </tr>

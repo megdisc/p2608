@@ -5,12 +5,24 @@ ALTER TABLE "public"."service_types" DROP COLUMN IF EXISTS "description";
 -- 2. 資格 (qualifications) の description カラム削除
 ALTER TABLE "public"."qualifications" DROP COLUMN IF EXISTS "description";
 
--- 3. 職種 (staff_roles) の description カラム削除
+-- 3. 職種 (staff_roles) の description カラム削除および sort_order 削除
 ALTER TABLE "public"."staff_roles" DROP COLUMN IF EXISTS "description";
+DROP INDEX IF EXISTS "public"."idx_staff_roles_sort_order";
+ALTER TABLE "public"."staff_roles" DROP COLUMN IF EXISTS "sort_order";
 
 -- 4. 所在地級数 (regional_grade_rates) の display_order カラム削除
 DROP INDEX IF EXISTS "public"."idx_regional_grade_rates_display_order";
 ALTER TABLE "public"."regional_grade_rates" DROP COLUMN IF EXISTS "display_order";
+
+-- 4.1 区分マスタの表示順 (display_order) カラム削除
+DROP INDEX IF EXISTS "public"."idx_capacity_tiers_display_order";
+ALTER TABLE "public"."capacity_tiers" DROP COLUMN IF EXISTS "display_order";
+
+DROP INDEX IF EXISTS "public"."idx_staffing_ratio_tiers_display_order";
+ALTER TABLE "public"."staffing_ratio_tiers" DROP COLUMN IF EXISTS "display_order";
+
+DROP INDEX IF EXISTS "public"."idx_wage_achievement_tiers_display_order";
+ALTER TABLE "public"."wage_achievement_tiers" DROP COLUMN IF EXISTS "display_order";
 
 -- 5. 基本報酬 (base_reward_items) に公定サービスコード (service_code) カラム追加
 ALTER TABLE "public"."base_reward_items" ADD COLUMN IF NOT EXISTS "service_code" VARCHAR(20);

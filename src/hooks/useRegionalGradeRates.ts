@@ -31,7 +31,7 @@ export function useRegionalGradeRates() {
       const { data, error } = await supabase
         .from('regional_grade_rates')
         .select('*')
-        .order('premium_rate', { ascending: false });
+        .order('grade', { ascending: true });
 
       if (error || !data || data.length === 0) {
         setItems(DEFAULT_REGIONAL_GRADE_RATES);

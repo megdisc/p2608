@@ -8,7 +8,7 @@ export type CapacityTierItem = {
   name: string;
   min_capacity: number;
   max_capacity: number | null;
-  display_order: number;
+  display_order?: number;
   valid_from: string;
   valid_to: string | null;
 };
@@ -31,21 +31,21 @@ export function useCapacityTiers() {
       const { data, error } = await supabase
         .from('capacity_tiers')
         .select('*, service_types(name)')
-        .order('display_order', { ascending: true });
+        .order('code', { ascending: true });
 
       if (error || !data || data.length === 0) {
         setItems(DEFAULT_CAPACITY_TIERS);
         return;
       }
 
-      setItems((data as Array<{ id: string; code: string; name: string; min_capacity: number | string; max_capacity: number | string | null; display_order: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
+      setItems((data as Array<{ id: string; code: string; name: string; min_capacity: number | string; max_capacity: number | string | null; display_order?: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
         id: d.id,
         service_type_name: d.service_types?.name || '就労継続支援B型',
         code: d.code,
         name: d.name,
         min_capacity: Number(d.min_capacity) || 0,
         max_capacity: d.max_capacity !== null && d.max_capacity !== undefined ? Number(d.max_capacity) : null,
-        display_order: Number(d.display_order) || 0,
+        display_order: d.display_order ? Number(d.display_order) : undefined,
         valid_from: d.valid_from || '2024-04-01',
         valid_to: d.valid_to || null,
       })));

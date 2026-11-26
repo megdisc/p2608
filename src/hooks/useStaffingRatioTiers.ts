@@ -7,7 +7,7 @@ export type StaffingRatioTierItem = {
   code: string;
   name: string;
   ratio_value: number;
-  display_order: number;
+  display_order?: number;
   valid_from: string;
   valid_to: string | null;
 };
@@ -28,20 +28,20 @@ export function useStaffingRatioTiers() {
       const { data, error } = await supabase
         .from('staffing_ratio_tiers')
         .select('*, service_types(name)')
-        .order('display_order', { ascending: true });
+        .order('code', { ascending: true });
 
       if (error || !data || data.length === 0) {
         setItems(DEFAULT_STAFFING_RATIO_TIERS);
         return;
       }
 
-      setItems((data as Array<{ id: string; code: string; name: string; ratio_value: number | string; display_order: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
+      setItems((data as Array<{ id: string; code: string; name: string; ratio_value: number | string; display_order?: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
         id: d.id,
         service_type_name: d.service_types?.name || '就労継続支援B型',
         code: d.code,
         name: d.name,
         ratio_value: Number(d.ratio_value) || 0,
-        display_order: Number(d.display_order) || 0,
+        display_order: d.display_order ? Number(d.display_order) : undefined,
         valid_from: d.valid_from || '2024-04-01',
         valid_to: d.valid_to || null,
       })));

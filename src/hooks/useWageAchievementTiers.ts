@@ -9,7 +9,7 @@ export type WageAchievementTierItem = {
   tier_rank: number;
   min_wage: number;
   max_wage: number | null;
-  display_order: number;
+  display_order?: number;
   valid_from: string;
   valid_to: string | null;
 };
@@ -36,14 +36,14 @@ export function useWageAchievementTiers() {
       const { data, error } = await supabase
         .from('wage_achievement_tiers')
         .select('*, service_types(name)')
-        .order('display_order', { ascending: true });
+        .order('code', { ascending: true });
 
       if (error || !data || data.length === 0) {
         setItems(DEFAULT_WAGE_ACHIEVEMENT_TIERS);
         return;
       }
 
-      setItems((data as Array<{ id: string; code: string; name: string; tier_rank: number | string; min_wage: number | string; max_wage: number | string | null; display_order: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
+      setItems((data as Array<{ id: string; code: string; name: string; tier_rank: number | string; min_wage: number | string; max_wage: number | string | null; display_order?: number | string; valid_from?: string; valid_to?: string | null; service_types?: { name?: string } }>).map((d) => ({
         id: d.id,
         service_type_name: d.service_types?.name || '就労継続支援B型',
         code: d.code,
@@ -51,7 +51,7 @@ export function useWageAchievementTiers() {
         tier_rank: Number(d.tier_rank) || 0,
         min_wage: Number(d.min_wage) || 0,
         max_wage: d.max_wage !== null && d.max_wage !== undefined ? Number(d.max_wage) : null,
-        display_order: Number(d.display_order) || 0,
+        display_order: d.display_order ? Number(d.display_order) : undefined,
         valid_from: d.valid_from || '2024-04-01',
         valid_to: d.valid_to || null,
       })));

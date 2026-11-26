@@ -19,27 +19,25 @@ export function CapacityTierPage() {
       key: 'service_type_name',
       header: TABLE_COLUMNS.SERVICE_TYPE,
       sortable: true,
-      style: { width: '160px' },
     },
     {
       key: 'code',
       header: '区分コード',
       sortable: true,
-      style: { width: '140px' },
     },
     {
       key: 'name',
       header: TABLE_COLUMNS.CAPACITY_TIER,
       sortable: true,
       className: 'bg-base-data',
-      style: { minWidth: '160px', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'min_capacity',
       header: '下限定員(人)',
       sortable: true,
       className: 'bg-base-data',
-      style: { width: '110px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: CapacityTierItem) => item.min_capacity,
     },
     {
@@ -47,27 +45,21 @@ export function CapacityTierPage() {
       header: '上限定員(人)',
       sortable: true,
       className: 'bg-base-data',
-      style: { width: '110px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: CapacityTierItem) => item.max_capacity !== null ? item.max_capacity : '-',
-    },
-    {
-      key: 'display_order',
-      header: '表示順',
-      sortable: true,
-      style: { width: '90px', textAlign: 'center' },
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: CapacityTierItem) => item.valid_from || '-',
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: CapacityTierItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
     },
   ];
@@ -79,7 +71,7 @@ export function CapacityTierPage() {
       title={WORDS_SYSTEM.CAPACITY_TIER}
       data={items}
       columns={columns}
-      initialSort={{ key: 'display_order', direction: 'asc' }}
+      initialSort={{ key: 'code', direction: 'asc' }}
       emptyMessage="登録されている利用定員規模区分データがありません"
       hideHeader={true}
       hideAddButton={true}

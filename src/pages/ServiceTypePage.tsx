@@ -20,21 +20,20 @@ export function ServiceTypePage() {
       key: 'code',
       header: TABLE_COLUMNS.SERVICE_TYPE_CODE,
       sortable: true,
-      style: { width: '140px' },
     },
     {
       key: 'name',
       header: TABLE_COLUMNS.SERVICE_TYPE_NAME,
       sortable: true,
       className: 'bg-base-data',
-      style: { minWidth: '180px', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'personnel_cost_ratio',
       header: TABLE_COLUMNS.PERSONNEL_COST_RATIO,
       sortable: true,
       className: 'quantity bg-base-data',
-      style: { width: '160px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: ServiceTypeItem) => {
         if (item.personnel_cost_ratio === null || item.personnel_cost_ratio === undefined) {
           return '-';
@@ -47,14 +46,14 @@ export function ServiceTypePage() {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: ServiceTypeItem) => item.valid_from || '-',
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: ServiceTypeItem) => item.valid_to || '-',
     },
   ];

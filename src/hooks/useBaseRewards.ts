@@ -44,7 +44,7 @@ export function useBaseRewards() {
     try {
       setLoading(true);
       const [rewardRes, stRes] = await Promise.all([
-        supabase.from('base_reward_items').select('*').order('base_units', { ascending: false }),
+        supabase.from('base_reward_items').select('*').order('service_code', { ascending: true }),
         supabase.from('service_types').select('id, name, code'),
       ]);
 

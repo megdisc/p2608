@@ -12,7 +12,6 @@ export function useStaffRoles() {
       const { data, error } = await supabase
         .from('staff_roles')
         .select('*')
-        .order('sort_order', { ascending: true })
         .order('code', { ascending: true });
 
       if (error) throw error;

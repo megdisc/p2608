@@ -20,7 +20,7 @@ export function RegionalGradeLocationPage() {
       header: TABLE_COLUMNS.PREFECTURE,
       sortable: true,
       className: 'bg-base-data',
-      style: { width: '160px', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'city',
@@ -33,20 +33,20 @@ export function RegionalGradeLocationPage() {
       key: 'grade',
       header: TABLE_COLUMNS.REGIONAL_GRADE,
       sortable: true,
-      style: { width: '140px', textAlign: 'center' },
+      style: { textAlign: 'center' },
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: RegionalGradeLocationItem) => item.valid_from || '-',
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       render: (item: RegionalGradeLocationItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
     },
   ];
@@ -58,7 +58,7 @@ export function RegionalGradeLocationPage() {
       title={WORDS_SYSTEM.REGIONAL_GRADE_LOCATION}
       data={items}
       columns={columns}
-      initialSort={{ key: 'city', direction: 'asc' }}
+      initialSort={{ key: 'prefecture', direction: 'asc' }}
       emptyMessage="登録されている所在地データがありません"
       hideHeader={true}
       hideAddButton={true}

@@ -73,12 +73,11 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE, 
       editable: false, 
       rowType: 'main',
-      style: { backgroundColor: '#ffffff' },
       render: (item: ServiceTypeWithRewardItems) => (
         item.isUnassigned ? (
           <span style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>未分類</span>
         ) : (
-          <span style={{ fontWeight: 500 }}>{item.name}</span>
+          item.name
         )
       )
     },
@@ -104,17 +103,7 @@ export function RewardItemPage() {
       render: (item: ServiceTypeWithRewardItems | RewardItem) => {
         const category = (item as RewardItem).item_category;
         const isAddition = category === 'addition' || (category as string) === 'reward_addition';
-        return (
-          <span style={{ 
-            padding: '2px 8px', 
-            borderRadius: '4px', 
-            fontSize: 'var(--text-caption)',
-            backgroundColor: isAddition ? 'var(--palette-bluegreen-200)' : 'var(--palette-red-200)',
-            color: isAddition ? 'var(--palette-bluegreen-900)' : 'var(--palette-red-900)'
-          }}>
-            {isAddition ? '体制加算' : '体制減算'}
-          </span>
-        );
+        return isAddition ? '体制加算' : '体制減算';
       }
     },
     { 

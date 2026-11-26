@@ -19,53 +19,49 @@ export function BaseRewardItemPage() {
       key: 'service_type_name',
       header: TABLE_COLUMNS.SERVICE_TYPE,
       sortable: true,
-      style: { width: '160px' },
       render: (item: BaseRewardItem) => item.service_type_name || '就労継続支援B型',
     },
     {
       key: 'service_code',
       header: 'サービスコード',
       sortable: true,
-      style: { width: '140px', textAlign: 'center' },
+      style: { textAlign: 'center' },
     },
     {
       key: 'capacity_tier',
       header: TABLE_COLUMNS.CAPACITY_TIER,
       sortable: true,
-      style: { width: '130px' },
     },
     {
       key: 'staffing_ratio',
       header: TABLE_COLUMNS.STAFFING_RATIO,
       sortable: true,
-      style: { width: '130px' },
     },
     {
       key: 'wage_achievement_tier',
       header: TABLE_COLUMNS.WAGE_ACHIEVEMENT_TIER,
       sortable: true,
-      style: { minWidth: '190px' },
     },
     {
       key: 'base_units',
       header: TABLE_COLUMNS.BASE_UNITS,
       sortable: true,
       className: 'quantity bg-base-data',
-      style: { width: '130px', textAlign: 'right', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: BaseRewardItem) => <NumberDisplay value={item.base_units} />,
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       inputType: 'date',
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
-      style: { width: '130px', textAlign: 'center' },
+      style: { textAlign: 'center' },
       inputType: 'date',
       render: (item: BaseRewardItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
     },
@@ -78,7 +74,7 @@ export function BaseRewardItemPage() {
       title="基本報酬"
       data={items}
       columns={columns}
-      initialSort={{ key: 'base_units', direction: 'desc' }}
+      initialSort={{ key: 'service_code', direction: 'asc' }}
       emptyMessage="登録されている基本報酬データがありません"
       hideHeader={true}
       hideAddButton={true}

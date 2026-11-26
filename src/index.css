@@ -372,6 +372,7 @@ button {
   margin: 0;
   color: var(--color-text-main);
   line-height: 28px;
+  white-space: nowrap;
 }
 
 .table-container {
@@ -949,8 +950,12 @@ input[type="number"] {
 /* --- タブ表示 (ピル型) --- */
 .tabs-container {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-1);
+  row-gap: var(--space-2);
   align-items: center;
+  justify-content: flex-end;
+  max-width: 100%;
 }
 
 .tab-pill {
@@ -1285,7 +1290,9 @@ input[type="number"] {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
   min-height: 28px;
   margin-bottom: var(--space-6);
 }
@@ -1295,16 +1302,26 @@ input[type="number"] {
   font-size: var(--text-heading-2);
   font-weight: var(--weight-heading);
   line-height: 28px;
-  height: 28px;
+  min-height: 28px;
+  height: auto;
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
 .page-header-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-4);
+  row-gap: var(--space-2);
   align-items: center;
-  height: 28px;
+  justify-content: flex-end;
+  min-height: 28px;
+  height: auto;
+  flex: 1;
+  min-width: 0;
 }
 
 /* --- 共通ローディング・プレースホルダー --- */

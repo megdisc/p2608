@@ -14,9 +14,9 @@ const getTabCategory = (tabId: string): string => {
   // 1. 設定（制度、施設、取引先、スキル体系、工賃・控除体系、給与体系、積立金体系）
   const settingsTabIds = [
     // 制度
-    'serviceType', 'baseReward', 'rewardItem', 'qualification', 'staffRole',
-    'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
-    'capacityTier', 'staffingRatioTier', 'wageAchievementTier',
+    'serviceType', 'capacityTier', 'staffingRatioTier', 'wageAchievementTier',
+    'baseReward', 'rewardItem', 'qualification', 'staffRole',
+    'regionalGradeRate', 'regionalGradeLocation',
     // 施設
     'organization', 'office', 'officeServiceType', 'officeReward',
     // 取引先
@@ -146,12 +146,77 @@ export function ScreenCompositionPage() {
         { name: 'id', desc: '支援種別ID' },
         { name: 'code', desc: 'サービス種類コード（厚生労働省公定2桁コード。例: 21: 就労継続支援B型, 22: 就労継続支援A型, 15: 就労移行支援 など）' },
         { name: 'name', desc: 'サービス種類名称' },
-        { name: 'description', desc: '説明・概要' },
         { name: 'personnel_cost_ratio', desc: '支援種別人件費割合（公定価格基準。例: 就労B型は0.5700、生活介護は0.6100。地域区分単価算出用）' },
         { name: 'valid_from', desc: '適用開始年月日（制度施行・新設年月日）', status: 'added' },
         { name: 'valid_to', desc: '適用終了年月日（制度廃止年月日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
+      ]
+    },
+    {
+      category: '1. 制度',
+      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
+      physicalName: 'capacity_tiers',
+      tableType: '独立マスタ',
+      logicalName: '利用定員規模区分',
+      description: '法令・報酬告示に基づく利用定員規模の基準区分マスタ。就労継続支援等の「20人以下」「21〜40人」「41〜60人」「61〜80人」「81人以上」の基準範囲と表示順を公定値として管理。事業所の指定定員数と照合して基本報酬区分を特定する基準値テーブル。',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '定員規模区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id。就労B型、生活介護等）', status: 'added' },
+        { name: 'code', desc: '区分コード（公定区分識別子。例: CAP_20, CAP_21_40, CAP_41_60, CAP_61_80, CAP_81_PLUS）', status: 'added' },
+        { name: 'name', desc: '定員規模名称（例: 20人以下, 21人以上40人以下, 41人以上60人以下, 61人以上80人以下, 81人以上）', status: 'added' },
+        { name: 'min_capacity', desc: '下限定員数（例: 1, 21, 41, 61, 81。範囲判定用下限値）', status: 'added' },
+        { name: 'max_capacity', desc: '上限定員数（例: 20, 40, 60, 80, NULL: 上限なし。範囲判定用上限値）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順（昇順ソート用）', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '1. 制度',
+      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
+      physicalName: 'staffing_ratio_tiers',
+      tableType: '独立マスタ',
+      logicalName: '人員配置基準区分',
+      description: '法令・報酬告示に基づく職員配置基準の公定区分マスタ。就労継続支援等の「7.5:1配置」「10:1配置」等の配置比率基準値を管理。事業所の常勤換算配置実績との照合・判定の基礎テーブル。',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '人員配置区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'code', desc: '区分コード（例: RATIO_7_5_1, RATIO_10_1, RATIO_6_1）', status: 'added' },
+        { name: 'name', desc: '配置区分名称（例: 7.5:1配置, 10:1配置）', status: 'added' },
+        { name: 'ratio_value', desc: '職員1人あたり利用者数比率（数値。例: 7.50, 10.00。基準判定用）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
+      ]
+    },
+    {
+      category: '1. 制度',
+      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
+      physicalName: 'wage_achievement_tiers',
+      tableType: '独立マスタ',
+      logicalName: '平均工賃月額達成区分',
+      description: '就労継続支援B型等の前年度平均工賃月額に応じた報酬告示基準区分マスタ。「4万5千円以上（第1区分）」から「1万円未満（第9区分）」までの全9段階の金額範囲・ランク順位を管理。前年度実績から当年度基本報酬ランクを特定する判定基準値テーブル。',
+      status: 'added',
+      columns: [
+        { name: 'id', desc: '工賃達成区分ID（PK）', status: 'added' },
+        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'code', desc: '区分コード（公定コード。例: WAGE_TIER_1 〜 WAGE_TIER_9）', status: 'added' },
+        { name: 'name', desc: '工賃達成区分名称（例: 4万5千円以上, 4万円以上4万5千円未満, ..., 1万円未満）', status: 'added' },
+        { name: 'tier_rank', desc: '区分ランク（1〜9。基本報酬単位数の高低順位）', status: 'added' },
+        { name: 'min_wage', desc: '下限工賃月額（円。例: 45000, 40000, 35000, ..., 0。判定範囲下限）', status: 'added' },
+        { name: 'max_wage', desc: '上限工賃月額（円。例: NULL: 上限なし, 44999, 39999, ..., 9999。判定範囲上限）', status: 'added' },
+        { name: 'display_order', desc: '表示並び順', status: 'added' },
+        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
+        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
+        { name: 'created_at', desc: '作成日時', status: 'added' },
+        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {
@@ -165,6 +230,7 @@ export function ScreenCompositionPage() {
       columns: [
         { name: 'id', desc: '基本報酬ID', status: 'added' },
         { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
+        { name: 'service_code', desc: 'サービスコード（国保連公定6桁コード。例: 111111）', status: 'added' },
         { name: 'capacity_tier', desc: '利用定員規模区分（20人以下、21〜40人、41〜60人など）', status: 'added' },
         { name: 'staffing_ratio', desc: '人員配置基準区分（7.5:1、6:1、10:1など）', status: 'added' },
         { name: 'wage_achievement_tier', desc: '平均工賃月額達成区分（4.5万円以上、4万円以上4.5万円未満など。または個別利用時間区分）', status: 'added' },
@@ -213,7 +279,6 @@ export function ScreenCompositionPage() {
         { name: 'code', desc: '職種区分コード（障害福祉指定体制届出2桁コード。例: 01: サービス管理責任者, 03: 社会福祉士, 13: 生活支援員 など）' },
         { name: 'name', desc: '資格・職種名称' },
         { name: 'category', desc: '資格区分' },
-        { name: 'description', desc: '資格概要' },
         { name: 'valid_from', desc: '適用開始年月日（資格・研修新設施行日）', status: 'added' },
         { name: 'valid_to', desc: '適用終了年月日（資格・研修廃止日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
@@ -234,7 +299,6 @@ export function ScreenCompositionPage() {
         { name: 'name', desc: '職種名称' },
         { name: 'category', desc: '職種区分（必置職種 / 加算職種 / 関連職種）' },
         { name: 'is_direct_care', desc: '直接処遇職員フラグ（常勤換算比率の対象となる職種か否か）' },
-        { name: 'description', desc: '職種概要・役割説明' },
         { name: 'sort_order', desc: '表示並び順' },
         { name: 'valid_from', desc: '適用開始年月日（公定職種新設施行日）', status: 'added' },
         { name: 'valid_to', desc: '適用終了年月日（職種廃止日。NULL: 継続中）', status: 'added' },
@@ -247,14 +311,13 @@ export function ScreenCompositionPage() {
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
       physicalName: 'regional_grade_rates',
       tableType: '独立マスタ',
-      logicalName: '所在地級数上乗せ割合',
+      logicalName: '所在地級数',
       description: '障害福祉サービス公定の級地（1級地〜7級地、その他）および上乗せ割合マスタ（地域手当準拠）',
       status: 'modified',
       columns: [
         { name: 'id', desc: '上乗せ割合ID' },
         { name: 'grade', desc: '級地名称（例: 1級地〜7級地、その他）' },
         { name: 'premium_rate', desc: '上乗せ割合（公務員地域手当準拠。例: 0.2000〜0.0000）' },
-        { name: 'display_order', desc: '表示順' },
         { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01。上乗せ割合の改定履歴管理用）', status: 'added' },
         { name: 'valid_to', desc: '適用終了年月日（改定による終了日。NULL: 適用中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
@@ -266,7 +329,7 @@ export function ScreenCompositionPage() {
       categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
       physicalName: 'regional_grade_locations',
       tableType: '独立マスタ',
-      logicalName: '所在地級数所在地',
+      logicalName: '所在地',
       description: '市区町村ごとの障害福祉サービス所在地級数（級地）対応マスタ',
       status: 'modified',
       columns: [
@@ -278,72 +341,6 @@ export function ScreenCompositionPage() {
         { name: 'valid_to', desc: '適用終了年月日（自治体合併等による終了日。NULL: 継続中）', status: 'added' },
         { name: 'created_at', desc: '作成日時' },
         { name: 'updated_at', desc: '更新日時' }
-      ]
-    },
-    {
-      category: '1. 制度',
-      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      physicalName: 'capacity_tiers',
-      tableType: '独立マスタ',
-      logicalName: '利用定員規模区分',
-      description: '法令・報酬告示に基づく利用定員規模の基準区分マスタ。就労継続支援等の「20人以下」「21〜40人」「41〜60人」「61〜80人」「81人以上」の基準範囲と表示順を公定値として管理。事業所の指定定員数と照合して基本報酬区分を特定する基準値テーブル。',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '定員規模区分ID（PK）', status: 'added' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id。就労B型、生活介護等）', status: 'added' },
-        { name: 'code', desc: '定員規模コード（公定区分識別子。例: CAP_20, CAP_21_40, CAP_41_60, CAP_61_80, CAP_81_PLUS）', status: 'added' },
-        { name: 'name', desc: '定員規模名称（例: 20人以下, 21人以上40人以下, 41人以上60人以下, 61人以上80人以下, 81人以上）', status: 'added' },
-        { name: 'min_capacity', desc: '下限定員数（人。例: 1, 21, 41, 61, 81。範囲判定用下限値）', status: 'added' },
-        { name: 'max_capacity', desc: '上限定員数（人。例: 20, 40, 60, 80, NULL: 上限なし。範囲判定用上限値）', status: 'added' },
-        { name: 'display_order', desc: '表示並び順（昇順ソート用）', status: 'added' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '1. 制度',
-      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      physicalName: 'staffing_ratio_tiers',
-      tableType: '独立マスタ',
-      logicalName: '人員配置基準区分',
-      description: '法令・報酬告示に基づく職員配置基準の公定区分マスタ。就労継続支援等の「7.5:1配置」「10:1配置」等の配置比率基準値を管理。事業所の常勤換算配置実績との照合・判定の基礎テーブル。',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '人員配置区分ID（PK）', status: 'added' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
-        { name: 'code', desc: '配置区分コード（例: RATIO_7_5_1, RATIO_10_1, RATIO_6_1）', status: 'added' },
-        { name: 'name', desc: '配置区分名称（例: 7.5:1配置, 10:1配置）', status: 'added' },
-        { name: 'ratio_value', desc: '職員1人あたり利用者数比率（数値。例: 7.50, 10.00。基準判定用）', status: 'added' },
-        { name: 'display_order', desc: '表示並び順', status: 'added' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
-      ]
-    },
-    {
-      category: '1. 制度',
-      categoryDescription: '福祉制度で定められている公定価格・基準値を管理するスキーマ群である。',
-      physicalName: 'wage_achievement_tiers',
-      tableType: '独立マスタ',
-      logicalName: '平均工賃月額達成区分',
-      description: '就労継続支援B型等の前年度平均工賃月額に応じた報酬告示基準区分マスタ。「4万5千円以上（第1区分）」から「1万円未満（第9区分）」までの全9段階の金額範囲・ランク順位を管理。前年度実績から当年度基本報酬ランクを特定する判定基準値テーブル。',
-      status: 'added',
-      columns: [
-        { name: 'id', desc: '工賃達成区分ID（PK）', status: 'added' },
-        { name: 'service_type_id', desc: '所属支援種別ID（FK -> service_types.id）', status: 'added' },
-        { name: 'code', desc: '区分コード（公定コード。例: WAGE_TIER_1 〜 WAGE_TIER_9）', status: 'added' },
-        { name: 'name', desc: '工賃達成区分名称（例: 4万5千円以上, 4万円以上4万5千円未満, ..., 1万円未満）', status: 'added' },
-        { name: 'tier_rank', desc: '区分ランク（1〜9。基本報酬単位数の高低順位）', status: 'added' },
-        { name: 'min_wage', desc: '下限工賃月額（円。例: 45000, 40000, 35000, ..., 0。判定範囲下限）', status: 'added' },
-        { name: 'max_wage', desc: '上限工賃月額（円。例: NULL: 上限なし, 44999, 39999, ..., 9999。判定範囲上限）', status: 'added' },
-        { name: 'display_order', desc: '表示並び順', status: 'added' },
-        { name: 'valid_from', desc: '適用開始年月日（報酬改定施行日。例: 2024-04-01）', status: 'added' },
-        { name: 'valid_to', desc: '適用終了年月日（改定による失効日。NULL: 適用中）', status: 'added' },
-        { name: 'created_at', desc: '作成日時', status: 'added' },
-        { name: 'updated_at', desc: '更新日時', status: 'added' }
       ]
     },
     {

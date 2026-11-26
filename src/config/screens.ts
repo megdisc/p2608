@@ -22,15 +22,15 @@ export const SCREEN_CONFIGS: Record<string, ScreenConfig> = {
     screenName: PAGE_NAMES.SCREEN_WELFARE,
     tabs: [
       { id: 'serviceType', label: PAGE_NAMES.SERVICE_TYPE },
+      { id: 'capacityTier', label: PAGE_NAMES.CAPACITY_TIER },
+      { id: 'staffingRatioTier', label: PAGE_NAMES.STAFFING_RATIO_TIER },
+      { id: 'wageAchievementTier', label: PAGE_NAMES.WAGE_ACHIEVEMENT_TIER },
       { id: 'baseReward', label: PAGE_NAMES.BASE_REWARD },
       { id: 'rewardItem', label: PAGE_NAMES.REWARD_ITEM },
       { id: 'qualification', label: PAGE_NAMES.QUALIFICATION },
       { id: 'staffRole', label: PAGE_NAMES.STAFF_ROLE },
       { id: 'regionalGradeRate', label: PAGE_NAMES.REGIONAL_GRADE_RATE },
       { id: 'regionalGradeLocation', label: PAGE_NAMES.REGIONAL_GRADE_LOCATION },
-      { id: 'capacityTier', label: PAGE_NAMES.CAPACITY_TIER },
-      { id: 'staffingRatioTier', label: PAGE_NAMES.STAFFING_RATIO_TIER },
-      { id: 'wageAchievementTier', label: PAGE_NAMES.WAGE_ACHIEVEMENT_TIER },
     ],
   },
   SCREEN_FACILITY: {

@@ -23,6 +23,12 @@ export function ScreenWelfarePage() {
     switch (navContext.activeTab) {
       case 'serviceType':
         return <ServiceTypePage />;
+      case 'capacityTier':
+        return <CapacityTierPage />;
+      case 'staffingRatioTier':
+        return <StaffingRatioTierPage />;
+      case 'wageAchievementTier':
+        return <WageAchievementTierPage />;
       case 'baseReward':
         return <BaseRewardItemPage />;
       case 'rewardItem':
@@ -36,12 +42,6 @@ export function ScreenWelfarePage() {
       case 'regionalGradeLocation':
       case 'regionalGrade': // 後方互換性
         return <RegionalGradeLocationPage />;
-      case 'capacityTier':
-        return <CapacityTierPage />;
-      case 'staffingRatioTier':
-        return <StaffingRatioTierPage />;
-      case 'wageAchievementTier':
-        return <WageAchievementTierPage />;
       default:
         return <ServiceTypePage />;
     }

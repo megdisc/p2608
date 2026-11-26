@@ -22,6 +22,12 @@ export function WageAchievementTierPage() {
       style: { width: '150px' },
     },
     {
+      key: 'code',
+      header: '区分コード',
+      sortable: true,
+      style: { width: '140px' },
+    },
+    {
       key: 'tier_rank',
       header: 'ランク',
       sortable: true,
@@ -41,7 +47,7 @@ export function WageAchievementTierPage() {
       sortable: true,
       className: 'quantity bg-base-data',
       style: { width: '130px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: WageAchievementTierItem) => <NumberDisplay value={item.min_wage} unit=" 円" />,
+      render: (item: WageAchievementTierItem) => <NumberDisplay value={item.min_wage} />,
     },
     {
       key: 'max_wage',
@@ -49,7 +55,7 @@ export function WageAchievementTierPage() {
       sortable: true,
       className: 'quantity bg-base-data',
       style: { width: '130px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: WageAchievementTierItem) => item.max_wage !== null ? <NumberDisplay value={item.max_wage} unit=" 円" /> : '上限なし',
+      render: (item: WageAchievementTierItem) => item.max_wage !== null ? <NumberDisplay value={item.max_wage} /> : '-',
     },
     {
       key: 'valid_from',

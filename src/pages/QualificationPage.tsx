@@ -19,7 +19,6 @@ export function QualificationPage() {
     { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true },
     { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true, className: 'bg-base-data', style: { backgroundColor: 'var(--palette-yellow-300)' } },
     { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true },
-    { key: 'description', header: TABLE_COLUMNS.DESCRIPTION, sortable: true },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,

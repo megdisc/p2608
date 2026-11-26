@@ -23,6 +23,12 @@ export function BaseRewardItemPage() {
       render: (item: BaseRewardItem) => item.service_type_name || '就労継続支援B型',
     },
     {
+      key: 'service_code',
+      header: 'サービスコード',
+      sortable: true,
+      style: { width: '140px', textAlign: 'center' },
+    },
+    {
       key: 'capacity_tier',
       header: TABLE_COLUMNS.CAPACITY_TIER,
       sortable: true,
@@ -46,7 +52,7 @@ export function BaseRewardItemPage() {
       sortable: true,
       className: 'quantity bg-base-data',
       style: { width: '130px', textAlign: 'right', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: BaseRewardItem) => <NumberDisplay value={item.base_units} unit=" 単位" />,
+      render: (item: BaseRewardItem) => <NumberDisplay value={item.base_units} />,
     },
     {
       key: 'valid_from',

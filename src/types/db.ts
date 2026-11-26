@@ -246,6 +246,7 @@ export type ServiceTypeTableItem = {
 export type BaseRewardItemTableItem = {
   id: string; // UUID
   service_type_id: string; // UUID
+  service_code?: string; // サービスコード（国保連請求公定コード 例: 111111）
   capacity_tier: string;
   staffing_ratio: string;
   wage_achievement_tier: string;

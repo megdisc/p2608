@@ -6,7 +6,7 @@ export type ServiceTypeItem = {
   id: string;
   code: string;
   name: string;
-  description: string;
+  description?: string;
   personnel_cost_ratio?: number | null;
   valid_from?: string;
   valid_to?: string | null;
@@ -63,7 +63,6 @@ export function useServiceTypes() {
         const upsertData: Partial<ServiceTypeTableItem> = {
           code: item.code.trim(),
           name: item.name,
-          description: item.description || '',
         };
         if (!item.id.startsWith('ST-')) {
           upsertData.id = item.id;

@@ -44,12 +44,6 @@ export function ServiceTypePage() {
       },
     },
     {
-      key: 'description',
-      header: TABLE_COLUMNS.DESCRIPTION,
-      sortable: true,
-      style: { minWidth: '240px' },
-    },
-    {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,

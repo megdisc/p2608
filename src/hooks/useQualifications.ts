@@ -6,7 +6,7 @@ export type QualificationItem = {
   code: string;
   name: string;
   category: string;
-  description: string;
+  description?: string;
   valid_from?: string;
   valid_to?: string | null;
 };
@@ -63,7 +63,6 @@ export function useQualifications() {
           code: item.code.trim(),
           name: item.name,
           category: item.category || null,
-          description: item.description || null,
         };
         if (!item.id.startsWith('QUAL-')) {
           upsertData.id = item.id;

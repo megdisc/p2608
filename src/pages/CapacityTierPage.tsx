@@ -40,7 +40,7 @@ export function CapacityTierPage() {
       sortable: true,
       className: 'bg-base-data',
       style: { width: '110px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: CapacityTierItem) => `${item.min_capacity}人`,
+      render: (item: CapacityTierItem) => item.min_capacity,
     },
     {
       key: 'max_capacity',
@@ -48,7 +48,7 @@ export function CapacityTierPage() {
       sortable: true,
       className: 'bg-base-data',
       style: { width: '110px', textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: CapacityTierItem) => item.max_capacity !== null ? `${item.max_capacity}人` : '上限なし',
+      render: (item: CapacityTierItem) => item.max_capacity !== null ? item.max_capacity : '-',
     },
     {
       key: 'display_order',

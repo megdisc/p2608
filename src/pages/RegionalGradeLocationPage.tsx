@@ -10,7 +10,7 @@ export function RegionalGradeLocationPage() {
 
   useEffect(() => {
     fetchLocations().catch(() => {
-      showAlert('所在地級数所在地データの取得に失敗しました', 'error');
+      showAlert('所在地データの取得に失敗しました', 'error');
     });
   }, [fetchLocations, showAlert]);
 
@@ -19,19 +19,21 @@ export function RegionalGradeLocationPage() {
       key: 'prefecture',
       header: TABLE_COLUMNS.PREFECTURE,
       sortable: true,
-      style: { width: '160px' },
+      className: 'bg-base-data',
+      style: { width: '160px', backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'city',
       header: TABLE_COLUMNS.CITY,
       sortable: true,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'grade',
       header: TABLE_COLUMNS.REGIONAL_GRADE,
       sortable: true,
-      className: 'bg-base-data',
-      style: { width: '140px', textAlign: 'center', backgroundColor: 'var(--palette-yellow-300)' },
+      style: { width: '140px', textAlign: 'center' },
     },
     {
       key: 'valid_from',
@@ -57,7 +59,7 @@ export function RegionalGradeLocationPage() {
       data={items}
       columns={columns}
       initialSort={{ key: 'city', direction: 'asc' }}
-      emptyMessage="登録されている所在地級数所在地データがありません"
+      emptyMessage="登録されている所在地データがありません"
       hideHeader={true}
       hideAddButton={true}
       hideDeleteColumn={true}

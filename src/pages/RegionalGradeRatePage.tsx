@@ -10,7 +10,7 @@ export function RegionalGradeRatePage() {
 
   useEffect(() => {
     fetchRates().catch(() => {
-      showAlert('所在地級数上乗せ割合データの取得に失敗しました', 'error');
+      showAlert('所在地級数データの取得に失敗しました', 'error');
     });
   }, [fetchRates, showAlert]);
 
@@ -30,14 +30,8 @@ export function RegionalGradeRatePage() {
       style: { width: '160px', textAlign: 'right', fontWeight: 'bold', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: RegionalGradeRateItem) => {
         const rate = Number(item.premium_rate) || 0;
-        return `${(rate * 100).toFixed(1)}%`;
+        return (rate * 100).toFixed(1);
       },
-    },
-    {
-      key: 'display_order',
-      header: '表示順',
-      sortable: true,
-      style: { width: '100px', textAlign: 'center' },
     },
     {
       key: 'valid_from',
@@ -62,8 +56,8 @@ export function RegionalGradeRatePage() {
       title={WORDS_SYSTEM.REGIONAL_GRADE_RATE}
       data={items}
       columns={columns}
-      initialSort={{ key: 'display_order', direction: 'asc' }}
-      emptyMessage="登録されている所在地級数上乗せ割合データがありません"
+      initialSort={{ key: 'premium_rate', direction: 'desc' }}
+      emptyMessage="登録されている所在地級数データがありません"
       hideHeader={true}
       hideAddButton={true}
       hideDeleteColumn={true}

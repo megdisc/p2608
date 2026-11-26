@@ -44,12 +44,6 @@ export function StaffRoleMasterPage() {
       render: (item: StaffRoleTableItem) => (item.is_direct_care ? '○' : '-'),
     },
     {
-      key: 'description',
-      header: TABLE_COLUMNS.DESCRIPTION,
-      sortable: true,
-      style: { minWidth: '240px' },
-    },
-    {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,

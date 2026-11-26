@@ -133,7 +133,7 @@ export function ProjectSidebar({ activeTab, setActiveTab }: ProjectSidebarProps)
               'regionalGrade', 'regionalGradeRate', 'regionalGradeLocation',
               'capacityTier', 'staffingRatioTier', 'wageAchievementTier'
             ].includes(activeTab) ? 'active' : ''}`}
-            onClick={() => setActiveTab('serviceType')}
+            onClick={() => setActiveTab('baseReward')}
           >
             {PAGE_NAMES.SCREEN_WELFARE}
           </button>

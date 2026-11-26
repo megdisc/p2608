@@ -85,7 +85,7 @@ export function RewardItemPage() {
       key: 'code', 
       header: TABLE_COLUMNS.SERVICE_TYPE_CODE, 
       rowType: 'sub',
-      sortable: false
+      sortable: false,
     },
     { 
       key: 'name', 
@@ -100,6 +100,8 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.TYPE, 
       rowType: 'sub',
       sortable: false,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: ServiceTypeWithRewardItems | RewardItem) => {
         const category = (item as RewardItem).item_category;
         const isAddition = category === 'addition' || (category as string) === 'reward_addition';
@@ -111,11 +113,11 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.OCCURRENCE_TYPE, 
       rowType: 'sub',
       sortable: false,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: ServiceTypeWithRewardItems | RewardItem) => {
         const occurrence = (item as RewardItem).occurrence_type;
-        return (
-          <span>{occurrence === 'monthly' ? '月次発生' : '日次発生'}</span>
-        );
+        return occurrence === 'monthly' ? '月次発生' : '日次発生';
       }
     },
     { 
@@ -123,28 +125,35 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.UNIT, 
       rowType: 'sub',
       sortable: false,
-      className: 'bg-base-data',
-      style: { backgroundColor: 'var(--palette-yellow-300)' },
+      className: 'quantity bg-base-data',
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
     },
     { 
       key: 'calc_rate', 
       header: TABLE_COLUMNS.CALC_RATE_PERCENT, 
       rowType: 'sub',
       sortable: false,
-      className: 'bg-base-data',
-      style: { backgroundColor: 'var(--palette-yellow-300)' },
+      className: 'quantity bg-base-data',
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
     },
     { 
       key: 'monthly_limit_count', 
       header: TABLE_COLUMNS.MONTHLY_LIMIT_COUNT, 
       rowType: 'sub',
-      sortable: false 
+      sortable: false,
+      className: 'quantity bg-base-data',
+      style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
+      render: (item: ServiceTypeWithRewardItems | RewardItem) => {
+        const count = (item as RewardItem).monthly_limit_count;
+        return count !== null && count !== undefined ? count : '-';
+      }
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       rowType: 'sub',
       sortable: false,
+      style: { textAlign: 'center' },
       render: (item: ServiceTypeWithRewardItems | RewardItem) => (
         <DateDisplay value={(item as RewardItem).valid_from} fallback="-" />
       )
@@ -154,6 +163,7 @@ export function RewardItemPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       rowType: 'sub',
       sortable: false,
+      style: { textAlign: 'center' },
       render: (item: ServiceTypeWithRewardItems | RewardItem) => (
         <DateDisplay value={(item as RewardItem).valid_to} fallback="-" />
       )

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import type { ServiceTypeItem } from '../hooks';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
@@ -47,14 +47,14 @@ export function ServiceTypePage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: ServiceTypeItem) => item.valid_from || '-',
+      render: (item: ServiceTypeItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: ServiceTypeItem) => item.valid_to || '-',
+      render: (item: ServiceTypeItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

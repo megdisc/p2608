@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import type { QualificationItem } from '../hooks';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
@@ -16,22 +16,38 @@ export function QualificationPage() {
   }, [fetchQualifications, showAlert]);
 
   const columns: Column<QualificationItem>[] = [
-    { key: 'code', header: TABLE_COLUMNS.QUALIFICATION_CODE, sortable: true },
-    { key: 'name', header: TABLE_COLUMNS.QUALIFICATION_NAME, sortable: true, className: 'bg-base-data', style: { backgroundColor: 'var(--palette-yellow-300)' } },
-    { key: 'category', header: TABLE_COLUMNS.TYPE, sortable: true },
+    {
+      key: 'code',
+      header: TABLE_COLUMNS.QUALIFICATION_CODE,
+      sortable: true,
+    },
+    {
+      key: 'name',
+      header: TABLE_COLUMNS.QUALIFICATION_NAME,
+      sortable: true,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
+    },
+    {
+      key: 'category',
+      header: TABLE_COLUMNS.TYPE,
+      sortable: true,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
+    },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: QualificationItem) => item.valid_from || '-',
+      render: (item: QualificationItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: QualificationItem) => item.valid_to || '-',
+      render: (item: QualificationItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

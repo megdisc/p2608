@@ -55,15 +55,14 @@ export function BaseRewardItemPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      inputType: 'date',
+      render: (item: BaseRewardItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      inputType: 'date',
-      render: (item: BaseRewardItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
+      render: (item: BaseRewardItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

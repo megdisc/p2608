@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column } from '../components';
+import { DataPage, type Column, DateDisplay } from '../components';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS } from '../constants';
 import { useStaffRoles } from '../hooks';
@@ -32,6 +32,8 @@ export function StaffRoleMasterPage() {
       key: 'category',
       header: TABLE_COLUMNS.STAFF_ROLE_CATEGORY,
       sortable: true,
+      className: 'bg-base-data',
+      style: { backgroundColor: 'var(--palette-yellow-300)' },
     },
     {
       key: 'is_direct_care',
@@ -46,14 +48,14 @@ export function StaffRoleMasterPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: StaffRoleTableItem) => item.valid_from || '-',
+      render: (item: StaffRoleTableItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: StaffRoleTableItem) => item.valid_to || '-',
+      render: (item: StaffRoleTableItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

@@ -45,14 +45,14 @@ export function StaffingRatioTierPage() {
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: StaffingRatioTierItem) => item.valid_from || '-',
+      render: (item: StaffingRatioTierItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: StaffingRatioTierItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
+      render: (item: StaffingRatioTierItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

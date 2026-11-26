@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { DataPage, type Column, NumberDisplay, DateDisplay } from '../components';
+import { DataPage, type Column, CurrencyDisplay, DateDisplay } from '../components';
 import { useAlert } from '../contexts';
 import { TABLE_COLUMNS, WORDS_SYSTEM } from '../constants';
 import { useWageAchievementTiers, type WageAchievementTierItem } from '../hooks';
@@ -29,7 +29,8 @@ export function WageAchievementTierPage() {
       key: 'tier_rank',
       header: 'ランク',
       sortable: true,
-      style: { textAlign: 'center' },
+      className: 'bg-base-data',
+      style: { textAlign: 'center', backgroundColor: 'var(--palette-yellow-300)' },
       render: (item: WageAchievementTierItem) => `第${item.tier_rank}区分`,
     },
     {
@@ -45,7 +46,7 @@ export function WageAchievementTierPage() {
       sortable: true,
       className: 'quantity bg-base-data',
       style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: WageAchievementTierItem) => <NumberDisplay value={item.min_wage} />,
+      render: (item: WageAchievementTierItem) => <CurrencyDisplay value={item.min_wage} />,
     },
     {
       key: 'max_wage',
@@ -53,21 +54,21 @@ export function WageAchievementTierPage() {
       sortable: true,
       className: 'quantity bg-base-data',
       style: { textAlign: 'right', backgroundColor: 'var(--palette-yellow-300)' },
-      render: (item: WageAchievementTierItem) => item.max_wage !== null ? <NumberDisplay value={item.max_wage} /> : '-',
+      render: (item: WageAchievementTierItem) => item.max_wage !== null ? <CurrencyDisplay value={item.max_wage} /> : '-',
     },
     {
       key: 'valid_from',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_FROM,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: WageAchievementTierItem) => item.valid_from || '-',
+      render: (item: WageAchievementTierItem) => <DateDisplay value={item.valid_from} fallback="-" />,
     },
     {
       key: 'valid_to',
       header: TABLE_COLUMNS.SERVICE_TYPE_VALID_TO,
       sortable: true,
       style: { textAlign: 'center' },
-      render: (item: WageAchievementTierItem) => item.valid_to ? <DateDisplay value={item.valid_to} /> : '-',
+      render: (item: WageAchievementTierItem) => <DateDisplay value={item.valid_to} fallback="-" />,
     },
   ];
 

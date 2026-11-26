@@ -16,11 +16,12 @@ import { WageAchievementTierPage } from './WageAchievementTierPage';
 
 export function ScreenWelfarePage() {
   const navContext = useNavigation();
-  const screenConfig = getScreenConfigForTab(navContext.activeTab);
+  const activeTab = navContext.activeTab === 'screenWelfare' ? 'baseReward' : navContext.activeTab;
+  const screenConfig = getScreenConfigForTab(activeTab);
   const displayTitle = screenConfig ? screenConfig.screenName : PAGE_NAMES.SCREEN_WELFARE;
 
   const renderContent = () => {
-    switch (navContext.activeTab) {
+    switch (activeTab) {
       case 'serviceType':
         return <ServiceTypePage />;
       case 'capacityTier':
@@ -43,7 +44,7 @@ export function ScreenWelfarePage() {
       case 'regionalGrade': // 後方互換性
         return <RegionalGradeLocationPage />;
       default:
-        return <ServiceTypePage />;
+        return <BaseRewardItemPage />;
     }
   };
 
@@ -53,7 +54,7 @@ export function ScreenWelfarePage() {
         <h2 className="page-title">{displayTitle}</h2>
         <div className="page-header-actions">
           {screenConfig && (
-            <Tabs tabs={screenConfig.tabs} activeTab={navContext.activeTab} onChange={navContext.setActiveTab} />
+            <Tabs tabs={screenConfig.tabs} activeTab={activeTab} onChange={navContext.setActiveTab} />
           )}
         </div>
       </div>

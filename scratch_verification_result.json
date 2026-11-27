@@ -1,10 +1,10 @@
 {
   "summary": {},
   "tableInventory": {
-    "total": 124,
-    "baseTablesCount": 66,
+    "total": 130,
+    "baseTablesCount": 72,
     "viewsCount": 58,
-    "directlyUsedCount": 78,
+    "directlyUsedCount": 83,
     "unusedOrLegacyViews": [
       {
         "name": "allowance_deduction_details",
@@ -44,7 +44,7 @@
       {
         "name": "attendance_records",
         "type": "VIEW",
-        "rowCount": 294,
+        "rowCount": 384,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -226,21 +226,21 @@
       {
         "name": "service_billing_details",
         "type": "VIEW",
-        "rowCount": 0,
+        "rowCount": 123,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
       {
         "name": "service_billing_snapshot_summaries",
         "type": "VIEW",
-        "rowCount": 14,
+        "rowCount": 20,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
       {
         "name": "service_billing_summaries",
         "type": "VIEW",
-        "rowCount": 14,
+        "rowCount": 20,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -261,7 +261,7 @@
       {
         "name": "staff_work_records",
         "type": "VIEW",
-        "rowCount": 168,
+        "rowCount": 219,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -333,7 +333,7 @@
       {
         "name": "attendance_records",
         "type": "VIEW",
-        "rowCount": 294,
+        "rowCount": 384,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -522,21 +522,21 @@
       {
         "name": "service_billing_details",
         "type": "VIEW",
-        "rowCount": 0,
+        "rowCount": 123,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
       {
         "name": "service_billing_snapshot_summaries",
         "type": "VIEW",
-        "rowCount": 14,
+        "rowCount": 20,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
       {
         "name": "service_billing_summaries",
         "type": "VIEW",
-        "rowCount": 14,
+        "rowCount": 20,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -557,7 +557,7 @@
       {
         "name": "staff_work_records",
         "type": "VIEW",
-        "rowCount": 168,
+        "rowCount": 219,
         "isDirectlyUsed": false,
         "isMentioned": false
       },
@@ -597,31 +597,31 @@
       "rowCount": 10,
       "sample": [
         {
-          "id": "e256fce1-8cee-42a3-ad75-d5250ccf0a9c",
+          "id": "df1068cf-2618-42a9-b575-7324179dbe8a",
           "target_period": "2026-06-14T15:00:00.000Z",
           "confirmed_at": "2026-06-15T09:00:00.000Z",
           "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
           "is_confirmed": true,
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
-          "id": "1ae50e7d-74ec-4051-9cd1-687b2b9776a3",
+          "id": "b2ee250c-7abb-4a85-93e3-f0c630528947",
           "target_period": "2026-06-15T15:00:00.000Z",
           "confirmed_at": "2026-06-16T09:00:00.000Z",
           "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
           "is_confirmed": true,
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
-          "id": "496d08e1-6367-4147-a04a-4cea622534e7",
+          "id": "0cbbd11c-5cfc-432a-b7b3-a9e4f36cc4fe",
           "target_period": "2026-06-16T15:00:00.000Z",
           "confirmed_at": "2026-06-17T09:00:00.000Z",
           "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
           "is_confirmed": true,
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         }
       ]
     },
@@ -638,8 +638,8 @@
           "is_financial_confirmed": true,
           "financial_confirmed_at": "2026-01-31T10:00:00.000Z",
           "financial_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "c1111111-2222-0601-a111-111111111111",
@@ -651,8 +651,8 @@
           "is_financial_confirmed": true,
           "financial_confirmed_at": "2026-06-30T10:00:00.000Z",
           "financial_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "c1111111-2222-1001-a111-111111111111",
@@ -664,8 +664,8 @@
           "is_financial_confirmed": false,
           "financial_confirmed_at": null,
           "financial_confirmed_by": null,
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         }
       ]
     },
@@ -689,8 +689,8 @@
           "managed_copayment_amount": "0.00",
           "deduction_total": "200.00",
           "payment": "15800.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "service_fee_deduction": "0.00",
           "actual_expense_deduction": "200.00",
           "payment_date": "2026-02-09T15:00:00.000Z"
@@ -712,8 +712,8 @@
           "managed_copayment_amount": "0.00",
           "deduction_total": "9500.00",
           "payment": "18500.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "service_fee_deduction": "9300.00",
           "actual_expense_deduction": "200.00",
           "payment_date": "2026-02-09T15:00:00.000Z"
@@ -735,8 +735,8 @@
           "managed_copayment_amount": "0.00",
           "deduction_total": "200.00",
           "payment": "16500.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "service_fee_deduction": "0.00",
           "actual_expense_deduction": "200.00",
           "payment_date": "2026-07-09T15:00:00.000Z"
@@ -751,8 +751,8 @@
           "summary_id": "a0000001-2222-42ea-800b-5e476066c581",
           "task_id": "e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a",
           "allocation_amount": "8000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "target_period": "2026-02-09T15:00:00.000Z"
         },
         {
@@ -760,8 +760,8 @@
           "summary_id": "a0000001-2222-42ea-800b-5e476066c582",
           "task_id": "1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c",
           "allocation_amount": "10000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "target_period": "2026-02-09T15:00:00.000Z"
         },
         {
@@ -769,8 +769,8 @@
           "summary_id": "a0000001-3333-42ea-800b-5e476066c581",
           "task_id": "33333333-1111-0000-0000-000000000003",
           "allocation_amount": "7000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z",
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z",
           "target_period": "2026-02-14T15:00:00.000Z"
         }
       ]
@@ -787,8 +787,8 @@
           "unit_price": "3000.00",
           "quantity": "1.00",
           "amount": "3000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "d2222222-2222-0102-a111-111111111111",
@@ -799,8 +799,8 @@
           "unit_price": "3000.00",
           "quantity": "1.00",
           "amount": "3000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "d2222222-2222-0601-a111-111111111111",
@@ -811,13 +811,13 @@
           "unit_price": "3000.00",
           "quantity": "1.00",
           "amount": "3000.00",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         }
       ]
     },
     "service_billing_snapshot": {
-      "rowCount": 14,
+      "rowCount": 20,
       "sample": [
         {
           "id": "b0000001-2222-42ea-800b-5e476066c581",
@@ -838,8 +838,8 @@
           "actual_expense_amount": "200.00",
           "total_member_billed_amount": "200.00",
           "status": "confirmed",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "b0000001-2222-42ea-800b-5e476066c582",
@@ -860,8 +860,8 @@
           "actual_expense_amount": "200.00",
           "total_member_billed_amount": "9500.00",
           "status": "confirmed",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "b0000006-2222-42ea-800b-5e476066c581",
@@ -882,17 +882,149 @@
           "actual_expense_amount": "200.00",
           "total_member_billed_amount": "200.00",
           "status": "confirmed",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         }
       ]
     },
     "service_billing_snapshot_details": {
-      "rowCount": 0,
-      "sample": []
+      "rowCount": 123,
+      "sample": [
+        {
+          "id": "fd3aea19-aa56-4293-be55-3f03dd0d81c9",
+          "summary_id": "b0000011-2222-42ea-800b-5e476066c581",
+          "reward_item_id": null,
+          "service_code": "111111",
+          "item_name": "就労継続支援Ｂ型サービス費(7.5:1)",
+          "item_category": "base_reward",
+          "unit_value": "584.00",
+          "count": "15.00",
+          "total_item_units": "8760.00",
+          "created_at": "2026-11-27T02:04:39.410Z"
+        },
+        {
+          "id": "e5fcc432-c3c1-46d5-9800-4942200862c1",
+          "summary_id": "b0000011-2222-42ea-800b-5e476066c582",
+          "reward_item_id": null,
+          "service_code": "111111",
+          "item_name": "就労継続支援Ｂ型サービス費(7.5:1)",
+          "item_category": "base_reward",
+          "unit_value": "584.00",
+          "count": "15.00",
+          "total_item_units": "8760.00",
+          "created_at": "2026-11-27T02:04:39.410Z"
+        },
+        {
+          "id": "92545bbb-47cd-44b1-946c-85200d9fa486",
+          "summary_id": "b0000011-3333-42ea-800b-5e476066c581",
+          "reward_item_id": null,
+          "service_code": "111111",
+          "item_name": "就労継続支援Ｂ型サービス費(7.5:1)",
+          "item_category": "base_reward",
+          "unit_value": "584.00",
+          "count": "15.00",
+          "total_item_units": "8760.00",
+          "created_at": "2026-11-27T02:04:39.410Z"
+        }
+      ]
     },
     "service_provision_system_snapshot": {
-      "error": "relation \"service_provision_system_snapshot\" does not exist"
+      "rowCount": 7,
+      "sample": [
+        {
+          "id": "77777777-0000-0000-0000-000000000004",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "service_type_id": "11111111-0000-0000-0000-000000000001",
+          "target_period": "2026-04",
+          "target_year": "2026",
+          "operating_days": 22,
+          "total_utilization": 420,
+          "avg_members_per_day": "19.09",
+          "previous_year_avg_members": "19.50",
+          "capacity": 20,
+          "capacity_tier_id": null,
+          "is_capacity_excess": false,
+          "direct_care_work_hours": "440.00",
+          "standard_monthly_hours": "160.00",
+          "direct_care_fte": "2.75",
+          "has_full_time_direct_care": true,
+          "actual_staffing_ratio": "6.94",
+          "determined_staffing_ratio": "7.5:1配置",
+          "staffing_ratio_tier_id": null,
+          "is_staffing_shortage": false,
+          "annual_average_wage": 42000,
+          "wage_achievement_tier_id": null,
+          "determined_wage_tier": "4万円以上4万5千円未満",
+          "status": "confirmed",
+          "confirmed_by": null,
+          "confirmed_at": null,
+          "remarks": null,
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
+        },
+        {
+          "id": "77777777-0000-0000-0000-000000000005",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "service_type_id": "11111111-0000-0000-0000-000000000001",
+          "target_period": "2026-05",
+          "target_year": "2026",
+          "operating_days": 20,
+          "total_utilization": 390,
+          "avg_members_per_day": "19.50",
+          "previous_year_avg_members": "19.50",
+          "capacity": 20,
+          "capacity_tier_id": null,
+          "is_capacity_excess": false,
+          "direct_care_work_hours": "432.00",
+          "standard_monthly_hours": "160.00",
+          "direct_care_fte": "2.70",
+          "has_full_time_direct_care": true,
+          "actual_staffing_ratio": "7.22",
+          "determined_staffing_ratio": "7.5:1配置",
+          "staffing_ratio_tier_id": null,
+          "is_staffing_shortage": false,
+          "annual_average_wage": 42000,
+          "wage_achievement_tier_id": null,
+          "determined_wage_tier": "4万円以上4万5千円未満",
+          "status": "confirmed",
+          "confirmed_by": null,
+          "confirmed_at": null,
+          "remarks": null,
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
+        },
+        {
+          "id": "77777777-0000-0000-0000-000000000006",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "service_type_id": "11111111-0000-0000-0000-000000000001",
+          "target_period": "2026-06",
+          "target_year": "2026",
+          "operating_days": 22,
+          "total_utilization": 430,
+          "avg_members_per_day": "19.55",
+          "previous_year_avg_members": "19.50",
+          "capacity": 20,
+          "capacity_tier_id": null,
+          "is_capacity_excess": false,
+          "direct_care_work_hours": "448.00",
+          "standard_monthly_hours": "160.00",
+          "direct_care_fte": "2.80",
+          "has_full_time_direct_care": true,
+          "actual_staffing_ratio": "6.98",
+          "determined_staffing_ratio": "7.5:1配置",
+          "staffing_ratio_tier_id": null,
+          "is_staffing_shortage": false,
+          "annual_average_wage": 42000,
+          "wage_achievement_tier_id": null,
+          "determined_wage_tier": "4万円以上4万5千円未満",
+          "status": "confirmed",
+          "confirmed_by": null,
+          "confirmed_at": null,
+          "remarks": null,
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
+        }
+      ]
     },
     "financial_snapshot": {
       "rowCount": 52,
@@ -910,8 +1042,8 @@
           "subject": "就労支援事業収益",
           "amount": "520000.00",
           "remarks": "ネットワーク構築受託売上(1月)",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "f1111111-2222-0105-a111-111111111111",
@@ -926,8 +1058,8 @@
           "subject": "就労支援事業収益",
           "amount": "310000.00",
           "remarks": "パン販売売上(1月)",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         },
         {
           "id": "f1111111-2222-0110-a111-111111111111",
@@ -942,8 +1074,8 @@
           "subject": "材料費",
           "amount": "48000.00",
           "remarks": "ネットワーク資材費",
-          "created_at": "2026-11-16T05:12:43.404Z",
-          "updated_at": "2026-11-16T05:12:43.404Z"
+          "created_at": "2026-11-27T02:13:19.489Z",
+          "updated_at": "2026-11-27T02:13:19.489Z"
         }
       ]
     }
@@ -955,18 +1087,14 @@
       "mismatches": []
     },
     "billingCalculations": {
-      "totalInspected": 14,
+      "totalInspected": 20,
       "mismatchCount": 0,
       "mismatches": []
     },
     "serviceProvisionCalculations": {
-      "totalInspected": 0,
-      "mismatchCount": 1,
-      "mismatches": [
-        {
-          "error": "service_provision_system_snapshot table missing or error: relation \"service_provision_system_snapshot\" does not exist"
-        }
-      ]
+      "totalInspected": 7,
+      "mismatchCount": 0,
+      "mismatches": []
     }
   },
   "unusedTablesAndColumns": {
@@ -1031,7 +1159,7 @@
         "table": "member_attendance_records",
         "column": "contact_date",
         "type": "date",
-        "totalRows": 294,
+        "totalRows": 384,
         "nonNullCount": 0,
         "issue": "ALL_NULL"
       },
@@ -1039,7 +1167,23 @@
         "table": "member_attendance_records",
         "column": "remarks",
         "type": "text",
-        "totalRows": 294,
+        "totalRows": 384,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_basic_schedules",
+        "column": "service_hours",
+        "type": "numeric",
+        "totalRows": 42,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_exception_schedules",
+        "column": "service_hours",
+        "type": "numeric",
+        "totalRows": 4,
         "nonNullCount": 0,
         "issue": "ALL_NULL"
       },
@@ -1172,10 +1316,106 @@
         "issue": "ALL_NULL"
       },
       {
+        "table": "qualifications",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 24,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "regional_grade_locations",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "regional_grade_rates",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "reward_items",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 31,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
         "table": "salary_closing_settings",
         "column": "valid_to",
         "type": "date",
         "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "capacity_tier_id",
+        "type": "uuid",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "staffing_ratio_tier_id",
+        "type": "uuid",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "wage_achievement_tier_id",
+        "type": "uuid",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "confirmed_by",
+        "type": "uuid",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "confirmed_at",
+        "type": "timestamp with time zone",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot",
+        "column": "remarks",
+        "type": "text",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_provision_system_snapshot_details",
+        "column": "staff_role_id",
+        "type": "uuid",
+        "totalRows": 28,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "service_types",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 28,
         "nonNullCount": 0,
         "issue": "ALL_NULL"
       },
@@ -1207,7 +1447,23 @@
         "table": "staff_attendance_records",
         "column": "remarks",
         "type": "text",
-        "totalRows": 168,
+        "totalRows": 219,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_basic_schedules",
+        "column": "scheduled_hours",
+        "type": "numeric",
+        "totalRows": 35,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_exception_schedules",
+        "column": "scheduled_hours",
+        "type": "numeric",
+        "totalRows": 3,
         "nonNullCount": 0,
         "issue": "ALL_NULL"
       },
@@ -1216,6 +1472,22 @@
         "column": "valid_until",
         "type": "date",
         "totalRows": 5,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_role_setting_details",
+        "column": "allocated_hours",
+        "type": "numeric",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_roles",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 7,
         "nonNullCount": 0,
         "issue": "ALL_NULL"
       },
@@ -1247,44 +1519,6 @@
     "unusedBaseTables": []
   },
   "appliedMigrations": [
-    "20260625000000",
-    "20261016000000",
-    "20261019000000",
-    "20261019000001",
-    "20261019000002",
-    "20261019000003",
-    "20261019000004",
-    "20261019000005",
-    "20261020000000",
-    "20261020000001",
-    "20261020000002",
-    "20261021000000",
-    "20261021000001",
-    "20261021000002",
-    "20261021000003",
-    "20261021000004",
-    "20261023000000",
-    "20261023000001",
-    "20261023000002",
-    "20261026000000",
-    "20261026000001",
-    "20261027000000",
-    "20261028000000",
-    "20261029000000",
-    "20261104000000",
-    "20261104010000",
-    "20261104020000",
-    "20261104030000",
-    "20261104040000",
-    "20261104050000",
-    "20261105000000",
-    "20261105000001",
-    "20261109140000",
-    "20261111140000",
-    "20261111150000",
-    "20261112160000",
-    "20261116110000",
-    "20261116150000",
-    "20261117110000"
+    "20260625000000"
   ]
 }

@@ -61,7 +61,7 @@ export function useServiceProvisionSystem(officeId?: string) {
 
       let workQuery = supabase.from('member_work_records').select('target_period, member_id, work_time, office_id');
       let attQuery = supabase.from('staff_attendance_records').select('work_date, staff_id, actual_work_hours, assigned_role, office_id');
-      let staffQuery = supabase.from('staff').select('id, employment_type, weekly_working_hours');
+      let staffQuery = supabase.from('office_staff_settings').select('staff_id, employment_type, weekly_working_hours, office_id');
       let rolesQuery = supabase.from('staff_roles').select('code, name, is_direct_care');
       let officesQuery = supabase.from('offices').select('id, standard_weekly_hours');
       let detailsQuery = supabase.from('office_service_type_setting_details').select('office_id, capacity');
@@ -70,6 +70,7 @@ export function useServiceProvisionSystem(officeId?: string) {
       if (officeId && officeId !== 'all') {
         workQuery = workQuery.eq('office_id', officeId);
         attQuery = attQuery.eq('office_id', officeId);
+        staffQuery = staffQuery.eq('office_id', officeId);
         officesQuery = officesQuery.eq('id', officeId);
         detailsQuery = detailsQuery.eq('office_id', officeId);
         snapshotQuery = snapshotQuery.eq('office_id', officeId);
@@ -101,7 +102,7 @@ export function useServiceProvisionSystem(officeId?: string) {
       if (detailsError) console.warn('office_service_type_setting_details error:', detailsError);
       if (snapshotError) console.warn('service_provision_system_snapshot error:', snapshotError);
 
-      const staffMap = new Map((staffList || []).map((s: { id: string; employment_type?: string; weekly_working_hours?: number }) => [s.id, s]));
+      const staffMap = new Map((staffList || []).map((s: { staff_id: string; employment_type?: string; weekly_working_hours?: number }) => [s.staff_id, s]));
       
       const directCareRoles = new Set(
         (roleList || [])

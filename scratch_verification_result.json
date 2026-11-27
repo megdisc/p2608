@@ -1,0 +1,1290 @@
+{
+  "summary": {},
+  "tableInventory": {
+    "total": 124,
+    "baseTablesCount": 66,
+    "viewsCount": 58,
+    "directlyUsedCount": 78,
+    "unusedOrLegacyViews": [
+      {
+        "name": "allowance_deduction_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_deduction_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_items",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "attendance_records",
+        "type": "VIEW",
+        "rowCount": 294,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_allowance_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_deduction_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_financial_records",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_record_closings",
+        "type": "VIEW",
+        "rowCount": 10,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "deduction_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "deduction_items",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "deduction_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_records",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "incentive_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "incentive_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_allowance_deduction_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_allowance_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_confirmation_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_deduction_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_financial_closings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_financial_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_incentive_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_incentive_records",
+        "type": "VIEW",
+        "rowCount": 2,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_record_closings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_wage_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "office_service_scheme_settings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "office_service_settings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "reserve_settings",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_details",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_snapshot_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_items",
+        "type": "VIEW",
+        "rowCount": 43,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "skill_categories_view",
+        "type": "VIEW",
+        "rowCount": 8,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "staff_work_records",
+        "type": "VIEW",
+        "rowCount": 168,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "users",
+        "type": "VIEW",
+        "rowCount": 9,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "wage_snapshot_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "wage_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "work_records",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      }
+    ],
+    "legacyCompatibilityViews": [
+      {
+        "name": "allowance_deduction_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_deduction_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_items",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "allowance_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "attendance_records",
+        "type": "VIEW",
+        "rowCount": 294,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_allowance_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_deduction_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_financial_records",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_record_closings",
+        "type": "VIEW",
+        "rowCount": 10,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "daily_work_confirmations",
+        "type": "VIEW",
+        "rowCount": 10,
+        "isDirectlyUsed": false,
+        "isMentioned": true
+      },
+      {
+        "name": "deduction_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "deduction_items",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "deduction_records",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_records",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "general_financial_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "incentive_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "incentive_snapshot_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_allowance_deduction_details",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_allowance_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_confirmation_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_deduction_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_financial_closings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_financial_details",
+        "type": "VIEW",
+        "rowCount": 52,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_incentive_details",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_incentive_records",
+        "type": "VIEW",
+        "rowCount": 2,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_record_closings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "monthly_wage_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "office_service_scheme_settings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "office_service_settings",
+        "type": "VIEW",
+        "rowCount": 3,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "reserve_settings",
+        "type": "VIEW",
+        "rowCount": 6,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_details",
+        "type": "VIEW",
+        "rowCount": 0,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_snapshot_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_billing_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "service_items",
+        "type": "VIEW",
+        "rowCount": 43,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "skill_categories_view",
+        "type": "VIEW",
+        "rowCount": 8,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "staff_work_records",
+        "type": "VIEW",
+        "rowCount": 168,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "users",
+        "type": "VIEW",
+        "rowCount": 9,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "wage_snapshot_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "wage_summaries",
+        "type": "VIEW",
+        "rowCount": 14,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      },
+      {
+        "name": "work_records",
+        "type": "VIEW",
+        "rowCount": 28,
+        "isDirectlyUsed": false,
+        "isMentioned": false
+      }
+    ],
+    "unusedBaseTables": []
+  },
+  "snapshotVerification": {
+    "daily_closings": {
+      "rowCount": 10,
+      "sample": [
+        {
+          "id": "e256fce1-8cee-42a3-ad75-d5250ccf0a9c",
+          "target_period": "2026-06-14T15:00:00.000Z",
+          "confirmed_at": "2026-06-15T09:00:00.000Z",
+          "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "is_confirmed": true,
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "1ae50e7d-74ec-4051-9cd1-687b2b9776a3",
+          "target_period": "2026-06-15T15:00:00.000Z",
+          "confirmed_at": "2026-06-16T09:00:00.000Z",
+          "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "is_confirmed": true,
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "496d08e1-6367-4147-a04a-4cea622534e7",
+          "target_period": "2026-06-16T15:00:00.000Z",
+          "confirmed_at": "2026-06-17T09:00:00.000Z",
+          "confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "is_confirmed": true,
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        }
+      ]
+    },
+    "monthly_closings": {
+      "rowCount": 3,
+      "sample": [
+        {
+          "id": "c1111111-2222-0101-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-01",
+          "is_settlement_confirmed": true,
+          "settlement_confirmed_at": "2026-01-31T09:00:00.000Z",
+          "settlement_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "is_financial_confirmed": true,
+          "financial_confirmed_at": "2026-01-31T10:00:00.000Z",
+          "financial_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "c1111111-2222-0601-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-06",
+          "is_settlement_confirmed": true,
+          "settlement_confirmed_at": "2026-06-30T09:00:00.000Z",
+          "settlement_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "is_financial_confirmed": true,
+          "financial_confirmed_at": "2026-06-30T10:00:00.000Z",
+          "financial_confirmed_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "c1111111-2222-1001-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-10",
+          "is_settlement_confirmed": false,
+          "settlement_confirmed_at": null,
+          "settlement_confirmed_by": null,
+          "is_financial_confirmed": false,
+          "financial_confirmed_at": null,
+          "financial_confirmed_by": null,
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        }
+      ]
+    },
+    "wage_snapshot": {
+      "rowCount": 14,
+      "sample": [
+        {
+          "id": "a0000001-2222-42ea-800b-5e476066c581",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-01",
+          "member_id": "b362ad61-3ab9-42b3-a53c-1b77f985b85a",
+          "work_time": "50.00",
+          "wage_rate": "100.00",
+          "basic_wage": "5000.00",
+          "incentive_total": "8000.00",
+          "other_allowance_total": "3000.00",
+          "wage_total": "16000.00",
+          "service_fee_total": "0.00",
+          "service_fee_copayment": "0.00",
+          "is_copayment_limit_applied": false,
+          "managed_copayment_amount": "0.00",
+          "deduction_total": "200.00",
+          "payment": "15800.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "service_fee_deduction": "0.00",
+          "actual_expense_deduction": "200.00",
+          "payment_date": "2026-02-09T15:00:00.000Z"
+        },
+        {
+          "id": "a0000001-2222-42ea-800b-5e476066c582",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-01",
+          "member_id": "e98c7634-1eb3-4e42-b062-841f39c043e0",
+          "work_time": "60.00",
+          "wage_rate": "250.00",
+          "basic_wage": "15000.00",
+          "incentive_total": "10000.00",
+          "other_allowance_total": "3000.00",
+          "wage_total": "28000.00",
+          "service_fee_total": "0.00",
+          "service_fee_copayment": "0.00",
+          "is_copayment_limit_applied": false,
+          "managed_copayment_amount": "0.00",
+          "deduction_total": "9500.00",
+          "payment": "18500.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "service_fee_deduction": "9300.00",
+          "actual_expense_deduction": "200.00",
+          "payment_date": "2026-02-09T15:00:00.000Z"
+        },
+        {
+          "id": "a0000006-2222-42ea-800b-5e476066c581",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-06",
+          "member_id": "b362ad61-3ab9-42b3-a53c-1b77f985b85a",
+          "work_time": "52.00",
+          "wage_rate": "100.00",
+          "basic_wage": "5200.00",
+          "incentive_total": "8500.00",
+          "other_allowance_total": "3000.00",
+          "wage_total": "16700.00",
+          "service_fee_total": "0.00",
+          "service_fee_copayment": "0.00",
+          "is_copayment_limit_applied": false,
+          "managed_copayment_amount": "0.00",
+          "deduction_total": "200.00",
+          "payment": "16500.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "service_fee_deduction": "0.00",
+          "actual_expense_deduction": "200.00",
+          "payment_date": "2026-07-09T15:00:00.000Z"
+        }
+      ]
+    },
+    "incentive_snapshot": {
+      "rowCount": 14,
+      "sample": [
+        {
+          "id": "d1111111-2222-0101-a111-111111111111",
+          "summary_id": "a0000001-2222-42ea-800b-5e476066c581",
+          "task_id": "e2d4d8c2-3f1a-4d9c-a123-1b94d1f0e21a",
+          "allocation_amount": "8000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "target_period": "2026-02-09T15:00:00.000Z"
+        },
+        {
+          "id": "d1111111-2222-0102-a111-111111111111",
+          "summary_id": "a0000001-2222-42ea-800b-5e476066c582",
+          "task_id": "1b8d2b7a-9a6c-4f5c-8b1a-2e3d4f5a6b7c",
+          "allocation_amount": "10000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "target_period": "2026-02-09T15:00:00.000Z"
+        },
+        {
+          "id": "d1111111-3333-0101-a111-111111111111",
+          "summary_id": "a0000001-3333-42ea-800b-5e476066c581",
+          "task_id": "33333333-1111-0000-0000-000000000003",
+          "allocation_amount": "7000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z",
+          "target_period": "2026-02-14T15:00:00.000Z"
+        }
+      ]
+    },
+    "allowance_deduction_snapshot": {
+      "rowCount": 28,
+      "sample": [
+        {
+          "id": "d2222222-2222-0101-a111-111111111111",
+          "summary_id": "a0000001-2222-42ea-800b-5e476066c581",
+          "item_id": null,
+          "item_category": "allowance",
+          "item_name": "精勤手当",
+          "unit_price": "3000.00",
+          "quantity": "1.00",
+          "amount": "3000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "d2222222-2222-0102-a111-111111111111",
+          "summary_id": "a0000001-2222-42ea-800b-5e476066c582",
+          "item_id": null,
+          "item_category": "allowance",
+          "item_name": "精勤手当",
+          "unit_price": "3000.00",
+          "quantity": "1.00",
+          "amount": "3000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "d2222222-2222-0601-a111-111111111111",
+          "summary_id": "a0000006-2222-42ea-800b-5e476066c581",
+          "item_id": null,
+          "item_category": "allowance",
+          "item_name": "精勤手当",
+          "unit_price": "3000.00",
+          "quantity": "1.00",
+          "amount": "3000.00",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        }
+      ]
+    },
+    "service_billing_snapshot": {
+      "rowCount": 14,
+      "sample": [
+        {
+          "id": "b0000001-2222-42ea-800b-5e476066c581",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "member_id": "b362ad61-3ab9-42b3-a53c-1b77f985b85a",
+          "target_period": "2026-01",
+          "attendance_days": 15,
+          "base_reward_units": "8760.00",
+          "addition_units": "240.00",
+          "subtraction_units": "0.00",
+          "total_units": "9000.00",
+          "unit_price": "10.00",
+          "total_cost_amount": "90000.00",
+          "calculated_copayment_amount": "9000.00",
+          "copayment_limit_amount": "0.00",
+          "final_copayment_amount": "0.00",
+          "benefit_billing_amount": "90000.00",
+          "actual_expense_amount": "200.00",
+          "total_member_billed_amount": "200.00",
+          "status": "confirmed",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "b0000001-2222-42ea-800b-5e476066c582",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "member_id": "e98c7634-1eb3-4e42-b062-841f39c043e0",
+          "target_period": "2026-01",
+          "attendance_days": 15,
+          "base_reward_units": "8760.00",
+          "addition_units": "540.00",
+          "subtraction_units": "0.00",
+          "total_units": "9300.00",
+          "unit_price": "10.00",
+          "total_cost_amount": "93000.00",
+          "calculated_copayment_amount": "9300.00",
+          "copayment_limit_amount": "9300.00",
+          "final_copayment_amount": "9300.00",
+          "benefit_billing_amount": "83700.00",
+          "actual_expense_amount": "200.00",
+          "total_member_billed_amount": "9500.00",
+          "status": "confirmed",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "b0000006-2222-42ea-800b-5e476066c581",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "member_id": "b362ad61-3ab9-42b3-a53c-1b77f985b85a",
+          "target_period": "2026-06",
+          "attendance_days": 16,
+          "base_reward_units": "9344.00",
+          "addition_units": "256.00",
+          "subtraction_units": "0.00",
+          "total_units": "9600.00",
+          "unit_price": "10.00",
+          "total_cost_amount": "96000.00",
+          "calculated_copayment_amount": "9600.00",
+          "copayment_limit_amount": "0.00",
+          "final_copayment_amount": "0.00",
+          "benefit_billing_amount": "96000.00",
+          "actual_expense_amount": "200.00",
+          "total_member_billed_amount": "200.00",
+          "status": "confirmed",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        }
+      ]
+    },
+    "service_billing_snapshot_details": {
+      "rowCount": 0,
+      "sample": []
+    },
+    "service_provision_system_snapshot": {
+      "error": "relation \"service_provision_system_snapshot\" does not exist"
+    },
+    "financial_snapshot": {
+      "rowCount": 52,
+      "sample": [
+        {
+          "id": "f1111111-2222-0101-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2025-12-31T15:00:00.000Z",
+          "project_id": "418efd88-75c7-4b89-8fe9-f1fb40fc3f6d",
+          "client_id": "73ab0c05-9915-4894-a083-6bccf7a66d2a",
+          "recorded_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "type": "revenue",
+          "activity_category": "production",
+          "cost_category": "manufacturing",
+          "subject": "就労支援事業収益",
+          "amount": "520000.00",
+          "remarks": "ネットワーク構築受託売上(1月)",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "f1111111-2222-0105-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-01-04T15:00:00.000Z",
+          "project_id": "d8c0b5c1-1e3c-4c7b-b384-5f5a8947f631",
+          "client_id": null,
+          "recorded_by": "de2d336b-254d-4af7-8e49-5acbda340e67",
+          "type": "revenue",
+          "activity_category": "production",
+          "cost_category": "manufacturing",
+          "subject": "就労支援事業収益",
+          "amount": "310000.00",
+          "remarks": "パン販売売上(1月)",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        },
+        {
+          "id": "f1111111-2222-0110-a111-111111111111",
+          "office_id": "22222222-2222-2222-2222-222222222222",
+          "target_period": "2026-01-09T15:00:00.000Z",
+          "project_id": "418efd88-75c7-4b89-8fe9-f1fb40fc3f6d",
+          "client_id": null,
+          "recorded_by": "563bb18c-8d3b-44ca-8fec-1fb32a71c8aa",
+          "type": "expense",
+          "activity_category": "production",
+          "cost_category": "manufacturing",
+          "subject": "材料費",
+          "amount": "48000.00",
+          "remarks": "ネットワーク資材費",
+          "created_at": "2026-11-16T05:12:43.404Z",
+          "updated_at": "2026-11-16T05:12:43.404Z"
+        }
+      ]
+    }
+  },
+  "logicVerification": {
+    "wageCalculations": {
+      "totalInspected": 14,
+      "mismatchCount": 0,
+      "mismatches": []
+    },
+    "billingCalculations": {
+      "totalInspected": 14,
+      "mismatchCount": 0,
+      "mismatches": []
+    },
+    "serviceProvisionCalculations": {
+      "totalInspected": 0,
+      "mismatchCount": 1,
+      "mismatches": [
+        {
+          "error": "service_provision_system_snapshot table missing or error: relation \"service_provision_system_snapshot\" does not exist"
+        }
+      ]
+    }
+  },
+  "unusedTablesAndColumns": {
+    "allNullColumns": [
+      {
+        "table": "addresses",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 4,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "allowance_deduction_items",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 12,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "allowance_deduction_snapshot",
+        "column": "item_id",
+        "type": "uuid",
+        "totalRows": 28,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "auth_users",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 9,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "email_addresses",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "entity_email_settings",
+        "column": "label",
+        "type": "text",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "entity_phone_settings",
+        "column": "label",
+        "type": "text",
+        "totalRows": 13,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_attendance_records",
+        "column": "contact_date",
+        "type": "date",
+        "totalRows": 294,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_attendance_records",
+        "column": "remarks",
+        "type": "text",
+        "totalRows": 294,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_recipient_certificates",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_skill_setting_summaries",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 6,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "member_wage_settings",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "members",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 6,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "office_member_setting_summaries",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "office_service_type_setting_details",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "office_service_type_setting_summaries",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "office_staff_setting_summaries",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "offices",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "offices",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "organizations",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 1,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "partner_contacts",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 5,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "partners",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "phone_numbers",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 13,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "project_tasks",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 10,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "projects",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 7,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "salary_closing_settings",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "skill_categories",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "skill_items",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 25,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "skill_level_items",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 9,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_attendance_records",
+        "column": "remarks",
+        "type": "text",
+        "totalRows": 168,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staff_qualification_settings",
+        "column": "valid_until",
+        "type": "date",
+        "totalRows": 5,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "staffs",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "wage_closing_settings",
+        "column": "valid_to",
+        "type": "date",
+        "totalRows": 3,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      },
+      {
+        "table": "wage_rate_items",
+        "column": "deleted_at",
+        "type": "timestamp with time zone",
+        "totalRows": 8,
+        "nonNullCount": 0,
+        "issue": "ALL_NULL"
+      }
+    ],
+    "unusedBaseTables": []
+  },
+  "appliedMigrations": [
+    "20260625000000",
+    "20261016000000",
+    "20261019000000",
+    "20261019000001",
+    "20261019000002",
+    "20261019000003",
+    "20261019000004",
+    "20261019000005",
+    "20261020000000",
+    "20261020000001",
+    "20261020000002",
+    "20261021000000",
+    "20261021000001",
+    "20261021000002",
+    "20261021000003",
+    "20261021000004",
+    "20261023000000",
+    "20261023000001",
+    "20261023000002",
+    "20261026000000",
+    "20261026000001",
+    "20261027000000",
+    "20261028000000",
+    "20261029000000",
+    "20261104000000",
+    "20261104010000",
+    "20261104020000",
+    "20261104030000",
+    "20261104040000",
+    "20261104050000",
+    "20261105000000",
+    "20261105000001",
+    "20261109140000",
+    "20261111140000",
+    "20261111150000",
+    "20261112160000",
+    "20261116110000",
+    "20261116150000",
+    "20261117110000"
+  ]
+}
